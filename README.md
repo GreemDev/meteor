@@ -27,7 +27,8 @@ Follow the guide on the official Meteor Client website, [here](https://meteorcli
 All credit goes to the original developers and to the creators of the APIs it leverages.<br>
 I am merely making my own changes due to the fact that Meteor no longer supports 1.19 natively.<br>
 There will be no downloadable versions of the mod ready-to-use.<br>
-If you want to use my version, follow the instructions above regarding compilation. I will also not provide any support,<br> 
-and the original developers/community likely won't either because it's not their version of the client.<br>
+If you want to use my version, follow the instructions above regarding compilation.<br> 
+Support for this version will not be offered, and the original developers/community likely won't either because it's not their version of the client.<br>
+*Functionality is not guaranteed!* Though it should work because I want to use it myself.<br>
 **TL;DR: *do not* ask for help in their support Discord, or my own.**<br>
 See the original Meteor Client README at the original repository, [here](https://github.com/MeteorDevelopment/meteor-client).
