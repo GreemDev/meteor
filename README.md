@@ -8,22 +8,26 @@
 <p align="center">A Minecraft Fabric Utility Mod for Minecraft 1.19.</p>
 
 <div align="center">
-    <a href="https://discord.gg/bBGQZvd"><img src="https://img.shields.io/discord/689197705683140636?logo=discord" alt="Discord"/></a>
-    <br><br>
-    <img src="https://img.shields.io/github/last-commit/MeteorDevelopment/meteor-client" alt="GitHub last commit"/>
-    <img src="https://img.shields.io/github/commit-activity/w/MeteorDevelopment/meteor-client" alt="GitHub commit activity"/>
     <br>
-    <img src="https://img.shields.io/github/languages/code-size/MeteorDevelopment/meteor-client" alt="GitHub code size in bytes"/>
-    <img src="https://tokei.rs/b1/github/MeteorDevelopment/meteor-client" alt="GitHub lines of code"/>
-    <img src="https://img.shields.io/github/contributors/MeteorDevelopment/meteor-client" alt="GitHub contributors"/>
+    <img src="https://img.shields.io/github/last-commit/GreemDev/meteor" alt="GitHub last commit"/>
+    <img src="https://img.shields.io/github/commit-activity/w/GreemDev/meteor" alt="GitHub commit activity"/>
     <br>
-    <img src="https://www.codefactor.io/repository/github/meteordevelopment/meteor-client/badge" alt="CodeFactor"/>
-    <img src="https://circleci.com/gh/MeteorDevelopment/meteor-client/tree/master.svg?style=shield" alt="CircleCI"/>
+    <img src="https://img.shields.io/github/languages/code-size/GreemDev/meteor" alt="GitHub code size in bytes"/>
+    <img src="https://tokei.rs/b1/github/GreemDev/meteor" alt="GitHub lines of code"/>
 </div>
 
-### Building
+## Building
 - Clone this repository
 - Run `./gradlew build`
 
-### Installation
+## Installation
 Follow the guide on the official Meteor Client website, [here](https://meteorclient.com/installation).
+
+### I am not the original creator of this client.
+All credit goes to the original developers and to the creators of the APIs it leverages.<br>
+I am merely making my own changes due to the fact that Meteor no longer supports 1.19 natively.<br>
+There will be no downloadable versions of the mod ready-to-use.<br>
+If you want to use my version, follow the instructions above regarding compilation. I will also not provide any support,<br> 
+and the original developers/community likely won't either because it's not their version of the client.<br>
+**TL;DR: *do not* ask for help in their support Discord, or my own.**<br>
+See the original Meteor Client README at the original repository, [here](https://github.com/MeteorDevelopment/meteor-client).
