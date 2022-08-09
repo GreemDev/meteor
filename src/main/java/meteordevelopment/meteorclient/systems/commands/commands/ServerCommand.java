@@ -61,7 +61,7 @@ public class ServerCommand extends Command {
             plugins.clear();
             MeteorClient.EVENT_BUS.subscribe(this);
             info("Please wait around 5 seconds...");
-            (new Thread(() -> {
+            new Thread(() -> {
                 Random random = new Random();
                 completionStarts.chars().forEach(i -> {
                     mc.player.networkHandler.sendPacket(new RequestCommandCompletionsC2SPacket(random.nextInt(200), Character.toString(i)));
@@ -71,7 +71,7 @@ public class ServerCommand extends Command {
                         e.printStackTrace();
                     }
                 });
-            })).start();
+            }).start();
             return SINGLE_SUCCESS;
         }));
 

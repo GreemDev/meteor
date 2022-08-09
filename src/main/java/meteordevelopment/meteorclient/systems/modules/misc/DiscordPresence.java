@@ -103,7 +103,6 @@ public class DiscordPresence extends Module {
     );
 
     private static final RichPresence rpc = new RichPresence();
-    private SmallImage currentSmallImage;
     private int ticks;
     private boolean forceUpdate, lastWasInMainMenu;
 
@@ -153,8 +152,6 @@ public class DiscordPresence extends Module {
         if (!MeteorClient.DEV_BUILD.isEmpty()) largeText += " Dev Build: " + MeteorClient.DEV_BUILD;
         rpc.setLargeImage("meteor_client", largeText);
 
-        currentSmallImage = SmallImage.Snail;
-
         recompileLine1();
         recompileLine2();
 
@@ -194,16 +191,6 @@ public class DiscordPresence extends Module {
     @EventHandler
     private void onTick(TickEvent.Post event) {
         boolean update = false;
-
-        // Image
-        if (ticks >= 200 || forceUpdate) {
-            currentSmallImage = currentSmallImage.next();
-            currentSmallImage.apply();
-            update = true;
-
-            ticks = 0;
-        }
-        else ticks++;
 
         if (Utils.canUpdate()) {
             // Line 1

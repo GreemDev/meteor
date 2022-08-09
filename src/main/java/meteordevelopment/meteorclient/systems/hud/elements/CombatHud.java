@@ -207,13 +207,15 @@ public class CombatHud extends HudElement {
             Renderer2D.COLOR.render(null);
 
             // Player Model
-            InventoryScreen.drawEntity(
-                (int) (x + (25 * scale.get())),
-                (int) (y + (66 * scale.get())),
-                (int) (30 * scale.get()),
-                -MathHelper.wrapDegrees(playerEntity.prevYaw + (playerEntity.getYaw() - playerEntity.prevYaw) * mc.getTickDelta()),
-                -playerEntity.getPitch(), playerEntity
-            );
+            try {
+                InventoryScreen.drawEntity(
+                    (int) (x + (25 * scale.get())),
+                    (int) (y + (66 * scale.get())),
+                    (int) (30 * scale.get()),
+                    -MathHelper.wrapDegrees(playerEntity.prevYaw + (playerEntity.getYaw() - playerEntity.prevYaw) * mc.getTickDelta()),
+                    -playerEntity.getPitch(), playerEntity
+                );
+            } catch (NullPointerException ignored) {}
 
             // Moving pos to past player model
             x += 50 * scale.get();
@@ -237,7 +239,13 @@ public class CombatHud extends HudElement {
 
             // Distance
             double dist = 0;
-            if (!isInEditor()) dist = Math.round(mc.player.distanceTo(playerEntity) * 100.0) / 100.0;
+            if (!isInEditor()) {
+                float distanceTo = 0.0f;
+                try {
+                    distanceTo = mc.player.distanceTo(playerEntity);
+                } catch (NullPointerException ignored) {}
+                dist = Math.round(distanceTo * 100.0) / 100.0;
+            }
             String distText = dist + "m";
 
             Color distColor;

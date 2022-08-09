@@ -220,7 +220,10 @@ public class TextHud extends HudElement {
 
         if (shown.get() != Shown.Always && conditionScript != null) {
             String text = MeteorStarscript.run(conditionScript);
-            visible = shown.get() == Shown.WhenTrue ? text.equalsIgnoreCase("true") : text.equalsIgnoreCase("false");
+            if (text != null)
+                visible = shown.get() == Shown.WhenTrue ? text.equalsIgnoreCase("true") : text.equalsIgnoreCase("false");
+            else
+                visible = true;
         }
 
         firstTick = false;

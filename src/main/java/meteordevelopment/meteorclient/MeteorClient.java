@@ -51,7 +51,7 @@ public class MeteorClient implements ClientModInitializer {
     public static MeteorClient INSTANCE;
     public static final IEventBus EVENT_BUS = new EventBus();
     public static final File FOLDER = new File(FabricLoader.getInstance().getGameDir().toString(), MOD_ID);
-    public static final Logger LOG = LoggerFactory.getLogger("Meteor Client");
+    public static final Logger LOG = LoggerFactory.getLogger("Meteor");
 
     static {
         String versionString = MOD_META.getVersion().getFriendlyString();

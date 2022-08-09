@@ -33,7 +33,7 @@ public class SayCommand extends Command {
             if (script != null) {
                 String message = MeteorStarscript.run(script);
 
-                if (message != null) {
+                if (message != null && mc.player != null) {
                     MessageSignature messageSignature = ((ClientPlayerEntityAccessor) mc.player)._signChatMessage(ChatMessageSigner.create(mc.player.getUuid()), Text.literal(message));
                     mc.getNetworkHandler().sendPacket(new ChatMessageC2SPacket(message, messageSignature, false));
                 }
