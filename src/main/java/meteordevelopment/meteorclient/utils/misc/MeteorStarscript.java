@@ -73,7 +73,7 @@ public class MeteorStarscript {
         StandardLib.init(ss);
 
         // General
-        ss.set("meteor_version", MeteorClient.VERSION != null ? (MeteorClient.DEV_BUILD.isEmpty() ? MeteorClient.VERSION.toString() : MeteorClient.VERSION + " " + MeteorClient.DEV_BUILD) : "");
+        ss.set("kotlin", "");
         ss.set("game_version", SharedConstants.getGameVersion().getName());
         ss.set("fps", () -> Value.number(MinecraftClientAccessor.getFps()));
         ss.set("ping", MeteorStarscript::ping);
@@ -81,6 +81,7 @@ public class MeteorStarscript {
 
         // Meteor
         ss.set("meteor", new ValueMap()
+            .set("version", MeteorClient.VERSION != null ? (MeteorClient.DEV_BUILD.isEmpty() ? MeteorClient.VERSION.toString() : MeteorClient.VERSION + " " + MeteorClient.DEV_BUILD) : "")
             .set("modules", () -> Value.number(Modules.get().getAll().size()))
             .set("active_modules", () -> Value.number(Modules.get().getActive().size()))
             .set("is_module_active", MeteorStarscript::isModuleActive)
@@ -149,6 +150,7 @@ public class MeteorStarscript {
             .set("hand", () -> mc.player != null ? wrap(mc.player.getMainHandStack()) : Value.null_())
             .set("offhand", () -> mc.player != null ? wrap(mc.player.getOffHandStack()) : Value.null_())
             .set("hand_or_offhand", MeteorStarscript::handOrOffhand)
+            .set("is_item_held", MeteorStarscript::isHoldingItem)
             .set("get_item", MeteorStarscript::getItem)
             .set("count_items", MeteorStarscript::countItems)
 
@@ -337,6 +339,19 @@ public class MeteorStarscript {
 
         Module module = Modules.get().get(ss.popString("First argument to meteor.is_module_active() needs to be a string."));
         return Value.bool(module != null && module.isActive());
+    }
+
+    private static Value isHoldingItem(Starscript ss, int argCount) {
+        if (argCount != 1) ss.error("player.is_item_held() requires 1 argument, got %d", argCount);
+        String itemName = ss.popString("First argument to player.is_item_held() needs to be a string.");
+        if (mc.player == null) return Value.null_();
+
+        ItemStack itemStack = mc.player.getMainHandStack();
+        if (itemStack.isEmpty()) itemStack = mc.player.getOffHandStack();
+        if (itemStack.isEmpty())
+            return Value.bool(false);
+        var realName = itemStack.getName().getString();
+        return Value.bool(realName.equalsIgnoreCase(itemName));
     }
 
     private static Value getItem(Starscript ss, int argCount) {

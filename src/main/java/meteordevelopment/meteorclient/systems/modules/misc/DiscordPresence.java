@@ -273,30 +273,10 @@ public class DiscordPresence extends Module {
 
     @Override
     public WWidget getWidget(GuiTheme theme) {
-        WButton help = theme.button("Open documentation.");
-        help.action = () -> Util.getOperatingSystem().open("https://github.com/MeteorDevelopment/meteor-client/wiki/Starscript");
-
-        return help;
-    }
-
-    private enum SmallImage {
-        MineGame("minegame", "MineGame159"),
-        Snail("seasnail", "seasnail8169");
-
-        private final String key, text;
-
-        SmallImage(String key, String text) {
-            this.key = key;
-            this.text = text;
-        }
-
-        void apply() {
-            rpc.setSmallImage(key, text);
-        }
-
-        SmallImage next() {
-            if (this == MineGame) return Snail;
-            return MineGame;
-        }
+        return theme.button("Starscript Info")
+            .action(() ->
+                Util.getOperatingSystem()
+                    .open("https://github.com/MeteorDevelopment/starscript/wiki")
+            );
     }
 }

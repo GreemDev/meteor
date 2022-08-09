@@ -3,11 +3,12 @@
   "name": "Meteor Client",
   "id": "meteor-client",
   "version": "${version}",
-  "description": "Based utility mod.",
+  "description": "Minecraft utility mod.",
   "authors": [
     "MineGame159",
     "squidoodly",
-    "seasnail"
+    "seasnail",
+    "(Barely) GreemDev"
   ],
   "contact": {
     "homepage": "https://meteorclient.com",
@@ -35,16 +36,18 @@
     "meteor-client:devbuild": "${devbuild}",
     "meteor-client:color": "145,61,226",
     "meteor-client:commit": "${commit}",
+    "meteor-client:kotlin": "${ktlangver}",
     "modmenu": {
       "links": {
-        "modmenu.discord": "https://meteorclient.com/discord"
+        "modmenu.discord": "https://meteorclient.com/"
       }
     }
   },
   "depends": {
     "java": ">=17",
-    "minecraft": ">=1.18.2",
-    "fabricloader": ">=0.13.2"
+    "minecraft": ">=1.19",
+    "fabricloader": ">=0.14.0",
+    "fabric-language-kotlin": ">=${ktlangver}"
   },
   "breaks": {
     "optifabric": "*",

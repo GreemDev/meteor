@@ -7,6 +7,7 @@ package meteordevelopment.meteorclient.systems.modules;
 
 import meteordevelopment.meteorclient.addons.AddonManager;
 import meteordevelopment.meteorclient.addons.MeteorAddon;
+import net.greemdev.meteor.Greteor;
 import net.minecraft.item.Items;
 
 public class Categories {
@@ -29,6 +30,8 @@ public class Categories {
         Modules.registerCategory(Render);
         Modules.registerCategory(World);
         Modules.registerCategory(Misc);
+
+        Greteor.categories();
 
         // Addons
         AddonManager.ADDONS.forEach(MeteorAddon::onRegisterCategories);

@@ -5,6 +5,9 @@
 
 package meteordevelopment.meteorclient.gui.widgets.pressable;
 
+import kotlin.Unit;
+import kotlin.reflect.KCallable;
+import kotlin.reflect.KFunction;
 import meteordevelopment.meteorclient.gui.widgets.WWidget;
 
 import java.util.function.Consumer;
@@ -33,13 +36,6 @@ public abstract class WPressable extends WWidget {
         }
 
         return false;
-    }
-
-    @SuppressWarnings("unchecked")
-    public <T extends WWidget> T action(Consumer<T> action) {
-        var actual = (T)this;
-        this.action = () -> action.accept(actual);
-        return actual;
     }
 
     @SuppressWarnings("unchecked")

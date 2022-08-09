@@ -18,10 +18,10 @@ import meteordevelopment.meteorclient.settings.Settings;
 import meteordevelopment.meteorclient.systems.hud.HudElement;
 import meteordevelopment.meteorclient.systems.hud.XAnchor;
 import meteordevelopment.meteorclient.systems.hud.YAnchor;
+import meteordevelopment.meteorclient.systems.hud.elements.TextHud;
+import meteordevelopment.meteorclient.utils.Utils;
 import meteordevelopment.meteorclient.utils.misc.NbtUtils;
 import net.minecraft.nbt.NbtCompound;
-
-import static meteordevelopment.meteorclient.utils.Utils.getWindowWidth;
 
 public class HudElementScreen extends WindowScreen {
     private final HudElement element;
@@ -70,7 +70,7 @@ public class HudElementScreen extends WindowScreen {
     @Override
     public void initWidgets() {
         // Description
-        add(theme.label(element.info.description, getWindowWidth() / 2.0));
+        add(theme.label(element.info.description, Utils.getWindowWidth() / 2.0));
 
         // Settings
         if (element.settings.sizeGroups() > 0) {

@@ -41,6 +41,8 @@ import meteordevelopment.meteorclient.utils.misc.input.Input;
 import meteordevelopment.meteorclient.utils.misc.input.KeyAction;
 import meteordevelopment.orbit.EventHandler;
 import meteordevelopment.orbit.EventPriority;
+import net.greemdev.meteor.Greteor;
+import net.greemdev.meteor.modules.AutoMessage;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.nbt.NbtElement;
 import net.minecraft.nbt.NbtList;
@@ -89,6 +91,7 @@ public class Modules extends System<Modules> {
         initRender();
         initWorld();
         initMisc();
+        Greteor.modules(this);
     }
 
     @Override
@@ -566,6 +569,7 @@ public class Modules extends System<Modules> {
         add(new ServerSpoof());
         add(new InventoryTweaks());
     }
+
 
     public static class ModuleRegistry extends Registry<Module> {
         public ModuleRegistry() {

@@ -32,6 +32,7 @@ import meteordevelopment.orbit.IEventBus;
 import net.fabricmc.api.ClientModInitializer;
 import net.fabricmc.loader.api.FabricLoader;
 import net.fabricmc.loader.api.metadata.ModMetadata;
+import net.greemdev.meteor.Greteor;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.screen.ChatScreen;
 import org.slf4j.Logger;
@@ -39,12 +40,13 @@ import org.slf4j.LoggerFactory;
 
 import java.io.File;
 import java.lang.invoke.MethodHandles;
+import java.util.Arrays;
 
 public class MeteorClient implements ClientModInitializer {
     public static final String MOD_ID = "meteor-client";
     public static final ModMetadata MOD_META = FabricLoader.getInstance().getModContainer(MOD_ID).get().getMetadata();
     public final static Version VERSION;
-    public final static String DEV_BUILD;
+    public final static String DEV_BUILD, KOTLIN, FABRIC_KOTLIN;
     public static MeteorAddon ADDON;
 
     public static MinecraftClient mc;
@@ -59,6 +61,9 @@ public class MeteorClient implements ClientModInitializer {
 
         VERSION = new Version(versionString);
         DEV_BUILD = MOD_META.getCustomValue(MeteorClient.MOD_ID + ":devbuild").getAsString();
+
+        FABRIC_KOTLIN = MOD_META.getCustomValue(MeteorClient.MOD_ID + ":kotlin").getAsString();
+        KOTLIN = FABRIC_KOTLIN.split("kotlin")[1].substring(1);
     }
 
     @Override

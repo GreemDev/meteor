@@ -66,6 +66,14 @@ public class IntSetting extends Setting<Integer> {
             return this;
         }
 
+        public int getMin() {
+            return min;
+        }
+
+        public int getMax() {
+            return max;
+        }
+
         public Builder max(int max) {
             this.max = max;
             return this;
