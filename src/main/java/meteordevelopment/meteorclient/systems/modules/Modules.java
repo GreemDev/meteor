@@ -91,7 +91,7 @@ public class Modules extends System<Modules> {
         initRender();
         initWorld();
         initMisc();
-        Greteor.modules(this);
+        Greteor.modules();
     }
 
     @Override
