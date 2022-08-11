@@ -13,11 +13,11 @@ import kotlin.reflect.KProperty
 fun Settings.group(name: String? = null, expanded: Boolean = true): SettingGroup =
     name?.let { getGroup(it) ?: createGroup(it, expanded) } ?: group("General", expanded)
 
-inline fun <V, ST : Setting<S>, S, B : Setting.SettingBuilder<B, V, ST>>
+inline fun <ST : Setting<S>, S, B : Setting.SettingBuilder<B, S, ST>>
     SettingGroup.new(builder: B, crossinline func: B.() -> Unit) =
     SettingDelegate(this, builder.apply(func))
 
-class SettingDelegate<V, ST : Setting<S>, S, B : Setting.SettingBuilder<B, V, ST>>
+class SettingDelegate<ST : Setting<S>, S, B : Setting.SettingBuilder<B, S, ST>>
     (group: SettingGroup, builder: B) : ReadOnlyProperty<Any?, ST> {
 
     val s: Setting<S> = group.add(builder.build() as Setting<S>)

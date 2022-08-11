@@ -33,6 +33,11 @@ class CommandAliases : GModule(
         renderStarscript()
     }
 
+    override fun onActivate() {
+        ChatUtils.warning("CommandAliases", "This module is meant for configuration; disabling.")
+        toggle()
+    }
+
     private fun recompile(scripts: List<String>) {
         commandScripts = scripts.map { MeteorStarscript.compile(it) }
 

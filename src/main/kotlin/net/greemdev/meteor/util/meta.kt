@@ -19,7 +19,11 @@ import meteordevelopment.meteorclient.systems.modules.*
 import meteordevelopment.meteorclient.systems.profiles.*
 import meteordevelopment.meteorclient.systems.proxies.Proxies
 import meteordevelopment.meteorclient.systems.waypoints.*
+import meteordevelopment.meteorclient.utils.player.ChatUtils
 import net.minecraft.entity.player.PlayerEntity
+import org.reflections.Reflections
+import org.reflections.scanners.Scanners
+import org.reflections.util.ConfigurationBuilder
 import java.util.UUID
 
 
@@ -30,8 +34,29 @@ fun StringListSetting.Builder.renderStarscript(): StringListSetting.Builder =
 fun<P1, P2> Collection<Pair<P1, P2>>.asMap() = associate { it.first to it.second }
 
 fun IntSetting.Builder.saneSlider(): IntSetting.Builder = sliderRange(min, max)
+
+inline fun<reified T> subtypesOf(pkg: String) =
+    Reflections(
+        ConfigurationBuilder()
+            .forPackage(pkg)
+            .addScanners(Scanners.SubTypes)
+    ).getSubTypesOf(T::class.java)
+
 infix fun <T : WPressable> T.action(func: (T) -> Unit): T = action { func(this) }
 
+fun String.ensurePrefix(prefix: String): String {
+    return if (startsWith(prefix))
+        this
+    else "$prefix$this"
+}
+
+fun String.ensureSuffix(suffix: String): String {
+    return if (endsWith(suffix))
+        this
+    else "$this$suffix"
+}
+
+inline fun <reified T> forceNextChatPrefix() = ChatUtils.forceNextPrefixClass(T::class.java)
 object Meteor {
 
     @JvmStatic

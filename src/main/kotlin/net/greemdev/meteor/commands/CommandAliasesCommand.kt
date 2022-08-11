@@ -16,6 +16,7 @@ import meteordevelopment.meteorclient.systems.commands.Command
 import meteordevelopment.meteorclient.utils.player.ChatUtils
 import net.greemdev.meteor.modules.CommandAliases
 import net.greemdev.meteor.util.Meteor
+import net.greemdev.meteor.util.ensurePrefix
 import net.minecraft.command.CommandSource
 import net.minecraft.text.Text
 import net.minecraft.util.Formatting
@@ -40,6 +41,9 @@ class CommandAliasesCommand : Command(
                 val mapping = Meteor.module<CommandAliases>().mapped.entries.firstOrNull {
                     it.key.equals(name, true)
                 } ?: throw notFound(name).create()
+
+                if (Meteor.module<CommandAliases>().chatFeedback)
+                    ChatUtils.info("Executing command '${mapping.value.ensurePrefix("/")}'")
 
                 mc.player?.sendCommand(mapping.value)
                 SINGLE_SUCCESS

@@ -5,13 +5,13 @@
 
 package net.greemdev.meteor
 
-import meteordevelopment.meteorclient.systems.modules.Category
-import meteordevelopment.meteorclient.systems.modules.Modules
-import net.greemdev.meteor.commands.CommandAliasesCommand
-import net.greemdev.meteor.modules.AutoMessage
-import net.greemdev.meteor.modules.CommandAliases
-import net.greemdev.meteor.util.Meteor
+import meteordevelopment.meteorclient.MeteorClient
+import meteordevelopment.meteorclient.systems.commands.Command
+import meteordevelopment.meteorclient.systems.modules.*
+import net.greemdev.meteor.util.*
 import net.minecraft.item.Items
+import java.lang.invoke.MethodHandles
+import kotlin.reflect.KClass
 
 object Greteor {
 
@@ -21,17 +21,18 @@ object Greteor {
 
     @JvmStatic
     fun modules() {
-        arrayOf(
-            AutoMessage(),
-            CommandAliases(),
-        ).forEach(Meteor.modules()::add)
+        subtypesOf<GModule>("net.greemdev.meteor.modules")
+            .map {
+                it.getDeclaredConstructor().newInstance()
+            }.forEach(Meteor.modules()::add)
     }
 
     @JvmStatic
     fun commands() {
-        arrayOf(
-            CommandAliasesCommand(),
-        ).forEach(Meteor.commands()::add)
+        subtypesOf<Command>("net.greemdev.meteor.commands")
+            .map {
+                it.getDeclaredConstructor().newInstance()
+            }.forEach(Meteor.commands()::add)
     }
 
     @JvmStatic
@@ -39,4 +40,13 @@ object Greteor {
         Modules.registerCategory(moduleCategory())
     }
 
+    @JvmStatic
+    fun lambdaFactory() {
+        MeteorClient.EVENT_BUS.registerLambdaFactory("net.greemdev.meteor") { lookupInMethod, klass ->
+            lookupInMethod(null, klass, MethodHandles.lookup())
+                as MethodHandles.Lookup
+        }
+    }
 }
+
+abstract class GModule(name: String, description: String) : Module(Greteor.moduleCategory(), name, description)

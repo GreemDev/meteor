@@ -7,4 +7,4 @@ package net.greemdev.meteor
 
 import meteordevelopment.meteorclient.systems.modules.Module
 
-abstract class GModule(name: String, description: String) : Module(Greteor.moduleCategory(), name, description)
+
