@@ -10,7 +10,6 @@ enum class StringComparisonType {
     Contains,
     StartsWith,
     EndsWith;
-
     fun compare(base: String, to: String, ignoreCase: Boolean = true) = when (this) {
         Equals -> base.equals(to, ignoreCase)
         Contains -> base.contains(to, ignoreCase)

@@ -38,10 +38,10 @@ object Greteor {
     }
 
     @JvmStatic
-    fun lambdaFactory() {
+    fun lambdaFactory() =
         MeteorClient.EVENT_BUS.registerLambdaFactory("net.greemdev.meteor") { lookupInMethod, klass ->
             lookupInMethod(null, klass, MethodHandles.lookup())
                 as MethodHandles.Lookup
         }
-    }
+
 }

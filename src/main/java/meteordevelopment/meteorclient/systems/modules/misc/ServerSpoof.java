@@ -80,7 +80,7 @@ public class ServerSpoof extends Module {
         }
 
         @EventHandler
-        private void onPacketRecieve(PacketEvent.Receive event) {
+        private void onPacketReceive(PacketEvent.Receive event) {
             if (!isActive() || !resourcePack.get()) return;
             if (!(event.packet instanceof ResourcePackSendS2CPacket packet)) return;
             event.cancel();

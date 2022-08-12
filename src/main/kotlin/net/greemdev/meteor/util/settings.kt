@@ -9,11 +9,13 @@ import meteordevelopment.meteorclient.settings.*
 import meteordevelopment.meteorclient.utils.misc.MyPotion
 import kotlin.properties.ReadOnlyProperty
 import kotlin.reflect.KProperty
+import kotlin.reflect.typeOf
 
 fun Settings.group(name: String? = null, expanded: Boolean = true): SettingGroup =
     name?.let { getGroup(it) ?: createGroup(it, expanded) } ?: group("General", expanded)
 
-inline fun <ST : Setting<S>, S, B : Setting.SettingBuilder<B, S, ST>>
+inline fun
+    <ST : Setting<S>, S, B : Setting.SettingBuilder<B, S, ST>>
     SettingGroup.new(builder: B, crossinline func: B.() -> Unit) =
     SettingDelegate(this, builder.apply(func))
 
@@ -22,12 +24,10 @@ class SettingDelegate<ST : Setting<S>, S, B : Setting.SettingBuilder<B, S, ST>>
 
     val s: Setting<S> = group.add(builder.build() as Setting<S>)
 
-    override fun getValue(thisRef: Any?, property: KProperty<*>): ST {
-        @Suppress("UNCHECKED_CAST")
-        // result of builder#build is always of type ST, and ST is of type Setting<S>.
-        // the result is upcast to the superclass for storing in the delegate.
-        return s as? ST ?: error("how")
-    }
+    // result of builder#build is always of type ST, and ST is a subtype of Setting<S>.
+    // the result is upcast to the superclass for storing in the delegate.
+    @Suppress("UNCHECKED_CAST")
+    override fun getValue(thisRef: Any?, property: KProperty<*>) = s as? ST ?: error("setting value is of type ${s.javaClass.simpleName}, and not required type")
 }
 
 //collection settings
@@ -51,11 +51,11 @@ infix fun SettingGroup.block(func: BlockSetting.Builder.() -> Unit) = new(BlockS
 infix fun SettingGroup.bool(func: BoolSetting.Builder.() -> Unit) = new(BoolSetting.Builder(), func)
 infix fun SettingGroup.color(func: ColorSetting.Builder.() -> Unit) = new(ColorSetting.Builder(), func)
 infix fun SettingGroup.double(func: DoubleSetting.Builder.() -> Unit) = new(DoubleSetting.Builder(), func)
-infix fun <T : Enum<T>> SettingGroup.enum(func: EnumSetting.Builder<T>.() -> Unit) = new(EnumSetting.Builder(), func)
+infix fun<T : Enum<T>> SettingGroup.enum(func: EnumSetting.Builder<T>.() -> Unit) = new(EnumSetting.Builder(), func)
 infix fun SettingGroup.font(func: FontFaceSetting.Builder.() -> Unit) = new(FontFaceSetting.Builder(), func)
 infix fun SettingGroup.int(func: IntSetting.Builder.() -> Unit) = new(IntSetting.Builder(), func)
 infix fun SettingGroup.item(func: ItemSetting.Builder.() -> Unit) = new(ItemSetting.Builder(), func)
 infix fun SettingGroup.keybind(func: KeybindSetting.Builder.() -> Unit) = new(KeybindSetting.Builder(), func)
 infix fun SettingGroup.potion(func: EnumSetting.Builder<MyPotion>.() -> Unit) = new(PotionSetting.Builder(), func)
-infix fun SettingGroup.providedString(func: ProvidedStringSetting.Builder.() -> Unit) = new(ProvidedStringSetting.Builder(), func)
 infix fun SettingGroup.string(func: StringSetting.Builder.() -> Unit) = new(StringSetting.Builder(), func)
+infix fun SettingGroup.providedString(func: ProvidedStringSetting.Builder.() -> Unit) = new(ProvidedStringSetting.Builder(), func)

@@ -138,5 +138,4 @@ public class HudElementScreen extends WindowScreen {
 
         return false;
     }
-
 }

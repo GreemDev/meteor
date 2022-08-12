@@ -11,6 +11,7 @@ import meteordevelopment.meteorclient.renderer.text.FontFace;
 import meteordevelopment.meteorclient.settings.*;
 import meteordevelopment.meteorclient.systems.System;
 import meteordevelopment.meteorclient.systems.Systems;
+import meteordevelopment.meteorclient.utils.render.FontUtils;
 import meteordevelopment.meteorclient.utils.render.color.SettingColor;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.nbt.NbtElement;
@@ -65,7 +66,7 @@ public class Config extends System<Config> {
     public final Setting<Boolean> titleScreenSplashes = sgVisual.add(new BoolSetting.Builder()
         .name("title-screen-splashes")
         .description("Show Meteor splash texts on title screen")
-        .defaultValue(true)
+        .defaultValue(false)
         .build()
     );
 
@@ -82,7 +83,7 @@ public class Config extends System<Config> {
         .name("window-title-text")
         .description("The text it displays in the window title.")
         .visible(customWindowTitle::get)
-        .defaultValue("Minecraft {mc_version} - Meteor Client {version}")
+        .defaultValue("Minecraft {game_version} - Meteor Client {meteor.version}")
         .onChanged(value -> mc.updateWindowTitle())
         .build()
     );
@@ -98,7 +99,7 @@ public class Config extends System<Config> {
 
     public final Setting<String> prefix = sgChat.add(new StringSetting.Builder()
         .name("prefix")
-        .description("Prefix.")
+        .description("Meteor command prefix.")
         .defaultValue(".")
         .build()
     );
