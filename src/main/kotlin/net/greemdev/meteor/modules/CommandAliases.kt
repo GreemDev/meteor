@@ -3,6 +3,8 @@
  * Copyright (c) Meteor Development.
  */
 
+@file:Suppress("HasPlatformType")
+
 package net.greemdev.meteor.modules
 
 import meteordevelopment.meteorclient.utils.misc.MeteorStarscript

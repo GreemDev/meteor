@@ -47,7 +47,7 @@ public class AutoClicker extends Module {
             .description("The amount of delay between clicks in ticks.")
             .defaultValue(2)
             .min(0)
-            .sliderMax(60)
+            .sliderMax(1200)
             .build()
     );
 

@@ -23,7 +23,10 @@ class SettingDelegate<ST : Setting<S>, S, B : Setting.SettingBuilder<B, S, ST>>
     val s: Setting<S> = group.add(builder.build() as Setting<S>)
 
     override fun getValue(thisRef: Any?, property: KProperty<*>): ST {
-        return s as? ST ?: error("hell")
+        @Suppress("UNCHECKED_CAST")
+        // result of builder#build is always of type ST, and ST is of type Setting<S>.
+        // the result is upcast to the superclass for storing in the delegate.
+        return s as? ST ?: error("how")
     }
 }
 

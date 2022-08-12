@@ -71,7 +71,7 @@ public abstract class ChatHudMixin implements IChatHud {
     @Redirect(method = "addMessage(Lnet/minecraft/text/Text;IIZ)V", at = @At(value = "INVOKE", target = "Ljava/util/List;size()I"))
     private int addMessageListSizeProxy(List<ChatHudLine> list) {
         BetterChat betterChat = Modules.get().get(BetterChat.class);
-        return betterChat.isLongerChat() && betterChat.getChatLength() > 100 ? 1 : list.size();
+        return betterChat.isLongerChat() && betterChat.getChatLength() >= 100 ? 1 : list.size();
     }
 
     @Inject(method = "render", at = @At("TAIL"))

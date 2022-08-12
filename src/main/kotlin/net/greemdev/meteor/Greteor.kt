@@ -11,28 +11,25 @@ import meteordevelopment.meteorclient.systems.modules.*
 import net.greemdev.meteor.util.*
 import net.minecraft.item.Items
 import java.lang.invoke.MethodHandles
-import kotlin.reflect.KClass
+
+abstract class GModule(name: String, description: String) : Module(Greteor.moduleCategory(), name, description)
 
 object Greteor {
 
-    private val category = Category("Greteor", Items.SCULK_SENSOR.defaultStack)
+    private val category = Category("Greteor", Items.DARK_PRISMARINE.defaultStack)
 
     fun moduleCategory() = category
 
     @JvmStatic
     fun modules() {
-        subtypesOf<GModule>("net.greemdev.meteor.modules")
-            .map {
-                it.getDeclaredConstructor().newInstance()
-            }.forEach(Meteor.modules()::add)
+        createSubtypesOf<GModule>("net.greemdev.meteor.modules")
+            .forEach(Meteor.modules()::add)
     }
 
     @JvmStatic
     fun commands() {
-        subtypesOf<Command>("net.greemdev.meteor.commands")
-            .map {
-                it.getDeclaredConstructor().newInstance()
-            }.forEach(Meteor.commands()::add)
+        createSubtypesOf<Command>("net.greemdev.meteor.commands")
+            .forEach(Meteor.commands()::add)
     }
 
     @JvmStatic
@@ -48,5 +45,3 @@ object Greteor {
         }
     }
 }
-
-abstract class GModule(name: String, description: String) : Module(Greteor.moduleCategory(), name, description)

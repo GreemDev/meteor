@@ -25,22 +25,32 @@ import org.reflections.Reflections
 import org.reflections.scanners.Scanners
 import org.reflections.util.ConfigurationBuilder
 import java.util.UUID
+import kotlin.reflect.KClass
+import kotlin.reflect.full.primaryConstructor
 
 
 fun StringSetting.Builder.renderStarscript(): StringSetting.Builder = renderer(StarscriptTextBoxRenderer::class.java)
 fun StringListSetting.Builder.renderStarscript(): StringListSetting.Builder =
     renderer(StarscriptTextBoxRenderer::class.java)
 
-fun<P1, P2> Collection<Pair<P1, P2>>.asMap() = associate { it.first to it.second }
+fun <P1, P2> Collection<Pair<P1, P2>>.asMap() = associate { it.first to it.second }
 
 fun IntSetting.Builder.saneSlider(): IntSetting.Builder = sliderRange(min, max)
 
-inline fun<reified T> subtypesOf(pkg: String) =
+inline fun <reified T> javaSubtypesOf(pkg: String): Set<Class<out T>> =
     Reflections(
         ConfigurationBuilder()
             .forPackage(pkg)
             .addScanners(Scanners.SubTypes)
     ).getSubTypesOf(T::class.java)
+
+inline fun <reified T : Any> subtypesOf(pkg: String): List<KClass<out T>> =
+    javaSubtypesOf<T>(pkg).map { it.kotlin }
+
+inline fun <reified T : Any> createSubtypesOf(pkg: String): List<T> =
+    subtypesOf<T>(pkg).mapNotNull {
+        it.primaryConstructor?.call()
+    }
 
 infix fun <T : WPressable> T.action(func: (T) -> Unit): T = action { func(this) }
 
@@ -57,6 +67,7 @@ fun String.ensureSuffix(suffix: String): String {
 }
 
 inline fun <reified T> forceNextChatPrefix() = ChatUtils.forceNextPrefixClass(T::class.java)
+
 object Meteor {
 
     @JvmStatic

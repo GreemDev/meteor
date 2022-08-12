@@ -88,10 +88,6 @@ tasks.withType(JavaCompile).configureEach {
     it.options.encoding("UTF-8")
 }
 
-tasks.compileKotlin {
-    targetCompatibility = "17"
-}
-
 jar {
 	from "LICENSE"
 

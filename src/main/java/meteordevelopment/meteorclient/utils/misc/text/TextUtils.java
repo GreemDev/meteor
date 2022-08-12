@@ -6,8 +6,7 @@
 package meteordevelopment.meteorclient.utils.misc.text;
 
 import meteordevelopment.meteorclient.utils.render.color.Color;
-import net.minecraft.text.Text;
-import net.minecraft.text.TextColor;
+import net.minecraft.text.*;
 
 import java.util.*;
 
@@ -21,6 +20,22 @@ public class TextUtils {
         preOrderTraverse(text, stack, coloredTexts);
         coloredTexts.removeIf(e -> e.getText().equals(""));
         return coloredTexts;
+    }
+
+    /**
+     * Parses a given {@link OrderedText} into its {@link Text} equivalent.
+     *
+     * @param orderedText the {@link OrderedText} to parse.
+     * @author RacoonDog
+     * @return The {@link Text} equivalent of the {@link OrderedText} parameter.
+     */
+    public static MutableText parseOrderedText(OrderedText orderedText) {
+        MutableText parsedText = Text.empty();
+        orderedText.accept((i, style, codePoint) -> {
+            parsedText.append(Text.literal(new String(Character.toChars(codePoint))).setStyle(style));
+            return true;
+        });
+        return parsedText;
     }
 
     /**
