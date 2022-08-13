@@ -42,6 +42,14 @@ public class Nametags extends Module {
     private final SettingGroup sgPlayers = settings.createGroup("Players");
     private final SettingGroup sgItems = settings.createGroup("Items");
 
+    private final Color WHITE = new Color(255, 255, 255);
+    private final Color RED = new Color(255, 25, 25);
+    private final Color AMBER = new Color(255, 105, 25);
+    private final Color GREEN = new Color(25, 252, 25);
+    private final Color GOLD = new Color(232, 185, 35);
+    private final Color GREY = new Color(150, 150, 150);
+    private final Color BLUE = new Color(20, 170, 170);
+
     // General
 
     private final Setting<Object2BooleanMap<EntityType<?>>> entities = sgGeneral.add(new EntityTypeListSetting.Builder()
@@ -54,7 +62,7 @@ public class Nametags extends Module {
     private final Setting<Double> scale = sgGeneral.add(new DoubleSetting.Builder()
         .name("scale")
         .description("The scale of the nametag.")
-        .defaultValue(1.5)
+        .defaultValue(1.25)
         .min(0.1)
         .build()
     );
@@ -183,6 +191,14 @@ public class Nametags extends Module {
         .build()
     );
 
+    private final Setting<SettingColor> gameModeColor = sgPlayers.add(new ColorSetting.Builder()
+        .name("gamemode-color")
+        .description("The color of the player's GameMode.")
+        .defaultValue(new SettingColor(GOLD.r, GOLD.g, GOLD.b, GOLD.a))
+        .visible(displayGameMode::get)
+        .build()
+    );
+
     private final Setting<Boolean> displayPing = sgPlayers.add(new BoolSetting.Builder()
         .name("ping")
         .description("Shows the player's ping.")
@@ -190,10 +206,26 @@ public class Nametags extends Module {
         .build()
     );
 
+    private final Setting<SettingColor> pingColor = sgPlayers.add(new ColorSetting.Builder()
+        .name("ping-color")
+        .description("The color of the player's ping.")
+        .defaultValue(new SettingColor(BLUE.r, BLUE.g, BLUE.b, BLUE.a))
+        .visible(displayPing::get)
+        .build()
+    );
+
     private final Setting<Boolean> displayDistance = sgPlayers.add(new BoolSetting.Builder()
         .name("distance")
         .description("Shows the distance between you and the player.")
         .defaultValue(true)
+        .build()
+    );
+
+    private final Setting<SettingColor> distanceColor = sgPlayers.add(new ColorSetting.Builder()
+        .name("distance-color")
+        .description("The color of the distance.")
+        .defaultValue(new SettingColor(GREY.r, GREY.g, GREY.b, GREY.a))
+        .visible(displayDistance::get)
         .build()
     );
 
@@ -205,14 +237,6 @@ public class Nametags extends Module {
         .defaultValue(true)
         .build()
     );
-
-    private final Color WHITE = new Color(255, 255, 255);
-    private final Color RED = new Color(255, 25, 25);
-    private final Color AMBER = new Color(255, 105, 25);
-    private final Color GREEN = new Color(25, 252, 25);
-    private final Color GOLD = new Color(232, 185, 35);
-    private final Color GREY = new Color(150, 150, 150);
-    private final Color BLUE = new Color(20, 170, 170);
 
     private final Vec3 pos = new Vec3();
     private final double[] itemWidths = new double[6];
@@ -373,12 +397,12 @@ public class Nametags extends Module {
         double hX = -widthHalf;
         double hY = -heightDown;
 
-        if (displayGameMode.get()) hX = text.render(gmText, hX, hY, GOLD, shadow);
+        if (displayGameMode.get()) hX = text.render(gmText, hX, hY, gameModeColor.get(), shadow);
         hX = text.render(name, hX, hY, nameColor, shadow);
 
         hX = text.render(healthText, hX, hY, healthColor, shadow);
-        if (displayPing.get()) hX = text.render(pingText, hX, hY, BLUE, shadow);
-        if (displayDistance.get()) text.render(distText, hX, hY, GREY, shadow);
+        if (displayPing.get()) hX = text.render(pingText, hX, hY, pingColor.get(), shadow);
+        if (displayDistance.get()) text.render(distText, hX, hY, distanceColor.get(), shadow);
         text.end();
 
         if (displayItems.get()) {
@@ -411,9 +435,8 @@ public class Nametags extends Module {
                 }
             }
 
-            double itemsHeight = (hasItems ? 32 : 0);
-            double itemWidthTotal = 0;
-            for (double w : itemWidths) itemWidthTotal += w;
+            double itemsHeight = hasItems ? 32 : 0;
+            double itemWidthTotal = Arrays.stream(itemWidths).sum();
             double itemWidthHalf = itemWidthTotal / 2;
 
             double y = -heightDown - 7 - itemsHeight;

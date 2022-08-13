@@ -18,6 +18,7 @@ import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
+import net.minecraft.util.Hand;
 
 import static meteordevelopment.meteorclient.MeteorClient.mc;
 
@@ -29,10 +30,34 @@ public class ItemHud extends HudElement {
 
     // General
 
+    private final Setting<Boolean> currentItem = sgGeneral.add(new BoolSetting.Builder()
+        .name("show-current-item")
+        .description("Show a dynamic display of how many items you have for the type in your hand.")
+        .defaultValue(true)
+        .build()
+    );
+
+    private final Setting<PlayerHand> inHand = sgGeneral.add(new EnumSetting.Builder<PlayerHand>()
+        .name("target-hand")
+        .description("Which hand to display the item stack for.")
+        .defaultValue(PlayerHand.Main)
+        .visible(currentItem::get)
+        .build()
+    );
+
+    private final Setting<Boolean> ignoreHeldTools = sgGeneral.add(new BoolSetting.Builder()
+        .name("ignore-tools")
+        .description("Ignore tools in the dynamic display.")
+        .defaultValue(true)
+        .visible(currentItem::get)
+        .build()
+    );
+
     private final Setting<Item> item = sgGeneral.add(new ItemSetting.Builder()
         .name("item")
-        .description("Item to display")
+        .description("Item to display.")
         .defaultValue(Items.TOTEM_OF_UNDYING)
+        .visible(() -> !currentItem.get())
         .build()
     );
 
@@ -93,11 +118,23 @@ public class ItemHud extends HudElement {
         setSize(17 * scale.get(), 17 * scale.get());
     }
 
+    private ItemStack targetedStack() {
+        ItemStack itemStack;
+        if (currentItem.get()) {
+            itemStack = mc.player.getStackInHand(inHand.get().mc).copy();
+            if (itemStack.getMaxDamage() > 0 && ignoreHeldTools.get())
+                return ItemStack.EMPTY;
+
+            itemStack.setCount(InvUtils.find(itemStack.getItem()).count());
+        } else {
+            itemStack = new ItemStack(item.get(), InvUtils.find(item.get()).count());
+        }
+        return itemStack;
+    }
+
     @Override
     public void render(HudRenderer renderer) {
-        ItemStack itemStack = new ItemStack(item.get(), InvUtils.find(item.get()).count());
-
-        if (noneMode.get() == NoneMode.HideItem && itemStack.isEmpty()) {
+        if (noneMode.get() == NoneMode.HideItem && targetedStack().isEmpty()) {
             if (isInEditor()) {
                 renderer.line(x, y, x + getWidth(), y + getHeight(), Color.GRAY);
                 renderer.line(x, y + getHeight(), x + getWidth(), y, Color.GRAY);
@@ -113,7 +150,7 @@ public class ItemHud extends HudElement {
                 double x = this.x + border.get();
                 double y = this.y + border.get();
 
-                render(itemStack, (int) (x / scale.get()), (int) (y / scale.get()));
+                render(targetedStack(), (int) (x / scale.get()), (int) (y / scale.get()));
 
                 matrices.pop();
             });
@@ -145,6 +182,24 @@ public class ItemHud extends HudElement {
                 mc.getItemRenderer().renderGuiItemOverlay(mc.textRenderer, itemStack, x, y, Integer.toString(itemStack.getCount() == Integer.MAX_VALUE ? 0 : itemStack.getCount()));
                 if (itemStack.getCount() == Integer.MAX_VALUE) itemStack.setCount(0);
             }
+        }
+    }
+
+    public enum PlayerHand {
+        Main(Hand.MAIN_HAND),
+        Off(Hand.OFF_HAND);
+
+        public Hand mc;
+        PlayerHand(Hand mc) {
+            this.mc = mc;
+        }
+
+        @Override
+        public String toString() {
+            return switch (this) {
+                case Main -> "Main Hand";
+                case Off -> "Offhand";
+            };
         }
     }
 

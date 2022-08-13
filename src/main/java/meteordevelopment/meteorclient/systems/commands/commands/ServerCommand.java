@@ -30,6 +30,7 @@ import net.minecraft.util.Formatting;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
 import java.util.*;
+import java.util.concurrent.ThreadLocalRandom;
 
 import static com.mojang.brigadier.Command.SINGLE_SUCCESS;
 
@@ -60,11 +61,10 @@ public class ServerCommand extends Command {
             ticks = 0;
             plugins.clear();
             MeteorClient.EVENT_BUS.subscribe(this);
-            info("Please wait around 5 seconds...");
+            info("Please wait for ~5 seconds...");
             new Thread(() -> {
-                Random random = new Random();
                 completionStarts.chars().forEach(i -> {
-                    mc.player.networkHandler.sendPacket(new RequestCommandCompletionsC2SPacket(random.nextInt(200), Character.toString(i)));
+                    mc.player.networkHandler.sendPacket(new RequestCommandCompletionsC2SPacket(ThreadLocalRandom.current().nextInt(200), Character.toString(i)));
                     try {
                         Thread.sleep(100);
                     } catch (InterruptedException e) {
@@ -201,7 +201,7 @@ public class ServerCommand extends Command {
                 Suggestions matches = packet.getSuggestions();
 
                 if (matches == null) {
-                    error("Invalid Packet.");
+                    error("Invalid packet.");
                     return;
                 }
 

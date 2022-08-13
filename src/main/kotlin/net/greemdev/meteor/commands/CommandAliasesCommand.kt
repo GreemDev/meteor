@@ -23,7 +23,7 @@ import net.minecraft.util.Formatting
 import java.util.concurrent.CompletableFuture
 
 class CommandAliasesCommand : Command(
-    "commandaliases", "Configured by the module of the same name.",
+    "command-aliases", "Configured by the module of the same name.",
     "ca"
 ) {
     companion object {
@@ -43,7 +43,7 @@ class CommandAliasesCommand : Command(
                 } ?: throw notFound(name).create()
 
                 if (Meteor.module<CommandAliases>().chatFeedback)
-                    ChatUtils.info("Executing command '${mapping.value.ensurePrefix("/")}'")
+                    info("Executing command '${mapping.value.ensurePrefix("/")}'")
 
                 mc.player?.sendCommand(mapping.value)
                 SINGLE_SUCCESS

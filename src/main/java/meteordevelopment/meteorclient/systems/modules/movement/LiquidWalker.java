@@ -36,7 +36,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
-public class Jesus extends Module {
+public class LiquidWalker extends Module {
     private final SettingGroup sgGeneral = settings.createGroup("General");
     private final SettingGroup sgWater = settings.createGroup("Water");
     private final SettingGroup sgLava = settings.createGroup("Lava");
@@ -146,8 +146,8 @@ public class Jesus extends Module {
     private boolean preBaritoneAssumeWalkOnWater;
     private boolean preBaritoneAssumeWalkOnLava;
 
-    public Jesus() {
-        super(Categories.Movement, "jesus", "Walk on liquids and powder snow like Jesus.");
+    public LiquidWalker() {
+        super(Categories.Movement, "liquid-walker", "Walk on liquids and powder snow.");
     }
 
     @Override

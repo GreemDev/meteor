@@ -6,6 +6,8 @@
 package net.greemdev.meteor
 
 import meteordevelopment.meteorclient.MeteorClient
+import meteordevelopment.meteorclient.addons.AddonManager
+import meteordevelopment.meteorclient.addons.MeteorAddon
 import meteordevelopment.meteorclient.systems.commands.Command
 import meteordevelopment.meteorclient.systems.modules.*
 import net.greemdev.meteor.util.*
@@ -38,10 +40,19 @@ object Greteor {
     }
 
     @JvmStatic
-    fun lambdaFactory() =
-        MeteorClient.EVENT_BUS.registerLambdaFactory("net.greemdev.meteor") { lookupInMethod, klass ->
-            lookupInMethod(null, klass, MethodHandles.lookup())
-                as MethodHandles.Lookup
+    fun getAddonPackages(): List<String> =
+        buildList {
+            add(MeteorClient.ADDON.`package`)
+            addAll(AddonManager.ADDONS.map(MeteorAddon::getPackage))
         }
 
+
+    @JvmStatic
+    fun lambdaFactoriesFor(packages: List<String>, vararg extraPackages: String) =
+        (packages + extraPackages).forEach {
+            MeteorClient.EVENT_BUS.registerLambdaFactory(it) { lookupInMethod, klass ->
+                lookupInMethod(null, klass, MethodHandles.lookup())
+                    as MethodHandles.Lookup
+            }
+        }
 }

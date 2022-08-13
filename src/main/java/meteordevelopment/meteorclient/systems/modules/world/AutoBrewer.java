@@ -94,7 +94,7 @@ public class AutoBrewer extends Module {
         }
 
         if (slot == -1) {
-            error("You do not have any %s left in your inventory... disabling.", ingredient.getName().getString());
+            error("You do not have any %s left in your inventory; disabling.", ingredient.getName().getString());
             toggle();
             return true;
         }
@@ -116,7 +116,7 @@ public class AutoBrewer extends Module {
             }
 
             if (slot == -1) {
-                error("You do not have a sufficient amount of blaze powder to use as fuel for the brew... disabling.");
+                error("You do not have a sufficient amount of blaze powder to use as fuel for the brew; disabling.");
                 toggle();
                 return true;
             }
@@ -146,7 +146,7 @@ public class AutoBrewer extends Module {
             }
 
             if (slot == -1) {
-                error("You do not have a sufficient amount of water bottles to complete this brew... disabling.");
+                error("You do not have a sufficient amount of water bottles to complete this brew; disabling.");
                 toggle();
                 return true;
             }
@@ -162,7 +162,7 @@ public class AutoBrewer extends Module {
             InvUtils.quickMove().slotId(i);
 
             if (!c.slots.get(i).getStack().isEmpty()) {
-                error("You do not have a sufficient amount of inventory space... disabling.");
+                error("You do not have a sufficient amount of inventory space; disabling.");
                 toggle();
                 return true;
             }

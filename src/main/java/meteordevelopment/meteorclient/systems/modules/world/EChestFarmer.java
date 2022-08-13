@@ -175,7 +175,7 @@ public class EChestFarmer extends Module {
             FindItemResult echest = InvUtils.findInHotbar(Items.ENDER_CHEST);
 
             if (!echest.found()) {
-                error("No Echests in hotbar, disabling");
+                error("No ender chests in hotbar; disabling.");
                 toggle();
                 return;
             }

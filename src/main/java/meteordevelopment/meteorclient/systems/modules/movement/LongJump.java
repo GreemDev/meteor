@@ -137,7 +137,7 @@ public class LongJump extends Module {
     @EventHandler
     private void onPacketReceive(PacketEvent.Receive event) {
         if (event.packet instanceof PlayerPositionLookS2CPacket && disableOnRubberband.get()) {
-            info("Rubberband detected! Disabling...");
+            info("Rubberband detected; disabling.");
             toggle();
         }
     }

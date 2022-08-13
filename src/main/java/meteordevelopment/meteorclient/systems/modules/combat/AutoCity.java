@@ -95,7 +95,7 @@ public class AutoCity extends Module {
 
         if (blockPosTarget == null) {
             if (selfToggle.get()) {
-                error("No target block found... disabling.");
+                error("No target block found; disabling.");
                 toggle();
             }
             target = null;
@@ -103,7 +103,7 @@ public class AutoCity extends Module {
         }
 
         if (PlayerUtils.distanceTo(blockPosTarget) > mc.interactionManager.getReachDistance() && selfToggle.get()) {
-            error("Target block out of reach... disabling.");
+            error("Target block out of reach; disabling.");
             toggle();
             return;
         }
@@ -117,7 +117,7 @@ public class AutoCity extends Module {
 
         if (!pickaxe.isHotbar()) {
             if (selfToggle.get()) {
-                error("No pickaxe found... disabling.");
+                error("No pickaxe found; disabling.");
                 toggle();
             }
             return;

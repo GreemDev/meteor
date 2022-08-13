@@ -36,7 +36,7 @@ class CommandAliases : GModule(
     }
 
     override fun onActivate() {
-        ChatUtils.warning("CommandAliases", "This module is meant for configuration; disabling.")
+        error("This module is meant for configuration; disabling.")
         toggle()
     }
 
@@ -48,14 +48,14 @@ class CommandAliases : GModule(
                 try {
                     MeteorStarscript.run(it)
                 } catch (e: StarscriptError) {
-                    ChatUtils.error("CommandAliases", "Command script failed: ${e.message}")
+                    error("Command script failed: ${e.message}")
                     null
                 }
             }.mapNotNull {
                 val name = it.substringBefore("::", "%null%")
                 val cstr = it.substringAfter("::", "%null%")
                 if ("%null%" in arrayOf(name, cstr)) {
-                    ChatUtils.error("CommandAliases", "Command string didn't contain required delimiter ::")
+                    error("Command string didn't contain required separator ::")
                     null
                 } else name.trim() to cstr.trim()
             }.asMap()

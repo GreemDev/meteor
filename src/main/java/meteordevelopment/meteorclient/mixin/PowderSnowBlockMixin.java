@@ -6,7 +6,7 @@
 package meteordevelopment.meteorclient.mixin;
 
 import meteordevelopment.meteorclient.systems.modules.Modules;
-import meteordevelopment.meteorclient.systems.modules.movement.Jesus;
+import meteordevelopment.meteorclient.systems.modules.movement.LiquidWalker;
 import net.minecraft.block.PowderSnowBlock;
 import net.minecraft.entity.Entity;
 import org.spongepowered.asm.mixin.Mixin;
@@ -20,6 +20,6 @@ import static meteordevelopment.meteorclient.MeteorClient.mc;
 public class PowderSnowBlockMixin {
     @Inject(method = "canWalkOnPowderSnow", at = @At("HEAD"), cancellable = true)
     private static void onCanWalkOnPowderSnow(Entity entity, CallbackInfoReturnable<Boolean> info) {
-        if (entity == mc.player && Modules.get().get(Jesus.class).canWalkOnPowderSnow()) info.setReturnValue(true);
+        if (entity == mc.player && Modules.get().get(LiquidWalker.class).canWalkOnPowderSnow()) info.setReturnValue(true);
     }
 }

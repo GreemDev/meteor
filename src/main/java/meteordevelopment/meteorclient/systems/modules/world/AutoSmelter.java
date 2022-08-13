@@ -101,7 +101,7 @@ public class AutoSmelter extends Module {
         }
 
         if (disableWhenOutOfItems.get() && slot == -1) {
-            error("You do not have any items in your inventory that can be smelted. Disabling.");
+            error("You do not have any items in your inventory that can be smelted; disabling.");
             toggle();
             return;
         }
@@ -126,7 +126,7 @@ public class AutoSmelter extends Module {
         }
 
         if (disableWhenOutOfItems.get() && slot == -1) {
-            error("You do not have any fuel in your inventory. Disabling.");
+            error("You do not have any fuel in your inventory; disabling.");
             toggle();
             return;
         }
@@ -141,7 +141,7 @@ public class AutoSmelter extends Module {
         InvUtils.quickMove().slotId(2);
 
         if (!resultStack.isEmpty()) {
-            error("Your inventory is full. Disabling.");
+            error("Your inventory is full; disabling.");
             toggle();
         }
     }

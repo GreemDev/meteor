@@ -35,7 +35,7 @@ import net.minecraft.util.Util
 class AutoMessage : GModule(
     "auto-message", "Sends a configurable Starscript message every so often."
 ) {
-    private val sgm = settings.group("Message", true)
+    private val sgm = settings.group("Message")
     private val sgc = settings.group("Commands", false)
 
     private var elapsedTicks: Int = 0
@@ -83,7 +83,7 @@ class AutoMessage : GModule(
         if (messageScript == null) elapsedTicks = 0
         if (commandScripts.isEmpty()) elapsedTicksCommands = 0
 
-        if (Utils.canUpdate()) {
+        if (Utils.canUpdate() && isActive) {
             if (elapsedTicks >= messageDelay.get()) {
                 MeteorStarscript.run(messageScript)?.also {
                     mc.player!!.sendChatMessage(it)
@@ -120,23 +120,23 @@ class AutoMessage : GModule(
                             MeteorStarscript.run(it)
                         }
                     } catch (e: StarscriptError) {
-                        ChatUtils.error("AutoMessage", "Message failed: ${e.message}")
+                        error("Message failed: ${e.message}")
                         null
                     }?.also {
-                        ChatUtils.info("AutoMessage", "Message success: $it")
+                        info("Message success: $it")
                     }
 
                     if (commandScripts.isEmpty()) {
-                        ChatUtils.warning("AutoMessage", "Not testing any command scripts; there are none.")
+                        warning("Not testing any command scripts; there are none.")
                     } else {
                         commandScripts.forEach {
                             try {
                                 MeteorStarscript.run(it)
                             } catch (e: StarscriptError) {
-                                ChatUtils.error("AutoMessage", "Command failed: ${e.message}")
+                                error("Command failed: ${e.message}")
                                 null
                             }?.also { cmd ->
-                                ChatUtils.info("AutoMessage", "Command success: $cmd")
+                                info("Command success: $cmd")
                             }
                         }
                     }

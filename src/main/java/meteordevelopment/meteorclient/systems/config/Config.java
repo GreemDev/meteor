@@ -63,10 +63,24 @@ public class Config extends System<Config> {
         .build()
     );
 
-    public final Setting<Boolean> titleScreenSplashes = sgVisual.add(new BoolSetting.Builder()
-        .name("title-screen-splashes")
-        .description("Show Meteor splash texts on title screen")
+    public final Setting<Boolean> useCustomSplashes = sgVisual.add(new BoolSetting.Builder()
+        .name("use-custom-splashes")
+        .description("Show custom splash texts on title screen")
         .defaultValue(false)
+        .build()
+    );
+
+    public final Setting<List<String>> customSplashes = sgVisual.add(new StringListSetting.Builder()
+        .name("custom-splashes")
+        .description("Custom splash texts to use on the title screen")
+        .defaultValue("Meteor on Crack!",
+            "Star Meteor Client on GitHub!",
+            "Based utility mod.",
+            "&6MineGame159 &fbased god",
+            "&4meteorclient.com",
+            "&4Meteor on Crack!",
+            "&6Meteor on Crack!")
+        .visible(useCustomSplashes::get)
         .build()
     );
 

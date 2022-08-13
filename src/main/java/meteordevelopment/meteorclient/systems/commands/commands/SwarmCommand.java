@@ -31,6 +31,7 @@ import net.minecraft.text.Text;
 
 import java.util.List;
 import java.util.Random;
+import java.util.concurrent.ThreadLocalRandom;
 
 import static com.mojang.brigadier.Command.SINGLE_SUCCESS;
 
@@ -361,9 +362,8 @@ public class SwarmCommand extends Command {
     }
 
     private void scatter(int radius) {
-        Random random = new Random();
-        double a = random.nextDouble() * 2 * Math.PI;
-        double r = radius * Math.sqrt(random.nextDouble());
+        double a = ThreadLocalRandom.current().nextDouble() * 2 * Math.PI;
+        double r = radius * Math.sqrt(ThreadLocalRandom.current().nextDouble());
         double x = mc.player.getX() + r * Math.cos(a);
         double z = mc.player.getZ() + r * Math.sin(a);
         BaritoneAPI.getProvider().getPrimaryBaritone().getPathingBehavior().cancelEverything();

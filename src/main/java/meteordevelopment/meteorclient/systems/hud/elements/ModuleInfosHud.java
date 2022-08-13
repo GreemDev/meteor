@@ -84,7 +84,6 @@ public class ModuleInfosHud extends HudElement {
     );
 
 
-
     public ModuleInfosHud() {
         super(INFO);
     }

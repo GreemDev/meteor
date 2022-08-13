@@ -56,7 +56,7 @@ public class Quiver extends Module {
         FindItemResult bow = InvUtils.findInHotbar(Items.BOW);
 
         if (!bow.isHotbar()) {
-            error("No bow found... disabling.");
+            error("No bow found; disabling.");
             toggle();
         }
 
