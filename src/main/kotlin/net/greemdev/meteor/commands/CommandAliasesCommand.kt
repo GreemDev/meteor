@@ -8,19 +8,13 @@ package net.greemdev.meteor.commands
 import com.mojang.brigadier.Command.SINGLE_SUCCESS
 import com.mojang.brigadier.arguments.StringArgumentType
 import com.mojang.brigadier.builder.LiteralArgumentBuilder
-import com.mojang.brigadier.context.CommandContext
 import com.mojang.brigadier.exceptions.SimpleCommandExceptionType
-import com.mojang.brigadier.suggestion.Suggestions
-import com.mojang.brigadier.suggestion.SuggestionsBuilder
 import meteordevelopment.meteorclient.systems.commands.Command
-import meteordevelopment.meteorclient.utils.player.ChatUtils
 import net.greemdev.meteor.modules.CommandAliases
 import net.greemdev.meteor.util.Meteor
 import net.greemdev.meteor.util.ensurePrefix
 import net.minecraft.command.CommandSource
 import net.minecraft.text.Text
-import net.minecraft.util.Formatting
-import java.util.concurrent.CompletableFuture
 
 class CommandAliasesCommand : Command(
     "command-aliases", "Configured by the module of the same name.",

@@ -21,13 +21,42 @@ import meteordevelopment.meteorclient.systems.proxies.Proxies
 import meteordevelopment.meteorclient.systems.waypoints.*
 import meteordevelopment.meteorclient.utils.player.ChatUtils
 import net.minecraft.entity.player.PlayerEntity
+import org.apache.logging.log4j.LogManager
+import org.apache.logging.log4j.Logger
+import org.apache.logging.log4j.message.MessageFactory
 import org.reflections.Reflections
 import org.reflections.scanners.Scanners
 import org.reflections.util.ConfigurationBuilder
-import java.util.UUID
+import java.util.*
+import kotlin.properties.ReadOnlyProperty
 import kotlin.reflect.KClass
+import kotlin.reflect.KProperty
 import kotlin.reflect.full.primaryConstructor
 
+
+fun<T> tryOrNull(func: () -> T): T? = try { func() } catch (t: Throwable) { null }
+
+/**
+ * Looks repetitive however each different type we check for has its own special logic in [LogManager]
+ */
+fun log4j(value: Any): ReadOnlyProperty<Any, Logger> = invoking {
+    when (value) {
+        is String -> LogManager.getLogger(value)
+        is Class<*> -> LogManager.getLogger(value)
+        is KClass<*> -> LogManager.getLogger(value.java)
+        is MessageFactory -> LogManager.getLogger(value)
+        else -> LogManager.getLogger(value)
+    }
+}
+
+fun<T : Any> optionalOf(value: T? = null): Optional<T> = if (value == null) Optional.empty() else Optional.of(value)
+
+fun <T> invoking(func: () -> T): FunctionProperty<T> = FunctionProperty(func)
+fun <T> invokingOrNull(func: () -> T): FunctionProperty<T?> = FunctionProperty{tryOrNull(func)}
+
+class FunctionProperty<T>(private val producer: () -> T): ReadOnlyProperty<Any?, T> {
+    override fun getValue(thisRef: Any?, property: KProperty<*>) = producer()
+}
 
 fun StringSetting.Builder.renderStarscript(): StringSetting.Builder = renderer(StarscriptTextBoxRenderer::class.java)
 fun StringListSetting.Builder.renderStarscript(): StringListSetting.Builder =

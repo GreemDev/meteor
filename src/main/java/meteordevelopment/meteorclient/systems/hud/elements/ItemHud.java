@@ -119,6 +119,9 @@ public class ItemHud extends HudElement {
     }
 
     private ItemStack targetedStack() {
+        if (mc.player == null)
+            return ItemStack.EMPTY;
+
         ItemStack itemStack;
         if (currentItem.get()) {
             itemStack = mc.player.getStackInHand(inHand.get().mc).copy();

@@ -17,6 +17,8 @@ import meteordevelopment.meteorclient.utils.Utils;
 import meteordevelopment.meteorclient.utils.misc.NbtUtils;
 import meteordevelopment.meteorclient.utils.render.color.SettingColor;
 import meteordevelopment.orbit.EventHandler;
+import net.greemdev.meteor.Greteor;
+import net.greemdev.meteor.hud.HudElementMetadata;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.nbt.NbtElement;
 import org.jetbrains.annotations.NotNull;
@@ -110,6 +112,7 @@ public class Hud extends System<Hud> implements Iterable<HudElement> {
         register(ModuleInfosHud.INFO);
         register(PotionTimersHud.INFO);
         register(CombatHud.INFO);
+        Greteor.hudElements().forEach(this::register);
 
         // Default config
         if (isFirstInit) resetToDefaultElements();
@@ -117,6 +120,9 @@ public class Hud extends System<Hud> implements Iterable<HudElement> {
 
     public void register(HudElementInfo<?> info) {
         infos.put(info.name, info);
+    }
+    public void register(HudElementMetadata<?> elementMetadata) {
+        infos.put(elementMetadata.getElementInfo().name, elementMetadata.getElementInfo());
     }
 
     private void add(HudElement element, int x, int y, XAnchor xAnchor, YAnchor yAnchor) {

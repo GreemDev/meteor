@@ -9,17 +9,16 @@ import meteordevelopment.meteorclient.settings.*
 import meteordevelopment.meteorclient.utils.misc.MyPotion
 import kotlin.properties.ReadOnlyProperty
 import kotlin.reflect.KProperty
-import kotlin.reflect.typeOf
 
 fun Settings.group(name: String? = null, expanded: Boolean = true): SettingGroup =
     name?.let { getGroup(it) ?: createGroup(it, expanded) } ?: group("General", expanded)
 
 inline fun
-    <ST : Setting<S>, S, B : Setting.SettingBuilder<B, S, ST>>
+    <ST : Setting<S>, S : Any, B : Setting.SettingBuilder<B, S, ST>>
     SettingGroup.new(builder: B, crossinline func: B.() -> Unit) =
     SettingDelegate(this, builder.apply(func))
 
-class SettingDelegate<ST : Setting<S>, S, B : Setting.SettingBuilder<B, S, ST>>
+class SettingDelegate<ST : Setting<S>, S : Any, B : Setting.SettingBuilder<B, S, ST>>
     (group: SettingGroup, builder: B) : ReadOnlyProperty<Any?, ST> {
 
     val s: Setting<S> = group.add(builder.build() as Setting<S>)

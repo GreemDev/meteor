@@ -8,7 +8,6 @@
 package net.greemdev.meteor.modules
 
 import meteordevelopment.meteorclient.utils.misc.MeteorStarscript
-import meteordevelopment.meteorclient.utils.player.ChatUtils
 import meteordevelopment.starscript.Script
 import meteordevelopment.starscript.utils.StarscriptError
 import net.greemdev.meteor.GModule

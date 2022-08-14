@@ -5,7 +5,7 @@
 
 package meteordevelopment.meteorclient.mixin;
 
-import com.mojang.blaze3d.platform.GlStateManager;
+import meteordevelopment.meteorclient.renderer.GL;
 import meteordevelopment.meteorclient.systems.modules.Modules;
 import meteordevelopment.meteorclient.systems.modules.render.*;
 import meteordevelopment.meteorclient.systems.modules.world.Ambience;
@@ -24,6 +24,7 @@ import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.injection.*;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
+import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
 @Mixin(WorldRenderer.class)
 public abstract class WorldRendererMixin {
@@ -51,6 +52,12 @@ public abstract class WorldRendererMixin {
         return Modules.get().isActive(Freecam.class) || spectator;
     }
 
+    @Inject(method = "method_43788(Lnet/minecraft/client/render/Camera;)Z", at = @At("HEAD"), cancellable = true)
+    private void method_43788(Camera camera, CallbackInfoReturnable<Boolean> info) {
+        if (Modules.get().get(NoRender.class).noBlindness() || Modules.get().get(NoRender.class).noDarkness())
+            info.setReturnValue(null);
+    }
+
     // EntityShaders
 
     @Inject(method = "render", at = @At("HEAD"))
@@ -66,9 +73,9 @@ public abstract class WorldRendererMixin {
 
             EntityShaders.overlayVertexConsumerProvider.setColor(0, 0, 0, 100);
 
-            GlStateManager._disableDepthTest();
+            GL.disableDepth();
             renderEntity(entity, cameraX, cameraY, cameraZ, tickDelta, matrices, EntityShaders.overlayVertexConsumerProvider);
-            GlStateManager._enableDepthTest();
+            GL.enableDepth();
 
             this.entityOutlinesFramebuffer = prevBuffer;
         }
@@ -81,9 +88,9 @@ public abstract class WorldRendererMixin {
             Color color = Modules.get().get(ESP.class).getOutlineColor(entity);
             EntityShaders.outlinesVertexConsumerProvider.setColor(color.r, color.g, color.b, color.a);
 
-            GlStateManager._disableDepthTest();
+            GL.disableDepth();
             renderEntity(entity, cameraX, cameraY, cameraZ, tickDelta, matrices, EntityShaders.outlinesVertexConsumerProvider);
-            GlStateManager._enableDepthTest();
+            GL.enableDepth();
 
             Utils.renderingEntityOutline = false;
             this.entityOutlinesFramebuffer = prevBuffer;

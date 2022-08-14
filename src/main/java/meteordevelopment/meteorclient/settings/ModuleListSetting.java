@@ -7,6 +7,8 @@ package meteordevelopment.meteorclient.settings;
 
 import meteordevelopment.meteorclient.systems.modules.Module;
 import meteordevelopment.meteorclient.systems.modules.Modules;
+import net.greemdev.meteor.Greteor;
+import net.greemdev.meteor.util.Meteor;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.nbt.NbtElement;
 import net.minecraft.nbt.NbtList;
@@ -15,9 +17,13 @@ import net.minecraft.nbt.NbtString;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.function.Consumer;
+import java.util.function.Predicate;
+import java.util.stream.Collectors;
 
 public class ModuleListSetting extends Setting<List<Module>> {
     private static List<String> suggestions;
+
+    public Predicate<? super Module> modulePredicate;
 
     public ModuleListSetting(String name, String description, List<Module> defaultValue, Consumer<List<Module>> onChanged, Consumer<Setting<List<Module>>> onModuleActivated, IVisible visible) {
         super(name, description, defaultValue, onChanged, onModuleActivated, visible);
@@ -81,6 +87,9 @@ public class ModuleListSetting extends Setting<List<Module>> {
     }
 
     public static class Builder extends SettingBuilder<Builder, List<Module>, ModuleListSetting> {
+
+        private Predicate<? super Module> modulePredicate = null;
+
         public Builder() {
             super(new ArrayList<>(0));
         }
@@ -96,9 +105,16 @@ public class ModuleListSetting extends Setting<List<Module>> {
             return defaultValue(modules);
         }
 
+        public final Builder onlyMatching(Predicate<? super Module> predicate) {
+            modulePredicate = predicate;
+            return this;
+        }
+
         @Override
         public ModuleListSetting build() {
-            return new ModuleListSetting(name, description, defaultValue, onChanged, onModuleActivated, visible);
+            var setting = new ModuleListSetting(name, description, defaultValue, onChanged, onModuleActivated, visible);
+            setting.modulePredicate = modulePredicate;
+            return setting;
         }
     }
 }

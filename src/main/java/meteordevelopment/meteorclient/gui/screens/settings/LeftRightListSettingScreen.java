@@ -12,7 +12,9 @@ import meteordevelopment.meteorclient.gui.widgets.WWidget;
 import meteordevelopment.meteorclient.gui.widgets.containers.WTable;
 import meteordevelopment.meteorclient.gui.widgets.input.WTextBox;
 import meteordevelopment.meteorclient.gui.widgets.pressable.WPressable;
+import meteordevelopment.meteorclient.settings.ModuleListSetting;
 import meteordevelopment.meteorclient.settings.Setting;
+import meteordevelopment.meteorclient.systems.modules.Module;
 import meteordevelopment.meteorclient.utils.Utils;
 import net.minecraft.util.Pair;
 import net.minecraft.util.registry.Registry;
@@ -61,6 +63,11 @@ public abstract class LeftRightListSettingScreen<T> extends WindowScreen {
     private void initWidgets(Registry<T> registry) {
         // Left (all)
         WTable left = abc(pairs -> registry.forEach(t -> {
+            if (t instanceof Module module
+                && setting instanceof ModuleListSetting mls) {
+                if (mls.modulePredicate != null && !mls.modulePredicate.test(module))
+                    return; //hacky but works and safe due to instanceofs
+            }
             if (skipValue(t) || collection.contains(t)) return;
 
             int words = Utils.search(getValueName(t), filterText);

@@ -25,7 +25,6 @@ import meteordevelopment.meteorclient.systems.modules.combat.*;
 import meteordevelopment.meteorclient.systems.modules.misc.*;
 import meteordevelopment.meteorclient.systems.modules.misc.swarm.Swarm;
 import meteordevelopment.meteorclient.systems.modules.movement.*;
-import meteordevelopment.meteorclient.systems.modules.movement.LiquidWalker;
 import meteordevelopment.meteorclient.systems.modules.movement.elytrafly.ElytraFly;
 import meteordevelopment.meteorclient.systems.modules.movement.speed.Speed;
 import meteordevelopment.meteorclient.systems.modules.player.*;

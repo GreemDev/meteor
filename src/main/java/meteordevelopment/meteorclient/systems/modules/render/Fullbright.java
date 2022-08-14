@@ -54,7 +54,7 @@ public class Fullbright extends Module {
         return minimumLightLevel.get();
     }
 
-    public boolean getGamma() {
+    public boolean isGamma() {
         return isActive() && mode.get() == Mode.Gamma;
     }
 

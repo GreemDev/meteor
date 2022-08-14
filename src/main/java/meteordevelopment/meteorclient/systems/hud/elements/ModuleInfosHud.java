@@ -33,21 +33,6 @@ public class ModuleInfosHud extends HudElement {
         .build()
     );
 
-    private final Setting<Boolean> displayKeybinds = sgGeneral.add(new BoolSetting.Builder()
-        .name("show-keybind")
-        .description("Shows the keybind of a module after its information.")
-        .defaultValue(false)
-        .build()
-    );
-
-    private final Setting<SettingColor> keybindColor = sgGeneral.add(new ColorSetting.Builder()
-        .name("keybind-color")
-        .description("Color when module has a keybind.")
-        .defaultValue(new SettingColor(25, 25, 255))
-        .visible(displayKeybinds::get)
-        .build()
-    );
-
     private final Setting<Boolean> textShadow = sgGeneral.add(new BoolSetting.Builder()
         .name("text-shadow")
         .description("Renders shadow behind text.")
@@ -120,12 +105,7 @@ public class ModuleInfosHud extends HudElement {
 
             double x = this.x + alignX(moduleWidth, alignment.get());
             x = renderer.text(module.title, x, y, moduleColor.get(), textShadow.get());
-            x = renderer.text(text, x + renderer.textWidth(" "), y, module.isActive() ? onColor.get() : offColor.get(), textShadow.get());
-            if (displayKeybinds.get() && module.keybind.isValid()) {
-                var keybindStr = module.keybind.toString();
-                renderer.text(keybindStr, x + renderer.textWidth(" "), y, keybindColor.get(), textShadow.get());
-                width += renderer.textWidth(keybindStr);
-            }
+            renderer.text(text, x + renderer.textWidth(" "), y, module.isActive() ? onColor.get() : offColor.get(), textShadow.get());
             y += renderer.textHeight() + 2;
 
             width = Math.max(width, moduleWidth);

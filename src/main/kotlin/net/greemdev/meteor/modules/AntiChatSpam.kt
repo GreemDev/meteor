@@ -8,7 +8,6 @@
 package net.greemdev.meteor.modules
 
 import meteordevelopment.meteorclient.events.game.ReceiveMessageEvent
-import meteordevelopment.meteorclient.utils.player.ChatUtils
 import meteordevelopment.orbit.EventHandler
 import net.greemdev.meteor.GModule
 import net.greemdev.meteor.type.StringComparisonType

@@ -18,17 +18,13 @@ import meteordevelopment.meteorclient.systems.Systems;
 import meteordevelopment.meteorclient.systems.config.Config;
 import meteordevelopment.meteorclient.systems.modules.Categories;
 import meteordevelopment.meteorclient.systems.modules.Modules;
-import meteordevelopment.meteorclient.systems.modules.misc.DiscordPresence;
 import meteordevelopment.meteorclient.utils.ReflectInit;
 import meteordevelopment.meteorclient.utils.Utils;
 import meteordevelopment.meteorclient.utils.misc.Version;
 import meteordevelopment.meteorclient.utils.misc.input.KeyAction;
 import meteordevelopment.meteorclient.utils.misc.input.KeyBinds;
 import meteordevelopment.meteorclient.utils.network.OnlinePlayers;
-import meteordevelopment.orbit.EventBus;
-import meteordevelopment.orbit.EventHandler;
-import meteordevelopment.orbit.EventPriority;
-import meteordevelopment.orbit.IEventBus;
+import meteordevelopment.orbit.*;
 import net.fabricmc.api.ClientModInitializer;
 import net.fabricmc.loader.api.FabricLoader;
 import net.fabricmc.loader.api.metadata.ModMetadata;
@@ -41,7 +37,6 @@ import org.slf4j.LoggerFactory;
 import java.io.File;
 import java.lang.invoke.MethodHandles;
 import java.util.Arrays;
-import java.util.stream.Collectors;
 
 public class MeteorClient implements ClientModInitializer {
     public static final String MOD_ID = "meteor-client";

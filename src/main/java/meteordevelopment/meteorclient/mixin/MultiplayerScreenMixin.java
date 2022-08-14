@@ -41,13 +41,11 @@ public class MultiplayerScreenMixin extends Screen {
         loggedInAs = "Logged in as ";
         loggedInAsLength = textRenderer.getWidth(loggedInAs);
 
-        addDrawableChild(new ButtonWidget(this.width - 75 - 3, 3, 75, 20, Text.literal("Accounts"), button -> {
-            client.setScreen(GuiThemes.get().accountsScreen());
-        }));
+        addDrawableChild(new ButtonWidget(this.width - 75 - 3, this.height - 20 - 7, 75, 20, Text.literal("Accounts"),
+            button -> client.setScreen(GuiThemes.get().accountsScreen())));
 
-        addDrawableChild(new ButtonWidget(this.width - 75 - 3 - 75 - 2, 3, 75, 20, Text.literal("Proxies"), button -> {
-            client.setScreen(GuiThemes.get().proxiesScreen());
-        }));
+        addDrawableChild(new ButtonWidget(this.width - 75 - 3, this.height - 20 - 7 - 20 - 4,75, 20, Text.literal("Proxies"),
+            button -> client.setScreen(GuiThemes.get().proxiesScreen())));
     }
 
     @Inject(method = "render", at = @At("TAIL"))
@@ -64,10 +62,12 @@ public class MultiplayerScreenMixin extends Screen {
         // Proxy
         Proxy proxy = Proxies.get().getEnabled();
 
-        String left = proxy != null ? "Using proxy " : "Not using a proxy";
+        String left = proxy != null ? "Using proxy " : null;
         String right = proxy != null ? (proxy.name != null && !proxy.name.isEmpty() ? "(" + proxy.name + ") " : "") + proxy.address + ":" + proxy.port : null;
 
-        textRenderer.drawWithShadow(matrices, left, x, y, textColor1);
-        if (right != null) textRenderer.drawWithShadow(matrices, right, x + textRenderer.getWidth(left), y, textColor2);
+        if (left != null) {
+            textRenderer.drawWithShadow(matrices, left, x, y, textColor1);
+            textRenderer.drawWithShadow(matrices, right, x + textRenderer.getWidth(left), y, textColor2);
+        }
     }
 }

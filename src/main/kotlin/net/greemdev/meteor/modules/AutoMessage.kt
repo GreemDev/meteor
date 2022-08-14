@@ -7,29 +7,17 @@
 
 package net.greemdev.meteor.modules
 
-import kotlinx.coroutines.DelicateCoroutinesApi
-import kotlinx.coroutines.GlobalScope
-import kotlinx.coroutines.delay
-import kotlinx.coroutines.launch
-import meteordevelopment.meteorclient.MeteorClient
+import kotlinx.coroutines.*
 import meteordevelopment.meteorclient.events.world.TickEvent
 import meteordevelopment.meteorclient.gui.GuiTheme
 import meteordevelopment.meteorclient.gui.widgets.WWidget
-import meteordevelopment.meteorclient.settings.IntSetting
-import meteordevelopment.meteorclient.settings.Setting
-import meteordevelopment.meteorclient.settings.StringListSetting
-import meteordevelopment.meteorclient.settings.StringSetting
 import meteordevelopment.meteorclient.utils.Utils
 import meteordevelopment.meteorclient.utils.misc.MeteorStarscript
-import meteordevelopment.meteorclient.utils.player.ChatUtils
 import meteordevelopment.orbit.EventHandler
 import meteordevelopment.starscript.Script
-import meteordevelopment.starscript.Starscript
 import meteordevelopment.starscript.utils.StarscriptError
 import net.greemdev.meteor.GModule
 import net.greemdev.meteor.util.*
-import net.minecraft.text.Text
-import net.minecraft.util.Formatting
 import net.minecraft.util.Util
 
 class AutoMessage : GModule(
