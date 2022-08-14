@@ -164,16 +164,9 @@ public class NoRender extends Module {
         .build()
     );
 
-    private final Setting<Boolean> noBlindness = sgWorld.add(new BoolSetting.Builder()
-        .name("blindness")
-        .description("Disables rendering of blindness.")
-        .defaultValue(false)
-        .build()
-    );
-
-    private final Setting<Boolean> noDarkness = sgWorld.add(new BoolSetting.Builder()
-        .name("darkness")
-        .description("Disables rendering of darkness.")
+    private final Setting<Boolean> noBlindEffects = sgWorld.add(new BoolSetting.Builder()
+        .name("blinding-effects")
+        .description("Disables rendering of vision hindering effects (Darkness and Blindness).")
         .defaultValue(false)
         .build()
     );
@@ -263,7 +256,7 @@ public class NoRender extends Module {
 
     private final Setting<Boolean> noBarrierInvis = sgWorld.add(new BoolSetting.Builder()
         .name("barrier-invisibility")
-        .description("Disables barriers being invisible when not holding one.")
+        .description("Render barrier texture in world when not holding barrier item.")
         .defaultValue(false)
         .build()
     );
@@ -397,12 +390,8 @@ public class NoRender extends Module {
         return isActive() && noWeather.get();
     }
 
-    public boolean noBlindness() {
-        return isActive() && noBlindness.get();
-    }
-
-    public boolean noDarkness() {
-        return isActive() && noDarkness.get();
+    public boolean noBlind() {
+        return isActive() && noBlindEffects.get();
     }
 
     public boolean noFog() {

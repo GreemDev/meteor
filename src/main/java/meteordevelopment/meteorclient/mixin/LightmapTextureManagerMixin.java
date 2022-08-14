@@ -28,6 +28,6 @@ public class LightmapTextureManagerMixin {
 
     @Inject(method = "getDarknessFactor(F)F", at = @At("HEAD"), cancellable = true)
     private void getDarknessFactor(float tickDelta, CallbackInfoReturnable<Float> info) {
-        if (Modules.get().get(NoRender.class).noDarkness()) info.setReturnValue(0.0f);
+        if (Modules.get().get(NoRender.class).noBlind()) info.setReturnValue(0.0f);
     }
 }
