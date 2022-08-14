@@ -77,7 +77,7 @@ public class StringListSetting extends Setting<List<String>>{
             int msgI = i;
             String message = setting.get().get(i);
 
-            WTextBox textBox = table.add(theme.textBox(message, (text, c) -> true, setting.renderer)).expandX().widget();
+            WTextBox textBox = table.add(theme.textBox(message, setting.renderer)).expandX().widget();
             textBox.action = () -> strings.set(msgI, textBox.get());
             textBox.actionOnUnfocused = () -> setting.set(strings);
 
@@ -93,7 +93,13 @@ public class StringListSetting extends Setting<List<String>>{
             table.row();
         }
 
-        WTextBox textBox = table.add(theme.textBox(setting.newText)).minWidth(300).expandX().widget();
+        if (!setting.get().isEmpty()) {
+            table.add(theme.horizontalSeparator()).expandX();
+            table.row();
+        }
+
+
+        WTextBox textBox = table.add(theme.textBox(setting.newText, setting.renderer)).minWidth(300).expandX().widget();
         textBox.action = () -> setting.newText = textBox.get();
 
         WPlus add = table.add(theme.plus()).widget();

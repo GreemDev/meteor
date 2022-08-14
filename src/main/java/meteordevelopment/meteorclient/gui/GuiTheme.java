@@ -99,6 +99,9 @@ public abstract class GuiTheme implements ISerializable<GuiTheme> {
     public WTextBox textBox(String text, CharFilter filter, Class<? extends WTextBox.Renderer> renderer) {
         return textBox(text, null, filter, renderer);
     }
+    public WTextBox textBox(String text, Class<? extends WTextBox.Renderer> renderer) {
+        return textBox(text, null, (t1, c1) -> true, renderer);
+    }
     public WTextBox textBox(String text, String placeholder, CharFilter filter) {
         return textBox(text, placeholder, filter, null);
     }
