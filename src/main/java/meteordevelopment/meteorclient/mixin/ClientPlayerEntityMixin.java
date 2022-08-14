@@ -18,10 +18,7 @@ import meteordevelopment.meteorclient.systems.commands.Commands;
 import meteordevelopment.meteorclient.systems.config.Config;
 import meteordevelopment.meteorclient.systems.modules.Modules;
 import meteordevelopment.meteorclient.systems.modules.misc.ServerSpoof;
-import meteordevelopment.meteorclient.systems.modules.movement.NoSlow;
-import meteordevelopment.meteorclient.systems.modules.movement.Scaffold;
-import meteordevelopment.meteorclient.systems.modules.movement.Sneak;
-import meteordevelopment.meteorclient.systems.modules.movement.Velocity;
+import meteordevelopment.meteorclient.systems.modules.movement.*;
 import meteordevelopment.meteorclient.systems.modules.player.Portals;
 import meteordevelopment.meteorclient.utils.Utils;
 import meteordevelopment.meteorclient.utils.player.ChatUtils;
@@ -108,6 +105,11 @@ public abstract class ClientPlayerEntityMixin extends AbstractClientPlayerEntity
     @Inject(method = "isSneaking", at = @At("HEAD"), cancellable = true)
     private void onIsSneaking(CallbackInfoReturnable<Boolean> info) {
         if (Modules.get().isActive(Scaffold.class)) info.setReturnValue(false);
+    }
+
+    @Inject(method = "getMountJumpStrength", at = @At("HEAD"), cancellable = true)
+    private void onGetMountJumpStrength(CallbackInfoReturnable<Float> info) {
+        if (Modules.get().get(EntityControl.class).isAlwaysMaxJump()) info.setReturnValue(1f);
     }
 
     @Inject(method = "shouldSlowDown", at = @At("HEAD"), cancellable = true)

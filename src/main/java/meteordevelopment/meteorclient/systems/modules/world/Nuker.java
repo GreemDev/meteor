@@ -158,6 +158,20 @@ public class Nuker extends Module {
         .build()
     );
 
+    private final Setting<Boolean> blacklistEnabled = sgWhitelist.add(new BoolSetting.Builder()
+        .name("blacklist-enabled")
+        .description("Never mine selected blocks.")
+        .defaultValue(false)
+        .build()
+    );
+
+    private final Setting<List<Block>> blacklist = sgWhitelist.add(new BlockListSetting.Builder()
+        .name("blacklist")
+        .description("The blocks you don't want to mine.")
+        .visible(blacklistEnabled::get)
+        .build()
+    );
+
     // Rendering
 
     // Bounding box
@@ -364,6 +378,8 @@ public class Nuker extends Module {
 
             // Check for selected
             if (whitelistEnabled.get() && !whitelist.get().contains(blockState.getBlock())) return;
+            // Ignore blacklisted
+            if (blacklistEnabled.get() && blacklist.get().contains(blockState.getBlock())) return;
 
             // Add block
             blocks.add(blockPosPool.get().set(blockPos));

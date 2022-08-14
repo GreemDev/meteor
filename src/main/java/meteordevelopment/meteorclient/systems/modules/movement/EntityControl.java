@@ -6,6 +6,7 @@
 package meteordevelopment.meteorclient.systems.modules.movement;
 
 //Created by squidoodly 10/07/2020
+//Modified in Greteor client
 
 import meteordevelopment.meteorclient.events.world.TickEvent;
 import meteordevelopment.meteorclient.mixin.ClientPlayerEntityAccessor;
@@ -34,21 +35,8 @@ public class EntityControl extends Module {
         super(Categories.Movement, "entity-control", "Lets you control rideable entities without a saddle.");
     }
 
-    @Override
-    public void onDeactivate() {
-        if (!Utils.canUpdate() || mc.world.getEntities() == null) return;
-
-        for (Entity entity : mc.world.getEntities()) {
-            if (entity instanceof AbstractHorseEntity) ((IHorseBaseEntity) entity).setSaddled(false);
-        }
+    public boolean isAlwaysMaxJump() {
+        return isActive() && maxJump.get();
     }
 
-    @EventHandler
-    private void onTick(TickEvent.Pre event) {
-        for (Entity entity : mc.world.getEntities()) {
-            if (entity instanceof AbstractHorseEntity) ((IHorseBaseEntity) entity).setSaddled(true);
-        }
-
-        if (maxJump.get()) ((ClientPlayerEntityAccessor) mc.player).setMountJumpStrength(1);
-    }
 }

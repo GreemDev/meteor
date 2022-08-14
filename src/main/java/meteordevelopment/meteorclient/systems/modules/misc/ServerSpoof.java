@@ -32,10 +32,18 @@ import java.nio.charset.StandardCharsets;
 public class ServerSpoof extends Module {
     private final SettingGroup sgGeneral = settings.getDefaultGroup();
 
-    private final Setting<String> brand = sgGeneral.add(new StringSetting.Builder()
+    private final Setting<Boolean> spoofBrand = sgGeneral.add(new BoolSetting.Builder()
         .name("brand")
+        .description("Spoof your client's brand name when logging in.")
+        .defaultValue(true)
+        .build()
+    );
+
+    private final Setting<String> brand = sgGeneral.add(new StringSetting.Builder()
+        .name("client-brand")
         .description("Specify the brand that will be send to the server.")
         .defaultValue("vanilla")
+        .visible(spoofBrand::get)
         .build()
     );
 
@@ -66,7 +74,7 @@ public class ServerSpoof extends Module {
     private class Listener {
         @EventHandler
         private void onPacketSend(PacketEvent.Send event) {
-            if (!isActive()) return;
+            if (!isActive() || !spoofBrand.get()) return;
             if (!(event.packet instanceof CustomPayloadC2SPacket)) return;
             CustomPayloadC2SPacketAccessor packet = (CustomPayloadC2SPacketAccessor) event.packet;
             Identifier id = packet.getChannel();

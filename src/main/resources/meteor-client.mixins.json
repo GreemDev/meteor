@@ -10,6 +10,7 @@
     "AbstractClientPlayerEntityMixin",
     "AbstractFurnaceScreenHandlerMixin",
     "AbstractFurnaceScreenMixin",
+    "AbstractHorseEntityMixin",
     "ArmorFeatureRendererMixin",
     "BackgroundRendererMixin",
     "BannerBlockEntityRendererMixin",
@@ -156,6 +157,7 @@
     "Vec3dMixin",
     "VertexBufferMixin",
     "WorldAccessor",
+    "WorldBorderMixin",
     "WorldChunkMixin",
     "WorldRendererAccessor",
     "WorldRendererMixin"
