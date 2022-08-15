@@ -9,6 +9,7 @@ import meteordevelopment.meteorclient.systems.modules.Module;
 import meteordevelopment.meteorclient.systems.modules.Modules;
 import net.greemdev.meteor.Greteor;
 import net.greemdev.meteor.util.Meteor;
+import net.greemdev.meteor.util.Util;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.nbt.NbtElement;
 import net.minecraft.nbt.NbtList;
@@ -23,10 +24,17 @@ import java.util.stream.Collectors;
 public class ModuleListSetting extends Setting<List<Module>> {
     private static List<String> suggestions;
 
-    public Predicate<? super Module> modulePredicate;
+    public final Predicate<? super Module> filter;
+    private final boolean bypassFilterWhenSavingAndLoading;
+
+    public ModuleListSetting(String name, String description, List<Module> defaultValue, Consumer<List<Module>> onChanged, Consumer<Setting<List<Module>>> onModuleActivated, IVisible visible, Predicate<? super Module> filter, boolean bypassFilterWhenSavingAndLoading) {
+        super(name, description, defaultValue, onChanged, onModuleActivated, visible);
+        this.filter = filter;
+        this.bypassFilterWhenSavingAndLoading = bypassFilterWhenSavingAndLoading;
+    }
 
     public ModuleListSetting(String name, String description, List<Module> defaultValue, Consumer<List<Module>> onChanged, Consumer<Setting<List<Module>>> onModuleActivated, IVisible visible) {
-        super(name, description, defaultValue, onChanged, onModuleActivated, visible);
+        this(name, description, defaultValue, onChanged, onModuleActivated, visible, null, false);
     }
 
     @Override
@@ -39,12 +47,12 @@ public class ModuleListSetting extends Setting<List<Module>> {
         String[] values = str.split(",");
         List<Module> modules = new ArrayList<>(values.length);
 
-        try {
+        Util.runOrIgnore(() -> {
             for (String value : values) {
                 Module module = Modules.get().get(value.trim());
-                if (module != null) modules.add(module);
+                if (module != null && (filter == null || filter.test(module))) modules.add(module);
             }
-        } catch (Exception ignored) {}
+        });
 
         return modules;
     }
@@ -67,7 +75,10 @@ public class ModuleListSetting extends Setting<List<Module>> {
     @Override
     public NbtCompound save(NbtCompound tag) {
         NbtList modulesTag = new NbtList();
-        for (Module module : get()) modulesTag.add(NbtString.of(module.name));
+        for (Module module : get()) {
+            if (bypassFilterWhenSavingAndLoading || (filter == null || filter.test(module)))
+                modulesTag.add(NbtString.of(module.name));
+        }
         tag.put("modules", modulesTag);
 
         return tag;
@@ -80,7 +91,7 @@ public class ModuleListSetting extends Setting<List<Module>> {
         NbtList valueTag = tag.getList("modules", 8);
         for (NbtElement tagI : valueTag) {
             Module module = Modules.get().get(tagI.asString());
-            if (module != null) get().add(module);
+            if (module != null && (bypassFilterWhenSavingAndLoading || (filter == null || filter.test(module)))) get().add(module);
         }
 
         return get();
@@ -89,6 +100,7 @@ public class ModuleListSetting extends Setting<List<Module>> {
     public static class Builder extends SettingBuilder<Builder, List<Module>, ModuleListSetting> {
 
         private Predicate<? super Module> modulePredicate = null;
+        private boolean bypassFilterWhenSavingAndLoading = false;
 
         public Builder() {
             super(new ArrayList<>(0));
@@ -105,16 +117,19 @@ public class ModuleListSetting extends Setting<List<Module>> {
             return defaultValue(modules);
         }
 
-        public final Builder onlyMatching(Predicate<? super Module> predicate) {
+        public final Builder filteredBy(Predicate<? super Module> predicate) {
             modulePredicate = predicate;
+            return this;
+        }
+
+        public final Builder ignoreFilterInNbt(boolean bypassFilterWhenSavingAndLoading) {
+            this.bypassFilterWhenSavingAndLoading = bypassFilterWhenSavingAndLoading;
             return this;
         }
 
         @Override
         public ModuleListSetting build() {
-            var setting = new ModuleListSetting(name, description, defaultValue, onChanged, onModuleActivated, visible);
-            setting.modulePredicate = modulePredicate;
-            return setting;
+            return new ModuleListSetting(name, description, defaultValue, onChanged, onModuleActivated, visible, modulePredicate, bypassFilterWhenSavingAndLoading);
         }
     }
 }

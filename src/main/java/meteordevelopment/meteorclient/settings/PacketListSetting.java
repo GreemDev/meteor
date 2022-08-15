@@ -7,6 +7,7 @@ package meteordevelopment.meteorclient.settings;
 
 import it.unimi.dsi.fastutil.objects.ObjectOpenHashSet;
 import meteordevelopment.meteorclient.utils.network.PacketUtils;
+import net.greemdev.meteor.util.Util;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.nbt.NbtElement;
 import net.minecraft.nbt.NbtList;
@@ -39,12 +40,12 @@ public class PacketListSetting extends Setting<Set<Class<? extends Packet<?>>>> 
         String[] values = str.split(",");
         Set<Class<? extends Packet<?>>> packets = new ObjectOpenHashSet<>(values.length);
 
-        try {
+        Util.runOrIgnore(() -> {
             for (String value : values) {
                 Class<? extends Packet<?>> packet = PacketUtils.getPacket(value.trim());
                 if (packet != null && (filter == null || filter.test(packet))) packets.add(packet);
             }
-        } catch (Exception ignored) {}
+        });
 
         return packets;
     }

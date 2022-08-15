@@ -5,10 +5,12 @@
 
 package net.greemdev.meteor.hud.element
 
+import meteordevelopment.meteorclient.settings.Setting
 import meteordevelopment.meteorclient.systems.hud.Alignment
 import meteordevelopment.meteorclient.systems.hud.HudElement
 import meteordevelopment.meteorclient.systems.hud.HudElementInfo
 import meteordevelopment.meteorclient.systems.hud.HudRenderer
+import meteordevelopment.meteorclient.systems.modules.Module
 import meteordevelopment.meteorclient.systems.modules.Modules
 import meteordevelopment.meteorclient.utils.render.color.SettingColor
 import net.greemdev.meteor.Greteor
@@ -18,11 +20,28 @@ import kotlin.math.max
 
 class ModuleKeybindHud : HudElement(elementInfo) {
     companion object : HudElementMetadata<ModuleKeybindHud> {
-        override val elementInfo = HudElementInfo(Greteor.hudElementGroup(),
-        "module-keybinds", "Displays selected modules with valid keybinds."
+        override val elementInfo = HudElementInfo(
+            Greteor.hudElementGroup(),
+            "module-keybinds", "Displays selected modules with valid keybinds."
         ) {
             ModuleKeybindHud()
         }
+
+        @JvmStatic
+        fun<R : Comparable<R>> sortModules(
+            modules: Setting<List<Module>>,
+            sorted: Setting<Boolean>,
+            isAscending: Setting<Boolean>,
+            sorter: (Module) -> R?
+        ): List<Module> =
+            modules.get().toMutableList().apply {
+                if (sorted.get()) {
+                    if (isAscending.get())
+                        sortBy(sorter)
+                    else
+                        sortByDescending(sorter)
+                }
+            }
     }
 
     private val sg = settings.group()
@@ -30,7 +49,20 @@ class ModuleKeybindHud : HudElement(elementInfo) {
     val modules by sg moduleList {
         name("modules")
         description("The modules to display the keybinds of.")
-        onlyMatching { it.keybind.isValid }
+        filteredBy { it.keybind.isValid }
+    }
+
+    val sorted by sg bool {
+        name("sort-modules")
+        description("Sort the modules on the HUD.")
+        defaultValue(true)
+    }
+
+    val sortOrder by sg bool {
+        name("ascending-order")
+        description("Sort the modules on the HUD in ascending order. Turn off for descending order.")
+        defaultValue(false)
+        visible(sorted::get)
     }
 
     val textShadow by sg bool {
@@ -68,7 +100,9 @@ class ModuleKeybindHud : HudElement(elementInfo) {
 
         var width = 0.0
         var height = 0.0
-        modules.get().forEachIndexed { i, module ->
+        sortModules(modules, sorted, sortOrder) {
+            it.title.length + it.keybind.toString().length
+        }.forEachIndexed { i, module ->
             var moduleWidth = renderer.textWidth(module.title) + renderer.textWidth(" ")
             val keybindStr = module.keybind.toString()
             moduleWidth += renderer.textWidth(keybindStr)
@@ -86,5 +120,4 @@ class ModuleKeybindHud : HudElement(elementInfo) {
 
         setSize(width, height)
     }
-
 }

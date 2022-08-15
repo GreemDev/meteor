@@ -5,6 +5,7 @@
 
 package meteordevelopment.meteorclient.settings;
 
+import net.greemdev.meteor.util.Util;
 import net.minecraft.item.Item;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.nbt.NbtElement;
@@ -35,12 +36,12 @@ public class ItemListSetting extends Setting<List<Item>> {
         String[] values = str.split(",");
         List<Item> items = new ArrayList<>(values.length);
 
-        try {
+        Util.runOrIgnore(() -> {
             for (String value : values) {
                 Item item = parseId(Registry.ITEM, value);
                 if (item != null && (filter == null || filter.test(item))) items.add(item);
             }
-        } catch (Exception ignored) {}
+        });
 
         return items;
     }

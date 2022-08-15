@@ -207,6 +207,7 @@ public class CombatHud extends HudElement {
             Renderer2D.COLOR.render(null);
 
             // Player Model
+
             try {
                 InventoryScreen.drawEntity(
                     (int) (x + (25 * scale.get())),

@@ -11,6 +11,7 @@ import meteordevelopment.meteorclient.systems.modules.Module;
 import meteordevelopment.meteorclient.systems.modules.Modules;
 import meteordevelopment.meteorclient.systems.modules.combat.*;
 import meteordevelopment.meteorclient.utils.render.color.SettingColor;
+import net.greemdev.meteor.hud.element.ModuleKeybindHud;
 
 import java.util.List;
 
@@ -23,6 +24,21 @@ public class ModuleInfosHud extends HudElement {
         .name("modules")
         .description("Which modules to display")
         .defaultValue(KillAura.class, CrystalAura.class, AnchorAura.class, BedAura.class, Surround.class)
+        .build()
+    );
+
+    private final Setting<Boolean> sorted = sgGeneral.add(new BoolSetting.Builder()
+        .name("sort-modules")
+        .description("Sort the modules on the HUD.")
+        .defaultValue(true)
+        .build()
+    );
+
+    private final Setting<Boolean> sortOrder = sgGeneral.add(new BoolSetting.Builder()
+        .name("ascending-order")
+        .description("Sort the modules on the HUD in ascending order. Turn off for descending order.")
+        .defaultValue(false)
+        .visible(sorted::get)
         .build()
     );
 
@@ -87,7 +103,7 @@ public class ModuleInfosHud extends HudElement {
         double height = 0;
 
         int i = 0;
-        for (Module module : modules.get()) {
+        for (Module module : ModuleKeybindHud.sortModules(modules, sorted, sortOrder, m -> m.title.length())) {
             double moduleWidth = renderer.textWidth(module.title) + renderer.textWidth(" ");
             String text = null;
 

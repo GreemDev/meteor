@@ -28,13 +28,18 @@ import org.reflections.Reflections
 import org.reflections.scanners.Scanners
 import org.reflections.util.ConfigurationBuilder
 import java.util.*
+import java.util.function.Supplier
 import kotlin.properties.ReadOnlyProperty
 import kotlin.reflect.KClass
 import kotlin.reflect.KProperty
 import kotlin.reflect.full.primaryConstructor
 
 
-fun<T> tryOrNull(func: () -> T): T? = try { func() } catch (t: Throwable) { null }
+fun<T> getOrNull(func: () -> T): T? = try { func() } catch (t: Throwable) { null }
+fun<T> supplyOrNull(func: Supplier<T>): T? = try { func.get() } catch (t: Throwable) { null }
+
+fun<T> tryOrIgnore(func: () -> Unit) = try { func() } catch (ignored: Throwable) { }
+fun<T> runOrIgnore(runnable: Runnable) = try { runnable.run() } catch (ignored: Throwable) { }
 
 /**
  * Looks repetitive however each different type we check for has its own special logic in [LogManager]
@@ -52,7 +57,7 @@ fun log4j(value: Any): ReadOnlyProperty<Any, Logger> = invoking {
 fun<T : Any> optionalOf(value: T? = null): Optional<T> = if (value == null) Optional.empty() else Optional.of(value)
 
 fun <T> invoking(func: () -> T): FunctionProperty<T> = FunctionProperty(func)
-fun <T> invokingOrNull(func: () -> T): FunctionProperty<T?> = FunctionProperty{tryOrNull(func)}
+fun <T> invokingOrNull(func: () -> T): FunctionProperty<T?> = FunctionProperty{getOrNull(func)}
 
 class FunctionProperty<T>(private val producer: () -> T): ReadOnlyProperty<Any?, T> {
     override fun getValue(thisRef: Any?, property: KProperty<*>) = producer()

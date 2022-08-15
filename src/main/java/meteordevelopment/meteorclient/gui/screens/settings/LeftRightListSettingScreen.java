@@ -63,11 +63,6 @@ public abstract class LeftRightListSettingScreen<T> extends WindowScreen {
     private void initWidgets(Registry<T> registry) {
         // Left (all)
         WTable left = abc(pairs -> registry.forEach(t -> {
-            if (t instanceof Module module
-                && setting instanceof ModuleListSetting mls) {
-                if (mls.modulePredicate != null && !mls.modulePredicate.test(module))
-                    return; //hacky but works and safe due to instanceofs
-            }
             if (skipValue(t) || collection.contains(t)) return;
 
             int words = Utils.search(getValueName(t), filterText);

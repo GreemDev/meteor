@@ -19,12 +19,15 @@ import meteordevelopment.meteorclient.utils.Utils;
 import meteordevelopment.meteorclient.utils.misc.Keybind;
 import meteordevelopment.meteorclient.utils.misc.input.KeyAction;
 import meteordevelopment.orbit.EventHandler;
+import net.greemdev.meteor.event.GameInputEvent;
+import net.greemdev.meteor.event.GameInputHandler;
 import net.minecraft.block.Blocks;
 import net.minecraft.block.SignBlock;
 import net.minecraft.block.entity.SignBlockEntity;
 import net.minecraft.client.gui.screen.ingame.SignEditScreen;
 import net.minecraft.network.packet.c2s.play.UpdateSignC2SPacket;
 import net.minecraft.util.math.BlockPos;
+import org.jetbrains.annotations.NotNull;
 
 import java.util.Arrays;
 
@@ -58,22 +61,22 @@ public class AutoSign extends Module {
     }
 
     private void copyTarget() {
-        if (Utils.canUpdate()) {
-            if (mc.crosshairTarget == null) {
-                error("You're not looking at anything.");
-                return;
-            }
-            var entity = mc.world.getBlockEntity(new BlockPos(mc.crosshairTarget.getPos()));
-            if (entity == null) {
-                error("You're not looking at anything.");
-                return;
-            }
-            if (entity instanceof SignBlockEntity signBlock) {
-                info("Copied the following sign: ");
-                for (var i = 0; i < 4; i++) {
-                    var row = text[i] = signBlock.getTextOnRow(i, false).copyContentOnly().getString();
-                    info("Line %s -> %s", i + 1, row);
-                }
+        if (!Utils.canUpdate()) return;
+
+        if (mc.crosshairTarget == null) {
+            error("You're not looking at anything.");
+            return;
+        }
+        var entity = mc.world.getBlockEntity(new BlockPos(mc.crosshairTarget.getPos()));
+        if (entity == null) {
+            error("You're not looking at anything.");
+            return;
+        }
+        if (entity instanceof SignBlockEntity signBlock) {
+            info("Copied the following sign: ");
+            for (var i = 0; i < 4; i++) {
+                var row = text[i] = signBlock.getTextOnRow(i, false).copyContentOnly().getString();
+                info("Line %s -> %s", i + 1, row);
             }
         }
     }

@@ -7,6 +7,7 @@ package meteordevelopment.meteorclient.gui.screens.settings;
 
 import meteordevelopment.meteorclient.gui.GuiTheme;
 import meteordevelopment.meteorclient.gui.widgets.WWidget;
+import meteordevelopment.meteorclient.settings.ModuleListSetting;
 import meteordevelopment.meteorclient.settings.Setting;
 import meteordevelopment.meteorclient.systems.modules.Module;
 import meteordevelopment.meteorclient.systems.modules.Modules;
@@ -26,5 +27,11 @@ public class ModuleListSettingScreen extends LeftRightListSettingScreen<Module> 
     @Override
     protected String getValueName(Module value) {
         return value.title;
+    }
+
+    @Override
+    protected boolean skipValue(Module value) {
+        return setting instanceof ModuleListSetting mls &&
+            mls.filter != null && !mls.filter.test(value);
     }
 }
