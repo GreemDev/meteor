@@ -75,8 +75,7 @@ public class FriendsTab extends Tab {
                 if (friend != null && Friends.get().add(friend)) {
                     nameW.set("");
 
-                    table.clear();
-                    initTable(table);
+                    reload();
                 }
             };
 
@@ -84,6 +83,10 @@ public class FriendsTab extends Tab {
         }
 
         private void initTable(WTable table) {
+
+            table.clear();
+            if (Friends.get().isEmpty()) return;
+
             for (Friend friend : Friends.get()) {
                 table.add(theme.label(friend.name));
 

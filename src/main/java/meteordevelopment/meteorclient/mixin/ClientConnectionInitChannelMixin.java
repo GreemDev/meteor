@@ -24,9 +24,9 @@ public class ClientConnectionInitChannelMixin {
         Proxy proxy = Proxies.get().getEnabled();
         if (proxy == null) return;
 
-        switch (proxy.type) {
-            case Socks4 -> channel.pipeline().addFirst(new Socks4ProxyHandler(new InetSocketAddress(proxy.address, proxy.port), proxy.username));
-            case Socks5 -> channel.pipeline().addFirst(new Socks5ProxyHandler(new InetSocketAddress(proxy.address, proxy.port), proxy.username, proxy.password));
+        switch (proxy.type.get()) {
+            case Socks4 -> channel.pipeline().addFirst(new Socks4ProxyHandler(new InetSocketAddress(proxy.address.get(), proxy.port.get()), proxy.username.get()));
+            case Socks5 -> channel.pipeline().addFirst(new Socks5ProxyHandler(new InetSocketAddress(proxy.address.get(), proxy.port.get()), proxy.username.get(), proxy.password.get()));
         }
     }
 }
