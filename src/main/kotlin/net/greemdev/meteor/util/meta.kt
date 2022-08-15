@@ -54,6 +54,20 @@ fun log4j(value: Any): ReadOnlyProperty<Any, Logger> = invoking {
     }
 }
 
+fun<R : Comparable<R>> List<Module>.sortModulesBy(
+    sorted: Boolean = true,
+    isAscending: Boolean = true,
+    sorter: (Module) -> R?
+): List<Module> =
+    toMutableList().apply {
+        if (sorted) {
+            if (isAscending)
+                sortBy(sorter)
+            else
+                sortByDescending(sorter)
+        }
+    }
+
 fun<T : Any> optionalOf(value: T? = null): Optional<T> = if (value == null) Optional.empty() else Optional.of(value)
 
 fun <T> invoking(func: () -> T): FunctionProperty<T> = FunctionProperty(func)
