@@ -82,7 +82,7 @@ class ModuleKeybindHud : HudElement(elementInfo) {
 
         var width = 0.0
         var height = 0.0
-        modules.get().sortModulesBy(sorted.get(), sortOrder.get()) {
+        modules.get().sorted(sorted.get(), sortOrder.get()) {
             it.title.length + it.keybind.toString().length
         }.forEachIndexed { i, module ->
             var moduleWidth = renderer.textWidth(module.title) + renderer.textWidth(" ")

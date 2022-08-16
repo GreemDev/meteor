@@ -5,43 +5,42 @@
 
 package net.greemdev.meteor.commands
 
-import com.mojang.brigadier.Command.SINGLE_SUCCESS
-import com.mojang.brigadier.arguments.StringArgumentType
-import com.mojang.brigadier.builder.LiteralArgumentBuilder
+import com.mojang.brigadier.exceptions.CommandSyntaxException
 import com.mojang.brigadier.exceptions.SimpleCommandExceptionType
-import meteordevelopment.meteorclient.systems.commands.Command
+import net.greemdev.meteor.GCommand
+import net.greemdev.meteor.commands.api.*
 import net.greemdev.meteor.modules.CommandAliases
-import net.greemdev.meteor.util.Meteor
-import net.greemdev.meteor.util.ensurePrefix
+import net.greemdev.meteor.util.*
 import net.minecraft.command.CommandSource
-import net.minecraft.text.Text
 
-class CommandAliasesCommand : Command(
+sealed class CommandAliasesCommand : GCommand(
     "command-aliases", "Configured by the module of the same name.",
     "ca"
 ) {
     companion object {
         private fun notFound(name: String) =
-            SimpleCommandExceptionType(Text.literal("No alias with the name '$name' was found."))
+            SimpleCommandExceptionType(text("No alias with the name '$name' was found."))
     }
 
-    override fun build(builder: LiteralArgumentBuilder<CommandSource>) {
-        builder.then(argument("alias", StringArgumentType.word())
-            .suggests { _, sb ->
-                CommandSource.suggestMatching(Meteor.module<CommandAliases>().mapped.keys, sb)
+    override fun CommandBuilder.build() {
+        then("alias", arg.wordString()) {
+            suggests {
+                CommandSource.suggestMatching(Meteor.module<CommandAliases>().mapped.keys, this)
             }
-            .executes { ctx ->
-                val name = StringArgumentType.getString(ctx, "alias")
-                val mapping = Meteor.module<CommandAliases>().mapped.entries.firstOrNull {
-                    it.key.equals(name, true)
-                } ?: throw notFound(name).create()
+            alwaysRuns(this@CommandAliasesCommand::executeCommand)
+        }
+    }
 
-                if (Meteor.module<CommandAliases>().chatFeedback)
-                    info("Executing command '${mapping.value.ensurePrefix("/")}'")
+    @Throws(CommandSyntaxException::class)
+    private fun executeCommand(ctx: MinecraftCommandContext) {
+        val name = ctx.argument<String>("name")
+        val mapping = Meteor.module<CommandAliases>().mapped.entries.firstOrNull {
+            it.key.equals(name, true)
+        } ?: throw notFound(name).create()
 
-                mc.player?.sendCommand(mapping.value)
-                SINGLE_SUCCESS
-            }
-        )
+        if (Meteor.module<CommandAliases>().chatFeedback)
+            info("Executing command '${mapping.value.ensurePrefix("/")}'")
+
+        mc.player?.sendCommand(mapping.value)
     }
 }

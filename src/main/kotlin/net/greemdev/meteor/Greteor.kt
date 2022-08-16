@@ -19,8 +19,6 @@ import net.greemdev.meteor.util.createSubtypesOf
 import net.minecraft.item.Items
 import java.lang.invoke.MethodHandles
 
-abstract class GModule(name: String, description: String) : Module(Greteor.moduleCategory(), name, description)
-
 object Greteor {
 
     private val category = Category("Greteor", Items.DARK_PRISMARINE.defaultStack)

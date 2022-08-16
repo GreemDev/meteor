@@ -28,22 +28,39 @@ import org.reflections.Reflections
 import org.reflections.scanners.Scanners
 import org.reflections.util.ConfigurationBuilder
 import java.util.*
+import java.util.function.BiConsumer
 import java.util.function.Supplier
 import kotlin.properties.ReadOnlyProperty
 import kotlin.reflect.KClass
 import kotlin.reflect.KProperty
 import kotlin.reflect.full.primaryConstructor
 
-fun<T> getOrNull(func: () -> T): T? = try { func() } catch (t: Throwable) { null }
-fun<T> supplyOrNull(func: Supplier<T>): T? = try { func.get() } catch (t: Throwable) { null }
+fun <T> getOrNull(func: () -> T): T? = try {
+    func()
+} catch (t: Throwable) {
+    null
+}
 
-fun<T> tryOrIgnore(func: () -> Unit) = try { func() } catch (ignored: Throwable) { }
-fun<T> runOrIgnore(runnable: Runnable) = try { runnable.run() } catch (ignored: Throwable) { }
+fun <T> supplyOrNull(func: Supplier<T>): T? = try {
+    func.get()
+} catch (t: Throwable) {
+    null
+}
+
+fun <T> tryOrIgnore(func: () -> Unit) = try {
+    func()
+} catch (ignored: Throwable) {
+}
+
+fun <T> runOrIgnore(runnable: Runnable) = try {
+    runnable.run()
+} catch (ignored: Throwable) {
+}
 
 /**
  * Looks repetitive however each different type we check for has its own special logic in [LogManager]
  */
-fun log4j(value: Any): ReadOnlyProperty<Any, Logger> = invoking {
+fun log4j(value: Any) = lazy {
     when (value) {
         is String -> LogManager.getLogger(value)
         is Class<*> -> LogManager.getLogger(value)
@@ -53,26 +70,27 @@ fun log4j(value: Any): ReadOnlyProperty<Any, Logger> = invoking {
     }
 }
 
-fun<R : Comparable<R>> List<Module>.sortModulesBy(
+fun<T> List<T>.indexedForEach(consumer: BiConsumer<Int, T>) = this.forEachIndexed { index, t -> consumer.accept(index, t) }
+
+fun <T, R : Comparable<R>> List<T>.sorted(
     sorted: Boolean = true,
     isAscending: Boolean = true,
-    sorter: (Module) -> R?
-): List<Module> =
-    toMutableList().apply {
-        if (sorted) {
-            if (isAscending)
-                sortBy(sorter)
-            else
-                sortByDescending(sorter)
-        }
+    sorter: (T) -> R?
+): List<T> = toMutableList().apply {
+    if (sorted) {
+        if (isAscending)
+            sortBy(sorter)
+        else
+            sortByDescending(sorter)
     }
+}
 
-fun<T : Any> optionalOf(value: T? = null): Optional<T> = if (value == null) Optional.empty() else Optional.of(value)
+fun <T : Any> optionalOf(value: T? = null): Optional<T> = if (value == null) Optional.empty() else Optional.of(value)
 
 fun <T> invoking(func: () -> T): FunctionProperty<T> = FunctionProperty(func)
-fun <T> invokingOrNull(func: () -> T): FunctionProperty<T?> = FunctionProperty{getOrNull(func)}
+fun <T> invokingOrNull(func: () -> T): FunctionProperty<T?> = FunctionProperty { getOrNull(func) }
 
-class FunctionProperty<T>(private val producer: () -> T): ReadOnlyProperty<Any?, T> {
+class FunctionProperty<T>(private val producer: () -> T) : ReadOnlyProperty<Any?, T> {
     override fun getValue(thisRef: Any?, property: KProperty<*>) = producer()
 }
 
@@ -96,7 +114,7 @@ inline fun <reified T : Any> subtypesOf(pkg: String): List<KClass<out T>> =
 
 inline fun <reified T : Any> createSubtypesOf(pkg: String): List<T> =
     subtypesOf<T>(pkg).mapNotNull {
-        it.primaryConstructor?.call()
+        getOrNull { it.primaryConstructor?.call() }
     }
 
 infix fun <T : WPressable> T.action(func: (T) -> Unit): T = action { func(this) }
@@ -114,54 +132,3 @@ fun String.ensureSuffix(suffix: String): String {
 }
 
 inline fun <reified T> forceNextChatPrefix() = ChatUtils.forceNextPrefixClass(T::class.java)
-
-object Meteor {
-
-    @JvmStatic
-    fun config(): Config = Config.get()
-
-    @JvmStatic
-    fun accounts(): Accounts = Accounts.get()
-
-    @JvmStatic
-    fun macros(): Macros = Macros.get()
-
-    @JvmStatic
-    fun proxies(): Proxies = Proxies.get()
-
-    @JvmStatic
-    fun hud(): Hud = Hud.get()
-
-    @JvmStatic
-    fun modules(): Modules = Modules.get()
-
-    @JvmStatic
-    fun commands(): Commands = Commands.get()
-
-    @JvmStatic
-    fun friends(): Friends = Friends.get()
-
-    @JvmStatic
-    fun waypoints(): Waypoints = Waypoints.get()
-
-    @JvmStatic
-    fun profiles(): Profiles = Profiles.get()
-
-    @JvmStatic
-    inline fun <reified T : Module> module(): T = modules().get(T::class.java)
-
-    @JvmStatic
-    inline fun <reified T : Command> command(): T = commands().get(T::class.java)
-
-    @JvmStatic
-    fun friend(uuid: UUID): Friend? = friends().get(uuid)
-
-    @JvmStatic
-    fun friend(player: PlayerEntity): Friend? = friends().get(player)
-
-    @JvmStatic
-    fun waypoint(name: String): Waypoint? = waypoints().get(name)
-
-    @JvmStatic
-    fun profile(name: String): Profile? = profiles().get(name)
-}

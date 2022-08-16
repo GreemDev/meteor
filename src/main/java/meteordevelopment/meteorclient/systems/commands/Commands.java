@@ -12,6 +12,7 @@ import meteordevelopment.meteorclient.systems.System;
 import meteordevelopment.meteorclient.systems.Systems;
 import meteordevelopment.meteorclient.systems.commands.builtin.*;
 import net.greemdev.meteor.Greteor;
+import net.greemdev.meteor.commands.ClipCommand;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.network.ClientCommandSource;
 import net.minecraft.command.CommandRegistryAccess;
@@ -74,6 +75,7 @@ public class Commands extends System<Commands> {
         add(new WaypointCommand());
 
         Greteor.commands();
+        add(new ClipCommand());
 
         commands.sort(Comparator.comparing(Command::getName));
     }

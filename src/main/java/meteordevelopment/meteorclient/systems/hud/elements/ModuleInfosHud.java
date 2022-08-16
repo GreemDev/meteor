@@ -103,7 +103,7 @@ public class ModuleInfosHud extends HudElement {
         double height = 0;
 
         int i = 0;
-        for (var module : Util.sortModulesBy(modules.get(), sorted.get(), sortOrder.get(), m -> m.title.length())) {
+        for (var module : Util.sorted(modules.get(), sorted.get(), sortOrder.get(), m -> m.title.length())) {
             double moduleWidth = renderer.textWidth(module.title) + renderer.textWidth(" ");
             String text = null;
 
