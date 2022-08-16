@@ -2,6 +2,7 @@
  * This file is part of the Meteor Client distribution (https://github.com/MeteorDevelopment/meteor-client).
  * Copyright (c) Meteor Development.
  */
+@file:JvmName("MCText")
 
 package net.greemdev.meteor.util
 
@@ -17,7 +18,7 @@ else if (block == null)
 else
     Text.literal(content).apply(block)
 
-fun textBuilder(initial: Text = Text.empty()): FormattedTextBuilder = FormattedTextBuilder(Text.empty().copy())
+fun textBuilder(initial: Text = text()): FormattedTextBuilder = FormattedTextBuilder(initial.copy())
 data class FormattedTextBuilder(private val internal: MutableText = Text.empty()) {
 
     fun withReset(text: String, vararg formatting: Formatting, resetAtEnd: Boolean = false) = append(text, RESET, formatting, resetAtEnd = resetAtEnd)

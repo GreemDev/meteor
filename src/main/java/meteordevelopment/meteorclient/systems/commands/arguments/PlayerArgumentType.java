@@ -12,6 +12,7 @@ import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import com.mojang.brigadier.exceptions.DynamicCommandExceptionType;
 import com.mojang.brigadier.suggestion.Suggestions;
 import com.mojang.brigadier.suggestion.SuggestionsBuilder;
+import net.greemdev.meteor.util.KMC;
 import net.minecraft.command.CommandSource;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.text.Text;
@@ -51,7 +52,7 @@ public class PlayerArgumentType implements ArgumentType<PlayerEntity> {
     public PlayerEntity parse(StringReader reader) throws CommandSyntaxException {
         String argument = reader.readString();
         PlayerEntity playerEntity = null;
-        for (PlayerEntity p : mc.world.getPlayers()) {
+        for (var p : KMC.playersInCurrentWorld(mc)) {
             if (p.getEntityName().equalsIgnoreCase(argument)) {
                 playerEntity = p;
                 break;
@@ -63,7 +64,7 @@ public class PlayerArgumentType implements ArgumentType<PlayerEntity> {
 
     @Override
     public <S> CompletableFuture<Suggestions> listSuggestions(CommandContext<S> context, SuggestionsBuilder builder) {
-        return CommandSource.suggestMatching(mc.world.getPlayers().stream().map(PlayerEntity::getEntityName), builder);
+        return CommandSource.suggestMatching(KMC.playersInCurrentWorld(mc).stream().map(PlayerEntity::getEntityName), builder);
     }
 
     @Override

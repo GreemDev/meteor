@@ -133,11 +133,18 @@ public class Config extends System<Config> {
         .build()
     );
 
+    public final Setting<SettingColor> meteorPrefixColor = sgChat.add(new ColorSetting.Builder()
+        .name("meteor-prefix-color")
+        .description("Sends chat feedback when meteor performs certain actions.")
+        .defaultValue(MeteorClient.ADDON.color.toSetting())
+        .build()
+    );
+
     // Misc
 
     public final Setting<Integer> rotationHoldTicks = sgMisc.add(new IntSetting.Builder()
         .name("rotation-hold")
-        .description("Hold long to hold server side rotation when not sending any packets.")
+        .description("How long to hold server side rotation when not sending any packets.")
         .defaultValue(4)
         .build()
     );

@@ -41,6 +41,6 @@ sealed class CommandAliasesCommand : GCommand(
         if (Meteor.module<CommandAliases>().chatFeedback)
             info("Executing command '${mapping.value.ensurePrefix("/")}'")
 
-        mc.player?.sendCommand(mapping.value)
+        mc.sendCommand(mapping.value)
     }
 }

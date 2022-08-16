@@ -10,6 +10,7 @@ import meteordevelopment.meteorclient.MeteorClient;
 import meteordevelopment.meteorclient.mixin.ChatHudAccessor;
 import meteordevelopment.meteorclient.systems.config.Config;
 import meteordevelopment.meteorclient.utils.PostInit;
+import meteordevelopment.meteorclient.utils.render.color.SettingColor;
 import net.minecraft.text.*;
 import net.minecraft.util.Formatting;
 import net.minecraft.util.Pair;
@@ -26,14 +27,17 @@ public class ChatUtils {
     private static final List<Pair<String, Supplier<Text>>> customPrefixes = new ArrayList<>();
     private static String forcedPrefixClassName;
 
-    private static Text PREFIX;
-
-    @PostInit
-    public static void init() {
-        PREFIX = Text.literal("")
+    public static Text getMeteorPrefix() {
+        SettingColor color;
+        try {
+            color = Config.get().meteorPrefixColor.get();
+        } catch (Throwable t) {
+            color = MeteorClient.ADDON.color.toSetting();
+        }
+        return Text.literal("")
             .setStyle(Style.EMPTY.withFormatting(Formatting.GRAY))
             .append("[")
-            .append(Text.literal("Meteor").setStyle(Style.EMPTY.withColor(new TextColor(MeteorClient.ADDON.color.getPacked()))))
+            .append(Text.literal("Meteor").setStyle(Style.EMPTY.withColor(new TextColor(color.getPacked()))))
             .append("] ");
     }
 
@@ -70,20 +74,6 @@ public class ChatUtils {
 
     public static void sendPlayerMsg(String format, Object... args) {
         sendPlayerMsg(format.formatted(args));
-    }
-
-    public static void displayActionBar(Text message) {
-        if (mc.player != null) {
-            mc.player.sendMessage(message, true);
-        }
-    }
-
-    public static void displayActionBar(String message) {
-        displayActionBar(Text.of(message));
-    }
-
-    public static void displayActionBar(String format, Object... args) {
-        displayActionBar(format.formatted(args));
     }
 
     // Default
@@ -171,7 +161,7 @@ public class ChatUtils {
     private static Text getPrefix() {
         if (customPrefixes.isEmpty()) {
             forcedPrefixClassName = null;
-            return PREFIX;
+            return getMeteorPrefix();
         }
 
         boolean foundChatUtils = false;
@@ -194,16 +184,16 @@ public class ChatUtils {
             }
         }
 
-        if (className == null) return PREFIX;
+        if (className == null) return getMeteorPrefix();
 
         for (Pair<String, Supplier<Text>> pair : customPrefixes) {
             if (className.startsWith(pair.getLeft())) {
                 Text prefix = pair.getRight().get();
-                return prefix != null ? prefix : PREFIX;
+                return prefix != null ? prefix : getMeteorPrefix();
             }
         }
 
-        return PREFIX;
+        return getMeteorPrefix();
     }
 
     private static String formatMsg(String format, Formatting defaultColor, Object... args) {

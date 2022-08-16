@@ -9,17 +9,6 @@ package net.greemdev.meteor.util
 import meteordevelopment.meteorclient.gui.utils.StarscriptTextBoxRenderer
 import meteordevelopment.meteorclient.gui.widgets.pressable.WPressable
 import meteordevelopment.meteorclient.settings.*
-import meteordevelopment.meteorclient.systems.accounts.*
-import meteordevelopment.meteorclient.systems.commands.*
-import meteordevelopment.meteorclient.systems.config.Config
-import meteordevelopment.meteorclient.systems.friends.*
-import meteordevelopment.meteorclient.systems.hud.Hud
-import meteordevelopment.meteorclient.systems.macros.*
-import meteordevelopment.meteorclient.systems.modules.*
-import meteordevelopment.meteorclient.systems.profiles.*
-import meteordevelopment.meteorclient.systems.proxies.Proxies
-import meteordevelopment.meteorclient.systems.waypoints.*
-import meteordevelopment.meteorclient.utils.player.ChatUtils
 import net.minecraft.entity.player.PlayerEntity
 import org.apache.logging.log4j.LogManager
 import org.apache.logging.log4j.Logger
@@ -130,5 +119,3 @@ fun String.ensureSuffix(suffix: String): String {
         this
     else "$this$suffix"
 }
-
-inline fun <reified T> forceNextChatPrefix() = ChatUtils.forceNextPrefixClass(T::class.java)

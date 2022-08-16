@@ -74,7 +74,7 @@ class AutoMessage : GModule(
         if (Utils.canUpdate() && isActive) {
             if (elapsedTicks >= messageDelay.get()) {
                 MeteorStarscript.run(messageScript)?.also {
-                    mc.player!!.sendChatMessage(it)
+                    mc.sendChatMessage(it)
                 }
                 elapsedTicks = 0
             }
@@ -82,7 +82,7 @@ class AutoMessage : GModule(
                 GlobalScope.launch {
                     commandScripts.forEach {
                         delay(250)
-                        MeteorStarscript.run(it)?.also(mc.player!!::sendCommand)
+                        MeteorStarscript.run(it)?.also(mc::sendCommand)
                     }
                 }
                 elapsedTicksCommands = 0
