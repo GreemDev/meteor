@@ -35,53 +35,55 @@ public class EnchantCommand extends Command {
     @Override
     public void build(LiteralArgumentBuilder<CommandSource> builder) {
         builder.then(literal("one").then(argument("enchantment", EnchantmentArgumentType.enchantment())
-            .then(literal("level").then(argument("level", IntegerArgumentType.integer()).executes(context -> {
-                one(context, enchantment -> context.getArgument("level", Integer.class));
-                return SINGLE_SUCCESS;
-            })))
-            .then(literal("max").executes(context -> {
-                one(context, Enchantment::getMaxLevel);
-                return SINGLE_SUCCESS;
-            }))
-        ));
+                    .then(literal("level").then(argument("level", IntegerArgumentType.integer())
+                        .executes(context -> {
+                            one(context, enchantment -> context.getArgument("level", Integer.class));
+                            return SINGLE_SUCCESS;
+                        })))
+                    .then(literal("max")
+                        .executes(context -> {
+                            one(context, Enchantment::getMaxLevel);
+                            return SINGLE_SUCCESS;
+                        }))
+                )
+            ).then(literal("all_possible")
+                .then(literal("level").then(argument("level", IntegerArgumentType.integer())
+                    .executes(context -> {
+                        all(true, enchantment -> context.getArgument("level", Integer.class));
+                        return SINGLE_SUCCESS;
+                    })))
+                .then(literal("max")
+                    .executes(context -> {
+                        all(true, Enchantment::getMaxLevel);
+                        return SINGLE_SUCCESS;
+                    }))
+            ).then(literal("all")
+                .then(literal("level").then(argument("level", IntegerArgumentType.integer())
+                    .executes(context -> {
+                        all(false, enchantment -> context.getArgument("level", Integer.class));
+                        return SINGLE_SUCCESS;
+                    })))
+                .then(literal("max")
+                    .executes(context -> {
+                        all(false, Enchantment::getMaxLevel);
+                        return SINGLE_SUCCESS;
+                    }))
+            ).then(literal("clear")
+                .executes(context -> {
+                    ItemStack itemStack = tryGetItemStack();
+                    Utils.clearEnchantments(itemStack);
 
-        builder.then(literal("all_possible")
-            .then(literal("level").then(argument("level", IntegerArgumentType.integer()).executes(context -> {
-                all(true, enchantment -> context.getArgument("level", Integer.class));
-                return SINGLE_SUCCESS;
-            })))
-            .then(literal("max").executes(context -> {
-                all(true, Enchantment::getMaxLevel);
-                return SINGLE_SUCCESS;
-            }))
-        );
+                    syncItem();
+                    return SINGLE_SUCCESS;
+                }))
+            .then(literal("remove").then(argument("enchantment", EnchantmentArgumentType.enchantment())
+                .executes(context -> {
+                    ItemStack itemStack = tryGetItemStack();
+                    Utils.removeEnchantment(itemStack, context.getArgument("enchantment", Enchantment.class));
 
-        builder.then(literal("all")
-            .then(literal("level").then(argument("level", IntegerArgumentType.integer()).executes(context -> {
-                all(false, enchantment -> context.getArgument("level", Integer.class));
-                return SINGLE_SUCCESS;
-            })))
-            .then(literal("max").executes(context -> {
-                all(false, Enchantment::getMaxLevel);
-                return SINGLE_SUCCESS;
-            }))
-        );
-
-        builder.then(literal("clear").executes(context -> {
-            ItemStack itemStack = tryGetItemStack();
-            Utils.clearEnchantments(itemStack);
-
-            syncItem();
-            return SINGLE_SUCCESS;
-        }));
-
-        builder.then(literal("remove").then(argument("enchantment", EnchantmentArgumentType.enchantment()).executes(context -> {
-            ItemStack itemStack = tryGetItemStack();
-            Utils.removeEnchantment(itemStack, context.getArgument("enchantment", Enchantment.class));
-
-            syncItem();
-            return SINGLE_SUCCESS;
-        })));
+                    syncItem();
+                    return SINGLE_SUCCESS;
+                })));
     }
 
     private void one(CommandContext<CommandSource> context, Function<Enchantment, Integer> level) throws CommandSyntaxException {

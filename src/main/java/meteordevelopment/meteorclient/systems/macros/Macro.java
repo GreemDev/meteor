@@ -73,7 +73,7 @@ public class Macro implements ISerializable<Macro> {
                 String message = MeteorStarscript.run(script);
 
                 if (message != null) {
-                    ChatUtils.sendMsg(Text.of(message));
+                    ChatUtils.sendPlayerMsg(message);
                 }
             }
 

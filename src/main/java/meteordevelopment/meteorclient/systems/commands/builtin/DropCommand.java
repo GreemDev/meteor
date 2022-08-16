@@ -30,53 +30,51 @@ public class DropCommand extends Command {
 
     @Override
     public void build(LiteralArgumentBuilder<CommandSource> builder) {
-
-        // Main Hand
-        builder.then(literal("hand").executes(context -> drop(player -> player.dropSelectedItem(true))));
-
-        // Offhand
-        builder.then(literal("offhand").executes(context -> drop(player -> InvUtils.drop().slotOffhand())));
-
-        // Hotbar
-        builder.then(literal("hotbar").executes(context -> drop(player -> {
-            for (int i = 0; i < 9; i++) {
-                InvUtils.drop().slotHotbar(i);
-            }
-        })));
-
-        // Main Inv
-        builder.then(literal("inventory").executes(context -> drop(player -> {
-            for (int i = 9; i < player.getInventory().main.size(); i++) {
-                InvUtils.drop().slotMain(i - 9);
-            }
-        })));
-
-        // Hotbar and main inv
-        builder.then(literal("all").executes(context -> drop(player -> {
+        builder.then(literal("hand")
+                .executes(context -> drop(player -> player.dropSelectedItem(true)))
+            )
+            .then(literal("offhand")
+                .executes(context -> drop(player -> InvUtils.drop().slotOffhand()))
+            )
+            .then(literal("hotbar")
+                .executes(context -> drop(player -> {
+                    for (int i = 0; i < 9; i++) {
+                        InvUtils.drop().slotHotbar(i);
+                    }
+                }))
+            ).then(literal("inventory")
+                .executes(context -> drop(player -> {
+                    for (int i = 9; i < player.getInventory().main.size(); i++) {
+                        InvUtils.drop().slotMain(i - 9);
+                    }
+                })))
+            .then(literal("all")
+                .executes(context -> drop(player -> {
                     for (int i = 0; i < player.getInventory().size(); i++) {
                         InvUtils.drop().slot(i);
                     }
-                })));
-
-        // Armor
-        builder.then(literal("armor").executes(context -> drop(player -> {
+                }))
+            ).then(literal("armor")
+                .executes(context -> drop(player -> {
                     for (int i = 0; i < player.getInventory().armor.size(); i++) {
                         InvUtils.drop().slotArmor(i);
                     }
-                })));
+                }))
+            ).then(literal("item")
+                .then(argument("item", ItemStackArgumentType.itemStack(Commands.REGISTRY_ACCESS))
+                    .executes(context -> drop(player -> {
+                        ItemStack stack = ItemStackArgumentType.getItemStackArgument(context, "item").createStack(1, false);
 
-        // Specific item
-        builder.then(argument("item", ItemStackArgumentType.itemStack(Commands.REGISTRY_ACCESS)).executes(context -> drop(player -> {
-            ItemStack stack = ItemStackArgumentType.getItemStackArgument(context, "item").createStack(1, false);
+                        if (stack == null || stack.getItem() == Items.AIR) throw NO_SUCH_ITEM.create();
 
-            if (stack == null || stack.getItem() == Items.AIR) throw NO_SUCH_ITEM.create();
-
-            for (int i = 0; i < player.getInventory().size(); i++) {
-                if (stack.getItem() == player.getInventory().getStack(i).getItem()) {
-                    InvUtils.drop().slot(i);
-                }
-            }
-        })));
+                        for (int i = 0; i < player.getInventory().size(); i++) {
+                            if (stack.getItem() == player.getInventory().getStack(i).getItem()) {
+                                InvUtils.drop().slot(i);
+                            }
+                        }
+                    }))
+                )
+            );
     }
 
     private int drop(PlayerConsumer consumer) throws CommandSyntaxException {

@@ -18,7 +18,6 @@ import net.minecraft.text.Text;
 import net.minecraft.util.Formatting;
 
 import java.util.List;
-import java.util.stream.Collectors;
 
 import static com.mojang.brigadier.Command.SINGLE_SUCCESS;
 
@@ -33,7 +32,7 @@ public class BindsCommand extends Command {
             // Modules
             List<Module> modules = Modules.get().getAll().stream()
                     .filter(module -> module.keybind.isSet())
-                    .collect(Collectors.toList());
+                    .toList();
 
             ChatUtils.info("--- Bound Modules ((highlight)%d(default)) ---", modules.size());
 

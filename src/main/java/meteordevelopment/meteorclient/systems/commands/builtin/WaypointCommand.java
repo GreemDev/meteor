@@ -25,58 +25,60 @@ public class WaypointCommand extends Command {
 
     @Override
     public void build(LiteralArgumentBuilder<CommandSource> builder) {
-        builder.then(literal("list").executes(context -> {
-            if (Waypoints.get().waypoints.isEmpty()) error("No created waypoints.");
-            else {
-                info(Formatting.WHITE + "Created Waypoints:");
-                for (Waypoint waypoint : Waypoints.get()) {
-                    info("Name: (highlight)'%s'(default), Dimension: (highlight)%s(default), Pos: (highlight)%s(default)", waypoint.name.get(), waypoint.dimension.get(), waypointPos(waypoint));
-                }
-            }
-            return SINGLE_SUCCESS;
-        }));
+        builder
+            .then(literal("list")
+                .executes(context -> {
+                    if (Waypoints.get().waypoints.isEmpty()) error("No created waypoints.");
+                    else {
+                        info(Formatting.WHITE + "Created Waypoints:");
+                        for (Waypoint waypoint : Waypoints.get()) {
+                            info("Name: (highlight)'%s'(default), Dimension: (highlight)%s(default), Pos: (highlight)%s(default)", waypoint.name.get(), waypoint.dimension.get(), waypointPos(waypoint));
+                        }
+                    }
+                    return SINGLE_SUCCESS;
+                }))
+            .then(literal("get").then(argument("waypoint", WaypointArgumentType.waypoint())
+                .executes(context -> {
+                    Waypoint waypoint = WaypointArgumentType.getWaypoint(context, "waypoint");
+                    info("Name: " + Formatting.WHITE + waypoint.name.get());
+                    info("Actual Dimension: " + Formatting.WHITE + waypoint.dimension.get());
+                    info("Position: " + Formatting.WHITE + waypointFullPos(waypoint));
+                    info("Visible: " + (waypoint.visible.get() ? Formatting.GREEN + "True" : Formatting.RED + "False"));
+                    return SINGLE_SUCCESS;
+                })))
+            .then(literal("add").then(argument("waypoint", StringArgumentType.greedyString())
+                .executes(context -> {
+                    if (mc.player == null) return -1;
 
-        builder.then(literal("get").then(argument("waypoint", WaypointArgumentType.waypoint()).executes(context -> {
-            Waypoint waypoint = WaypointArgumentType.getWaypoint(context, "waypoint");
-            info("Name: " + Formatting.WHITE + waypoint.name.get());
-            info("Actual Dimension: " + Formatting.WHITE + waypoint.dimension.get());
-            info("Position: " + Formatting.WHITE + waypointFullPos(waypoint));
-            info("Visible: " + (waypoint.visible.get() ? Formatting.GREEN + "True" : Formatting.RED + "False"));
-            return SINGLE_SUCCESS;
-        })));
+                    Waypoint waypoint = new Waypoint.Builder()
+                        .name(StringArgumentType.getString(context, "waypoint"))
+                        .pos(mc.player.getBlockPos().up(2))
+                        .dimension(PlayerUtils.getDimension())
+                        .build();
 
-        builder.then(literal("add").then(argument("waypoint", StringArgumentType.greedyString()).executes(context -> {
-            if (mc.player == null) return -1;
+                    Waypoints.get().add(waypoint);
 
-            Waypoint waypoint = new Waypoint.Builder()
-                .name(StringArgumentType.getString(context, "waypoint"))
-                .pos(mc.player.getBlockPos().up(2))
-                .dimension(PlayerUtils.getDimension())
-                .build();
+                    info("Created waypoint with name: (highlight)%s(default)", waypoint.name.get());
+                    return SINGLE_SUCCESS;
+                })))
+            .then(literal("delete").then(argument("waypoint", WaypointArgumentType.waypoint())
+                .executes(context -> {
+                    Waypoint waypoint = WaypointArgumentType.getWaypoint(context, "waypoint");
 
-            Waypoints.get().add(waypoint);
+                    info("The waypoint (highlight)'%s'(default) has been deleted.", waypoint.name.get());
 
-            info("Created waypoint with name: (highlight)%s(default)", waypoint.name.get());
-            return SINGLE_SUCCESS;
-        })));
+                    Waypoints.get().remove(waypoint);
 
-        builder.then(literal("delete").then(argument("waypoint", WaypointArgumentType.waypoint()).executes(context -> {
-            Waypoint waypoint = WaypointArgumentType.getWaypoint(context, "waypoint");
+                    return SINGLE_SUCCESS;
+                })))
+            .then(literal("toggle").then(argument("waypoint", WaypointArgumentType.waypoint())
+                .executes(context -> {
+                    Waypoint waypoint = WaypointArgumentType.getWaypoint(context, "waypoint");
+                    waypoint.visible.set(!waypoint.visible.get());
 
-            info("The waypoint (highlight)'%s'(default) has been deleted.", waypoint.name.get());
-
-            Waypoints.get().remove(waypoint);
-
-            return SINGLE_SUCCESS;
-        })));
-
-        builder.then(literal("toggle").then(argument("waypoint", WaypointArgumentType.waypoint()).executes(context -> {
-            Waypoint waypoint = WaypointArgumentType.getWaypoint(context, "waypoint");
-            waypoint.visible.set(!waypoint.visible.get());
-
-            Waypoints.get().save();
-            return SINGLE_SUCCESS;
-        })));
+                    Waypoints.get().save();
+                    return SINGLE_SUCCESS;
+                })));
     }
 
     private String waypointPos(Waypoint waypoint) {
@@ -84,6 +86,6 @@ public class WaypointCommand extends Command {
     }
 
     private String waypointFullPos(Waypoint waypoint) {
-        return "X: " + waypoint.pos.get().getX() +  ", Y: " + waypoint.pos.get().getY() + ", Z: " + waypoint.pos.get().getZ();
+        return "X: " + waypoint.pos.get().getX() + ", Y: " + waypoint.pos.get().getY() + ", Z: " + waypoint.pos.get().getZ();
     }
 }

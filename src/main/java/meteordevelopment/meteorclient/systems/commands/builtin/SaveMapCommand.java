@@ -51,7 +51,6 @@ public class SaveMapCommand extends Command {
     @Override
     public void build(LiteralArgumentBuilder<CommandSource> builder) {
         builder.executes(context -> {
-
             MapState state = getMapState();
             if (state == null) throw MAP_NOT_FOUND.create();
             ItemStack map = getMap();
@@ -62,20 +61,22 @@ public class SaveMapCommand extends Command {
             saveMap(map, state, path, 128);
 
             return SINGLE_SUCCESS;
-        }).then(argument("scale", IntegerArgumentType.integer()).executes(context -> {
-            int scale = IntegerArgumentType.getInteger(context, "scale");
+        }).then(argument("scale", IntegerArgumentType.integer())
+            .executes(context -> {
+                int scale = IntegerArgumentType.getInteger(context, "scale");
 
-            MapState state = getMapState();
-            if (state == null) throw MAP_NOT_FOUND.create();
-            ItemStack map = getMap();
+                MapState state = getMapState();
+                if (state == null) throw MAP_NOT_FOUND.create();
+                ItemStack map = getMap();
 
-            String path = getPath();
-            if (path == null) throw OOPS.create();
+                String path = getPath();
+                if (path == null) throw OOPS.create();
 
-            saveMap(map, state, path, scale);
+                saveMap(map, state, path, scale);
 
-            return SINGLE_SUCCESS;
-        }));
+                return SINGLE_SUCCESS;
+            })
+        );
     }
 
     private void saveMap(ItemStack map, MapState state, String path, int scale) {

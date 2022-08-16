@@ -25,6 +25,7 @@ public class BaritoneCommand extends Command {
                 String command = context.getArgument("command", String.class);
                 BaritoneAPI.getProvider().getPrimaryBaritone().getCommandManager().execute(command);
                 return SINGLE_SUCCESS;
-            }));
+            })
+        );
     }
 }

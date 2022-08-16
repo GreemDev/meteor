@@ -19,9 +19,10 @@ public class FOVCommand extends Command {
 
     @Override
     public void build(LiteralArgumentBuilder<CommandSource> builder) {
-        builder.then(argument("fov", IntegerArgumentType.integer(0, 180)).executes(context -> {
-            mc.options.getFov().setValue(context.getArgument("fov", Integer.class));
-            return SINGLE_SUCCESS;
-        }));
+        builder.then(argument("fov", IntegerArgumentType.integer(0, 180))
+            .executes(context -> {
+                mc.options.getFov().setValue(context.getArgument("fov", Integer.class));
+                return SINGLE_SUCCESS;
+            }));
     }
 }

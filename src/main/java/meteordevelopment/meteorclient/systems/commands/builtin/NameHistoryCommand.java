@@ -30,7 +30,8 @@ import java.util.UUID;
 import static com.mojang.brigadier.Command.SINGLE_SUCCESS;
 
 public class NameHistoryCommand extends Command {
-    private static final Type RESPONSE_TYPE = new TypeToken<List<NameHistoryObject>>() {}.getType();
+    private static final Type RESPONSE_TYPE = new TypeToken<List<NameHistoryObject>>() {
+    }.getType();
 
     public NameHistoryCommand() {
         super("name-history", "Provides a list of a players previous names from the Mojang api.", "history", "names");
@@ -38,62 +39,64 @@ public class NameHistoryCommand extends Command {
 
     @Override
     public void build(LiteralArgumentBuilder<CommandSource> builder) {
-        builder.then(argument("player", PlayerListEntryArgumentType.playerListEntry()).executes(context -> {
-            MeteorExecutor.execute(() -> {
-                PlayerListEntry lookUpTarget = PlayerListEntryArgumentType.getPlayerListEntry(context);
-                UUID uuid = lookUpTarget.getProfile().getId();
+        builder.then(argument("player", PlayerListEntryArgumentType.playerListEntry())
+            .executes(context -> {
+                MeteorExecutor.execute(() -> {
+                    PlayerListEntry lookUpTarget = PlayerListEntryArgumentType.getPlayerListEntry(context);
+                    UUID uuid = lookUpTarget.getProfile().getId();
 
-                List<NameHistoryObject> nameHistoryObjects = Http.get("https://api.mojang.com/user/profiles/" + formatUUID(uuid) + "/names").sendJson(RESPONSE_TYPE);
+                    List<NameHistoryObject> nameHistoryObjects = Http.get("https://api.mojang.com/user/profiles/" + formatUUID(uuid) + "/names").sendJson(RESPONSE_TYPE);
 
-                if (nameHistoryObjects == null || nameHistoryObjects.isEmpty()) {
-                    error("There was an error fetching that users name history.");
-                    return;
-                }
-
-                String name = lookUpTarget.getProfile().getName();
-                MutableText initial = Text.literal(name);
-                initial.append(Text.literal(name.endsWith("s") ? "'" : "'s"));
-
-                Color nameColor = PlayerUtils.getPlayerColor(mc.world.getPlayerByUuid(uuid), Utils.WHITE);
-
-                initial.setStyle(initial.getStyle()
-                        .withColor(new TextColor(nameColor.getPacked()))
-                        .withClickEvent(new ClickEvent(
-                                        ClickEvent.Action.OPEN_URL,
-                                        "https://namemc.com/search?q=" + name
-                                )
-                        )
-                        .withHoverEvent(new HoverEvent(
-                                HoverEvent.Action.SHOW_TEXT,
-                                Text.literal("View on NameMC")
-                                        .formatted(Formatting.YELLOW)
-                                        .formatted(Formatting.ITALIC)
-                        ))
-                );
-
-                info(initial.append(Text.literal(" Username History:").formatted(Formatting.GRAY)));
-
-                for (NameHistoryObject nameHistoryObject : nameHistoryObjects) {
-                    MutableText nameText = Text.literal(nameHistoryObject.name);
-                    nameText.formatted(Formatting.AQUA);
-
-                    if (nameHistoryObject.changedToAt != 0L) {
-                        MutableText changed = Text.literal("Changed at: ");
-                        changed.formatted(Formatting.GRAY);
-
-                        Date date = new Date(nameHistoryObject.changedToAt);
-                        DateFormat formatter = new SimpleDateFormat("hh:mm:ss, dd/MM/yyyy");
-                        changed.append(Text.literal(formatter.format(date)).formatted(Formatting.WHITE));
-
-                        nameText.setStyle(nameText.getStyle().withHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, changed)));
+                    if (nameHistoryObjects == null || nameHistoryObjects.isEmpty()) {
+                        error("There was an error fetching that users name history.");
+                        return;
                     }
 
-                    ChatUtils.sendMsg(nameText);
-                }
-            });
+                    String name = lookUpTarget.getProfile().getName();
+                    MutableText initial = Text.literal(name);
+                    initial.append(Text.literal(name.endsWith("s") ? "'" : "'s"));
 
-            return SINGLE_SUCCESS;
-        }));
+                    Color nameColor = PlayerUtils.getPlayerColor(mc.world.getPlayerByUuid(uuid), Utils.WHITE);
+
+                    initial.setStyle(initial.getStyle()
+                        .withColor(new TextColor(nameColor.getPacked()))
+                        .withClickEvent(new ClickEvent(
+                                ClickEvent.Action.OPEN_URL,
+                                "https://namemc.com/search?q=" + name
+                            )
+                        )
+                        .withHoverEvent(new HoverEvent(
+                            HoverEvent.Action.SHOW_TEXT,
+                            Text.literal("View on NameMC")
+                                .formatted(Formatting.YELLOW)
+                                .formatted(Formatting.ITALIC)
+                        ))
+                    );
+
+                    info(initial.append(Text.literal(" Username History:").formatted(Formatting.GRAY)));
+
+                    for (NameHistoryObject nameHistoryObject : nameHistoryObjects) {
+                        MutableText nameText = Text.literal(nameHistoryObject.name);
+                        nameText.formatted(Formatting.AQUA);
+
+                        if (nameHistoryObject.changedToAt != 0L) {
+                            MutableText changed = Text.literal("Changed at: ");
+                            changed.formatted(Formatting.GRAY);
+
+                            Date date = new Date(nameHistoryObject.changedToAt);
+                            DateFormat formatter = new SimpleDateFormat("hh:mm:ss, dd/MM/yyyy");
+                            changed.append(Text.literal(formatter.format(date)).formatted(Formatting.WHITE));
+
+                            nameText.setStyle(nameText.getStyle().withHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, changed)));
+                        }
+
+                        ChatUtils.sendMsg(nameText);
+                    }
+                });
+
+                return SINGLE_SUCCESS;
+            })
+        );
     }
 
     private String formatUUID(UUID uuid) {

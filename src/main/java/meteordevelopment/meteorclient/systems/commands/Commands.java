@@ -41,8 +41,6 @@ public class Commands extends System<Commands> {
     @Override
     public void init() {
         add(new BaritoneCommand());
-        add(new VClipCommand());
-        add(new HClipCommand());
         add(new DismountCommand());
         add(new DamageCommand());
         add(new DropCommand());

@@ -34,7 +34,6 @@ import kotlin.reflect.KClass
 import kotlin.reflect.KProperty
 import kotlin.reflect.full.primaryConstructor
 
-
 fun<T> getOrNull(func: () -> T): T? = try { func() } catch (t: Throwable) { null }
 fun<T> supplyOrNull(func: Supplier<T>): T? = try { func.get() } catch (t: Throwable) { null }
 

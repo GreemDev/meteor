@@ -28,17 +28,18 @@ public class DamageCommand extends Command {
 
     @Override
     public void build(LiteralArgumentBuilder<CommandSource> builder) {
-        builder.then(argument("damage", IntegerArgumentType.integer(1, 7)).executes(context -> {
-            int amount = IntegerArgumentType.getInteger(context, "damage");
+        builder.then(argument("damage", IntegerArgumentType.integer(1, 7))
+            .executes(context -> {
+                int amount = IntegerArgumentType.getInteger(context, "damage");
 
-            if (mc.player.getAbilities().invulnerable) {
-                throw INVULNERABLE.create();
-            }
+                if (mc.player.getAbilities().invulnerable) {
+                    throw INVULNERABLE.create();
+                }
 
-            damagePlayer(amount);
-            return SINGLE_SUCCESS;
-        }));
-
+                damagePlayer(amount);
+                return SINGLE_SUCCESS;
+            })
+        );
     }
 
     private void damagePlayer(int amount) {
@@ -50,7 +51,7 @@ public class DamageCommand extends Command {
 
         Vec3d pos = mc.player.getPos();
 
-        for(int i = 0; i < 80; i++) {
+        for (int i = 0; i < 80; i++) {
             sendPositionPacket(pos.x, pos.y + amount + 2.1, pos.z, false);
             sendPositionPacket(pos.x, pos.y + 0.05, pos.z, false);
         }

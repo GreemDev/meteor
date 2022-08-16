@@ -50,40 +50,40 @@ public class ServerCommand extends Command {
         builder.executes(context -> {
             basicInfo();
             return SINGLE_SUCCESS;
-        });
-
-        builder.then(literal("info").executes(ctx -> {
-            basicInfo();
-            return SINGLE_SUCCESS;
-        }));
-
-        builder.then(literal("plugins").executes(ctx -> {
-            ticks = 0;
-            plugins.clear();
-            MeteorClient.EVENT_BUS.subscribe(this);
-            info("Please wait for ~5 seconds...");
-            new Thread(() -> {
-                completionStarts.chars().forEach(i -> {
-                    mc.player.networkHandler.sendPacket(new RequestCommandCompletionsC2SPacket(ThreadLocalRandom.current().nextInt(200), Character.toString(i)));
-                    try {
-                        Thread.sleep(100);
-                    } catch (InterruptedException e) {
-                        e.printStackTrace();
-                    }
-                });
-            }).start();
-            return SINGLE_SUCCESS;
-        }));
-
-        builder.then(literal("tps").executes(ctx -> {
-            float tps = TickRate.INSTANCE.getTickRate();
-            Formatting color;
-            if (tps > 17.0f) color = Formatting.GREEN;
-            else if (tps > 12.0f) color = Formatting.YELLOW;
-            else color = Formatting.RED;
-            info("Current TPS: %s%.2f(default).", color, tps);
-            return SINGLE_SUCCESS;
-        }));
+        }).then(literal("info")
+            .executes(ctx -> {
+                basicInfo();
+                return SINGLE_SUCCESS;
+            })
+        ).then(literal("plugins")
+            .executes(ctx -> {
+                ticks = 0;
+                plugins.clear();
+                MeteorClient.EVENT_BUS.subscribe(this);
+                info("Please wait for ~5 seconds...");
+                new Thread(() -> {
+                    completionStarts.chars().forEach(i -> {
+                        mc.player.networkHandler.sendPacket(new RequestCommandCompletionsC2SPacket(ThreadLocalRandom.current().nextInt(200), Character.toString(i)));
+                        try {
+                            Thread.sleep(100);
+                        } catch (InterruptedException e) {
+                            e.printStackTrace();
+                        }
+                    });
+                }).start();
+                return SINGLE_SUCCESS;
+            })
+        ).then(literal("tps")
+            .executes(ctx -> {
+                float tps = TickRate.INSTANCE.getTickRate();
+                Formatting color;
+                if (tps > 17.0f) color = Formatting.GREEN;
+                else if (tps > 12.0f) color = Formatting.YELLOW;
+                else color = Formatting.RED;
+                info("Current TPS: %s%.2f(default).", color, tps);
+                return SINGLE_SUCCESS;
+            })
+        );
     }
 
     private void basicInfo() {
@@ -106,7 +106,8 @@ public class ServerCommand extends Command {
         String ipv4 = "";
         try {
             ipv4 = InetAddress.getByName(server.address).getHostAddress();
-        } catch (UnknownHostException ignored) {}
+        } catch (UnknownHostException ignored) {
+        }
 
         MutableText ipText;
 
@@ -122,8 +123,7 @@ public class ServerCommand extends Command {
                     Text.literal("Copy to clipboard")
                 ))
             );
-        }
-        else {
+        } else {
             ipText = Text.literal(Formatting.GRAY + server.address);
             ipText.setStyle(ipText.getStyle()
                 .withClickEvent(new ClickEvent(
@@ -150,7 +150,7 @@ public class ServerCommand extends Command {
         }
         info(
             Text.literal(String.format("%sIP: ", Formatting.GRAY))
-            .append(ipText)
+                .append(ipText)
         );
 
         info("Port: %d", ServerAddress.parse(server.address).getPort());
@@ -224,8 +224,7 @@ public class ServerCommand extends Command {
     private String formatName(String name) {
         if (ANTICHEAT_LIST.contains(name)) {
             return String.format("%s%s(default)", Formatting.RED, name);
-        }
-        else if (name.contains("exploit") || name.contains("cheat") || name.contains("illegal")) {
+        } else if (name.contains("exploit") || name.contains("cheat") || name.contains("illegal")) {
             return String.format("%s%s(default)", Formatting.RED, name);
         }
 
@@ -233,16 +232,16 @@ public class ServerCommand extends Command {
     }
 
     public String formatPerms() {
-		int p = 5;
-		while (!mc.player.hasPermissionLevel(p) && p > 0) p--;
+        int p = 5;
+        while (!mc.player.hasPermissionLevel(p) && p > 0) p--;
 
-		return switch (p) {
-			case 0 -> "0 (No Perms)";
-			case 1 -> "1 (No Perms)";
-			case 2 -> "2 (Player Command Access)";
-			case 3 -> "3 (Server Command Access)";
-			case 4 -> "4 (Operator)";
-			default -> p + " (Unknown)";
-		};
-	}
+        return switch (p) {
+            case 0 -> "0 (No Perms)";
+            case 1 -> "1 (No Perms)";
+            case 2 -> "2 (Player Command Access)";
+            case 3 -> "3 (Server Command Access)";
+            case 4 -> "4 (Operator)";
+            default -> p + " (Unknown)";
+        };
+    }
 }

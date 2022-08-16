@@ -22,37 +22,39 @@ public class ProfilesCommand extends Command {
 
     @Override
     public void build(LiteralArgumentBuilder<CommandSource> builder) {
-        builder.then(literal("load").then(argument("profile", ProfileArgumentType.profile()).executes(context -> {
-            Profile profile = ProfileArgumentType.getProfile(context, "profile");
+        builder.then(literal("load").then(argument("profile", ProfileArgumentType.profile())
+            .executes(context -> {
+                Profile profile = ProfileArgumentType.getProfile(context, "profile");
 
-            if (profile != null) {
-                profile.load();
-                info("Loaded profile (highlight)%s(default).", profile.name.get());
-            }
+                if (profile != null) {
+                    profile.load();
+                    info("Loaded profile (highlight)%s(default).", profile.name.get());
+                }
 
-            return SINGLE_SUCCESS;
-        })));
+                return SINGLE_SUCCESS;
+            }))
+        ).then(literal("save").then(argument("profile", ProfileArgumentType.profile())
+            .executes(context -> {
+                Profile profile = ProfileArgumentType.getProfile(context, "profile");
 
-        builder.then(literal("save").then(argument("profile", ProfileArgumentType.profile()).executes(context -> {
-            Profile profile = ProfileArgumentType.getProfile(context, "profile");
+                if (profile != null) {
+                    profile.save();
+                    info("Saved profile (highlight)%s(default).", profile.name.get());
+                }
 
-            if (profile != null) {
-                profile.save();
-                info("Saved profile (highlight)%s(default).", profile.name.get());
-            }
+                return SINGLE_SUCCESS;
+            }))
+        ).then(literal("delete").then(argument("profile", ProfileArgumentType.profile())
+            .executes(context -> {
+                Profile profile = ProfileArgumentType.getProfile(context, "profile");
 
-            return SINGLE_SUCCESS;
-        })));
+                if (profile != null) {
+                    Profiles.get().remove(profile);
+                    info("Deleted profile (highlight)%s(default).", profile.name.get());
+                }
 
-        builder.then(literal("delete").then(argument("profile", ProfileArgumentType.profile()).executes(context -> {
-            Profile profile = ProfileArgumentType.getProfile(context, "profile");
-
-            if (profile != null) {
-                Profiles.get().remove(profile);
-                info("Deleted profile (highlight)%s(default).", profile.name.get());
-            }
-
-            return SINGLE_SUCCESS;
-        })));
+                return SINGLE_SUCCESS;
+            }))
+        );
     }
 }

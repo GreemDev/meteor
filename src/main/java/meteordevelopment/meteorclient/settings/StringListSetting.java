@@ -12,7 +12,6 @@ import meteordevelopment.meteorclient.gui.widgets.containers.WTable;
 import meteordevelopment.meteorclient.gui.widgets.input.WTextBox;
 import meteordevelopment.meteorclient.gui.widgets.pressable.WButton;
 import meteordevelopment.meteorclient.gui.widgets.pressable.WMinus;
-import meteordevelopment.meteorclient.gui.widgets.pressable.WPlus;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.nbt.NbtElement;
 import net.minecraft.nbt.NbtList;
@@ -75,13 +74,12 @@ public class StringListSetting extends Setting<List<String>>{
     public static void fillTable(GuiTheme theme, WTable table, StringListSetting setting) {
         table.clear();
         ArrayList<String> strings = new ArrayList<>(setting.get());
-        CharFilter filter = setting.filter == null ? (text, c) -> true : setting.filter;
 
         for (int i = 0; i < setting.get().size(); i++) {
             int msgI = i;
             String message = setting.get().get(i);
 
-            WTextBox textBox = table.add(theme.textBox(message, filter, setting.renderer)).expandX().widget();
+            WTextBox textBox = table.add(theme.textBox(message, CharFilter.orNone(setting.filter), setting.renderer)).expandX().widget();
             textBox.action = () -> strings.set(msgI, textBox.get());
             textBox.actionOnUnfocused = () -> setting.set(strings);
 

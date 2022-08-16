@@ -26,20 +26,22 @@ public class SayCommand extends Command {
 
     @Override
     public void build(LiteralArgumentBuilder<CommandSource> builder) {
-        builder.then(argument("message", StringArgumentType.greedyString()).executes(context -> {
-            String msg = context.getArgument("message", String.class);
-            Script script = MeteorStarscript.compile(msg);
+        builder.then(argument("message", StringArgumentType.greedyString())
+            .executes(context -> {
+                String msg = context.getArgument("message", String.class);
+                Script script = MeteorStarscript.compile(msg);
 
-            if (script != null) {
-                String message = MeteorStarscript.run(script);
+                if (script != null) {
+                    String message = MeteorStarscript.run(script);
 
-                if (message != null && mc.player != null) {
-                    MessageSignature messageSignature = ((ClientPlayerEntityAccessor) mc.player)._signChatMessage(ChatMessageSigner.create(mc.player.getUuid()), Text.literal(message));
-                    mc.getNetworkHandler().sendPacket(new ChatMessageC2SPacket(message, messageSignature, false));
+                    if (message != null && mc.player != null) {
+                        MessageSignature messageSignature = ((ClientPlayerEntityAccessor) mc.player)._signChatMessage(ChatMessageSigner.create(mc.player.getUuid()), Text.literal(message));
+                        mc.getNetworkHandler().sendPacket(new ChatMessageC2SPacket(message, messageSignature, false));
+                    }
                 }
-            }
 
-            return SINGLE_SUCCESS;
-        }));
+                return SINGLE_SUCCESS;
+            })
+        );
     }
 }

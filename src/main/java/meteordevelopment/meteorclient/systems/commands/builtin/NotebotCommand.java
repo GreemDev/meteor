@@ -42,86 +42,87 @@ public class NotebotCommand extends Command {
 
     @Override
     public void build(LiteralArgumentBuilder<CommandSource> builder) {
-        builder.then(literal("help").executes(ctx -> {
-            Util.getOperatingSystem().open("https://github.com/MeteorDevelopment/meteor-client/wiki/Notebot-Guide");
-            return SINGLE_SUCCESS;
-        }));
-
-        builder.then(literal("status").executes(ctx -> {
-            Notebot notebot = Modules.get().get(Notebot.class);
-            info(notebot.getStatus());
-            return SINGLE_SUCCESS;
-        }));
-
-        builder.then(literal("pause").executes(ctx -> {
-            Notebot notebot = Modules.get().get(Notebot.class);
-            notebot.pause();
-            return SINGLE_SUCCESS;
-        }));
-
-        builder.then(literal("resume").executes(ctx -> {
-            Notebot notebot = Modules.get().get(Notebot.class);
-            notebot.pause();
-            return SINGLE_SUCCESS;
-        }));
-
-        builder.then(literal("stop").executes(ctx -> {
-            Notebot notebot = Modules.get().get(Notebot.class);
-            notebot.stop();
-            return SINGLE_SUCCESS;
-        }));
-
-        builder.then(literal("play").then(argument("name", StringArgumentType.greedyString()).executes(ctx -> {
-            Notebot notebot = Modules.get().get(Notebot.class);
-            String name = ctx.getArgument("name", String.class);
-            if (name == null || name.equals("")) {
-                throw INVALID_NAME.create();
-            }
-            Path path = MeteorClient.FOLDER.toPath().resolve(String.format("notebot/%s.txt", name));
-            if (!path.toFile().exists()) {
-                path = MeteorClient.FOLDER.toPath().resolve(String.format("notebot/%s.nbs", name));
-            }
-            notebot.loadSong(path.toFile());
-            return SINGLE_SUCCESS;
-        })));
-
-        builder.then(literal("preview").then(argument("name", StringArgumentType.greedyString()).executes(ctx -> {
-            Notebot notebot = Modules.get().get(Notebot.class);
-            String name = ctx.getArgument("name", String.class);
-            if (name == null || name.equals("")) {
-                throw INVALID_NAME.create();
-            }
-            Path path = MeteorClient.FOLDER.toPath().resolve(String.format("notebot/%s.txt", name));
-            if (!path.toFile().exists()) {
-                path = MeteorClient.FOLDER.toPath().resolve(String.format("notebot/%s.nbs", name));
-            }
-            notebot.previewSong(path.toFile());
-            return SINGLE_SUCCESS;
-        })));
-
-        builder.then(literal("record").then(literal("start").executes(ctx -> {
-            ticks = -1;
-            song.clear();
-            MeteorClient.EVENT_BUS.subscribe(this);
-            info("Recording started");
-            return SINGLE_SUCCESS;
-        })));
-
-        builder.then(literal("record").then(literal("cancel").executes(ctx -> {
-            MeteorClient.EVENT_BUS.unsubscribe(this);
-            info("Recording cancelled");
-            return SINGLE_SUCCESS;
-        })));
-
-        builder.then(literal("record").then(literal("save").then(argument("name", StringArgumentType.greedyString()).executes(ctx -> {
-            String name = ctx.getArgument("name", String.class);
-            if (name == null || name.equals("")) {
-                throw INVALID_NAME.create();
-            }
-            Path path = MeteorClient.FOLDER.toPath().resolve(String.format("notebot/%s.txt", name));
-            saveRecording(path);
-            return SINGLE_SUCCESS;
-        }))));
+        builder.then(literal("help")
+            .executes(ctx -> {
+                Util.getOperatingSystem().open("https://github.com/MeteorDevelopment/meteor-client/wiki/Notebot-Guide");
+                return SINGLE_SUCCESS;
+            })
+        ).then(literal("status")
+            .executes(ctx -> {
+                Notebot notebot = Modules.get().get(Notebot.class);
+                info(notebot.getStatus());
+                return SINGLE_SUCCESS;
+            })
+        ).then(literal("pause")
+            .executes(ctx -> {
+                Notebot notebot = Modules.get().get(Notebot.class);
+                notebot.pause();
+                return SINGLE_SUCCESS;
+            })
+        ).then(literal("resume")
+            .executes(ctx -> {
+                Notebot notebot = Modules.get().get(Notebot.class);
+                notebot.pause();
+                return SINGLE_SUCCESS;
+            })
+        ).then(literal("stop")
+            .executes(ctx -> {
+                Notebot notebot = Modules.get().get(Notebot.class);
+                notebot.stop();
+                return SINGLE_SUCCESS;
+            })
+        ).then(literal("play").then(argument("name", StringArgumentType.greedyString())
+            .executes(ctx -> {
+                Notebot notebot = Modules.get().get(Notebot.class);
+                String name = ctx.getArgument("name", String.class);
+                if (name == null || name.equals("")) {
+                    throw INVALID_NAME.create();
+                }
+                Path path = MeteorClient.FOLDER.toPath().resolve(String.format("notebot/%s.txt", name));
+                if (!path.toFile().exists()) {
+                    path = MeteorClient.FOLDER.toPath().resolve(String.format("notebot/%s.nbs", name));
+                }
+                notebot.loadSong(path.toFile());
+                return SINGLE_SUCCESS;
+            }))
+        ).then(literal("preview").then(argument("name", StringArgumentType.greedyString())
+            .executes(ctx -> {
+                Notebot notebot = Modules.get().get(Notebot.class);
+                String name = ctx.getArgument("name", String.class);
+                if (name == null || name.equals("")) {
+                    throw INVALID_NAME.create();
+                }
+                Path path = MeteorClient.FOLDER.toPath().resolve(String.format("notebot/%s.txt", name));
+                if (!path.toFile().exists()) {
+                    path = MeteorClient.FOLDER.toPath().resolve(String.format("notebot/%s.nbs", name));
+                }
+                notebot.previewSong(path.toFile());
+                return SINGLE_SUCCESS;
+            }))
+        ).then(literal("record").then(literal("start")
+            .executes(ctx -> {
+                ticks = -1;
+                song.clear();
+                MeteorClient.EVENT_BUS.subscribe(this);
+                info("Recording started");
+                return SINGLE_SUCCESS;
+            }))
+        ).then(literal("record").then(literal("cancel")
+            .executes(ctx -> {
+                MeteorClient.EVENT_BUS.unsubscribe(this);
+                info("Recording cancelled");
+                return SINGLE_SUCCESS;
+            }))
+        ).then(literal("record").then(literal("save").then(argument("name", StringArgumentType.greedyString())
+            .executes(ctx -> {
+                String name = ctx.getArgument("name", String.class);
+                if (name == null || name.equals("")) {
+                    throw INVALID_NAME.create();
+                }
+                Path path = MeteorClient.FOLDER.toPath().resolve("notebot/%s.txt".formatted(name));
+                saveRecording(path);
+                return SINGLE_SUCCESS;
+            }))));
     }
 
     @EventHandler

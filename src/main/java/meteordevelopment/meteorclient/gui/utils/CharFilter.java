@@ -16,7 +16,7 @@ public interface CharFilter {
      * @return A non-nullable {@link CharFilter} instance.
      */
     @NotNull
-    static CharFilter orDefault(@Nullable CharFilter filter) {
+    static CharFilter orNone(@Nullable CharFilter filter) {
         return filter != null
             ? filter
             : none();

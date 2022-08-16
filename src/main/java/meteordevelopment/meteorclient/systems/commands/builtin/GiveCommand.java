@@ -29,24 +29,28 @@ public class GiveCommand extends Command {
 
     @Override
     public void build(LiteralArgumentBuilder<CommandSource> builder) {
-        builder.then(argument("item", ItemStackArgumentType.itemStack(Commands.REGISTRY_ACCESS)).executes(context -> {
-            if (!mc.player.getAbilities().creativeMode) throw NOT_IN_CREATIVE.create();
+        builder.then(argument("item", ItemStackArgumentType.itemStack(Commands.REGISTRY_ACCESS))
+            .executes(context -> {
+                    if (!mc.player.getAbilities().creativeMode) throw NOT_IN_CREATIVE.create();
 
-            ItemStack item = ItemStackArgumentType.getItemStackArgument(context, "item").createStack(1, false);
-            if (!mc.player.getInventory().insertStack(item)) {
-                throw NO_SPACE.create();
-            }
+                    ItemStack item = ItemStackArgumentType.getItemStackArgument(context, "item").createStack(1, false);
+                    if (!mc.player.getInventory().insertStack(item)) {
+                        throw NO_SPACE.create();
+                    }
 
-            return SINGLE_SUCCESS;
-        }).then(argument("number", IntegerArgumentType.integer()).executes(context -> {
-            if (!mc.player.getAbilities().creativeMode) throw NOT_IN_CREATIVE.create();
+                    return SINGLE_SUCCESS;
+                }
+            ).then(argument("number", IntegerArgumentType.integer())
+                .executes(context -> {
+                    if (!mc.player.getAbilities().creativeMode) throw NOT_IN_CREATIVE.create();
 
-            ItemStack item = ItemStackArgumentType.getItemStackArgument(context, "item").createStack(IntegerArgumentType.getInteger(context, "number"), false);
-            if (!mc.player.getInventory().insertStack(item)) {
-                throw NO_SPACE.create();
-            }
+                    ItemStack item = ItemStackArgumentType.getItemStackArgument(context, "item").createStack(IntegerArgumentType.getInteger(context, "number"), false);
+                    if (!mc.player.getInventory().insertStack(item)) {
+                        throw NO_SPACE.create();
+                    }
 
-            return SINGLE_SUCCESS;
-        })));
+                    return SINGLE_SUCCESS;
+                }))
+        );
     }
 }

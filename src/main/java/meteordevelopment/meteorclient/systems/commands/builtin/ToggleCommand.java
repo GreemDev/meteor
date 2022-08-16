@@ -24,61 +24,55 @@ public class ToggleCommand extends Command {
 
     @Override
     public void build(LiteralArgumentBuilder<CommandSource> builder) {
-        builder
-            .then(literal("all")
-                .then(literal("on")
-                    .executes(context -> {
-                        new ArrayList<>(Modules.get().getAll()).forEach(module -> {
-                            if (!module.isActive()) module.toggle();
-                        });
-                        Hud.get().active = true;
-                        return SINGLE_SUCCESS;
-                    })
-                )
-                .then(literal("off")
-                    .executes(context -> {
-                        new ArrayList<>(Modules.get().getActive()).forEach(Module::toggle);
-                        Hud.get().active = false;
-                        return SINGLE_SUCCESS;
-                    })
-                )
+        builder.then(literal("all")
+            .then(literal("on").executes(context -> {
+                    new ArrayList<>(Modules.get().getAll()).forEach(module -> {
+                        if (!module.isActive()) module.toggle();
+                    });
+                    Hud.get().active = true;
+                    return SINGLE_SUCCESS;
+                })
             )
-            .then(argument("module", ModuleArgumentType.module())
+            .then(literal("off").executes(context -> {
+                    new ArrayList<>(Modules.get().getActive()).forEach(Module::toggle);
+                    Hud.get().active = false;
+                    return SINGLE_SUCCESS;
+                })
+            )
+        ).then(argument("module", ModuleArgumentType.module())
+            .executes(context -> {
+                Module m = ModuleArgumentType.getModule(context, "module");
+                m.toggle();
+                return SINGLE_SUCCESS;
+            }).then(literal("on")
                 .executes(context -> {
                     Module m = ModuleArgumentType.getModule(context, "module");
-                    m.toggle();
+                    if (!m.isActive()) m.toggle();
                     return SINGLE_SUCCESS;
                 })
-                .then(literal("on")
-                    .executes(context -> {
-                        Module m = ModuleArgumentType.getModule(context, "module");
-                        if (!m.isActive()) m.toggle();
-                        return SINGLE_SUCCESS;
-                    }))
-                .then(literal("off")
-                    .executes(context -> {
-                        Module m = ModuleArgumentType.getModule(context, "module");
-                        if (m.isActive()) m.toggle();
-                        return SINGLE_SUCCESS;
-                    })
-                )
-            )
-            .then(literal("hud")
+            ).then(literal("off")
                 .executes(context -> {
-                    Hud.get().active = !(Hud.get().active);
+                    Module m = ModuleArgumentType.getModule(context, "module");
+                    if (m.isActive()) m.toggle();
                     return SINGLE_SUCCESS;
                 })
-                .then(literal("on")
-                    .executes(context -> {
-                        Hud.get().active = true;
-                        return SINGLE_SUCCESS;
-                    })
-                ).then(literal("off")
-                    .executes(context -> {
-                        Hud.get().active = false;
-                        return SINGLE_SUCCESS;
-                    })
-                )
-            );
+            )
+        ).then(literal("hud")
+            .executes(context -> {
+                Hud.get().active = !(Hud.get().active);
+                return SINGLE_SUCCESS;
+            })
+            .then(literal("on")
+                .executes(context -> {
+                    Hud.get().active = true;
+                    return SINGLE_SUCCESS;
+                })
+            ).then(literal("off")
+                .executes(context -> {
+                    Hud.get().active = false;
+                    return SINGLE_SUCCESS;
+                })
+            )
+        );
     }
 }

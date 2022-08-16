@@ -10,6 +10,7 @@ import meteordevelopment.meteorclient.MeteorClient;
 import meteordevelopment.meteorclient.events.meteor.KeyEvent;
 import meteordevelopment.meteorclient.systems.commands.Command;
 import meteordevelopment.meteorclient.systems.commands.arguments.PlayerArgumentType;
+import meteordevelopment.meteorclient.utils.player.ChatUtils;
 import meteordevelopment.orbit.EventHandler;
 import net.minecraft.command.CommandSource;
 import net.minecraft.text.Text;
@@ -26,17 +27,19 @@ public class SpectateCommand extends Command {
 
     @Override
     public void build(LiteralArgumentBuilder<CommandSource> builder) {
-        builder.then(literal("reset").executes(context -> {
-            mc.setCameraEntity(mc.player);
-            return SINGLE_SUCCESS;
-        }));
-
-        builder.then(argument("player", PlayerArgumentType.player()).executes(context -> {
-            mc.setCameraEntity(PlayerArgumentType.getPlayer(context));
-            mc.player.sendMessage(Text.literal("Sneak to un-spectate."), true);
-            MeteorClient.EVENT_BUS.subscribe(shiftListener);
-            return SINGLE_SUCCESS;
-        }));
+        builder.then(literal("reset")
+                .executes(context -> {
+                    mc.setCameraEntity(mc.player);
+                    return SINGLE_SUCCESS;
+                }))
+            .then(argument("player", PlayerArgumentType.player())
+                .executes(context -> {
+                    mc.setCameraEntity(PlayerArgumentType.getPlayer(context));
+                    ChatUtils.displayActionBar("Sneak to un-spectate.");
+                    MeteorClient.EVENT_BUS.subscribe(shiftListener);
+                    return SINGLE_SUCCESS;
+                })
+            );
     }
 
     private static class StaticListener {

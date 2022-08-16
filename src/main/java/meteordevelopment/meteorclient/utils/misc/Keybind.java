@@ -64,10 +64,6 @@ public class Keybind implements ISerializable<Keybind>, ICopyable<Keybind> {
         return this.value == value;
     }
 
-    public boolean isValid() {
-        return value != -1;
-    }
-
     public boolean isKey() {
         return isKey;
     }

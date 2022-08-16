@@ -100,7 +100,7 @@ public abstract class GuiTheme implements ISerializable<GuiTheme> {
         return textBox(text, null, filter, renderer);
     }
     public WTextBox textBox(String text, Class<? extends WTextBox.Renderer> renderer) {
-        return textBox(text, null, (t1, c1) -> true, renderer);
+        return textBox(text, null, CharFilter.none(), renderer);
     }
     public WTextBox textBox(String text, String placeholder, CharFilter filter) {
         return textBox(text, placeholder, filter, null);
@@ -109,10 +109,10 @@ public abstract class GuiTheme implements ISerializable<GuiTheme> {
         return textBox(text, filter, null);
     }
     public WTextBox textBox(String text, String placeholder) {
-        return textBox(text, placeholder, (text1, c) -> true, null);
+        return textBox(text, placeholder, CharFilter.none(), null);
     }
     public WTextBox textBox(String text) {
-        return textBox(text, (text1, c) -> true, null);
+        return textBox(text, CharFilter.none(), null);
     }
 
     public abstract <T> WDropdown<T> dropdown(T[] values, T value);

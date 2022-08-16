@@ -21,14 +21,12 @@ public class RotationCommand extends Command {
     @Override
     public void build(LiteralArgumentBuilder<CommandSource> builder) {
         builder
-            .then(literal("set")
-                .then(argument("pitch", FloatArgumentType.floatArg(-90, 90))
+            .then(literal("set").then(argument("pitch", FloatArgumentType.floatArg(-90, 90))
                     .executes(context -> {
                         mc.player.setPitch(context.getArgument("pitch", Float.class));
 
                         return SINGLE_SUCCESS;
-                    })
-                    .then(argument("yaw", FloatArgumentType.floatArg(-180, 180))
+                    }).then(argument("yaw", FloatArgumentType.floatArg(-180, 180))
                         .executes(context -> {
                             mc.player.setPitch(context.getArgument("pitch", Float.class));
                             mc.player.setYaw(context.getArgument("yaw", Float.class));
@@ -37,16 +35,13 @@ public class RotationCommand extends Command {
                         })
                     )
                 )
-            )
-            .then(literal("add")
-                .then(argument("pitch", FloatArgumentType.floatArg(-90, 90))
+            ).then(literal("add").then(argument("pitch", FloatArgumentType.floatArg(-90, 90))
                     .executes(context -> {
                         float pitch = mc.player.getPitch() + context.getArgument("pitch", Float.class);
                         mc.player.setPitch(pitch >= 0 ? Math.min(pitch, 90) : Math.max(pitch, -90));
 
                         return SINGLE_SUCCESS;
-                    })
-                    .then(argument("yaw", FloatArgumentType.floatArg(-180, 180))
+                    }).then(argument("yaw", FloatArgumentType.floatArg(-180, 180))
                         .executes(context -> {
                             float pitch = mc.player.getPitch() + context.getArgument("pitch", Float.class);
                             mc.player.setPitch(pitch >= 0 ? Math.min(pitch, 90) : Math.max(pitch, -90));

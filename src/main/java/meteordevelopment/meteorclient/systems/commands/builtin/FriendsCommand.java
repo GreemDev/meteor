@@ -36,34 +36,31 @@ public class FriendsCommand extends Command {
     @Override
     public void build(LiteralArgumentBuilder<CommandSource> builder) {
         builder.then(literal("add").then(argument("player", PlayerArgumentType.player())
-                        .executes(context -> {
-                            Friend friend = new Friend(PlayerArgumentType.getPlayer(context));
+                .executes(context -> {
+                    Friend friend = new Friend(PlayerArgumentType.getPlayer(context));
 
-                            if (Friends.get().add(friend)) info("Added (highlight)%s (default)to friends.", friend.name);
-                            else error("That person is already your friend.");
+                    if (Friends.get().add(friend)) info("Added (highlight)%s (default)to friends.", friend.name);
+                    else error("That person is already your friend.");
 
-                            return SINGLE_SUCCESS;
-                        })
-                )
-        );
-
-        builder.then(literal("remove").then(argument("friend", FriendArgumentType.friend())
-                        .executes(context -> {
-                            Friend friend = FriendArgumentType.getFriend(context, "friend");
-
-                            if (Friends.get().remove(friend)) info("Removed (highlight)%s (default)from friends.", friend.name);
-                            else error("That person is not your friend.");
-
-                            return SINGLE_SUCCESS;
-                        })
-                )
-        );
-
-        builder.then(literal("list").executes(context -> {
-                    info("--- Friends ((highlight)%s(default)) ---", Friends.get().count());
-                    Friends.get().forEach(friend-> ChatUtils.info("(highlight)" + friend.name));
                     return SINGLE_SUCCESS;
                 })
+            )
+        ).then(literal("remove").then(argument("friend", FriendArgumentType.friend())
+                .executes(context -> {
+                    Friend friend = FriendArgumentType.getFriend(context, "friend");
+
+                    if (Friends.get().remove(friend)) info("Removed (highlight)%s (default)from friends.", friend.name);
+                    else error("That person is not your friend.");
+
+                    return SINGLE_SUCCESS;
+                })
+            )
+        ).then(literal("list")
+            .executes(context -> {
+                info("--- Friends ((highlight)%s(default)) ---", Friends.get().count());
+                Friends.get().forEach(friend -> ChatUtils.info("(highlight)" + friend.name));
+                return SINGLE_SUCCESS;
+            })
         );
     }
 

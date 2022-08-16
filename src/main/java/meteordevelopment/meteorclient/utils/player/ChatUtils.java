@@ -58,6 +58,34 @@ public class ChatUtils {
         forcedPrefixClassName = klass.getName();
     }
 
+    /** Sends the message as if the user typed it into chat. */
+    public static void sendPlayerMsg(String message) {
+        if (mc.player != null) {
+            mc.inGameHud.getChatHud().addToMessageHistory(message);
+
+            if (message.startsWith("/")) mc.player.sendCommand(message.substring(1), null);
+            else mc.player.sendChatMessage(message, null);
+        }
+    }
+
+    public static void sendPlayerMsg(String format, Object... args) {
+        sendPlayerMsg(format.formatted(args));
+    }
+
+    public static void displayActionBar(Text message) {
+        if (mc.player != null) {
+            mc.player.sendMessage(message, true);
+        }
+    }
+
+    public static void displayActionBar(String message) {
+        displayActionBar(Text.of(message));
+    }
+
+    public static void displayActionBar(String format, Object... args) {
+        displayActionBar(format.formatted(args));
+    }
+
     // Default
     public static void info(String message, Object... args) {
         sendMsg(Formatting.GRAY, message, args);
