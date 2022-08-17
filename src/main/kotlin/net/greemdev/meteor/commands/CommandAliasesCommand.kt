@@ -41,7 +41,7 @@ class CommandAliasesCommand : GCommand(
         } ?: throw notFound(name).create()
 
         if (Meteor.module<CommandAliases>().chatFeedback)
-            info("Executing command '${mapping.value.ensurePrefix("/")}'")
+            info("Executing '${mapping.value.ensurePrefix("/")}'")
 
         mc.sendCommand(mapping.value)
     }

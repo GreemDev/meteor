@@ -216,7 +216,7 @@ public class DefaultSettingsWidgetFactory implements SettingsWidgetFactory {
     }
 
     private void genericW(WTable table, GenericSetting<?> setting) {
-        WButton edit = table.add(theme.button(GuiRenderer.EDIT)).widget();
+        WButton edit = table.add(theme.button(GuiRenderer.EDIT)).expandCellX().widget();
         edit.action = () -> mc.setScreen(setting.get().createScreen(theme));
 
         reset(table, setting, null);

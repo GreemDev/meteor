@@ -11,6 +11,7 @@ import meteordevelopment.meteorclient.systems.modules.Categories;
 import meteordevelopment.meteorclient.systems.modules.Module;
 import meteordevelopment.orbit.EventHandler;
 import net.minecraft.network.packet.c2s.play.PlayerInteractBlockC2SPacket;
+import net.minecraft.util.hit.BlockHitResult;
 import net.minecraft.util.math.Direction;
 
 public class BuildHeight extends Module {
@@ -21,9 +22,10 @@ public class BuildHeight extends Module {
     @EventHandler
     private void onSendPacket(PacketEvent.Send event) {
         if (!(event.packet instanceof PlayerInteractBlockC2SPacket p)) return;
+        BlockHitResult hitResult = p.getBlockHitResult();
 
-        if (p.getBlockHitResult().getPos().y >= 255 && p.getBlockHitResult().getSide() == Direction.UP) {
-            ((BlockHitResultAccessor) p.getBlockHitResult()).setSide(Direction.DOWN);
+        if (hitResult.getPos().y >= mc.world.getTopY() && hitResult.getSide() == Direction.UP) {
+            ((BlockHitResultAccessor)hitResult).setSide(Direction.DOWN);
         }
     }
 }
