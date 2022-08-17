@@ -35,7 +35,7 @@ object Greteor {
 
     @JvmStatic
     fun commands() {
-        createSubtypesOf<Command>("net.greemdev.meteor.commands")
+        createSubtypesOf<GCommand>("net.greemdev.meteor.commands")
             .forEach(Meteor.commands()::add)
     }
 

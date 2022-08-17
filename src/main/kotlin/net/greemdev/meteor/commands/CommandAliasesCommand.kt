@@ -7,13 +7,15 @@ package net.greemdev.meteor.commands
 
 import com.mojang.brigadier.exceptions.CommandSyntaxException
 import com.mojang.brigadier.exceptions.SimpleCommandExceptionType
+import meteordevelopment.meteorclient.utils.player.ChatUtils
 import net.greemdev.meteor.GCommand
 import net.greemdev.meteor.commands.api.*
 import net.greemdev.meteor.modules.CommandAliases
 import net.greemdev.meteor.util.*
 import net.minecraft.command.CommandSource
+import net.minecraft.util.Formatting
 
-sealed class CommandAliasesCommand : GCommand(
+class CommandAliasesCommand : GCommand(
     "command-aliases", "Configured by the module of the same name.",
     "ca"
 ) {
@@ -33,7 +35,7 @@ sealed class CommandAliasesCommand : GCommand(
 
     @Throws(CommandSyntaxException::class)
     private fun executeCommand(ctx: MinecraftCommandContext) {
-        val name = ctx.argument<String>("name")
+        val name = ctx.argument<String>("alias")
         val mapping = Meteor.module<CommandAliases>().mapped.entries.firstOrNull {
             it.key.equals(name, true)
         } ?: throw notFound(name).create()

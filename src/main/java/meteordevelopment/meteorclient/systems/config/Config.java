@@ -12,6 +12,7 @@ import meteordevelopment.meteorclient.settings.*;
 import meteordevelopment.meteorclient.systems.System;
 import meteordevelopment.meteorclient.systems.Systems;
 import meteordevelopment.meteorclient.utils.render.FontUtils;
+import meteordevelopment.meteorclient.utils.render.color.RainbowColors;
 import meteordevelopment.meteorclient.utils.render.color.SettingColor;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.nbt.NbtElement;
@@ -137,6 +138,7 @@ public class Config extends System<Config> {
         .name("meteor-prefix-color")
         .description("Sends chat feedback when meteor performs certain actions.")
         .defaultValue(MeteorClient.ADDON.color.toSetting())
+        .onChanged(this::onChangePrefixColor)
         .build()
     );
 
@@ -195,5 +197,12 @@ public class Config extends System<Config> {
         List<String> list = new ArrayList<>();
         for (NbtElement item : tag.getList(key, 8)) list.add(item.asString());
         return list;
+    }
+
+    private void onChangePrefixColor(SettingColor color) {
+        if (color.rainbow)
+            RainbowColors.addSetting(meteorPrefixColor);
+        else
+            RainbowColors.removeSetting(meteorPrefixColor);
     }
 }

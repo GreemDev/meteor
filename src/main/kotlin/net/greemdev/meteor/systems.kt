@@ -15,8 +15,6 @@ abstract class GModule(name: String, description: String) : Module(Greteor.modul
 abstract class GCommand(name: String, description: String, vararg val aliases: String)
     : meteordevelopment.meteorclient.systems.commands.Command(name, description) {
 
-    protected fun modify(builder: CommandBuilder, func: CommandBuilder.() -> Unit) = builder.func()
-
     override fun getAliases() = aliases.toMutableList()
 
     abstract fun CommandBuilder.build()

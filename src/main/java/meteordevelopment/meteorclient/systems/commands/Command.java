@@ -47,7 +47,7 @@ public abstract class Command {
 
     public final void registerTo(CommandDispatcher<CommandSource> dispatcher) {
         register(dispatcher, name);
-        for (String alias : aliases) register(dispatcher, alias);
+        for (String alias : getAliases()) register(dispatcher, alias);
     }
 
     public void register(CommandDispatcher<CommandSource> dispatcher, String name) {
