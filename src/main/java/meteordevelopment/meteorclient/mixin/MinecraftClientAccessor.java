@@ -39,5 +39,5 @@ public interface MinecraftClientAccessor {
     ResourceReloadLogger getResourceReloadLogger();
 
     @Invoker("doAttack")
-    boolean leftClick();
+    boolean attack();
 }

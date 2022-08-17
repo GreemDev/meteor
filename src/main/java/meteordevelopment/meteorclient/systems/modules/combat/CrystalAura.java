@@ -507,7 +507,7 @@ public class CrystalAura extends Module {
     private double renderDamage;
 
     public CrystalAura() {
-        super(Categories.Combat, "crystal-aura", "Automatically places and attacks crystals.");
+        super(Categories.Combat, "crystal-aura", "Automatically places and attacks end crystals.");
     }
 
     @Override

@@ -128,19 +128,19 @@ public class AutoFish extends Module {
 
             if (autoCastTimer > ticksAutoCast.get()) {
                 autoCastEnabled = false;
-                Utils.rightClick();
+                Utils.pressItemUseKey();
             }
         }
 
         // Handle logic
         if (ticksEnabled && ticksToRightClick <= 0) {
             if (ticksData == 0) {
-                Utils.rightClick();
+                Utils.pressItemUseKey();
                 ticksToRightClick = ticksThrow.get();
                 ticksData = 1;
             }
             else if (ticksData == 1) {
-                Utils.rightClick();
+                Utils.pressItemUseKey();
                 ticksEnabled = false;
             }
         }

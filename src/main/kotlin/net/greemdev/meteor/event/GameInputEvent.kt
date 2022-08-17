@@ -15,6 +15,7 @@ import net.greemdev.meteor.util.invoking
 
 class GameInputEvent private constructor(private var backingEvent: Any) : Cancellable() {
 
+    //both upcast to Any to prevent recursion
     constructor(e: MouseButtonEvent) : this(e as Any)
     constructor(e: KeyEvent) : this(e as Any)
 

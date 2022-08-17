@@ -27,6 +27,7 @@ import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ArrowItem;
 import net.minecraft.item.BowItem;
 import net.minecraft.item.CrossbowItem;
+import net.minecraft.item.SpectralArrowItem;
 import net.minecraft.util.math.Vec3d;
 
 public class BowAimbot extends Module {

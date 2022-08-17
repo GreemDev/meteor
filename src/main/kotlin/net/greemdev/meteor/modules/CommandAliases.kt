@@ -14,7 +14,7 @@ import net.greemdev.meteor.GModule
 import net.greemdev.meteor.util.*
 
 class CommandAliases : GModule(
-    "command-aliases", "Use commands dynamically formatted with Starscript via Meteor command 'ca'"
+    "command-aliases", "Use commands dynamically formatted with Starscript via Meteor command 'ca'."
 ) {
     init {
         runInMainMenu = true

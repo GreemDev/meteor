@@ -169,7 +169,7 @@ public class AutoEat extends Module {
     private void eat() {
         changeSlot(slot);
         setPressed(true);
-        if (!mc.player.isUsingItem()) Utils.rightClick();
+        if (!mc.player.isUsingItem()) Utils.pressItemUseKey();
 
         eating = true;
     }

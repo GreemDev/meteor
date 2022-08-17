@@ -22,8 +22,8 @@ public class AutoClicker extends Module {
     }
 
     public enum Button {
-        Right,
-        Left
+        Attack,
+        Use
     }
 
     private final SettingGroup sgGeneral = settings.getDefaultGroup();
@@ -38,7 +38,7 @@ public class AutoClicker extends Module {
     private final Setting<Button> button = sgGeneral.add(new EnumSetting.Builder<Button>()
             .name("button")
             .description("Which button to press.")
-            .defaultValue(Button.Right)
+            .defaultValue(Button.Attack)
             .build()
     );
 
@@ -75,16 +75,16 @@ public class AutoClicker extends Module {
         switch (mode.get()) {
             case Hold:
                 switch (button.get()) {
-                    case Left -> mc.options.attackKey.setPressed(true);
-                    case Right -> mc.options.useKey.setPressed(true);
+                    case Attack -> mc.options.attackKey.setPressed(true);
+                    case Use -> mc.options.useKey.setPressed(true);
                 }
                 break;
             case Press:
                 timer++;
                 if (!(delay.get() > timer)) {
                     switch (button.get()) {
-                        case Left -> Utils.leftClick();
-                        case Right -> Utils.rightClick();
+                        case Attack -> Utils.pressAttackKey();
+                        case Use -> Utils.pressItemUseKey();
                     }
                     timer = 0;
                 }

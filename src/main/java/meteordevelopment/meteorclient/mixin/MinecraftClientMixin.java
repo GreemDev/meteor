@@ -43,7 +43,7 @@ import java.util.concurrent.CompletableFuture;
 @Mixin(value = MinecraftClient.class, priority = 1001)
 public abstract class MinecraftClientMixin implements IMinecraftClient {
     @Unique private boolean doItemUseCalled;
-    @Unique private boolean rightClick;
+    @Unique private boolean useItem;
     @Unique private long lastTime;
     @Unique private boolean firstFrame;
 
@@ -75,8 +75,8 @@ public abstract class MinecraftClientMixin implements IMinecraftClient {
         MeteorClient.EVENT_BUS.post(TickEvent.Pre.get());
         getProfiler().pop();
 
-        if (rightClick && !doItemUseCalled && interactionManager != null) doItemUse();
-        rightClick = false;
+        if (useItem && !doItemUseCalled && interactionManager != null) doItemUse();
+        useItem = false;
     }
 
     @Inject(at = @At("TAIL"), method = "tick")
@@ -163,7 +163,7 @@ public abstract class MinecraftClientMixin implements IMinecraftClient {
     // Interface
 
     @Override
-    public void rightClick() {
-        rightClick = true;
+    public void useItem() {
+        useItem = true;
     }
 }

@@ -29,7 +29,7 @@ public class SelfWeb extends Module {
 
     private final Setting<Integer> range = sgGeneral.add(new IntSetting.Builder()
             .name("range")
-            .description("How far away the player has to be from you to place webs. Requires Mode to Smart.")
+            .description("How far away the player has to be from you to place webs. Requires Smart Mode.")
             .defaultValue(3)
             .min(1)
             .sliderRange(1, 7)

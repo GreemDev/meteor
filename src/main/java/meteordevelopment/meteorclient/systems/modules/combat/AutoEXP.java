@@ -68,7 +68,7 @@ public class AutoEXP extends Module {
     private int repairingI;
 
     public AutoEXP() {
-        super(Categories.Combat, "auto-exp", "Automatically repairs your armor and tools in pvp.");
+        super(Categories.Combat, "auto-exp", "Automatically repairs your armor and tools in PvP.");
     }
 
     @Override

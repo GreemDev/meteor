@@ -181,9 +181,7 @@ public class AntiAFK extends Module {
 
             //Click
             if (click.get() && random.nextInt(99) + 1 == 45) {
-                mc.options.attackKey.setPressed(true);
-                Utils.leftClick();
-                mc.options.attackKey.setPressed(false);
+                Utils.pressAttackKey();
             }
 
             //Disco

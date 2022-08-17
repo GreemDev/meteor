@@ -30,8 +30,8 @@ public class BowSpam extends Module {
     );
 
     private final Setting<Boolean> onlyWhenHoldingRightClick = sgGeneral.add(new BoolSetting.Builder()
-        .name("when-holding-right-click")
-        .description("Works only when holding right click.")
+        .name("when-holding-use")
+        .description("Works only when holding the use/place keybind.")
         .defaultValue(false)
         .build()
     );
