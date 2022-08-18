@@ -26,7 +26,7 @@ public class SettingCommand extends Command {
 
     @Override
     public void build(LiteralArgumentBuilder<CommandSource> builder) {
-        builder.then(argument("module", ModuleArgumentType.module())
+        builder.then(argument("module", ModuleArgumentType.create())
             .executes(context -> {
                 Module module = context.getArgument("module", Module.class);
 
@@ -36,23 +36,25 @@ public class SettingCommand extends Command {
                 Utils.screenToOpen = screen;
                 return SINGLE_SUCCESS;
             })
-        ).then(argument("module", ModuleArgumentType.module()).then(argument("setting", SettingArgumentType.setting())
+        ).then(argument("module", ModuleArgumentType.create()).then(argument("setting", SettingArgumentType.create())
                 .executes(context -> {
                     // Get setting value
-                    Setting<?> setting = SettingArgumentType.getSetting(context);
+                    Setting<?> setting = SettingArgumentType.get(context);
 
-                    ModuleArgumentType.getModule(context, "module").info("Setting (highlight)%s(default) is (highlight)%s(default).", setting.title, setting.get());
+                    ModuleArgumentType.get(context)
+                        .info("Setting (highlight)%s(default) is (highlight)%s(default).", setting.title, setting.get());
 
                     return SINGLE_SUCCESS;
                 })
-                .then(argument("value", SettingValueArgumentType.value())
+                .then(argument("value", SettingValueArgumentType.create())
                     .executes(context -> {
                         // Set setting value
-                        Setting<?> setting = SettingArgumentType.getSetting(context);
-                        String value = context.getArgument("value", String.class);
+                        Setting<?> setting = SettingArgumentType.get(context);
+                        String value = SettingValueArgumentType.get(context);
 
                         if (setting.parse(value)) {
-                            ModuleArgumentType.getModule(context, "module").info("Setting (highlight)%s(default) changed to (highlight)%s(default).", setting.title, value);
+                            ModuleArgumentType.get(context)
+                                .info("Setting (highlight)%s(default) changed to (highlight)%s(default).", setting.title, value);
                         }
 
                         return SINGLE_SUCCESS;

@@ -22,10 +22,20 @@ import java.util.concurrent.CompletableFuture;
 import java.util.stream.Stream;
 
 public class SettingArgumentType implements ArgumentType<String> {
-    private static final DynamicCommandExceptionType NO_SUCH_SETTING = new DynamicCommandExceptionType(o -> Text.literal("No such setting '" + o + "'."));
+    private static final DynamicCommandExceptionType NO_SUCH_SETTING = new DynamicCommandExceptionType(name -> Text.literal("No such setting '" + name + "'."));
 
-    public static SettingArgumentType setting() {
+    public static SettingArgumentType create() {
         return new SettingArgumentType();
+    }
+
+    public static Setting<?> get(CommandContext<?> context) throws CommandSyntaxException {
+        Module module = context.getArgument("module", Module.class);
+        String settingName = context.getArgument("setting", String.class);
+
+        Setting<?> setting = module.settings.get(settingName);
+        if (setting == null) throw NO_SUCH_SETTING.create(settingName);
+
+        return setting;
     }
 
     @Override
@@ -36,19 +46,9 @@ public class SettingArgumentType implements ArgumentType<String> {
     @Override
     public <S> CompletableFuture<Suggestions> listSuggestions(CommandContext<S> context, SuggestionsBuilder builder) {
         Stream<String> stream = Streams.stream(context.getArgument("module", Module.class).settings.iterator())
-                .flatMap(settings -> Streams.stream(settings.iterator()))
-                .map(setting -> setting.name);
+            .flatMap(settings -> Streams.stream(settings.iterator()))
+            .map(setting -> setting.name);
 
         return CommandSource.suggestMatching(stream, builder);
-    }
-
-    public static Setting<?> getSetting(CommandContext<?> context) throws CommandSyntaxException {
-        Module module = context.getArgument("module", Module.class);
-        String settingName = context.getArgument("setting", String.class);
-
-        Setting<?> setting = module.settings.get(settingName);
-        if (setting == null) throw NO_SUCH_SETTING.create(settingName);
-
-        return setting;
     }
 }

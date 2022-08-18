@@ -32,12 +32,12 @@ public class NbtCommand extends Command {
 
     @Override
     public void build(LiteralArgumentBuilder<CommandSource> builder) {
-        builder.then(literal("add").then(argument("nbt_data", CompoundNbtTagArgumentType.nbtTag())
+        builder.then(literal("add").then(argument("nbt", CompoundNbtTagArgumentType.create())
             .executes(s -> {
                 ItemStack stack = mc.player.getInventory().getMainHandStack();
 
                 if (validBasic(stack)) {
-                    NbtCompound tag = CompoundNbtTagArgumentType.getTag(s, "nbt_data");
+                    NbtCompound tag = CompoundNbtTagArgumentType.get(s);
                     NbtCompound source = stack.getOrCreateNbt();
 
                     if (tag != null) {
@@ -50,30 +50,30 @@ public class NbtCommand extends Command {
 
                 return SINGLE_SUCCESS;
             }))
-        ).then(literal("set").then(argument("nbt_data", CompoundNbtTagArgumentType.nbtTag())
-            .executes(s -> {
+        ).then(literal("set").then(argument("nbt", CompoundNbtTagArgumentType.create())
+            .executes(context -> {
                 ItemStack stack = mc.player.getInventory().getMainHandStack();
 
                 if (validBasic(stack)) {
-                    stack.setNbt(s.getArgument("nbt_data", NbtCompound.class));
+                    stack.setNbt(CompoundNbtTagArgumentType.get(context));
                     setStack(stack);
                 }
 
                 return SINGLE_SUCCESS;
             }))
         ).then(literal("remove").then(argument("nbt_path", NbtPathArgumentType.nbtPath())
-            .executes(s -> {
+            .executes(context -> {
                 ItemStack stack = mc.player.getInventory().getMainHandStack();
 
                 if (validBasic(stack)) {
-                    NbtPathArgumentType.NbtPath path = s.getArgument("nbt_path", NbtPathArgumentType.NbtPath.class);
+                    NbtPathArgumentType.NbtPath path = context.getArgument("nbt_path", NbtPathArgumentType.NbtPath.class);
                     path.remove(stack.getNbt());
                 }
 
                 return SINGLE_SUCCESS;
             }))
         ).then(literal("get")
-            .executes(s -> {
+            .executes(context-> {
                 ItemStack stack = mc.player.getInventory().getMainHandStack();
 
                 if (stack == null) {
@@ -105,7 +105,7 @@ public class NbtCommand extends Command {
                 return SINGLE_SUCCESS;
             })
         ).then(literal("copy")
-            .executes(s -> {
+            .executes(context -> {
                 ItemStack stack = mc.player.getInventory().getMainHandStack();
 
                 if (stack == null) {
@@ -131,7 +131,7 @@ public class NbtCommand extends Command {
                 return SINGLE_SUCCESS;
             })
         ).then(literal("paste")
-            .executes(s -> {
+            .executes(context -> {
                 ItemStack stack = mc.player.getInventory().getMainHandStack();
 
                 if (validBasic(stack)) {

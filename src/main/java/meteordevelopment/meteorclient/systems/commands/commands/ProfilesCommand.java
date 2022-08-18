@@ -22,9 +22,9 @@ public class ProfilesCommand extends Command {
 
     @Override
     public void build(LiteralArgumentBuilder<CommandSource> builder) {
-        builder.then(literal("load").then(argument("profile", ProfileArgumentType.profile())
+        builder.then(literal("load").then(argument("profile", ProfileArgumentType.create())
             .executes(context -> {
-                Profile profile = ProfileArgumentType.getProfile(context, "profile");
+                Profile profile = ProfileArgumentType.get(context);
 
                 if (profile != null) {
                     profile.load();
@@ -33,9 +33,9 @@ public class ProfilesCommand extends Command {
 
                 return SINGLE_SUCCESS;
             }))
-        ).then(literal("save").then(argument("profile", ProfileArgumentType.profile())
+        ).then(literal("save").then(argument("profile", ProfileArgumentType.create())
             .executes(context -> {
-                Profile profile = ProfileArgumentType.getProfile(context, "profile");
+                Profile profile = ProfileArgumentType.get(context);
 
                 if (profile != null) {
                     profile.save();
@@ -44,9 +44,9 @@ public class ProfilesCommand extends Command {
 
                 return SINGLE_SUCCESS;
             }))
-        ).then(literal("delete").then(argument("profile", ProfileArgumentType.profile())
+        ).then(literal("delete").then(argument("profile", ProfileArgumentType.create())
             .executes(context -> {
-                Profile profile = ProfileArgumentType.getProfile(context, "profile");
+                Profile profile = ProfileArgumentType.get(context);
 
                 if (profile != null) {
                     Profiles.get().remove(profile);

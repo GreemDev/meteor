@@ -33,9 +33,9 @@ public class SpectateCommand extends Command {
                     mc.setCameraEntity(mc.player);
                     return SINGLE_SUCCESS;
                 }))
-            .then(argument("player", PlayerArgumentType.player())
+            .then(argument("player", PlayerArgumentType.create())
                 .executes(context -> {
-                    mc.setCameraEntity(PlayerArgumentType.getPlayer(context));
+                    mc.setCameraEntity(PlayerArgumentType.get(context));
                     KMC.showActionBar(mc, "Sneak to un-spectate.");
                     MeteorClient.EVENT_BUS.subscribe(shiftListener);
                     return SINGLE_SUCCESS;

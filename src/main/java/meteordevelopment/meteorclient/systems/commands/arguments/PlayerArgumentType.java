@@ -12,39 +12,26 @@ import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import com.mojang.brigadier.exceptions.DynamicCommandExceptionType;
 import com.mojang.brigadier.suggestion.Suggestions;
 import com.mojang.brigadier.suggestion.SuggestionsBuilder;
-import net.greemdev.meteor.util.KMC;
 import net.minecraft.command.CommandSource;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.text.Text;
 
 import java.util.Collection;
+import java.util.List;
 import java.util.concurrent.CompletableFuture;
-import java.util.stream.Collectors;
 
 import static meteordevelopment.meteorclient.MeteorClient.mc;
 
 public class PlayerArgumentType implements ArgumentType<PlayerEntity> {
+    private static final DynamicCommandExceptionType NO_SUCH_PLAYER = new DynamicCommandExceptionType(name -> Text.literal("Player with name " + name + " doesn't exist."));
 
-    private static Collection<String> EXAMPLES;
+    private static final Collection<String> EXAMPLES = List.of("seasnail8169", "MineGame159");
 
-    static {
-        if (mc.world != null) {
-            EXAMPLES = mc.world.getPlayers()
-                .stream()
-                .limit(3)
-                .map(PlayerEntity::getEntityName)
-                .collect(Collectors.toList());
-        }
-    }
-
-    private static final DynamicCommandExceptionType NO_SUCH_PLAYER = new DynamicCommandExceptionType(o ->
-            Text.literal("Player with name " + o + " doesn't exist."));
-
-    public static PlayerArgumentType player() {
+    public static PlayerArgumentType create() {
         return new PlayerArgumentType();
     }
 
-    public static PlayerEntity getPlayer(CommandContext<?> context) {
+    public static PlayerEntity get(CommandContext<?> context) {
         return context.getArgument("player", PlayerEntity.class);
     }
 
@@ -52,19 +39,21 @@ public class PlayerArgumentType implements ArgumentType<PlayerEntity> {
     public PlayerEntity parse(StringReader reader) throws CommandSyntaxException {
         String argument = reader.readString();
         PlayerEntity playerEntity = null;
-        for (var p : KMC.playersInCurrentWorld(mc)) {
+
+        for (PlayerEntity p : mc.world.getPlayers()) {
             if (p.getEntityName().equalsIgnoreCase(argument)) {
                 playerEntity = p;
                 break;
             }
         }
         if (playerEntity == null) throw NO_SUCH_PLAYER.create(argument);
+
         return playerEntity;
     }
 
     @Override
     public <S> CompletableFuture<Suggestions> listSuggestions(CommandContext<S> context, SuggestionsBuilder builder) {
-        return CommandSource.suggestMatching(KMC.playersInCurrentWorld(mc).stream().map(PlayerEntity::getEntityName), builder);
+        return CommandSource.suggestMatching(mc.world.getPlayers().stream().map(PlayerEntity::getEntityName), builder);
     }
 
     @Override

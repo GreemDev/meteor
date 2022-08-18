@@ -21,9 +21,9 @@ public class InventoryCommand extends Command {
 
     @Override
     public void build(LiteralArgumentBuilder<CommandSource> builder) {
-        builder.then(argument("player", PlayerArgumentType.player())
+        builder.then(argument("player", PlayerArgumentType.create())
             .executes(context -> {
-                Utils.screenToOpen = new InventoryScreen(PlayerArgumentType.getPlayer(context));
+                Utils.screenToOpen = new InventoryScreen(PlayerArgumentType.get(context));
                 return SINGLE_SUCCESS;
             })
         );

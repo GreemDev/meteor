@@ -3,6 +3,8 @@
  * Copyright (c) Meteor Development.
  */
 
+@file:JvmName("Args")
+
 package net.greemdev.meteor.commands.api
 
 import com.mojang.brigadier.arguments.*
@@ -22,12 +24,13 @@ inline fun<reified T> MinecraftCommandContext.argument(name: String, noinline pa
 object Arguments {
 
     fun module(): ModuleArgumentType = ModuleArgumentType.create()
-    fun player(): PlayerArgumentType = PlayerArgumentType.player()
-    fun playerListEntry(): PlayerListEntryArgumentType = PlayerListEntryArgumentType.playerListEntry()
-    fun profile(): ProfileArgumentType = ProfileArgumentType.profile()
-    fun setting(): SettingArgumentType = SettingArgumentType.setting()
-    fun settingValue(): SettingValueArgumentType = SettingValueArgumentType.value()
-    fun waypoint(): WaypointArgumentType = WaypointArgumentType.waypoint()
+    fun friend(): FriendArgumentType = FriendArgumentType.create()
+    fun player(): PlayerArgumentType = PlayerArgumentType.create()
+    fun playerListEntry(): PlayerListEntryArgumentType = PlayerListEntryArgumentType.create()
+    fun profile(): ProfileArgumentType = ProfileArgumentType.create()
+    fun setting(): SettingArgumentType = SettingArgumentType.create()
+    fun settingValue(): SettingValueArgumentType = SettingValueArgumentType.create()
+    fun waypoint(): WaypointArgumentType = WaypointArgumentType.create()
 
     fun boolean(): BoolArgumentType = BoolArgumentType.bool()
     fun double(min: Double = -Double.MAX_VALUE, max: Double = Double.MAX_VALUE): DoubleArgumentType = DoubleArgumentType.doubleArg(min, max)
@@ -65,7 +68,7 @@ object Arguments {
     fun enchantment(): EnchantmentArgumentType = EnchantmentArgumentType.enchantment()
     fun message(): MessageArgumentType = MessageArgumentType.message()
     fun statusEffect(): StatusEffectArgumentType = StatusEffectArgumentType.statusEffect()
-    fun nbtTag(): CompoundNbtTagArgumentType = CompoundNbtTagArgumentType.nbtTag()
+    fun nbtTag(): CompoundNbtTagArgumentType = CompoundNbtTagArgumentType.create()
     fun nbtPath(): NbtPathArgumentType = NbtPathArgumentType.nbtPath()
     fun objective(): ScoreboardObjectiveArgumentType = ScoreboardObjectiveArgumentType.scoreboardObjective()
     fun objectiveCriteria(): ScoreboardCriterionArgumentType = ScoreboardCriterionArgumentType.scoreboardCriterion()
