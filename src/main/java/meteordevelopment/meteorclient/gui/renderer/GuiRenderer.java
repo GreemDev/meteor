@@ -46,6 +46,10 @@ public class GuiRenderer {
     private final Renderer2D r = new Renderer2D(false);
     private final Renderer2D rTex = new Renderer2D(true);
 
+    public Renderer2D r2D() {
+        return r;
+    }
+
     private final Pool<Scissor> scissorPool = new Pool<>(Scissor::new);
     private final Stack<Scissor> scissorStack = new Stack<>();
 

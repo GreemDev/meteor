@@ -17,11 +17,11 @@ import net.minecraft.util.math.Vec3d
 class ClipCommand : GCommand("clip", "Lets you clip through blocks vertically or horizontally.") {
 
     override fun CommandBuilder.build() {
-        then(command("v") {
+        then("v") {
             then("distance", arg.double()) {
                 alwaysRuns(this@ClipCommand::vertical)
             }
-        }) then command("h") {
+        }.then("h") {
             then("distance", arg.double()) {
                 alwaysRuns(this@ClipCommand::horizontal)
             }

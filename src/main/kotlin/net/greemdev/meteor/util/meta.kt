@@ -9,9 +9,9 @@ package net.greemdev.meteor.util
 import meteordevelopment.meteorclient.gui.utils.StarscriptTextBoxRenderer
 import meteordevelopment.meteorclient.gui.widgets.pressable.WPressable
 import meteordevelopment.meteorclient.settings.*
-import net.minecraft.entity.player.PlayerEntity
+import net.minecraft.text.MutableText
+import net.minecraft.text.Text
 import org.apache.logging.log4j.LogManager
-import org.apache.logging.log4j.Logger
 import org.apache.logging.log4j.message.MessageFactory
 import org.reflections.Reflections
 import org.reflections.scanners.Scanners
@@ -46,9 +46,7 @@ fun <T> runOrIgnore(runnable: Runnable) = try {
 } catch (ignored: Throwable) {
 }
 
-/**
- * Looks repetitive however each different type we check for has its own special logic in [LogManager]
- */
+// Looks repetitive however each different type we check for has its own special logic in LogManager
 fun log4j(value: Any) = lazy {
     when (value) {
         is String -> LogManager.getLogger(value)
@@ -58,6 +56,14 @@ fun log4j(value: Any) = lazy {
         else -> LogManager.getLogger(value)
     }
 }
+
+fun textOf(content: String? = null, block: (MutableText.() -> Unit)?): MutableText = if (content == null)
+    Text.empty()
+else
+    Text.literal(content).apply { block?.invoke(this) }
+
+fun textOf(content: String?) = textOf(content, null)
+fun textOf() = textOf(null, null)
 
 fun<T> List<T>.indexedForEach(consumer: BiConsumer<Int, T>) = this.forEachIndexed { index, t -> consumer.accept(index, t) }
 
@@ -87,9 +93,10 @@ fun StringSetting.Builder.renderStarscript(): StringSetting.Builder = renderer(S
 fun StringListSetting.Builder.renderStarscript(): StringListSetting.Builder =
     renderer(StarscriptTextBoxRenderer::class.java)
 
-fun <P1, P2> Collection<Pair<P1, P2>>.asMap() = associate { it.first to it.second }
+fun <P1, P2> Collection<Pair<P1, P2>>.partition() = associate { it }
 
 fun IntSetting.Builder.saneSlider(): IntSetting.Builder = sliderRange(min, max)
+fun DoubleSetting.Builder.saneSlider(): DoubleSetting.Builder = sliderRange(min, max)
 
 inline fun <reified T> javaSubtypesOf(pkg: String): Set<Class<out T>> =
     Reflections(

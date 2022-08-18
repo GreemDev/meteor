@@ -37,7 +37,7 @@ public class ClientConnectionMixin {
     @Inject(method = "disconnect", at = @At("HEAD"))
     private void disconnect(Text disconnectReason, CallbackInfo ci) {
         if (Modules.get().get(HighwayBuilder.class).isActive()) {
-            MutableText text = Text.literal(String.format("\n\n%s[%sHighway Builder%s] Statistics:", Formatting.GRAY, Formatting.BLUE, Formatting.GRAY)).append("\n");
+            MutableText text = Text.literal("\n\n%s[%sHighway Builder%s] Statistics:".formatted(Formatting.GRAY, Formatting.BLUE, Formatting.GRAY)).append("\n");
             text.append(Modules.get().get(HighwayBuilder.class).getStatsText());
 
             ((MutableText) disconnectReason).append(text);

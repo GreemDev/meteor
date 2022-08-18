@@ -11,14 +11,7 @@ import net.minecraft.text.Text
 import net.minecraft.util.Formatting
 import net.minecraft.util.Formatting.*
 
-fun text(content: String? = null, block: (MutableText.() -> Unit)? = null): Text = if (content == null)
-    Text.empty()
-else if (block == null)
-    Text.of(content)
-else
-    Text.literal(content).apply(block)
-
-fun textBuilder(initial: Text = text()): FormattedTextBuilder = FormattedTextBuilder(initial.copy())
+fun textBuilder(initial: Text = textOf()): FormattedTextBuilder = FormattedTextBuilder(initial.copy())
 data class FormattedTextBuilder(private val internal: MutableText = Text.empty()) {
 
     fun withReset(text: String, vararg formatting: Formatting, resetAtEnd: Boolean = false) = append(text, RESET, formatting, resetAtEnd = resetAtEnd)
@@ -40,7 +33,7 @@ data class FormattedTextBuilder(private val internal: MutableText = Text.empty()
     fun withWhite(text: String, vararg formatting: Formatting, resetAtEnd: Boolean = false) = append(text, WHITE, formatting, resetAtEnd = resetAtEnd)
 
     fun append(content: String, prefixing: Formatting, formatting: Array<out Formatting>, resetAtEnd: Boolean = false): FormattedTextBuilder {
-        internal.append(text(content) { formatted(prefixing, *formatting) })
+        internal.append(textOf(content) { formatted(prefixing, *formatting) })
         if (resetAtEnd)
             internal.append(Text.empty().formatted(RESET))
 

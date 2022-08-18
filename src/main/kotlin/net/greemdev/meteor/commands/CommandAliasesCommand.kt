@@ -7,21 +7,19 @@ package net.greemdev.meteor.commands
 
 import com.mojang.brigadier.exceptions.CommandSyntaxException
 import com.mojang.brigadier.exceptions.SimpleCommandExceptionType
-import meteordevelopment.meteorclient.utils.player.ChatUtils
 import net.greemdev.meteor.GCommand
 import net.greemdev.meteor.commands.api.*
 import net.greemdev.meteor.modules.CommandAliases
 import net.greemdev.meteor.util.*
 import net.minecraft.command.CommandSource
-import net.minecraft.util.Formatting
 
 class CommandAliasesCommand : GCommand(
-    "command-aliases", "Configured by the module of the same name.",
-    "ca"
+    "command-aliases", "Configured by the module of the same name.", "ca"
 ) {
     companion object {
+
         private fun notFound(name: String) =
-            SimpleCommandExceptionType(text("No alias with the name '$name' was found."))
+            SimpleCommandExceptionType(textOf("No alias with the name '$name' was found."))
     }
 
     override fun CommandBuilder.build() {

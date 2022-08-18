@@ -6,7 +6,6 @@
 
 package net.greemdev.meteor.util
 
-import meteordevelopment.meteorclient.utils.player.ChatUtils
 import net.minecraft.client.MinecraftClient
 import net.minecraft.client.network.AbstractClientPlayerEntity
 import net.minecraft.entity.Entity
@@ -29,7 +28,7 @@ fun MinecraftClient.playersInCurrentWorld(): List<AbstractClientPlayerEntity> = 
 fun MinecraftClient.sendCommand(command: String, preview: Text? = null) = player().sendCommand(command, preview)
 fun MinecraftClient.showMessage(text: Text) = player().sendMessage(text)
 fun MinecraftClient.showActionBar(text: Text) = player().sendMessage(text, true)
-fun MinecraftClient.showActionBar(message: String) = showActionBar(text(message))
+fun MinecraftClient.showActionBar(message: String) = showActionBar(textOf(message))
 fun MinecraftClient.sendChatMessage(message: String, preview: Text? = null) = player().sendChatMessage(message, preview)
 fun MinecraftClient.sendAsPlayer(message: String, preview: Text? = null) {
     inGameHud.chatHud.addToMessageHistory(message)

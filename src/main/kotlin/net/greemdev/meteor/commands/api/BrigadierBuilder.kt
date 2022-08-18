@@ -35,6 +35,10 @@ data class BrigadierBuilder<T : BArgBuilder<CommandSource, T>>(val builder: T) {
         this then command(name, builder)
         return this
     }
+    infix fun then(command: Pair<String, CommandBuilder.() -> Unit>): BrigadierBuilder<T>  {
+        this then command(command.first, command.second)
+        return this
+    }
     infix fun<A> then(builder: MinecraftArgumentBuilder<A>): BrigadierBuilder<T> {
         this.builder.then(builder)
         return this
