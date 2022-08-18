@@ -20,6 +20,7 @@ import meteordevelopment.meteorclient.systems.commands.arguments.PlayerListEntry
 import meteordevelopment.meteorclient.systems.friends.Friend;
 import meteordevelopment.meteorclient.systems.friends.Friends;
 import meteordevelopment.meteorclient.utils.player.ChatUtils;
+import net.minecraft.client.network.PlayerListEntry;
 import net.minecraft.command.CommandSource;
 
 import java.util.Arrays;
@@ -39,7 +40,8 @@ public class FriendsCommand extends Command {
     public void build(LiteralArgumentBuilder<CommandSource> builder) {
         builder.then(literal("add").then(argument("player", PlayerListEntryArgumentType.create())
                 .executes(context -> {
-                    Friend friend = new Friend(PlayerListEntryArgumentType.get(context));
+                    PlayerListEntry entry = PlayerListEntryArgumentType.get(context);
+                    Friend friend = new Friend(entry.getProfile().getName(), entry.getProfile().getId());
 
                     if (Friends.get().add(friend)) info("Added (highlight)%s (default)to friends.", friend.name);
                     else error("Already friends with that player.");
