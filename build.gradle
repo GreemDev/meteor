@@ -27,16 +27,23 @@ repositories {
     mavenCentral()
 }
 
+configurations {
+    // include mods
+    modImplementation.extendsFrom(modInclude)
+    include.extendsFrom(modInclude)
+
+    // include libraries
+    implementation.extendsFrom(library)
+    shadow.extendsFrom(library)
+}
+
 dependencies {
-	def library = { id ->
-		implementation(id) { exclude group: "org.slf4j" }
-		shadow(id) { exclude group: "org.slf4j" }
-	}
 
 	// Fabric
 	minecraft "com.mojang:minecraft:${project.minecraft_version}"
 	mappings "net.fabricmc:yarn:${project.yarn_mappings}:v2"
 	modImplementation "net.fabricmc:fabric-loader:${project.loader_version}"
+    modInclude fabricApi.module("fabric-resource-loader-v0", project.api_version)
 
     // Kotlin
     modImplementation "net.fabricmc:fabric-language-kotlin:${project.fabric_kotlin_version}"
@@ -44,11 +51,10 @@ dependencies {
 	// Compat fixes
     modCompileOnly fabricApi.module("fabric-renderer-indigo", project.api_version)
     modCompileOnly("me.jellysquid.mods:sodium-fabric:${project.sodium_version}") { transitive = false }
-    modCompileOnly("io.vram:canvas-fabric-mc118:1.0.+") { transitive = false }
+    modCompileOnly("io.vram:canvas-fabric-mc119:1.0.+") { transitive = false }
 
 	// Baritone integration
-    modImplementation "baritone:fabric:${project.baritone_version}"
-    include "baritone:fabric:${project.baritone_version}"
+    modInclude "baritone:fabric:${project.baritone_version}"
 
     // Libraries
     library "meteordevelopment:orbit:${project.orbit_version}"
@@ -57,11 +63,8 @@ dependencies {
     library "org.reflections:reflections:${project.reflections_version}"
 
     // Proxies
-    implementation("io.netty:netty-handler-proxy:${project.netty_version}") { transitive = false }
-    shadow("io.netty:netty-handler-proxy:${project.netty_version}") { transitive = false }
-
-    implementation("io.netty:netty-codec-socks:${project.netty_version}") { transitive = false }
-    shadow("io.netty:netty-codec-socks:${project.netty_version}") { transitive = false }
+    library("io.netty:netty-handler-proxy:${project.netty_version}") { transitive = false }
+    library("io.netty:netty-codec-socks:${project.netty_version}") { transitive = false }
 
     // Launch sub project
     shadow project(":launch")

@@ -3,5 +3,7 @@
  * Copyright (c) Meteor Development.
  */
 
-package meteordevelopment.meteorclient.mixin;public interface StarscriptAccessor {
+package meteordevelopment.meteorclient.mixin;
+
+public interface StarscriptAccessor {
 }

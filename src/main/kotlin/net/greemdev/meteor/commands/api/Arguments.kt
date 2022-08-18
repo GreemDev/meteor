@@ -21,7 +21,7 @@ inline fun<reified T> MinecraftCommandContext.argument(name: String, noinline pa
 
 object Arguments {
 
-    fun module(): ModuleArgumentType = ModuleArgumentType.module()
+    fun module(): ModuleArgumentType = ModuleArgumentType.create()
     fun player(): PlayerArgumentType = PlayerArgumentType.player()
     fun playerListEntry(): PlayerListEntryArgumentType = PlayerListEntryArgumentType.playerListEntry()
     fun profile(): ProfileArgumentType = ProfileArgumentType.profile()

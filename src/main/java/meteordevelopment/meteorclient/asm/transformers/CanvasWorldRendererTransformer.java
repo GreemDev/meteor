@@ -36,7 +36,7 @@ public class CanvasWorldRendererTransformer extends AsmTransformer {
             if (!(insn instanceof MethodInsnNode in)) continue;
 
             if (drawMethod.equals(in)) {
-                method.instructions.insert(insn, new MethodInsnNode(Opcodes.INVOKESTATIC, "meteordevelopment/meteorclient/utils/render/EntityShaders", "endRender", "()V"));
+                method.instructions.insert(insn, new MethodInsnNode(Opcodes.INVOKESTATIC, "meteordevelopment/meteorclient/utils/render/postprocess/PostProcessShaders", "endRender", "()V"));
                 break;
             }
         }

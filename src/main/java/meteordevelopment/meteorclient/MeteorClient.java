@@ -18,8 +18,7 @@ import meteordevelopment.meteorclient.systems.Systems;
 import meteordevelopment.meteorclient.systems.config.Config;
 import meteordevelopment.meteorclient.systems.modules.Categories;
 import meteordevelopment.meteorclient.systems.modules.Modules;
-import meteordevelopment.meteorclient.utils.ReflectInit;
-import meteordevelopment.meteorclient.utils.Utils;
+import meteordevelopment.meteorclient.utils.*;
 import meteordevelopment.meteorclient.utils.misc.Version;
 import meteordevelopment.meteorclient.utils.misc.input.KeyAction;
 import meteordevelopment.meteorclient.utils.misc.input.KeyBinds;
@@ -90,7 +89,7 @@ public class MeteorClient implements ClientModInitializer {
         ReflectInit.registerPackages();
 
         // Pre init
-        ReflectInit.preInit();
+        ReflectInit.init(PreInit.class);
 
         // Register module categories
         Categories.init();
@@ -111,7 +110,7 @@ public class MeteorClient implements ClientModInitializer {
         Systems.load();
 
         // Post init
-        ReflectInit.postInit();
+        ReflectInit.init(PostInit.class);
 
         // Save on shutdown
         Runtime.getRuntime().addShutdownHook(new Thread(() -> {

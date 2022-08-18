@@ -22,8 +22,6 @@ public class MixinPlugin implements IMixinConfigPlugin {
     private static final String mixinPackage = "meteordevelopment.meteorclient.mixin";
 
     private static boolean loaded;
-
-    private static boolean isResourceLoaderPresent;
     private static boolean isOriginsPresent;
     private static boolean isIndigoPresent;
     private static boolean isSodiumPresent;
@@ -66,11 +64,7 @@ public class MixinPlugin implements IMixinConfigPlugin {
             e.printStackTrace();
         }
 
-        for (ModContainer mod : FabricLoader.getInstance().getAllMods()) {
-            isResourceLoaderPresent = isResourceLoaderPresent || mod.getMetadata().getId().startsWith("fabric-resource-loader");
-            isIndigoPresent = isIndigoPresent || mod.getMetadata().getId().startsWith("fabric-renderer-indigo");
-        }
-
+        isIndigoPresent = FabricLoader.getInstance().isModLoaded("fabric-renderer-indigo");
         isOriginsPresent = FabricLoader.getInstance().isModLoaded("origins");
         isSodiumPresent = FabricLoader.getInstance().isModLoaded("sodium");
         isCanvasPresent = FabricLoader.getInstance().isModLoaded("canvas");
@@ -87,9 +81,6 @@ public class MixinPlugin implements IMixinConfigPlugin {
     public boolean shouldApplyMixin(String targetClassName, String mixinClassName) {
         if (!mixinClassName.startsWith(mixinPackage)) {
             throw new RuntimeException("Mixin " + mixinClassName + " is not in the mixin package");
-        }
-        else if (mixinClassName.endsWith("NamespaceResourceManagerMixin") || mixinClassName.endsWith("ReloadableResourceManagerImplMixin")) {
-            return !isResourceLoaderPresent;
         }
         else if (mixinClassName.endsWith("PlayerEntityRendererMixin")) {
             return !isOriginsPresent;

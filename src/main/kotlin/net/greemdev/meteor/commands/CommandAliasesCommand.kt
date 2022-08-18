@@ -17,9 +17,9 @@ class CommandAliasesCommand : GCommand(
     "command-aliases", "Configured by the module of the same name.", "ca"
 ) {
     companion object {
-
-        private fun notFound(name: String) =
-            SimpleCommandExceptionType(textOf("No alias with the name '$name' was found."))
+        private val notFound by dynamicCommandException {
+            textOf("No alias with the name '$it' was found.")
+        }
     }
 
     override fun CommandBuilder.build() {
@@ -36,7 +36,7 @@ class CommandAliasesCommand : GCommand(
         val name = ctx.argument<String>("alias")
         val mapping = Meteor.module<CommandAliases>().mapped.entries.firstOrNull {
             it.key.equals(name, true)
-        } ?: throw notFound(name).create()
+        } ?: throw notFound.create(name)
 
         if (Meteor.module<CommandAliases>().chatFeedback)
             info("Executing '${mapping.value.ensurePrefix("/")}'")
