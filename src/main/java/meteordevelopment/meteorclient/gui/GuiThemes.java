@@ -9,6 +9,8 @@ import meteordevelopment.meteorclient.MeteorClient;
 import meteordevelopment.meteorclient.gui.themes.meteor.MeteorGuiTheme;
 import meteordevelopment.meteorclient.utils.PostInit;
 import meteordevelopment.meteorclient.utils.PreInit;
+import net.fabricmc.loader.api.FabricLoader;
+import net.greemdev.meteor.Greteor;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.nbt.NbtIo;
 
@@ -42,7 +44,7 @@ public class GuiThemes {
                 e.printStackTrace();
             }
         }
-
+        Greteor.roundedTheme();
         if (theme == null) select("Meteor");
     }
 

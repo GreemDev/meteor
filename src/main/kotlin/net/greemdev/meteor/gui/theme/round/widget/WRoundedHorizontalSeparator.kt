@@ -1,0 +1,36 @@
+/*
+ * This file is part of the Meteor Client distribution (https://github.com/MeteorDevelopment/meteor-client).
+ * Copyright (c) Meteor Development.
+ */
+
+package net.greemdev.meteor.gui.theme.round.widget
+
+import meteordevelopment.meteorclient.gui.renderer.GuiRenderer
+import meteordevelopment.meteorclient.gui.widgets.WHorizontalSeparator
+import net.greemdev.meteor.gui.theme.round.RoundedWidget
+import kotlin.math.round
+
+class WRoundedHorizontalSeparator(text: String?) : WHorizontalSeparator(text), RoundedWidget {
+    override fun onRender(renderer: GuiRenderer, mouseX: Double, mouseY: Double, delta: Double) {
+        val theme = theme()
+        if (text == null) { //render without text
+            val s = theme.scale(1.0)
+            val w = width / 2
+
+            renderer.quad(x, y + s, w, s, theme.separatorEdges.get(), theme.separatorCenter.get())
+            renderer.quad(x + w, y + s, w, s, theme.separatorCenter.get(), theme.separatorEdges.get())
+        } else { //render with text
+            val s = theme.scale(2.0)
+            val h = theme.scale(1.0)
+
+            val textStart = round(width / 2 - textWidth / 2 - s)
+            val textEnd = s + textStart + textWidth + s
+
+            val offsetY = round(height / 2)
+
+            renderer.quad(x, y + offsetY, textStart, h, theme.separatorEdges.get(), theme.separatorCenter.get())
+            renderer.text(text, x + textStart + s, y, theme.separatorText.get(), false)
+            renderer.quad(x + textEnd, y + offsetY, width - textEnd, h, theme.separatorCenter.get(), theme.separatorEdges.get())
+        }
+    }
+}

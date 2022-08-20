@@ -21,9 +21,8 @@ fun Entity.editPos(x: Double = 0.0, y: Double = 0.0, z: Double = 0.0) {
 
 fun MinecraftClient.isInGame() = player != null && world != null
 
-fun MinecraftClient.player() = player!!
-fun MinecraftClient.currentWorld() = world!!
-fun MinecraftClient.playersInCurrentWorld(): List<AbstractClientPlayerEntity> = world!!.players
+fun MinecraftClient.player() = player ?: error("The client's PlayerEntity is unavailable.")
+fun MinecraftClient.currentWorld() = world ?: error("There is no world loaded currently.")
 
 fun MinecraftClient.sendCommand(command: String, preview: Text? = null) = player().sendCommand(command, preview)
 fun MinecraftClient.showMessage(text: Text) = player().sendMessage(text)

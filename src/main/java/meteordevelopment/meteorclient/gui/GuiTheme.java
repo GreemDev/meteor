@@ -82,10 +82,16 @@ public abstract class GuiTheme implements ISerializable<GuiTheme> {
 
     protected abstract WButton button(String text, GuiTexture texture);
     public WButton button(String text) {
-        return button(text, null);
+        return button(text, (GuiTexture)null);
+    }
+    public WButton button(String text, Runnable action) {
+        return button(text).action(action);
     }
     public WButton button(GuiTexture texture) {
         return button(null, texture);
+    }
+    public WButton button(GuiTexture texture, Runnable action) {
+        return button(texture).action(action);
     }
 
     public abstract WMinus minus();

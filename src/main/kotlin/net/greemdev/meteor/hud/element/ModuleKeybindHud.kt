@@ -18,8 +18,7 @@ import kotlin.math.max
 
 class ModuleKeybindHud : HudElement(elementInfo) {
     companion object : HudElementMetadata<ModuleKeybindHud> {
-        override val elementInfo = HudElementInfo(
-            Greteor.hudElementGroup(),
+        override val elementInfo = HudElementInfo(Greteor.hudGroup(),
             "module-keybinds", "Displays selected modules with valid keybinds."
         ) {
             ModuleKeybindHud()

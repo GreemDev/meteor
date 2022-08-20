@@ -273,10 +273,7 @@ public class DiscordPresence extends Module {
 
     @Override
     public WWidget getWidget(GuiTheme theme) {
-        return theme.button("Starscript Info")
-            .action(() ->
-                Util.getOperatingSystem()
-                    .open("https://github.com/MeteorDevelopment/starscript/wiki")
-            );
+        return theme.button("Starscript Info", () ->
+            Util.getOperatingSystem().open("https://github.com/MeteorDevelopment/starscript/wiki"));
     }
 }

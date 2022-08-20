@@ -9,6 +9,8 @@ package net.greemdev.meteor.util
 import meteordevelopment.meteorclient.gui.utils.StarscriptTextBoxRenderer
 import meteordevelopment.meteorclient.gui.widgets.pressable.WPressable
 import meteordevelopment.meteorclient.settings.*
+import meteordevelopment.meteorclient.utils.Utils
+import net.fabricmc.loader.api.FabricLoader
 import net.minecraft.text.MutableText
 import net.minecraft.text.Text
 import org.apache.logging.log4j.LogManager
@@ -48,6 +50,7 @@ fun <T> runOrIgnore(runnable: Runnable) = try {
 
 // Looks repetitive however each different type we check for has its own special logic in LogManager
 fun log4j(value: Any) = lazy {
+    1 or 2
     when (value) {
         is String -> LogManager.getLogger(value)
         is Class<*> -> LogManager.getLogger(value)
@@ -56,6 +59,8 @@ fun log4j(value: Any) = lazy {
         else -> LogManager.getLogger(value)
     }
 }
+
+operator fun FabricLoader.contains(modId: String) = modLoader.isModLoaded(modId)
 
 fun textOf(content: String? = null, block: (MutableText.() -> Unit)?): MutableText = if (content == null)
     Text.empty()

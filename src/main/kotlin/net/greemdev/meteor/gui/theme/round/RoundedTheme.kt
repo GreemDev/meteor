@@ -7,29 +7,25 @@
 
 package net.greemdev.meteor.gui.theme.round
 
-import meteordevelopment.meteorclient.MeteorClient.mc
+import meteordevelopment.meteorclient.gui.DefaultSettingsWidgetFactory
 import meteordevelopment.meteorclient.gui.GuiTheme
 import meteordevelopment.meteorclient.gui.WidgetScreen
 import meteordevelopment.meteorclient.gui.renderer.packer.GuiTexture
 import meteordevelopment.meteorclient.gui.utils.AlignmentX
 import meteordevelopment.meteorclient.gui.utils.CharFilter
 import meteordevelopment.meteorclient.gui.widgets.*
-import meteordevelopment.meteorclient.gui.widgets.containers.WSection
-import meteordevelopment.meteorclient.gui.widgets.containers.WView
-import meteordevelopment.meteorclient.gui.widgets.containers.WWindow
-import meteordevelopment.meteorclient.gui.widgets.input.WDropdown
-import meteordevelopment.meteorclient.gui.widgets.input.WSlider
 import meteordevelopment.meteorclient.gui.widgets.input.WTextBox
-import meteordevelopment.meteorclient.gui.widgets.pressable.*
 import meteordevelopment.meteorclient.renderer.text.TextRenderer
 import meteordevelopment.meteorclient.settings.SettingGroup
 import meteordevelopment.meteorclient.systems.accounts.Account
 import meteordevelopment.meteorclient.systems.modules.Module
 import meteordevelopment.meteorclient.utils.render.color.Color
 import meteordevelopment.meteorclient.utils.render.color.SettingColor
+import net.greemdev.meteor.gui.theme.round.widget.*
+import net.greemdev.meteor.gui.theme.round.widget.pressable.*
+import net.greemdev.meteor.gui.theme.round.widget.input.*
 import net.greemdev.meteor.type.setting.TriStateColorSetting
 import net.greemdev.meteor.util.*
-import net.minecraft.command.argument.ColorArgumentType.color
 
 
 class RoundedTheme : GuiTheme("Rounded") {
@@ -52,7 +48,7 @@ class RoundedTheme : GuiTheme("Rounded") {
         saneSlider()
         onSliderRelease()
         onChanged {
-            (mc.currentScreen as? WidgetScreen)?.invalidate()
+            (minecraft.currentScreen as? WidgetScreen)?.invalidate()
         }
     }
 
@@ -73,19 +69,18 @@ class RoundedTheme : GuiTheme("Rounded") {
         description("Hide HUD when in GUI.")
         defaultValue(false)
         onChanged {
-            if (mc.currentScreen is WidgetScreen)
-                mc.options.hudHidden = it
+            if (minecraft.currentScreen is WidgetScreen)
+                minecraft.options.hudHidden = it
         }
     }
 
-    val roundness by sg int {
-        name("round")
+    val round by sg double {
+        name("roundness")
         description("How much the GUI and HUD should be rounded.")
-        defaultValue(0)
-        min(0)
-        max(20)
-        sliderMin(0)
-        sliderMax(15)
+        defaultValue(4.0)
+        min(0.0)
+        max(25.0)
+        saneSlider()
     }
 
     // Colors
@@ -115,7 +110,7 @@ class RoundedTheme : GuiTheme("Rounded") {
     val moduleBackground by colorSetting(sgBC, "module-background", "Color of module background when active.", SettingColor(50, 50, 50))
 
     // Outline
-    val outlineColor = TriStateColorSetting(sgBC,
+    val outlineColor = TriStateColorSetting(sgO,
         "outline",
         SettingColor(0, 0, 0),
         SettingColor(10, 10, 10),
@@ -170,155 +165,66 @@ class RoundedTheme : GuiTheme("Rounded") {
         SettingColor(152, 118, 170)
     )
 
-
-    override fun window(icon: WWidget?, title: String?): WWindow {
-        TODO("Not yet implemented")
+    init {
+        settingsFactory = DefaultSettingsWidgetFactory(this)
     }
 
-    override fun label(text: String?, title: Boolean, maxWidth: Double): WLabel {
-        TODO("Not yet implemented")
-    }
 
-    override fun horizontalSeparator(text: String?): WHorizontalSeparator {
-        TODO("Not yet implemented")
-    }
+    override fun window(icon: WWidget?, title: String?) = w(WRoundedWindow(icon, title))
+    override fun label(text: String?, title: Boolean, maxWidth: Double): WLabel =
+        if (maxWidth == 0.0)
+            w(WRoundedLabel(text, title))
+        else
+            w(WRoundedMultiLabel(text, title, maxWidth))
 
-    override fun verticalSeparator(): WVerticalSeparator {
-        TODO("Not yet implemented")
-    }
+    override fun horizontalSeparator(text: String?) = w(WRoundedHorizontalSeparator(text))
+    override fun verticalSeparator() = w(WRoundedVerticalSeparator())
+    override fun button(text: String?, texture: GuiTexture?) = w(WRoundedButton(text, texture))
+    override fun minus() = w(WRoundedMinus())
 
-    override fun button(text: String?, texture: GuiTexture?): WButton {
-        TODO("Not yet implemented")
-    }
+    override fun plus() = w(WRoundedPlus())
 
-    override fun minus(): WMinus {
-        TODO("Not yet implemented")
-    }
+    override fun checkbox(checked: Boolean) = w(WRoundedCheckbox(checked))
 
-    override fun plus(): WPlus {
-        TODO("Not yet implemented")
-    }
-
-    override fun checkbox(checked: Boolean): WCheckbox {
-        TODO("Not yet implemented")
-    }
-
-    override fun slider(value: Double, min: Double, max: Double): WSlider {
-        TODO("Not yet implemented")
-    }
+    override fun slider(value: Double, min: Double, max: Double) = w(WRoundedSlider(value, min, max))
 
     override fun textBox(
-        text: String?,
+        text: String,
         placeholder: String?,
-        filter: CharFilter?,
+        filter: CharFilter,
         renderer: Class<out WTextBox.Renderer>?
-    ): WTextBox {
-        TODO("Not yet implemented")
-    }
+    ) = w(WRoundedTextBox(text, placeholder, filter, renderer))
 
-    override fun <T : Any?> dropdown(values: Array<out T>?, value: T): WDropdown<T> {
-        TODO("Not yet implemented")
-    }
+    override fun <T : Any> dropdown(values: Array<out T>, value: T) = w(WRoundedDropdown(values, value))
 
-    override fun triangle(): WTriangle {
-        TODO("Not yet implemented")
-    }
+    override fun triangle() = w(WRoundedTriangle())
+    override fun tooltip(text: String) = w(WRoundedTooltip(text))
+    override fun view() = w(WRoundedView())
+    override fun section(title: String, expanded: Boolean, headerWidget: WWidget?) = w(WRoundedSection(title, expanded, headerWidget))
+    override fun account(screen: WidgetScreen, account: Account<*>) = w(WRoundedAccount(screen, account))
+    override fun module(module: Module) = w(WRoundedModule(module))
+    override fun quad(color: Color) = w(WRoundedQuad(color))
+    override fun topBar() = w(WRoundedTopBar())
+    override fun favorite(checked: Boolean) = w(WRoundedFavorite(checked))
 
-    override fun tooltip(text: String?): WTooltip {
-        TODO("Not yet implemented")
-    }
+    override fun textColor(): Color = textColor.get()
+    override fun textSecondaryColor() = textSecondaryColor.get()
 
-    override fun view(): WView {
-        TODO("Not yet implemented")
-    }
+    override fun starscriptTextColor() = starscriptText.get()
+    override fun starscriptBraceColor() = starscriptBraces.get()
+    override fun starscriptParenthesisColor() = starscriptParenthesis.get()
+    override fun starscriptDotColor() = starscriptDots.get()
+    override fun starscriptCommaColor() = starscriptCommas.get()
+    override fun starscriptOperatorColor() = starscriptOperators.get()
+    override fun starscriptStringColor() = starscriptStrings.get()
+    override fun starscriptNumberColor() = starscriptNumbers.get()
+    override fun starscriptKeywordColor() = starscriptKeywords.get()
+    override fun starscriptAccessedObjectColor() = starscriptAccessedObjects.get()
 
-    override fun section(title: String?, expanded: Boolean, headerWidget: WWidget?): WSection {
-        TODO("Not yet implemented")
-    }
-
-    override fun account(screen: WidgetScreen?, account: Account<*>?): WAccount {
-        TODO("Not yet implemented")
-    }
-
-    override fun module(module: Module?): WWidget {
-        TODO("Not yet implemented")
-    }
-
-    override fun quad(color: Color?): WQuad {
-        TODO("Not yet implemented")
-    }
-
-    override fun topBar(): WTopBar {
-        TODO("Not yet implemented")
-    }
-
-    override fun favorite(checked: Boolean): WFavorite {
-        TODO("Not yet implemented")
-    }
-
-    override fun textColor(): Color {
-        TODO("Not yet implemented")
-    }
-
-    override fun textSecondaryColor(): Color {
-        TODO("Not yet implemented")
-    }
-
-    override fun starscriptTextColor(): Color {
-        TODO("Not yet implemented")
-    }
-
-    override fun starscriptBraceColor(): Color {
-        TODO("Not yet implemented")
-    }
-
-    override fun starscriptParenthesisColor(): Color {
-        TODO("Not yet implemented")
-    }
-
-    override fun starscriptDotColor(): Color {
-        TODO("Not yet implemented")
-    }
-
-    override fun starscriptCommaColor(): Color {
-        TODO("Not yet implemented")
-    }
-
-    override fun starscriptOperatorColor(): Color {
-        TODO("Not yet implemented")
-    }
-
-    override fun starscriptStringColor(): Color {
-        TODO("Not yet implemented")
-    }
-
-    override fun starscriptNumberColor(): Color {
-        TODO("Not yet implemented")
-    }
-
-    override fun starscriptKeywordColor(): Color {
-        TODO("Not yet implemented")
-    }
-
-    override fun starscriptAccessedObjectColor(): Color {
-        TODO("Not yet implemented")
-    }
-
-    override fun textRenderer(): TextRenderer {
-        TODO("Not yet implemented")
-    }
-
-    override fun scale(value: Double): Double {
-        TODO("Not yet implemented")
-    }
-
-    override fun categoryIcons(): Boolean {
-        TODO("Not yet implemented")
-    }
-
-    override fun hideHUD(): Boolean {
-        TODO("Not yet implemented")
-    }
+    override fun textRenderer() = TextRenderer.get()
+    override fun scale(value: Double) = value * scale.get()
+    override fun categoryIcons() = showCategoryIcons.get()
+    override fun hideHUD() = hideHud.get()
 
     private fun colorSetting(name: String, description: String, defaultValue: SettingColor) = colorSetting(sgC, name, description, defaultValue)
 

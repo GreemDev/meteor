@@ -23,6 +23,9 @@ typealias ArgumentBuilder<T> = BrigadierBuilder<MinecraftArgumentBuilder<T>>
 private typealias BArgBuilder<S, T> = com.mojang.brigadier.builder.ArgumentBuilder<S, T>
 
 data class BrigadierBuilder<T : BArgBuilder<CommandSource, T>>(val builder: T) {
+
+    val arg = Arguments
+
     infix fun requires(predicate: CommandSource.() -> Boolean): BrigadierBuilder<T> {
         this.builder.requires(predicate)
         return this
@@ -31,7 +34,7 @@ data class BrigadierBuilder<T : BArgBuilder<CommandSource, T>>(val builder: T) {
         this.builder.then(builder)
         return this
     }
-    fun then(name: String, builder: CommandBuilder.() -> Unit = {}): BrigadierBuilder<T>  {
+    fun then(name: String, builder: CommandBuilder.() -> Unit = {}): BrigadierBuilder<T> {
         this then command(name, builder)
         return this
     }
@@ -43,7 +46,7 @@ data class BrigadierBuilder<T : BArgBuilder<CommandSource, T>>(val builder: T) {
         this.builder.then(builder)
         return this
     }
-    fun<A> then(name: String, argType: ArgumentType<A>, builder: ArgumentBuilder<A>.() -> Unit = {}): BrigadierBuilder<T>  {
+    fun<A> then(name: String, argType: ArgumentType<A>, builder: ArgumentBuilder<A>.() -> Unit = {}): BrigadierBuilder<T> {
         this then BrigadierBuilder(MinecraftArgumentBuilder.argument(name, argType)).apply(builder).builder
         return this
     }

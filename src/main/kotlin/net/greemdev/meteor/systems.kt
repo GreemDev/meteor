@@ -11,7 +11,7 @@ import meteordevelopment.meteorclient.systems.modules.Module
 import net.greemdev.meteor.commands.api.CommandBuilder
 import net.minecraft.command.CommandSource
 
-abstract class GModule(name: String, description: String) : Module(Greteor.moduleCategory(), name, description)
+abstract class GModule(name: String, description: String) : Module(Greteor.category(), name, description)
 
 abstract class GCommand(
     name: String,

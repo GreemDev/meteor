@@ -24,7 +24,7 @@ class TriStateColorSetting(private val group: SettingGroup, name: String, normal
     }
 
     fun get(): SettingColor = normal.get()
-    fun get(pressed: Boolean, hovered: Boolean, bypassDisableHoverColor: Boolean): SettingColor =
+    fun get(pressed: Boolean, hovered: Boolean, bypassDisableHoverColor: Boolean = false): SettingColor =
         if (pressed)
             this.pressed.get()
         else if (hovered && (bypassDisableHoverColor || !GuiThemes.get().disableHoverColor))

@@ -67,7 +67,7 @@ class AutoMessage : GModule(
 
     @OptIn(DelicateCoroutinesApi::class)
     @EventHandler
-    private fun postTick(unused: TickEvent.Post) {
+    private fun postTick(ignored: TickEvent.Post) {
         if (messageScript == null) elapsedTicks = 0
         if (commandScripts.isEmpty()) elapsedTicksCommands = 0
 
@@ -97,38 +97,38 @@ class AutoMessage : GModule(
 
     override fun getWidget(theme: GuiTheme): WWidget =
         theme.table().apply {
-            add(theme.button("Starscript Info")
-                action {
-                    Util.getOperatingSystem().open("https://github.com/MeteorDevelopment/starscript/wiki")
-                })
-            add(theme.button("Test Current")
-                action {
-                    try {
-                        messageScript?.let {
-                            MeteorStarscript.run(it)
-                        }
-                    } catch (e: StarscriptError) {
-                        error("Message failed: ${e.message}")
-                        null
-                    }?.also {
-                        info("Message success: $it")
-                    }
 
-                    if (commandScripts.isEmpty()) {
-                        warning("Not testing any command scripts; there are none.")
-                    } else {
-                        commandScripts.forEach {
-                            try {
-                                MeteorStarscript.run(it)
-                            } catch (e: StarscriptError) {
-                                error("Command failed: ${e.message}")
-                                null
-                            }?.also { cmd ->
-                                info("Command success: $cmd")
-                            }
+            add(theme.button("Starscript Info") {
+                Util.getOperatingSystem().open("https://github.com/MeteorDevelopment/starscript/wiki")
+            })
+
+            add(theme.button("Test Current") {
+                try {
+                    messageScript?.let {
+                        MeteorStarscript.run(it)
+                    }
+                } catch (e: StarscriptError) {
+                    error("Message failed: ${e.message}")
+                    null
+                }?.also {
+                    info("Message success: $it")
+                }
+
+                if (commandScripts.isEmpty()) {
+                    warning("Not testing any command scripts; there are none.")
+                } else {
+                    commandScripts.forEach {
+                        try {
+                            MeteorStarscript.run(it)
+                        } catch (e: StarscriptError) {
+                            error("Command failed: ${e.message}")
+                            null
+                        }?.also { cmd ->
+                            info("Command success: $cmd")
                         }
                     }
-                })
+                }
+            })
         }
 
 

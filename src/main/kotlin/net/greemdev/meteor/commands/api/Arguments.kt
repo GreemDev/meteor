@@ -13,9 +13,6 @@ import meteordevelopment.meteorclient.systems.commands.arguments.*
 import net.minecraft.command.argument.*
 import net.minecraft.predicate.NumberRange
 
-
-val arg = Arguments
-
 inline infix fun <reified T> MinecraftCommandContext.argument(name: String) = getArgument(name, T::class.java)
 
 inline fun<reified T> MinecraftCommandContext.argument(name: String, noinline parser: (MinecraftCommandContext, String) -> T)

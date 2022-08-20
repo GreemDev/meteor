@@ -6,26 +6,23 @@
 package net.greemdev.meteor
 
 import meteordevelopment.meteorclient.MeteorClient
-import meteordevelopment.meteorclient.addons.AddonManager
-import meteordevelopment.meteorclient.addons.MeteorAddon
-import meteordevelopment.meteorclient.systems.commands.Command
+import meteordevelopment.meteorclient.addons.*
+import meteordevelopment.meteorclient.gui.GuiThemes
 import meteordevelopment.meteorclient.systems.hud.HudGroup
 import meteordevelopment.meteorclient.systems.modules.Category
-import meteordevelopment.meteorclient.systems.modules.Module
 import meteordevelopment.meteorclient.systems.modules.Modules
-import net.greemdev.meteor.hud.element.ModuleKeybindHud
-import net.greemdev.meteor.util.Meteor
-import net.greemdev.meteor.util.createSubtypesOf
+import net.greemdev.meteor.gui.theme.round.RoundedTheme
+import net.greemdev.meteor.hud.element.*
+import net.greemdev.meteor.util.*
 import net.minecraft.item.Items
 import java.lang.invoke.MethodHandles
 
+private val category = Category("Greteor", Items.DARK_PRISMARINE.defaultStack)
+private val hudGroup = HudGroup("Greteor")
+
 object Greteor {
-
-    private val category = Category("Greteor", Items.DARK_PRISMARINE.defaultStack)
-    private val hudGroup = HudGroup("Greteor")
-
-    fun moduleCategory() = category
-    fun hudElementGroup() = hudGroup
+    fun category() = category
+    fun hudGroup() = hudGroup
 
     @JvmStatic
     fun modules() {
@@ -41,7 +38,13 @@ object Greteor {
 
     @JvmStatic
     fun categories() {
-        Modules.registerCategory(moduleCategory())
+        Modules.registerCategory(category())
+    }
+
+    @JvmStatic
+    fun roundedTheme() {
+        if ("meteor-rejects" !in modLoader)
+            GuiThemes.add(RoundedTheme())
     }
 
     @JvmStatic
