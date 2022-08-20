@@ -71,7 +71,7 @@ class AutoMessage : GModule(
         if (messageScript == null) elapsedTicks = 0
         if (commandScripts.isEmpty()) elapsedTicksCommands = 0
 
-        if (mc.isInGame() && isActive) {
+        if (mc.isInGame() and isActive) {
             if (elapsedTicks >= messageDelay.get()) {
                 MeteorStarscript.run(messageScript)?.also {
                     mc.sendChatMessage(it)

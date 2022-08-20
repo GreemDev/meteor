@@ -10,10 +10,7 @@ import com.mojang.brigadier.arguments.ArgumentType
 import com.mojang.brigadier.builder.RequiredArgumentBuilder
 import com.mojang.brigadier.suggestion.Suggestions
 import com.mojang.brigadier.suggestion.SuggestionsBuilder
-import kotlinx.coroutines.Deferred
-import kotlinx.coroutines.DelicateCoroutinesApi
-import kotlinx.coroutines.GlobalScope
-import kotlinx.coroutines.async
+import kotlinx.coroutines.*
 import kotlinx.coroutines.future.asCompletableFuture
 import net.minecraft.command.CommandSource
 import java.util.concurrent.CompletableFuture

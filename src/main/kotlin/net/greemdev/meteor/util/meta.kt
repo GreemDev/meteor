@@ -9,7 +9,6 @@ package net.greemdev.meteor.util
 import meteordevelopment.meteorclient.gui.utils.StarscriptTextBoxRenderer
 import meteordevelopment.meteorclient.gui.widgets.pressable.WPressable
 import meteordevelopment.meteorclient.settings.*
-import meteordevelopment.meteorclient.utils.Utils
 import net.fabricmc.loader.api.FabricLoader
 import net.minecraft.text.MutableText
 import net.minecraft.text.Text
@@ -50,7 +49,6 @@ fun <T> runOrIgnore(runnable: Runnable) = try {
 
 // Looks repetitive however each different type we check for has its own special logic in LogManager
 fun log4j(value: Any) = lazy {
-    1 or 2
     when (value) {
         is String -> LogManager.getLogger(value)
         is Class<*> -> LogManager.getLogger(value)
@@ -98,7 +96,7 @@ fun StringSetting.Builder.renderStarscript(): StringSetting.Builder = renderer(S
 fun StringListSetting.Builder.renderStarscript(): StringListSetting.Builder =
     renderer(StarscriptTextBoxRenderer::class.java)
 
-fun <P1, P2> Collection<Pair<P1, P2>>.partition() = associate { it }
+fun <P1, P2> Collection<Pair<P1, P2>>.associate() = associate { it }
 
 fun IntSetting.Builder.saneSlider(): IntSetting.Builder = sliderRange(min, max)
 fun DoubleSetting.Builder.saneSlider(): DoubleSetting.Builder = sliderRange(min, max)

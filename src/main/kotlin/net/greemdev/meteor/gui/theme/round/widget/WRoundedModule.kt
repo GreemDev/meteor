@@ -64,17 +64,17 @@ class WRoundedModule(private val module: Module) : WPressable(), RoundedWidget {
         animationProgress2 = animationProgress2.clamp(0, 1)
 
         if (animationProgress1 > 0.0)
-            renderer.quad(x, y, width * animationProgress1, height, theme.moduleBackground.get())
+            renderer.quad(x, y, width * animationProgress1, height, theme.moduleBackground())
 
         if (animationProgress2 > 0)
-            renderer.quad(x, y + height * (1 - animationProgress2), theme.scale(2.0), height * animationProgress2, theme.accentColor.get())
+            renderer.quad(x, y + height * (1 - animationProgress2), theme.scale(2.0), height * animationProgress2, theme.accentColor())
 
         var x = x + pad
         val w = width - pad * 2
 
-        if (theme.moduleAlignment.get() == AlignmentX.Center)
+        if (theme.moduleAlignment() == AlignmentX.Center)
             x += w / 2 - titleWidth / 2
-        else if (theme.moduleAlignment.get() == AlignmentX.Right)
+        else if (theme.moduleAlignment() == AlignmentX.Right)
             x += w - titleWidth
 
         renderer.text(module.title, x, y + pad, theme.textColor(), false)

@@ -57,7 +57,7 @@ class CommandAliases : GModule(
                     error("Command string didn't contain required separator ::")
                     null
                 } else name.trim() to cstr.trim()
-            }.partition()
+            }.associate()
         }
     }
 }

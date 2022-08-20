@@ -71,26 +71,26 @@ class ModuleKeybindHud : HudElement(elementInfo) {
     }
 
     override fun render(renderer: HudRenderer) {
-        if (Modules.get() == null || modules.get().isEmpty()) {
-            renderer.text("Module Keybinds", x.toDouble(), y.toDouble(), moduleColor.get(), textShadow.get())
+        if (Modules.get() == null || modules().isEmpty()) {
+            renderer.text("Module Keybinds", x.toDouble(), y.toDouble(), moduleColor(), textShadow())
             setSize(renderer.textWidth("Module Keybinds"), renderer.textHeight())
             return
         }
 
-        var y = this.y.toDouble()
+        var y = y.toDouble()
 
         var width = 0.0
         var height = 0.0
-        modules.get().sorted(sorted.get(), sortOrder.get()) {
+        modules().sorted(sorted(), sortOrder()) {
             it.title.length + it.keybind.toString().length
         }.forEachIndexed { i, module ->
             var moduleWidth = renderer.textWidth(module.title) + renderer.textWidth(" ")
             val keybindName = module.keybind.toString()
             moduleWidth += renderer.textWidth(keybindName)
 
-            var x = this.x + alignX(moduleWidth, alignment.get())
-            x = renderer.text(module.title, x, y, moduleColor.get(), textShadow.get())
-            renderer.text(keybindName, x + renderer.textWidth(" "), y, keybindColor.get(), textShadow.get())
+            var x = this.x + alignX(moduleWidth, alignment())
+            x = renderer.text(module.title, x, y, moduleColor(), textShadow())
+            renderer.text(keybindName, x + renderer.textWidth(" "), y, keybindColor(), textShadow())
             y += renderer.textHeight() + 2
 
             width = max(width, moduleWidth)

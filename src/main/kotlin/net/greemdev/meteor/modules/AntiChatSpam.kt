@@ -29,7 +29,7 @@ class AntiChatSpam : GModule(
         name("comparison")
         description("How to determine if the message should be hidden.")
         defaultValue(StringComparisonType.Contains)
-        visible { filters.get().isNotEmpty() }
+        visible { filters().isNotEmpty() }
     }
 
     val ignoreCase by sg bool {
@@ -41,9 +41,8 @@ class AntiChatSpam : GModule(
 
     @EventHandler
     fun receiveMessage(e: ReceiveMessageEvent) {
-        filters.get().forEach {
-            val comparer = comparisonType.get()
-            if (comparer.compare(e.message.string, it, ignoreCase.get()))
+        filters().forEach {
+            if (comparisonType().compare(e.message.string, it, ignoreCase()))
                 e.cancel()
         }
     }

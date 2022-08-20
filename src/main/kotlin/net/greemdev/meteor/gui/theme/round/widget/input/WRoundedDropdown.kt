@@ -28,11 +28,13 @@ class WRoundedDropdown<T>(values: Array<out T>, value: T) : WDropdown<T>(values,
         renderer.rotatedQuad(x + pad + maxValueWidth + pad, y + pad, s, s, 0.0, GuiRenderer.TRIANGLE, theme.textColor())
     }
 
-    private class WRoot : WDropdownRoot(), RoundedWidget {
+    private inner class WRoot : WDropdownRoot(), RoundedWidget {
         override fun onRender(renderer: GuiRenderer, mouseX: Double, mouseY: Double, delta: Double) {
             val theme = theme()
             val s = theme.scale(2.0)
-            val c = theme.outlineColor.get()
+            val c = theme.outlineColor()
+
+            renderBackground(renderer, this, pressed, mouseOver)
 
             renderer.quad(x, y + height - s, width, s, c)
             renderer.quad(x, y, s, height - s, c)

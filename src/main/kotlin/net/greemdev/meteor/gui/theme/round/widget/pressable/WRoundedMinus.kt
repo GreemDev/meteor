@@ -8,6 +8,7 @@ package net.greemdev.meteor.gui.theme.round.widget.pressable
 import meteordevelopment.meteorclient.gui.renderer.GuiRenderer
 import meteordevelopment.meteorclient.gui.widgets.pressable.WMinus
 import net.greemdev.meteor.gui.theme.round.RoundedWidget
+import net.greemdev.meteor.util.invoke
 
 class WRoundedMinus : WMinus(), RoundedWidget {
 
@@ -16,6 +17,6 @@ class WRoundedMinus : WMinus(), RoundedWidget {
         val s = theme.scale(3.0)
 
         renderBackground(renderer, this, pressed, mouseOver)
-        renderer.quad(x + pad, y + height / 2 - s / 2, width - pad * 2, s, theme().minusColor.get())
+        renderer.quad(x + pad, y + height / 2 - s / 2, width - pad * 2, s, theme().minusColor())
     }
 }

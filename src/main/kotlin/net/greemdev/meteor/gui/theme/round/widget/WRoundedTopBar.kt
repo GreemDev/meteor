@@ -14,6 +14,7 @@ import meteordevelopment.meteorclient.gui.renderer.GuiRenderer
 import meteordevelopment.meteorclient.gui.tabs.Tabs
 import meteordevelopment.meteorclient.utils.render.color.Color
 import net.greemdev.meteor.gui.theme.round.util.*
+import net.greemdev.meteor.util.invoke
 import net.greemdev.meteor.util.minecraft
 import org.lwjgl.glfw.GLFW.glfwSetCursorPos
 
@@ -56,9 +57,9 @@ class WRoundedTopBar : WTopBar(), RoundedWidget {
             val color = getButtonColor(pressed || (minecraft.currentScreen is TabScreen && (minecraft.currentScreen as TabScreen).tab == tab), mouseOver)
 
             when (buttonState(this)) {
-                1 -> renderer.quadRoundedSide(this, color, theme().round.get(), false)
-                2 -> renderer.quadRoundedSide(this, color, theme().round.get(), true)
-                3 -> renderer.quadRounded(this, color, theme().round.get())
+                1 -> renderer.quadRoundedSide(this, color, theme().round(), false)
+                2 -> renderer.quadRoundedSide(this, color, theme().round(), true)
+                3 -> renderer.quadRounded(this, color, theme().round())
                 else -> renderer.quad(this, color)
             }
             renderer.text(tab.name, x + pad, y + pad, nameColor, false)

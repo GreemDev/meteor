@@ -8,6 +8,7 @@ package net.greemdev.meteor.gui.theme.round.widget.input
 import meteordevelopment.meteorclient.gui.renderer.GuiRenderer
 import meteordevelopment.meteorclient.gui.widgets.input.WSlider
 import net.greemdev.meteor.gui.theme.round.RoundedWidget
+import net.greemdev.meteor.util.invoke
 
 class WRoundedSlider(value: Double, min: Double, max: Double) : WSlider(value, min, max), RoundedWidget {
     override fun onRender(renderer: GuiRenderer, mouseX: Double, mouseY: Double, delta: Double) {
@@ -26,8 +27,8 @@ class WRoundedSlider(value: Double, min: Double, max: Double) : WSlider(value, m
         val x = x + handleSize / 2
         val y = y + height / 2 - s / 2
 
-        quad(x, y, valueWidth, s, theme.sliderLeft.get())
-        quad(x + valueWidth, y, width - valueWidth - handleSize, s, theme.sliderRight.get())
+        quad(x, y, valueWidth, s, theme.sliderLeft())
+        quad(x + valueWidth, y, width - valueWidth - handleSize, s, theme.sliderRight())
     }
 
     private fun GuiRenderer.renderHandle(valueWidth: Double) {

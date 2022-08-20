@@ -6,11 +6,9 @@
 package meteordevelopment.meteorclient.utils.player;
 
 import baritone.api.BaritoneAPI;
-import meteordevelopment.meteorclient.MeteorClient;
 import meteordevelopment.meteorclient.mixin.ChatHudAccessor;
 import meteordevelopment.meteorclient.systems.config.Config;
-import meteordevelopment.meteorclient.utils.PostInit;
-import meteordevelopment.meteorclient.utils.render.color.SettingColor;
+import net.greemdev.meteor.util.ChatFeedback;
 import net.minecraft.text.*;
 import net.minecraft.util.Formatting;
 import net.minecraft.util.Pair;
@@ -26,20 +24,6 @@ import static meteordevelopment.meteorclient.MeteorClient.mc;
 public class ChatUtils {
     private static final List<Pair<String, Supplier<Text>>> customPrefixes = new ArrayList<>();
     private static String forcedPrefixClassName;
-
-    public static Text getMeteorPrefix() {
-        SettingColor color;
-        try {
-            color = Config.get().meteorPrefixColor.get();
-        } catch (Throwable t) {
-            color = MeteorClient.ADDON.color.toSetting();
-        }
-        return Text.literal("")
-            .setStyle(Style.EMPTY.withFormatting(Formatting.GRAY))
-            .append("[")
-            .append(Text.literal("Meteor").setStyle(Style.EMPTY.withColor(new TextColor(color.getPacked()))))
-            .append("] ");
-    }
 
     /** Registers a custom prefix to be used when calling from a class in the specified package. When null is returned from the supplier the default Meteor prefix is used. */
     public static void registerCustomPrefix(String packageName, Supplier<Text> supplier) {
@@ -161,7 +145,7 @@ public class ChatUtils {
     private static Text getPrefix() {
         if (customPrefixes.isEmpty()) {
             forcedPrefixClassName = null;
-            return getMeteorPrefix();
+            return ChatFeedback.feedbackPrefix();
         }
 
         boolean foundChatUtils = false;
@@ -184,16 +168,16 @@ public class ChatUtils {
             }
         }
 
-        if (className == null) return getMeteorPrefix();
+        if (className == null) return ChatFeedback.feedbackPrefix();
 
         for (Pair<String, Supplier<Text>> pair : customPrefixes) {
             if (className.startsWith(pair.getLeft())) {
                 Text prefix = pair.getRight().get();
-                return prefix != null ? prefix : getMeteorPrefix();
+                return prefix != null ? prefix : ChatFeedback.feedbackPrefix();
             }
         }
 
-        return getMeteorPrefix();
+        return ChatFeedback.feedbackPrefix();
     }
 
     private static String formatMsg(String format, Formatting defaultColor, Object... args) {

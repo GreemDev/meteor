@@ -10,6 +10,8 @@ import meteordevelopment.meteorclient.utils.misc.MyPotion
 import kotlin.properties.ReadOnlyProperty
 import kotlin.reflect.KProperty
 
+operator fun<T : Any> Setting<T>.invoke(): T = get()
+
 fun Settings.group(name: String? = null, expanded: Boolean = true): SettingGroup =
     name?.let { getGroup(it) ?: createGroup(it, expanded) } ?: group("General", expanded)
 

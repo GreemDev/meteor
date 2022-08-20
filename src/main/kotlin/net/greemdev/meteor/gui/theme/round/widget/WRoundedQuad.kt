@@ -10,9 +10,10 @@ import meteordevelopment.meteorclient.gui.widgets.WQuad
 import meteordevelopment.meteorclient.utils.render.color.Color
 import net.greemdev.meteor.gui.theme.round.RoundedWidget
 import net.greemdev.meteor.gui.theme.round.util.quadRounded
+import net.greemdev.meteor.util.invoke
 
 class WRoundedQuad(color: Color) : WQuad(color), RoundedWidget {
     override fun onRender(renderer: GuiRenderer, mouseX: Double, mouseY: Double, delta: Double) {
-        renderer.quadRounded(x, y, width, height, color, theme().round.get())
+        renderer.quadRounded(x, y, width, height, color, theme().round())
     }
 }

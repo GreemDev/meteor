@@ -8,6 +8,7 @@ package net.greemdev.meteor.gui.theme.round.widget
 import meteordevelopment.meteorclient.gui.renderer.GuiRenderer
 import meteordevelopment.meteorclient.gui.widgets.WLabel
 import net.greemdev.meteor.gui.theme.round.RoundedWidget
+import net.greemdev.meteor.util.invoke
 
 open class WRoundedLabel(text: String?, title: Boolean) : WLabel(text, title), RoundedWidget {
     override fun onRender(renderer: GuiRenderer, mouseX: Double, mouseY: Double, delta: Double) {
@@ -15,7 +16,7 @@ open class WRoundedLabel(text: String?, title: Boolean) : WLabel(text, title), R
             val color = if (color != null)
                 color
             else if (title)
-                theme().titleTextColor.get()
+                theme().titleTextColor()
             else
                 theme().textColor()
 

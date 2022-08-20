@@ -10,6 +10,7 @@ import net.minecraft.client.MinecraftClient
 import net.minecraft.client.network.AbstractClientPlayerEntity
 import net.minecraft.entity.Entity
 import net.minecraft.text.Text
+import net.minecraft.util.math.Vec3d
 
 fun MinecraftClient.setPlayerPos(x: Double = player!!.x, y: Double = player!!.y, z: Double = player!!.z) {
     player!!.setPos(x, y, z)
@@ -17,6 +18,11 @@ fun MinecraftClient.setPlayerPos(x: Double = player!!.x, y: Double = player!!.y,
 
 fun Entity.editPos(x: Double = 0.0, y: Double = 0.0, z: Double = 0.0) {
     setPosition(this.x + x, this.y + y, this.z + z)
+}
+
+operator fun Entity.plus(vec3d: Vec3d): Entity {
+    addVelocity(vec3d.x, vec3d.y, vec3d.z)
+    return this
 }
 
 fun MinecraftClient.isInGame() = player != null && world != null

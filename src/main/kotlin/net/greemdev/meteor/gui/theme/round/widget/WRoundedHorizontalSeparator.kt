@@ -8,6 +8,7 @@ package net.greemdev.meteor.gui.theme.round.widget
 import meteordevelopment.meteorclient.gui.renderer.GuiRenderer
 import meteordevelopment.meteorclient.gui.widgets.WHorizontalSeparator
 import net.greemdev.meteor.gui.theme.round.RoundedWidget
+import net.greemdev.meteor.util.invoke
 import kotlin.math.round
 
 class WRoundedHorizontalSeparator(text: String?) : WHorizontalSeparator(text), RoundedWidget {
@@ -17,8 +18,8 @@ class WRoundedHorizontalSeparator(text: String?) : WHorizontalSeparator(text), R
             val s = theme.scale(1.0)
             val w = width / 2
 
-            renderer.quad(x, y + s, w, s, theme.separatorEdges.get(), theme.separatorCenter.get())
-            renderer.quad(x + w, y + s, w, s, theme.separatorCenter.get(), theme.separatorEdges.get())
+            renderer.quad(x, y + s, w, s, theme.separatorEdges(), theme.separatorCenter())
+            renderer.quad(x + w, y + s, w, s, theme.separatorCenter(), theme.separatorEdges())
         } else { //render with text
             val s = theme.scale(2.0)
             val h = theme.scale(1.0)
@@ -28,9 +29,9 @@ class WRoundedHorizontalSeparator(text: String?) : WHorizontalSeparator(text), R
 
             val offsetY = round(height / 2)
 
-            renderer.quad(x, y + offsetY, textStart, h, theme.separatorEdges.get(), theme.separatorCenter.get())
-            renderer.text(text, x + textStart + s, y, theme.separatorText.get(), false)
-            renderer.quad(x + textEnd, y + offsetY, width - textEnd, h, theme.separatorCenter.get(), theme.separatorEdges.get())
+            renderer.quad(x, y + offsetY, textStart, h, theme.separatorEdges(), theme.separatorCenter())
+            renderer.text(text, x + textStart + s, y, theme.separatorText(), false)
+            renderer.quad(x + textEnd, y + offsetY, width - textEnd, h, theme.separatorCenter(), theme.separatorEdges())
         }
     }
 }

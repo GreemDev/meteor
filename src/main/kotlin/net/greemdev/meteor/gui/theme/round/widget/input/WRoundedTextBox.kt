@@ -16,6 +16,7 @@ import meteordevelopment.meteorclient.utils.render.color.Color
 import net.greemdev.meteor.gui.theme.round.RoundedWidget
 import net.greemdev.meteor.gui.theme.round.widget.WRoundedLabel
 import net.greemdev.meteor.util.clamp
+import net.greemdev.meteor.util.invoke
 
 class WRoundedTextBox(text: String, placeholder: String?, filter: CharFilter, renderer: Class<out Renderer>?)
     : WTextBox(text, placeholder, filter, renderer), RoundedWidget {
@@ -49,14 +50,14 @@ class WRoundedTextBox(text: String, placeholder: String?, filter: CharFilter, re
         if (text.isNotEmpty())
             this.renderer.render(renderer, x + pad - overflowW, y + pad, text, theme.textColor())
         else if (placeholder != null)
-            this.renderer.render(renderer, x + pad - overflowW, y + pad, placeholder, theme.placeholderColor.get())
+            this.renderer.render(renderer, x + pad - overflowW, y + pad, placeholder, theme.placeholderColor())
 
         // Text highlighting
         if (focused and (cursor != selectionStart || cursor != selectionEnd)) {
             val selStart = x + pad + getTextWidth(selectionStart) - overflowW
             val selEnd = x + pad + getTextWidth(selectionEnd) - overflowW
 
-            renderer.quad(selStart, y + pad, selEnd - selStart, theme.textHeight(), theme.textHighlightColor.get())
+            renderer.quad(selStart, y + pad, selEnd - selStart, theme.textHeight(), theme.textHighlightColor())
         }
 
         // Cursor
@@ -76,9 +77,9 @@ class WRoundedTextBox(text: String, placeholder: String?, filter: CharFilter, re
         override fun onRender(renderer: GuiRenderer, mouseX: Double, mouseY: Double, delta: Double) {
             val theme = theme()
             val s = theme.scale(2.0)
-            val c = theme.outlineColor.get()
+            val c = theme.outlineColor()
 
-            val col = theme.backgroundColor.get()
+            val col = theme.backgroundColor()
             val preA = col.a
             col.a /= 2
             col.validate()

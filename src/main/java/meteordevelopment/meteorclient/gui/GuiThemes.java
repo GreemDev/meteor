@@ -35,6 +35,7 @@ public class GuiThemes {
 
     @PostInit
     public static void postInit() {
+        Greteor.roundedTheme();
         if (FILE.exists()) {
             try {
                 NbtCompound tag = NbtIo.read(FILE);
@@ -44,7 +45,6 @@ public class GuiThemes {
                 e.printStackTrace();
             }
         }
-        Greteor.roundedTheme();
         if (theme == null) select("Meteor");
     }
 

@@ -14,7 +14,7 @@ class WRoundedMultiLabel(text: String?, title: Boolean, maxWidth: Double)
 
     override fun onRender(renderer: GuiRenderer, mouseX: Double, mouseY: Double, delta: Double) {
         val h = theme.textHeight(title)
-        val color = theme().textColor.get()
+        val color = theme().textColor()
 
         lines.forEachIndexed { i, text ->
             renderer.text(text, x, y + h * i, color, false)

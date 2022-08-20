@@ -11,13 +11,16 @@ import meteordevelopment.meteorclient.renderer.text.FontFace;
 import meteordevelopment.meteorclient.settings.*;
 import meteordevelopment.meteorclient.systems.System;
 import meteordevelopment.meteorclient.systems.Systems;
+import meteordevelopment.meteorclient.utils.player.ChatUtils;
 import meteordevelopment.meteorclient.utils.render.FontUtils;
 import meteordevelopment.meteorclient.utils.render.color.RainbowColors;
 import meteordevelopment.meteorclient.utils.render.color.SettingColor;
+import net.greemdev.meteor.util.PrefixBrackets;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.nbt.NbtElement;
 import net.minecraft.nbt.NbtList;
 import net.minecraft.nbt.NbtString;
+import net.minecraft.text.Text;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -134,8 +137,32 @@ public class Config extends System<Config> {
         .build()
     );
 
+    public final Setting<String> meteorPrefix = sgChat.add(new StringSetting.Builder()
+        .name("chat-feedback-prefix")
+        .description("The prefix to appear before all Meteor chat feedback messages.")
+        .defaultValue("Meteor")
+        .onChanged(s -> {
+            if (s.equalsIgnoreCase("Baritone")) {
+                ChatUtils.sendMsg(Text.of("You are not allowed to use the Baritone prefix."));
+                resetPrefix();
+            }
+        })
+        .build()
+    );
+
+    private void resetPrefix() {
+        meteorPrefix.reset();
+    }
+
+    public final Setting<PrefixBrackets> meteorPrefixBrackets = sgChat.add(new EnumSetting.Builder<PrefixBrackets>()
+        .name("chat-feedback-prefix-brackets")
+        .description("The brackets to be placed before and after the Meteor chat feedback prefix.")
+        .defaultValue(PrefixBrackets.Square)
+        .build()
+    );
+
     public final Setting<SettingColor> meteorPrefixColor = sgChat.add(new ColorSetting.Builder()
-        .name("meteor-prefix-color")
+        .name("chat-feedback-prefix-color")
         .description("Sends chat feedback when meteor performs certain actions.")
         .defaultValue(MeteorClient.ADDON.color.toSetting())
         .onChanged(this::onChangePrefixColor)
