@@ -43,8 +43,8 @@ class DashModule : GModule("dash", "Boosts you forward in the direction you're l
         if (!allowRepeat() and event.isAction(KeyAction.Repeat))
             return
 
-        if (event.matches(activation()) and isActive)
-            mc.player() + mc.player().rotationVecClient.multiply(power.get())
+        if (isActive and event.matches(activation()))
+            mc.player() + mc.rotationVecClient().multiply(power())
     }
 
     @EventHandler

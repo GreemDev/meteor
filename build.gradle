@@ -8,7 +8,8 @@ plugins {
 sourceCompatibility = targetCompatibility = JavaVersion.VERSION_17
 
 archivesBaseName = project.archives_base_name
-version = project.mod_version + (project.hasProperty("devbuild") ? ("-" + project.findProperty("devbuild")) : "")
+def modVersion = "0.0.1-greem"
+version = modVersion
 group = project.maven_group
 
 repositories {
@@ -123,7 +124,7 @@ publishing {
     publications {
         java(MavenPublication) {
             artifactId = "meteor-client"
-            version = project.hasProperty("devbuild") ? (project.mod_version + "-SNAPSHOT") : project.mod_version
+            version = modVersion
 
             artifact(remapJar) {
                 builtBy remapJar

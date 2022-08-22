@@ -72,9 +72,9 @@ public class Commands extends System<Commands> {
         add(new FOVCommand());
         add(new RotationCommand());
         add(new WaypointCommand());
+    }
 
-        Greteor.commands();
-
+    public void sortCommands() {
         commands.sort(Comparator.comparing(Command::getName));
     }
 

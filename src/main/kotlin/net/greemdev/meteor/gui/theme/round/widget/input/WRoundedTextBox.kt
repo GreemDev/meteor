@@ -73,11 +73,13 @@ class WRoundedTextBox(text: String, placeholder: String?, filter: CharFilter, re
         renderer.scissorEnd()
     }
 
-    override fun createCompletionsRootWidget() = object : WVerticalList() {
+    override fun createCompletionsRootWidget(): WVerticalList = object : WVerticalList(), RoundedWidget {
         override fun onRender(renderer: GuiRenderer, mouseX: Double, mouseY: Double, delta: Double) {
             val theme = theme()
             val s = theme.scale(2.0)
             val c = theme.outlineColor()
+
+            this.renderBackground(renderer, this, pressed = false, mouseOver = false)
 
             val col = theme.backgroundColor()
             val preA = col.a

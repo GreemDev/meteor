@@ -25,15 +25,12 @@ object Greteor {
     fun hudGroup() = hudGroup
 
     @JvmStatic
-    fun modules() {
+    fun init() {
         createSubtypesOf<GModule>("net.greemdev.meteor.modules")
             .forEach(Meteor.modules()::add)
-    }
-
-    @JvmStatic
-    fun commands() {
         createSubtypesOf<GCommand>("net.greemdev.meteor.commands")
             .forEach(Meteor.commands()::add)
+        initGStarscript()
     }
 
     @JvmStatic

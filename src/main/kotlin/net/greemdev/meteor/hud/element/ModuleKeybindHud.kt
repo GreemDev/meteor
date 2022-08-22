@@ -16,14 +16,13 @@ import net.greemdev.meteor.hud.HudElementMetadata
 import net.greemdev.meteor.util.*
 import kotlin.math.max
 
-class ModuleKeybindHud : HudElement(elementInfo) {
-    companion object : HudElementMetadata<ModuleKeybindHud> {
-        override val elementInfo = HudElementInfo(Greteor.hudGroup(),
-            "module-keybinds", "Displays selected modules with valid keybinds."
-        ) {
-            ModuleKeybindHud()
-        }
-    }
+class ModuleKeybindHud : HudElement(Companion.info) {
+    companion object : HudElementMetadata<ModuleKeybindHud>(
+        HudElementInfo(Greteor.hudGroup(),
+            "module-keybinds", "Displays selected modules with valid keybinds.",
+            ::ModuleKeybindHud
+        )
+    )
 
     private val sg = settings.group()
 

@@ -15,6 +15,7 @@ import meteordevelopment.meteorclient.gui.GuiThemes;
 import meteordevelopment.meteorclient.gui.WidgetScreen;
 import meteordevelopment.meteorclient.gui.tabs.Tabs;
 import meteordevelopment.meteorclient.systems.Systems;
+import meteordevelopment.meteorclient.systems.commands.Commands;
 import meteordevelopment.meteorclient.systems.config.Config;
 import meteordevelopment.meteorclient.systems.modules.Categories;
 import meteordevelopment.meteorclient.systems.modules.Modules;
@@ -97,6 +98,9 @@ public class MeteorClient implements ClientModInitializer {
         // Load systems
         Systems.init();
 
+        // Load Greteor features
+        Greteor.init();
+
         // Subscribe after systems are loaded
         EVENT_BUS.subscribe(this);
 
@@ -105,6 +109,9 @@ public class MeteorClient implements ClientModInitializer {
 
         // Sort modules after addons have added their own
         Modules.get().sortModules();
+
+        // Sort commands after addons have added their own
+        Commands.get().sortCommands();
 
         // Load configs
         Systems.load();

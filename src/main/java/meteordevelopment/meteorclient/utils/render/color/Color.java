@@ -8,6 +8,7 @@ package meteordevelopment.meteorclient.utils.render.color;
 import meteordevelopment.meteorclient.utils.misc.ICopyable;
 import meteordevelopment.meteorclient.utils.misc.ISerializable;
 import net.minecraft.nbt.NbtCompound;
+import net.minecraft.text.TextColor;
 import net.minecraft.util.math.Vec3d;
 
 @SuppressWarnings("unused")
@@ -234,6 +235,9 @@ public class Color implements ICopyable<Color>, ISerializable<Color> {
 
     public SettingColor toSetting() {
         return new SettingColor(r, g, b, a);
+    }
+    public TextColor toTextColor() {
+        return new TextColor(getPacked());
     }
 
     public void validate() {

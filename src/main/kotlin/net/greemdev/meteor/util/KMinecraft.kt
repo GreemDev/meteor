@@ -9,7 +9,10 @@ package net.greemdev.meteor.util
 import net.minecraft.client.MinecraftClient
 import net.minecraft.client.network.AbstractClientPlayerEntity
 import net.minecraft.entity.Entity
+import net.minecraft.entity.player.PlayerEntity
+import net.minecraft.item.ItemStack
 import net.minecraft.text.Text
+import net.minecraft.util.math.Vec2f
 import net.minecraft.util.math.Vec3d
 
 fun MinecraftClient.setPlayerPos(x: Double = player!!.x, y: Double = player!!.y, z: Double = player!!.z) {
@@ -29,6 +32,17 @@ fun MinecraftClient.isInGame() = player != null && world != null
 
 fun MinecraftClient.player() = player ?: error("The client's PlayerEntity is unavailable.")
 fun MinecraftClient.currentWorld() = world ?: error("There is no world loaded currently.")
+
+fun PlayerEntity.usableItemStack(): ItemStack? =
+    if (!ItemStack.areEqual(mainHandStack, ItemStack.EMPTY))
+        mainHandStack
+    else if (!ItemStack.areEqual(offHandStack, ItemStack.EMPTY))
+        offHandStack
+    else null
+
+fun MinecraftClient.rotationVecClient(): Vec3d = player().rotationVecClient
+fun MinecraftClient.rotation(): Vec2f = player().rotationClient
+fun MinecraftClient.rotationVec(): Vec3d = player().rotationVector
 
 fun MinecraftClient.sendCommand(command: String, preview: Text? = null) = player().sendCommand(command, preview)
 fun MinecraftClient.showMessage(text: Text) = player().sendMessage(text)

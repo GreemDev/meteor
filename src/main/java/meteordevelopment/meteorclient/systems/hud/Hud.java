@@ -121,8 +121,8 @@ public class Hud extends System<Hud> implements Iterable<HudElement> {
     public void register(HudElementInfo<?> info) {
         infos.put(info.name, info);
     }
-    public void register(HudElementMetadata<?> elementMetadata) {
-        infos.put(elementMetadata.getElementInfo().name, elementMetadata.getElementInfo());
+    public void register(HudElementMetadata<?> meta) {
+        register(meta.getInfo());
     }
 
     private void add(HudElement element, int x, int y, XAnchor xAnchor, YAnchor yAnchor) {

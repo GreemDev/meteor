@@ -14,6 +14,6 @@ typealias MinecraftCommandContext = CommandContext<CommandSource>
 typealias MinecraftLiteralBuilder = LiteralArgumentBuilder<CommandSource>
 typealias MinecraftArgumentBuilder<T> = RequiredArgumentBuilder<CommandSource, T>
 
-fun command(name: String, builder: CommandBuilder.() -> Unit = {})
-    = CommandBuilder(LiteralArgumentBuilder.literal(name)).apply(builder).builder
-
+fun command(name: String, block: CommandBuilder.() -> Unit = {}) =
+    CommandBuilder(LiteralArgumentBuilder.literal(name))
+        .apply(block).builder

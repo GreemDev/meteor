@@ -45,7 +45,11 @@ public class NameHistoryCommand extends Command {
                     PlayerListEntry lookUpTarget = PlayerListEntryArgumentType.get(context);
                     UUID uuid = lookUpTarget.getProfile().getId();
 
-                    List<NameHistoryObject> nameHistoryObjects = Http.get("https://api.mojang.com/user/profiles/" + formatUUID(uuid) + "/names").sendJson(RESPONSE_TYPE);
+                    List<NameHistoryObject> nameHistoryObjects = Http.get(
+                        "https://api.mojang.com/user/profiles/"
+                            + uuid.toString().replace("-", "")
+                            + "/names")
+                        .sendJson(RESPONSE_TYPE);
 
                     if (nameHistoryObjects == null || nameHistoryObjects.isEmpty()) {
                         error("There was an error fetching that users name history.");
@@ -54,12 +58,12 @@ public class NameHistoryCommand extends Command {
 
                     String name = lookUpTarget.getProfile().getName();
                     MutableText initial = Text.literal(name);
-                    initial.append(Text.literal(name.endsWith("s") ? "'" : "'s"));
+                    initial.append(Text.literal(name.endsWith("s") ? "'" : "'s").append(" Info"));
 
                     Color nameColor = PlayerUtils.getPlayerColor(mc.world.getPlayerByUuid(uuid), Utils.WHITE);
 
                     initial.setStyle(initial.getStyle()
-                        .withColor(new TextColor(nameColor.getPacked()))
+                        .withColor(nameColor.toTextColor())
                         .withClickEvent(new ClickEvent(
                                 ClickEvent.Action.OPEN_URL,
                                 "https://namemc.com/search?q=" + name
@@ -73,6 +77,7 @@ public class NameHistoryCommand extends Command {
                         ))
                     );
 
+                    info(Text.literal(" UUID: %s".formatted(uuid)));
                     info(initial.append(Text.literal(" Username History:").formatted(Formatting.GRAY)));
 
                     for (NameHistoryObject nameHistoryObject : nameHistoryObjects) {

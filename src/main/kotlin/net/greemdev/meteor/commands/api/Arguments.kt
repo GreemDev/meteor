@@ -13,6 +13,8 @@ import meteordevelopment.meteorclient.systems.commands.arguments.*
 import net.minecraft.command.argument.*
 import net.minecraft.predicate.NumberRange
 
+inline operator fun<reified T> MinecraftCommandContext.invoke(name: String) = lazy { argument<T>(name) }
+
 inline infix fun <reified T> MinecraftCommandContext.argument(name: String) = getArgument(name, T::class.java)
 
 inline fun<reified T> MinecraftCommandContext.argument(name: String, noinline parser: (MinecraftCommandContext, String) -> T)

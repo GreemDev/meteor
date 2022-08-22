@@ -7,6 +7,4 @@ package net.greemdev.meteor.hud
 
 import meteordevelopment.meteorclient.systems.hud.*
 
-interface HudElementMetadata<T : HudElement> {
-    val elementInfo: HudElementInfo<T>
-}
+abstract class HudElementMetadata<T : HudElement>(val info: HudElementInfo<T>)
