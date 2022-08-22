@@ -21,6 +21,10 @@ private val category = Category("Greteor", Items.DARK_PRISMARINE.defaultStack)
 private val hudGroup = HudGroup("Greteor")
 
 object Greteor {
+
+    @JvmStatic
+    val logger by log4j("Greteor")
+
     fun category() = category
     fun hudGroup() = hudGroup
 

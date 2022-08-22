@@ -60,6 +60,8 @@ fun log4j(value: Any) = lazy {
 
 operator fun FabricLoader.contains(modId: String) = modLoader.isModLoaded(modId)
 
+fun<T> Collection<T>?.getOrEmpty() = this ?: emptySet()
+
 fun textOf(content: String? = null, block: (MutableText.() -> Unit)?): MutableText = if (content == null)
     Text.empty()
 else

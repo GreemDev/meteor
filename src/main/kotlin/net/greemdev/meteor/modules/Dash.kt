@@ -15,7 +15,7 @@ import net.greemdev.meteor.event.GameInputEvent
 import net.greemdev.meteor.util.*
 
 // Based on https://github.com/AntiCope/meteor-rejects/blob/master/src/main/java/anticope/rejects/modules/Boost.java
-class DashModule : GModule("dash", "Boosts you forward in the direction you're looking.") {
+class Dash : GModule("dash", "Boosts you forward in the direction you're looking.") {
     private val sg = settings.group()
 
     val power by sg double {
@@ -40,7 +40,10 @@ class DashModule : GModule("dash", "Boosts you forward in the direction you're l
     }
 
     private fun onKeybindPress(event: GameInputEvent) {
-        if (!allowRepeat() and event.isAction(KeyAction.Repeat))
+        if (!allowRepeat() and (event.isAction(KeyAction.Repeat) or event.isAction(KeyAction.Release)))
+            return
+
+        if (allowRepeat() and event.isAction(KeyAction.Release))
             return
 
         if (isActive and event.matches(activation()))
