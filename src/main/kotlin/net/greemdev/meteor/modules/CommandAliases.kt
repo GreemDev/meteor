@@ -20,8 +20,6 @@ class CommandAliases : GModule(
         runInMainMenu = true
     }
 
-    private val sg = settings.group()
-
     private var commandScripts = listOf<Script>()
     var mapped = mapOf<String, String>()
         private set

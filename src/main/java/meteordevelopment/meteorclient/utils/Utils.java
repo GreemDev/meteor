@@ -22,6 +22,7 @@ import meteordevelopment.meteorclient.utils.render.color.Color;
 import meteordevelopment.meteorclient.utils.world.BlockEntityIterator;
 import meteordevelopment.meteorclient.utils.world.ChunkIterator;
 import meteordevelopment.orbit.EventHandler;
+import net.greemdev.meteor.util.Util;
 import net.minecraft.block.Block;
 import net.minecraft.block.Blocks;
 import net.minecraft.block.ShulkerBoxBlock;
@@ -261,7 +262,7 @@ public class Utils {
         return Math.sqrt(dX * dX + dY * dY + dZ * dZ);
     }
 
-    public static String getWorldName() {
+    public static String getWorldName(boolean useAddress) {
         // Singleplayer
         if (mc.isInSingleplayer()) {
             if (mc.world == null) return "";
@@ -275,7 +276,7 @@ public class Utils {
 
         // Multiplayer
         if (mc.getCurrentServerEntry() != null) {
-            String name = mc.isConnectedToRealms() ? "realms" : mc.getCurrentServerEntry().address;
+            String name = mc.isConnectedToRealms() ? "realms" : useAddress ? mc.getCurrentServerEntry().address : mc.getCurrentServerEntry().name;
             if (SystemUtils.IS_OS_WINDOWS) {
                 name = name.replace(":", "_");
             }
@@ -283,6 +284,10 @@ public class Utils {
         }
 
         return "";
+    }
+
+    public static String getWorldName() {
+        return getWorldName(true);
     }
 
     public static String nameToTitle(String name) {

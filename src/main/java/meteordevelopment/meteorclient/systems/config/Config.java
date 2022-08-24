@@ -6,6 +6,7 @@
 package meteordevelopment.meteorclient.systems.config;
 
 import meteordevelopment.meteorclient.MeteorClient;
+import meteordevelopment.meteorclient.gui.utils.StarscriptTextBoxRenderer;
 import meteordevelopment.meteorclient.renderer.Fonts;
 import meteordevelopment.meteorclient.renderer.text.FontFace;
 import meteordevelopment.meteorclient.settings.*;
@@ -88,7 +89,7 @@ public class Config extends System<Config> {
         .build()
     );
 
-    public final Setting<Boolean> customWindowTitle = sgVisual.add(new BoolSetting.Builder()
+    public final Setting<Boolean> useCustomWindowTitle = sgVisual.add(new BoolSetting.Builder()
         .name("custom-window-title")
         .description("Show custom text in the window title.")
         .defaultValue(false)
@@ -97,12 +98,13 @@ public class Config extends System<Config> {
         .build()
     );
 
-    public final Setting<String> customWindowTitleText = sgVisual.add(new StringSetting.Builder()
+    public final Setting<String> customWindowTitle = sgVisual.add(new StringSetting.Builder()
         .name("window-title-text")
         .description("The text it displays in the window title.")
-        .visible(customWindowTitle::get)
+        .visible(useCustomWindowTitle::get)
         .defaultValue("Minecraft {game_version} - Meteor Client {meteor.version}")
         .onChanged(value -> mc.updateWindowTitle())
+        .renderer(StarscriptTextBoxRenderer.class)
         .build()
     );
 

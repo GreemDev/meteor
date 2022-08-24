@@ -35,6 +35,7 @@ import net.minecraft.util.math.BlockPos;
 import java.lang.reflect.InvocationTargetException;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.function.Consumer;
 
 public abstract class GuiTheme implements ISerializable<GuiTheme> {
     public static final double TITLE_TEXT_SCALE = 1.25;
@@ -98,6 +99,12 @@ public abstract class GuiTheme implements ISerializable<GuiTheme> {
     public abstract WPlus plus();
 
     public abstract WCheckbox checkbox(boolean checked);
+
+    public WCheckbox checkbox(boolean checked, Consumer<Boolean> action) {
+        var checkbox = checkbox(checked);
+        checkbox.action = () -> action.accept(checked);
+        return checkbox;
+    }
 
     public abstract WSlider slider(double value, double min, double max);
 

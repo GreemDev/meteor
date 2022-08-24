@@ -18,7 +18,9 @@ import net.minecraft.client.render.entity.PlayerEntityRenderer;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.util.Identifier;
 import org.spongepowered.asm.mixin.Mixin;
+import org.spongepowered.asm.mixin.Unique;
 import org.spongepowered.asm.mixin.injection.At;
+import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.ModifyArgs;
 import org.spongepowered.asm.mixin.injection.Redirect;
 import org.spongepowered.asm.mixin.injection.invoke.arg.Args;
@@ -39,25 +41,25 @@ public class PlayerEntityRendererMixin {
     private void redirectRenderMain(ModelPart modelPart, MatrixStack matrices, VertexConsumer vertices, int light, int overlay) {
         Chams chams = Modules.get().get(Chams.class);
 
-        if (chams.isActive() && chams.hand.get()) {
-            Color color = chams.handColor.get();
-            modelPart.render(matrices, vertices, light, overlay, color.r/255f, color.g/255f, color.b/255f, color.a/255f);
-        } else {
-            modelPart.render(matrices, vertices, light, overlay);
-        }
+        renderArm(modelPart, chams, matrices, vertices, light, overlay);
     }
 
     @Redirect(method = "renderArm", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/model/ModelPart;render(Lnet/minecraft/client/util/math/MatrixStack;Lnet/minecraft/client/render/VertexConsumer;II)V", ordinal = 1))
     private void redirectRenderSleeve(ModelPart modelPart, MatrixStack matrices, VertexConsumer vertices, int light, int overlay) {
         Chams chams = Modules.get().get(Chams.class);
 
-        if (Modules.get().isActive(HandView.class)) return;
+        if (!Modules.get().isActive(HandView.class)) {
+            renderArm(modelPart, chams, matrices, vertices, light, overlay);
+        }
+    }
 
+    @Unique
+    private static void renderArm(ModelPart part, Chams chams, MatrixStack matrices, VertexConsumer vertices, int light, int overlay) {
         if (chams.isActive() && chams.hand.get()) {
             Color color = chams.handColor.get();
-            modelPart.render(matrices, vertices, light, overlay, color.r/255f, color.g/255f, color.b/255f, color.a/255f);
+            part.render(matrices, vertices, light, overlay, color.r/255f, color.g/255f, color.b/255f, color.a/255f);
         } else {
-            modelPart.render(matrices, vertices, light, overlay);
+            part.render(matrices, vertices, light, overlay);
         }
     }
 }

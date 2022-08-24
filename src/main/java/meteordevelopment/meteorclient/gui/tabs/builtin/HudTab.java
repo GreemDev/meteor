@@ -56,8 +56,8 @@ public class HudTab extends Tab {
             openEditor.action = () -> mc.setScreen(new HudEditorScreen(theme));
 
             WHorizontalList buttons = add(theme.horizontalList()).expandX().widget();
-            buttons.add(theme.button("Clear")).expandX().widget().action = hud::clear;
-            buttons.add(theme.button("Reset to default elements")).expandX().widget().action = hud::resetToDefaultElements;
+            buttons.add(theme.button("Clear", hud::clear)).expandX().widget();
+            buttons.add(theme.button("Reset to default elements", hud::resetToDefaultElements)).expandX().widget();
 
             add(theme.horizontalSeparator()).expandX();
 

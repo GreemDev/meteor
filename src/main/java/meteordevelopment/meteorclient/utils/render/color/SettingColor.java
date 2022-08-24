@@ -10,6 +10,10 @@ import net.minecraft.nbt.NbtCompound;
 public class SettingColor extends Color {
     public boolean rainbow;
 
+    public static SettingColor rainbow() {
+        return new SettingColor(0, 0, 0, 255, true);
+    }
+
     public SettingColor() {
         super();
     }

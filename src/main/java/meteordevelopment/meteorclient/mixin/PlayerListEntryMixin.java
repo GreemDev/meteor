@@ -20,13 +20,15 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 public abstract class PlayerListEntryMixin {
 
     @Unique
-    private static final String MIGRATOR_CAPE_URL = "https://textures.minecraft.net/texture/2340c0e03dd24a11b15a8b33c2a7e9e32abb2051b2481d0ba7defd635ca7a933";
+    private static final String MIGRATOR_CAPE_URL = "http://textures.minecraft.net/texture/2340c0e03dd24a11b15a8b33c2a7e9e32abb2051b2481d0ba7defd635ca7a933";
 
     @Inject(method = "method_2956", at = @At(value = "INVOKE", target = "Ljava/util/Map;put(Ljava/lang/Object;Ljava/lang/Object;)Ljava/lang/Object;"), cancellable = true)
     private void ignoreMigrator(MinecraftProfileTexture.Type type, Identifier id, MinecraftProfileTexture texture, CallbackInfo ci) {
-        if (Modules.get().get(GameTweaks.class).noMigrators()) {
+        var gameTweaks = Modules.get().get(GameTweaks.class);
+        if (gameTweaks.noMigrators()) {
             if (type == MinecraftProfileTexture.Type.CAPE || type == MinecraftProfileTexture.Type.ELYTRA) {
                 if (texture.getUrl().equals(MIGRATOR_CAPE_URL)) {
+                    gameTweaks.getTextureBlacklist().add(id);
                     ci.cancel();
                 }
             }

@@ -80,9 +80,11 @@ class AutoMessage : GModule(
             }
             if (elapsedTicksCommands >= commandsDelay.get()) {
                 GlobalScope.launch {
-                    commandScripts.forEach {
+                    commandScripts.forEach { script ->
                         delay(250)
-                        MeteorStarscript.run(it)?.also(mc::sendCommand)
+                        MeteorStarscript.run(script)
+                            ?.run { removePrefix("/") }
+                            ?.also(mc::sendCommand)
                     }
                 }
                 elapsedTicksCommands = 0

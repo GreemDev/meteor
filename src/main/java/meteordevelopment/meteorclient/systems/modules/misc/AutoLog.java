@@ -89,7 +89,7 @@ public class AutoLog extends Module {
     );
 
     public AutoLog() {
-        super(Categories.Combat, "auto-log", "Automatically disconnects you when certain requirements are met.");
+        super(Categories.Combat, "auto-disconnect", "Automatically disconnects you when certain requirements are met.");
     }
 
     @EventHandler

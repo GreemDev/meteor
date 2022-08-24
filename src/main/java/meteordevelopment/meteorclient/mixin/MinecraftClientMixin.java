@@ -123,9 +123,9 @@ public abstract class MinecraftClientMixin implements IMinecraftClient {
 
     @ModifyArg(method = "updateWindowTitle", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/util/Window;setTitle(Ljava/lang/String;)V"))
     private String setTitle(String original) {
-        if (Config.get() == null || !Config.get().customWindowTitle.get()) return original;
+        if (Config.get() == null || !Config.get().useCustomWindowTitle.get()) return original;
 
-        String customTitle = Config.get().customWindowTitleText.get();
+        String customTitle = Config.get().customWindowTitle.get();
         Script script = MeteorStarscript.compile(customTitle);
 
         if (script != null) {

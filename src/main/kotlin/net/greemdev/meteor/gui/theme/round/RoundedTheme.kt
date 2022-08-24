@@ -85,10 +85,10 @@ class RoundedTheme : GuiTheme("Rounded") {
 
     // Colors
 
-    val accentColor by colorSetting("accent", "Main color of the GUI.", SettingColor(135, 0, 255))
-    val checkboxColor by colorSetting("checkbox", "Color of checkbox.", SettingColor(135, 0, 255))
-    val plusColor by colorSetting("plus", "Color of plus button.", SettingColor(255, 255, 255))
-    val minusColor by colorSetting("minus", "Color of minus button.", SettingColor(255, 255, 255))
+    val accentColor by colorSetting("accent", "Main color of the GUI.", SettingColor.rainbow())
+    val checkboxColor by colorSetting("checkbox", "Color of checkbox.", SettingColor.rainbow())
+    val plusColor by colorSetting("plus", "Color of plus button.", SettingColor(0, 0, 255))
+    val minusColor by colorSetting("minus", "Color of minus button.", SettingColor(255, 0, 0))
     val favoriteColor by colorSetting("favorite", "Color of checked favorite button.", SettingColor(255, 255, 0))
 
     // Text

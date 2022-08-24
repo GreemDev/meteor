@@ -12,7 +12,6 @@ import net.greemdev.meteor.util.*
 
 // based on https://github.com/Declipsonator/Meteor-Tweaks/blob/main/src/main/java/me/declipsonator/meteortweaks/modules/GroupChat.java
 class PrivateChat : GModule("private-chat", "Turns your chat into a private conversation.") {
-    val sg = settings.group()
 
     val players by sg stringList {
         name("players")
@@ -36,7 +35,7 @@ class PrivateChat : GModule("private-chat", "Turns your chat into a private conv
         }.also {
             foundAny = it.isNotEmpty()
         }.forEach {
-            mc.player().sendCommand(dmFormat().ensurePrefix("/")
+            mc.player().sendCommand(dmFormat().withoutPrefix("/")
                 .replace("{player}", it.profile.name)
                 .replace("{message}", event.message)
             )

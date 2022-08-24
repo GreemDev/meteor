@@ -2,7 +2,7 @@
   "schemaVersion": 1,
   "name": "Meteor Client",
   "id": "meteor-client",
-  "version": "${version}",
+  "version": "0.6.9",
   "description": "Minecraft utility mod.",
   "authors": [
     "MineGame159",
@@ -12,9 +12,8 @@
   ],
   "contact": {
     "homepage": "https://meteorclient.com",
-    "issues": "https://github.com/MeteorDevelopment/meteor-client/issues",
-    "sources": "https://github.com/MeteorDevelopment/meteor-client",
-    "discord": "https://meteorclient.com/discord"
+    "issues": "https://github.com/GreemDev/meteor/issues",
+    "sources": "https://github.com/GreemDev/meteor"
   },
   "license": "GPL-3.0",
   "icon": "assets/meteor-client/icon.png",

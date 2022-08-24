@@ -7,12 +7,12 @@ package net.greemdev.meteor.modules
 
 import net.greemdev.meteor.GModule
 import net.greemdev.meteor.util.*
+import net.minecraft.util.Identifier
 
 // based on https://github.com/Declipsonator/Meteor-Tweaks/blob/main/src/main/java/me/declipsonator/meteortweaks/modules/GameTweaks.java
 class GameTweaks : GModule("game-tweaks", "Minor changes to the game experience to improve gameplay.") {
     private val sgGP = settings.group("Gameplay")
     private val sgR = settings.group("Render")
-    private val sg = settings.group()
 
     val lessAnnoyingBats by sgGP bool {
         name("less-annoying-bats")
@@ -42,4 +42,6 @@ class GameTweaks : GModule("game-tweaks", "Minor changes to the game experience 
     fun noMigrators() = isActive and !migratorCapes()
     fun noScore() = isActive and !showScore()
     fun screenshots() = isActive and clipboardScreenshots()
+
+    val textureBlacklist = hashSetOf<Identifier>()
 }

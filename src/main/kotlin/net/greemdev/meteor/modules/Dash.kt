@@ -16,7 +16,6 @@ import net.greemdev.meteor.util.*
 
 // Based on https://github.com/AntiCope/meteor-rejects/blob/master/src/main/java/anticope/rejects/modules/Boost.java
 class Dash : GModule("dash", "Boosts you forward in the direction you're looking.") {
-    private val sg = settings.group()
 
     val power by sg double {
         name("power")
@@ -37,14 +36,15 @@ class Dash : GModule("dash", "Boosts you forward in the direction you're looking
         name("allow-hold")
         description("Allows you to dash repeatedly by holding down the button.")
         defaultValue(false)
+        visible { mc.isInSingleplayer } //repeat is too fast for servers and never works
     }
 
     private fun onKeybindPress(event: GameInputEvent) {
-        if (!allowRepeat() and (event.isAction(KeyAction.Repeat) or event.isAction(KeyAction.Release)))
-            return
-
-        if (allowRepeat() and event.isAction(KeyAction.Release))
-            return
+        if (any(
+                !allowRepeat() and (event.isAction(KeyAction.Repeat) or event.isAction(KeyAction.Release)),
+                allowRepeat() and event.isAction(KeyAction.Release),
+                isActive && mc.inGameHud.chatHud.chatScreen != null
+        )) return
 
         if (isActive and event.matches(activation()))
             mc.player() + mc.rotationVecClient().multiply(power())

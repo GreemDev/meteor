@@ -72,6 +72,17 @@ fun textOf() = textOf(null, null)
 
 fun<T> List<T>.indexedForEach(consumer: BiConsumer<Int, T>) = this.forEachIndexed { index, t -> consumer.accept(index, t) }
 
+fun String.toCamelCase(separator: String = "-"): String {
+    return split(separator)
+        .mapIndexed { i, part ->
+            if (i == 0)
+                part.lowercase()
+            else
+                part.replaceFirstChar { it.uppercase() }
+        }.joinToString("")
+}
+
+fun any(vararg conditions: Boolean) = conditions.any()
 fun <T, R : Comparable<R>> List<T>.sorted(
     sorted: Boolean = true,
     isAscending: Boolean = true,
@@ -120,14 +131,26 @@ inline fun <reified T : Any> createSubtypesOf(pkg: String): List<T> =
 
 infix fun <T : WPressable> T.action(func: (T) -> Unit): T = action { func(this) }
 
-fun String.ensurePrefix(prefix: String): String {
-    return if (startsWith(prefix))
+fun String.ensurePrefix(prefix: String, ignoreCase: Boolean = false): String {
+    return if (startsWith(prefix, ignoreCase))
         this
     else "$prefix$this"
 }
 
-fun String.ensureSuffix(suffix: String): String {
-    return if (endsWith(suffix))
+fun String.withoutPrefix(prefix: String, ignoreCase: Boolean = false): String {
+    return if (startsWith(prefix, ignoreCase))
+        substringAfter(prefix)
+    else this
+}
+
+fun String.ensureSuffix(suffix: String, ignoreCase: Boolean = false): String {
+    return if (endsWith(suffix, ignoreCase))
         this
     else "$this$suffix"
+}
+
+fun String.withoutSuffix(suffix: String, ignoreCase: Boolean = false): String {
+    return if (endsWith(suffix, ignoreCase))
+        substringBeforeLast(suffix)
+    else this
 }

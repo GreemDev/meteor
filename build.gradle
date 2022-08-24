@@ -8,8 +8,7 @@ plugins {
 sourceCompatibility = targetCompatibility = JavaVersion.VERSION_17
 
 archivesBaseName = project.archives_base_name
-def modVersion = "0.0.1-greem"
-version = modVersion
+version = project.mod_version
 group = project.maven_group
 
 repositories {
@@ -81,8 +80,8 @@ shadowJar {
 
 processResources {
     filesMatching("fabric.mod.json") {
-        expand "version": project.version,
-               "devbuild": project.findProperty("devbuild") ?: "",
+        expand "version": project.mod_version,
+               "devbuild": project.revision ?: "",
                "commit": project.findProperty("commit") ?: "",
                "ktlangver": project.fabric_kotlin_version ?: ""
     }
@@ -118,41 +117,4 @@ task sourcesJar(type: Jar, dependsOn: classes) {
 task javadocJar(type: Jar) {
     archiveClassifier.set("javadoc")
     from javadoc
-}
-
-publishing {
-    publications {
-        java(MavenPublication) {
-            artifactId = "meteor-client"
-            version = modVersion
-
-            artifact(remapJar) {
-                builtBy remapJar
-            }
-
-            artifact(sourcesJar) {
-                builtBy remapSourcesJar
-            }
-
-            artifact(javadocJar) {
-                builtBy javadocJar
-            }
-        }
-    }
-
-    repositories {
-        maven {
-            name = "meteor-maven"
-            url = project.hasProperty("devbuild") ? "https://maven.meteordev.org/snapshots" : "https://maven.meteordev.org/releases"
-
-            credentials {
-                username = System.getenv("MAVEN_METEOR_ALIAS")
-                password = System.getenv("MAVEN_METEOR_TOKEN")
-            }
-
-            authentication {
-                basic(BasicAuthentication)
-            }
-        }
-    }
 }

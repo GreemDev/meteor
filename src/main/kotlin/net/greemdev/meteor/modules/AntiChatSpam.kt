@@ -17,9 +17,6 @@ class AntiChatSpam : GModule(
     "anti-chat-spam",
     "Prevent messages from displaying. Useful for hiding automated messages."
 ) {
-
-    private val sg = settings.group()
-
     val filters by sg stringList {
         name("filters")
         description("The contents to check if a message matches.")

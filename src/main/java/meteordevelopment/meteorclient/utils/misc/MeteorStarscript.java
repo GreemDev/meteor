@@ -30,6 +30,7 @@ import meteordevelopment.starscript.utils.Error;
 import meteordevelopment.starscript.utils.StarscriptError;
 import meteordevelopment.starscript.value.Value;
 import meteordevelopment.starscript.value.ValueMap;
+import net.greemdev.meteor.util.KMC;
 import net.minecraft.SharedConstants;
 import net.minecraft.block.BlockState;
 import net.minecraft.client.network.PlayerListEntry;
@@ -81,7 +82,7 @@ public class MeteorStarscript {
 
         // Meteor
         ss.set("meteor", new ValueMap()
-            .set("version", MeteorClient.VERSION != null ? (MeteorClient.DEV_BUILD.isEmpty() ? MeteorClient.VERSION.toString() : MeteorClient.VERSION + " " + MeteorClient.DEV_BUILD) : "")
+            .set("version", MeteorClient.VERSION != null ? (MeteorClient.DEV_BUILD.isEmpty() ? MeteorClient.VERSION.toString() : MeteorClient.VERSION + "-rev" + MeteorClient.DEV_BUILD) : "")
             .set("modules", () -> Value.number(Modules.get().getAll().size()))
             .set("active_modules", () -> Value.number(Modules.get().getActive().size()))
             .set("is_module_active", MeteorStarscript::isModuleActive)
@@ -149,6 +150,7 @@ public class MeteorStarscript {
 
             .set("hand", () -> mc.player != null ? wrap(mc.player.getMainHandStack()) : Value.null_())
             .set("offhand", () -> mc.player != null ? wrap(mc.player.getOffHandStack()) : Value.null_())
+            .set("effective_stack", () -> mc.player != null ? wrap(KMC.usableItemStack(mc.player)) : Value.null_())
             .set("hand_or_offhand", MeteorStarscript::handOrOffhand)
             .set("is_item_held", MeteorStarscript::isHoldingItem)
             .set("get_item", MeteorStarscript::getItem)
@@ -174,7 +176,8 @@ public class MeteorStarscript {
 
         // Server
         ss.set("server", new ValueMap()
-            .set("_toString", () -> Value.string(Utils.getWorldName()))
+            .set("_toString", () -> Value.string(Utils.getWorldName(false)))
+            .set("ip", () -> Value.string(Utils.getWorldName()))
             .set("tps", () -> Value.number(TickRate.INSTANCE.getTickRate()))
             .set("time", () -> Value.string(Utils.getWorldTime()))
             .set("player_count", () -> Value.number(mc.getNetworkHandler() != null ? mc.getNetworkHandler().getPlayerList().size() : 0))
@@ -568,6 +571,7 @@ public class MeteorStarscript {
             .set("_toString", Value.string(itemStack.getCount() <= 1 ? name : String.format("%s %dx", name, itemStack.getCount())))
             .set("name", Value.string(name))
             .set("count", Value.number(itemStack.getCount()))
+            .set("is_tool", () -> Value.bool(itemStack.getMaxDamage() != 0))
             .set("durability", Value.number(durability))
             .set("max_durability", Value.number(itemStack.getMaxDamage()))
         );

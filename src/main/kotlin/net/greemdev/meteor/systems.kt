@@ -9,9 +9,12 @@ import com.mojang.brigadier.builder.LiteralArgumentBuilder
 import meteordevelopment.meteorclient.systems.commands.Command
 import meteordevelopment.meteorclient.systems.modules.Module
 import net.greemdev.meteor.commands.api.CommandBuilder
+import net.greemdev.meteor.util.group
 import net.minecraft.command.CommandSource
 
-abstract class GModule(name: String, description: String) : Module(Greteor.category(), name, description)
+abstract class GModule(name: String, description: String) : Module(Greteor.category(), name, description) {
+    protected val sg by lazy { settings.group() }
+}
 
 abstract class GCommand(
     name: String,
