@@ -8,7 +8,7 @@ plugins {
 sourceCompatibility = targetCompatibility = JavaVersion.VERSION_17
 
 archivesBaseName = project.archives_base_name
-version = project.mod_version
+version = project.mod_version + (project.hasProperty("revision") ? ("-rev" + project.findProperty("revision")) : "")
 group = project.maven_group
 
 repositories {

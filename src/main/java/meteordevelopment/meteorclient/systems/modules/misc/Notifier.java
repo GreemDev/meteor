@@ -117,25 +117,27 @@ public class Notifier extends Module {
 
     @EventHandler
     private void onEntityAdded(EntityAddedEvent event) {
-        if (event.entity.getUuid().equals(mc.player.getUuid()) || !entities.get().getBoolean(event.entity.getType()) || !visualRange.get() || this.event.get() == Event.Despawn) return;
+        if (event.entity.getUuid().equals(mc.player.getUuid()) || !entities.get().getBoolean(event.entity.getType()) || !visualRange.get() || this.event.get() == Event.Despawn)
+            return;
 
         if (event.entity instanceof PlayerEntity) {
             if ((!visualRangeIgnoreFriends.get() || !Friends.get().isFriend(((PlayerEntity) event.entity))) && (!visualRangeIgnoreFakes.get() || !(event.entity instanceof FakePlayerEntity))) {
                 ChatUtils.sendMsg(event.entity.getId() + 100, Formatting.GRAY, "(highlight)%s(default) has entered your visual range!", event.entity.getEntityName());
             }
-        }
-        else {
+        } else {
             MutableText text = Text.literal(event.entity.getType().getName().getString()).formatted(Formatting.WHITE);
             text.append(Text.literal(" has spawned at ").formatted(Formatting.GRAY));
             text.append(formatCoords(event.entity.getPos()));
             text.append(Text.literal(".").formatted(Formatting.GRAY));
             info(text);
+
         }
     }
 
     @EventHandler
     private void onEntityRemoved(EntityRemovedEvent event) {
-        if (event.entity.getUuid().equals(mc.player.getUuid()) || !entities.get().getBoolean(event.entity.getType()) || !visualRange.get() || this.event.get() == Event.Spawn) return;
+        if (event.entity.getUuid().equals(mc.player.getUuid()) || !entities.get().getBoolean(event.entity.getType()) || !visualRange.get() || this.event.get() == Event.Spawn)
+            return;
 
         if (event.entity instanceof PlayerEntity) {
             if ((!visualRangeIgnoreFriends.get() || !Friends.get().isFriend(((PlayerEntity) event.entity))) && (!visualRangeIgnoreFakes.get() || !(event.entity instanceof FakePlayerEntity))) {
@@ -183,7 +185,6 @@ public class Notifier extends Module {
         synchronized (totemPopMap) {
             int pops = totemPopMap.getOrDefault(entity.getUuid(), 0);
             totemPopMap.put(entity.getUuid(), ++pops);
-
             ChatUtils.sendMsg(getChatId(entity), Formatting.GRAY, "(highlight)%s (default)popped (highlight)%d (default)%s.", entity.getEntityName(), pops, pops == 1 ? "totem" : "totems");
         }
     }
@@ -197,8 +198,8 @@ public class Notifier extends Module {
 
                 if (player.deathTime > 0 || player.getHealth() <= 0) {
                     int pops = totemPopMap.removeInt(player.getUuid());
-
                     ChatUtils.sendMsg(getChatId(player), Formatting.GRAY, "(highlight)%s (default)died after popping (highlight)%d (default)%s.", player.getEntityName(), pops, pops == 1 ? "totem" : "totems");
+
                     chatIdMap.removeInt(player.getUuid());
                 }
             }

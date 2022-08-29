@@ -20,10 +20,12 @@ import meteordevelopment.meteorclient.gui.widgets.pressable.WButton;
 import meteordevelopment.meteorclient.settings.*;
 import meteordevelopment.meteorclient.systems.modules.Categories;
 import meteordevelopment.meteorclient.systems.modules.Module;
+import meteordevelopment.meteorclient.systems.modules.Modules;
 import meteordevelopment.meteorclient.utils.Utils;
 import meteordevelopment.meteorclient.utils.misc.MeteorStarscript;
 import meteordevelopment.orbit.EventHandler;
 import meteordevelopment.starscript.Script;
+import net.greemdev.meteor.modules.presence.MinecraftPresence;
 import net.minecraft.client.gui.screen.*;
 import net.minecraft.client.gui.screen.multiplayer.MultiplayerScreen;
 import net.minecraft.client.gui.screen.option.*;
@@ -144,13 +146,16 @@ public class DiscordPresence extends Module {
 
     @Override
     public void onActivate() {
+        var gp = Modules.get().get(MinecraftPresence.class);
+        if (gp.isActive()) {
+            info("Disabling Minecraft Presence.");
+            gp.toggle();
+        }
         DiscordIPC.start(835240968533049424L, null);
 
         rpc.setStart(System.currentTimeMillis() / 1000L);
 
-        String largeText = "Meteor Client " + MeteorClient.VERSION;
-        if (!MeteorClient.DEV_BUILD.isEmpty()) largeText += " Dev Build: " + MeteorClient.DEV_BUILD;
-        rpc.setLargeImage("meteor_client", largeText);
+        rpc.setLargeImage("meteor_client", "Meteor Client " + MeteorClient.fullVersion());
 
         recompileLine1();
         recompileLine2();

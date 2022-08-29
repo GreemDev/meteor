@@ -293,4 +293,16 @@ public class Mesh {
     private int getVerticesOffset() {
         return (int) (verticesPointer - verticesPointerStart);
     }
+
+    public int getIndicesCount() {
+        return indicesCount;
+    }
+
+    public long getIndicesPointer() {
+        return indicesPointer;
+    }
+
+    public void setIndicesCount(int count) {
+        indicesCount = count;
+    }
 }

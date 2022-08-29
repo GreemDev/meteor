@@ -17,7 +17,7 @@ import net.greemdev.meteor.util.*
 import net.minecraft.item.Items
 import java.lang.invoke.MethodHandles
 
-private val category = Category("Greteor", Items.DARK_PRISMARINE.defaultStack)
+private val category = Category("Greteor", Items.LIME_CONCRETE_POWDER.defaultStack)
 private val hudGroup = HudGroup("Greteor")
 
 object Greteor {

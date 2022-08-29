@@ -41,7 +41,6 @@ import meteordevelopment.meteorclient.utils.misc.input.Input;
 import meteordevelopment.meteorclient.utils.misc.input.KeyAction;
 import meteordevelopment.orbit.EventHandler;
 import meteordevelopment.orbit.EventPriority;
-import net.greemdev.meteor.Greteor;
 import net.greemdev.meteor.modules.IgnoreWorldBorder;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.nbt.NbtElement;

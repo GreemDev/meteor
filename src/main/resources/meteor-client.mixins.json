@@ -36,7 +36,6 @@
     "CactusBlockMixin",
     "CameraMixin",
     "CapabilityTrackerMixin",
-    "CapeFeatureRendererMixin",
     "ChatHudAccessor",
     "ChatHudMixin",
     "ChatScreenMixin",

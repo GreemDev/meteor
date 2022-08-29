@@ -22,6 +22,7 @@ import java.util.function.BiConsumer
 import java.util.function.Supplier
 import kotlin.properties.ReadOnlyProperty
 import kotlin.reflect.KClass
+import kotlin.reflect.KMutableProperty
 import kotlin.reflect.KProperty
 import kotlin.reflect.full.primaryConstructor
 
@@ -81,6 +82,18 @@ fun String.toCamelCase(separator: String = "-"): String {
                 part.replaceFirstChar { it.uppercase() }
         }.joinToString("")
 }
+
+/**
+ * Sets the [KMutableProperty]'s value and then returns the new value.
+ */
+fun<T> KMutableProperty<T>.coalesce(newValue: T): T {
+    setter.call(newValue)
+    return newValue
+}
+
+fun meteordevelopment.meteorclient.utils.render.color.Color.awt() = java.awt.Color(packed)
+fun java.awt.Color.meteor() = meteordevelopment.meteorclient.utils.render.color.Color(rgb)
+
 
 fun any(vararg conditions: Boolean) = conditions.any()
 fun <T, R : Comparable<R>> List<T>.sorted(

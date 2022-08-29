@@ -51,6 +51,13 @@ public class MeteorClient implements ClientModInitializer {
     public static final File FOLDER = new File(FabricLoader.getInstance().getGameDir().toString(), MOD_ID);
     public static final Logger LOG = LoggerFactory.getLogger("Meteor");
 
+    public static String fullVersion() {
+        var sb = new StringBuilder(VERSION.toString());
+        if (DEV_BUILD != null && !DEV_BUILD.isEmpty())
+            sb.append("-rev").append(DEV_BUILD);
+        return sb.toString();
+    }
+
     static {
         String versionString = MOD_META.getVersion().getFriendlyString();
         if (versionString.contains("-")) versionString = versionString.split("-")[0];

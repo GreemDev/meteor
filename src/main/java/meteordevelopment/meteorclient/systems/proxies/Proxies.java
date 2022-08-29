@@ -14,6 +14,7 @@ import org.jetbrains.annotations.NotNull;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Objects;
 import java.util.regex.Pattern;
 
 public class Proxies extends System<Proxies> implements Iterable<Proxy> {
@@ -32,7 +33,7 @@ public class Proxies extends System<Proxies> implements Iterable<Proxy> {
 
     public boolean add(Proxy proxy) {
         for (Proxy p : proxies) {
-            if (p.type.get().equals(proxy.type.get()) && p.address.get().equals(proxy.address.get()) && p.port.get() == proxy.port.get()) return false;
+            if (p.type.get().equals(proxy.type.get()) && p.address.get().equals(proxy.address.get()) && Objects.equals(p.port.get(), proxy.port.get())) return false;
         }
 
         if (proxies.isEmpty()) proxy.enabled.set(true);

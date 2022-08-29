@@ -42,6 +42,4 @@ class GameTweaks : GModule("game-tweaks", "Minor changes to the game experience 
     fun noMigrators() = isActive and !migratorCapes()
     fun noScore() = isActive and !showScore()
     fun screenshots() = isActive and clipboardScreenshots()
-
-    val textureBlacklist = hashSetOf<Identifier>()
 }

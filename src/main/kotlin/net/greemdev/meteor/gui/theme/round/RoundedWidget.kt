@@ -17,9 +17,10 @@ interface RoundedWidget : BaseWidget {
         val t = theme()
         val s = t.scale(2.0)
         val outlineColor = t.outlineColor.get(pressed, mouseOver)
-        renderer.quadRounded(widget.x, widget.y + s,
+        val r = renderer.r2D().rounded()
+        r.quad(widget.x, widget.y + s,
             widget.width - s * 2, widget.height - s * 2,
             t.backgroundColor.get(pressed, mouseOver), t.round() - s)
-        renderer.quadOutlineRounded(widget, outlineColor, t.round(), s)
+        r.quadOutline(widget, outlineColor, t.round(), s)
     }
 }

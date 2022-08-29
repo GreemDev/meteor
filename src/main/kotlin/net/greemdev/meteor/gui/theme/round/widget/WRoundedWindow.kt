@@ -9,7 +9,7 @@ import meteordevelopment.meteorclient.gui.renderer.GuiRenderer
 import meteordevelopment.meteorclient.gui.widgets.WWidget
 import meteordevelopment.meteorclient.gui.widgets.containers.WWindow
 import net.greemdev.meteor.gui.theme.round.RoundedWidget
-import net.greemdev.meteor.gui.theme.round.util.quadRounded
+import net.greemdev.meteor.gui.theme.round.util.*
 import net.greemdev.meteor.util.*
 
 class WRoundedWindow(icon: WWidget?, title: String?) : WWindow(icon, title), RoundedWidget {
@@ -17,7 +17,7 @@ class WRoundedWindow(icon: WWidget?, title: String?) : WWindow(icon, title), Rou
 
     override fun onRender(renderer: GuiRenderer, mouseX: Double, mouseY: Double, delta: Double) {
         if (expanded || animProgress > 0)
-            renderer.quadRounded(x, y + header.height / 2,
+            renderer.r2D().rounded().quad(x, y + header.height / 2,
                 width, height - header.height / 2,
                 theme().backgroundColor(), theme().round(),
                 false)
@@ -25,7 +25,7 @@ class WRoundedWindow(icon: WWidget?, title: String?) : WWindow(icon, title), Rou
 
     private inner class WRoundedHeader(icon: WWidget?) : WHeader(icon) {
         override fun onRender(renderer: GuiRenderer, mouseX: Double, mouseY: Double, delta: Double) {
-            renderer.quadRounded(this, theme().accentColor(), theme().round())
+            renderer.r2D().rounded().quad(this, theme().accentColor(), theme().round())
         }
     }
 

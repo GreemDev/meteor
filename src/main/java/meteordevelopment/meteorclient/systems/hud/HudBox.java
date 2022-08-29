@@ -16,7 +16,7 @@ public class HudBox implements ISerializable<HudBox> {
     public YAnchor yAnchor = YAnchor.Top;
 
     public int x, y;
-    int width, height;
+    public int width, height;
 
     public HudBox(HudElement element) {
         this.element = element;

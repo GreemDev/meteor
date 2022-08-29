@@ -10,8 +10,8 @@ import net.minecraft.nbt.NbtCompound;
 import java.util.function.Consumer;
 
 public class IntSetting extends Setting<Integer> {
-    public final int min, max;
-    public final int sliderMin, sliderMax;
+    public int min, max;
+    public int sliderMin, sliderMax;
     public final boolean noSlider;
 
     private IntSetting(String name, String description, int defaultValue, Consumer<Integer> onChanged, Consumer<Setting<Integer>> onModuleActivated, IVisible visible, int min, int max, int sliderMin, int sliderMax, boolean noSlider) {

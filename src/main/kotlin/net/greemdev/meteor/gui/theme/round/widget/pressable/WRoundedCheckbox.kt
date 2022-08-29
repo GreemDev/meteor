@@ -8,7 +8,7 @@ package net.greemdev.meteor.gui.theme.round.widget.pressable
 import meteordevelopment.meteorclient.gui.renderer.GuiRenderer
 import meteordevelopment.meteorclient.gui.widgets.pressable.WCheckbox
 import net.greemdev.meteor.gui.theme.round.RoundedWidget
-import net.greemdev.meteor.gui.theme.round.util.quadRounded
+import net.greemdev.meteor.gui.theme.round.util.*
 import net.greemdev.meteor.util.*
 
 class WRoundedCheckbox(checked: Boolean) : WCheckbox(checked), RoundedWidget {
@@ -29,7 +29,7 @@ class WRoundedCheckbox(checked: Boolean) : WCheckbox(checked), RoundedWidget {
 
         if (animProgress > 0.0) {
             val cs = (width - theme.scale(2.0)) / 1.75 * animProgress
-            renderer.quadRounded(x + (width - cs) / 2, y + (height - cs) / 2, cs, cs, theme.checkboxColor(), theme.round())
+            renderer.r2D().rounded().quad(x + (width - cs) / 2, y + (height - cs) / 2, cs, cs, theme.checkboxColor(), theme.round())
         }
     }
 }

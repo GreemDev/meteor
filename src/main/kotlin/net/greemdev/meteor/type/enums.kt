@@ -24,3 +24,8 @@ enum class StringComparisonType {
         EndsWith -> "Ends With"
     }
 }
+
+enum class ItemSelectMode {
+    Sequential,
+    Random
+}

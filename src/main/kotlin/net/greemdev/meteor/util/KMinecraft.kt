@@ -28,7 +28,7 @@ operator fun Entity.plus(vec3d: Vec3d): Entity {
     return this
 }
 
-fun MinecraftClient.isInGame() = player != null && world != null
+fun MinecraftClient?.isInGame() = this != null && player != null && world != null
 
 fun MinecraftClient.player() = player ?: error("The client's PlayerEntity is unavailable.")
 fun MinecraftClient.currentWorld() = world ?: error("There is no world loaded currently.")
@@ -41,6 +41,8 @@ fun PlayerEntity.usableItemStack(): ItemStack? =
     else null
 
 fun MinecraftClient.rotationVecClient(): Vec3d = player().rotationVecClient
+
+operator fun Vec3d.times(value: Double): Vec3d = multiply(value)
 fun MinecraftClient.rotation(): Vec2f = player().rotationClient
 fun MinecraftClient.rotationVec(): Vec3d = player().rotationVector
 

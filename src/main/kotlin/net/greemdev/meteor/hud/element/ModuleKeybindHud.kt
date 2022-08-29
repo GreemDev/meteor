@@ -18,10 +18,9 @@ import kotlin.math.max
 
 class ModuleKeybindHud : HudElement(Companion.info) {
     companion object : HudElementMetadata<ModuleKeybindHud>(
-        HudElementInfo(Greteor.hudGroup(),
-            "module-keybinds", "Displays selected modules with valid keybinds.",
-            ::ModuleKeybindHud
-        )
+        Greteor.hudGroup(),
+        "module-keybinds", "Displays selected modules with valid keybinds.",
+        ::ModuleKeybindHud
     )
 
     private val sg = settings.group()

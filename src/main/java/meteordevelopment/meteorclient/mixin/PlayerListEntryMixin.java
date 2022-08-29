@@ -28,7 +28,6 @@ public abstract class PlayerListEntryMixin {
         if (gameTweaks.noMigrators()) {
             if (type == MinecraftProfileTexture.Type.CAPE || type == MinecraftProfileTexture.Type.ELYTRA) {
                 if (texture.getUrl().equals(MIGRATOR_CAPE_URL)) {
-                    gameTweaks.getTextureBlacklist().add(id);
                     ci.cancel();
                 }
             }

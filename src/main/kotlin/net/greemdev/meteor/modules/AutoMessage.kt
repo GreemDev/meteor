@@ -83,7 +83,7 @@ class AutoMessage : GModule(
                     commandScripts.forEach { script ->
                         delay(250)
                         MeteorStarscript.run(script)
-                            ?.run { removePrefix("/") }
+                            ?.removePrefix("/")
                             ?.also(mc::sendCommand)
                     }
                 }
@@ -99,7 +99,6 @@ class AutoMessage : GModule(
 
     override fun getWidget(theme: GuiTheme): WWidget =
         theme.table().apply {
-
             add(theme.button("Starscript Info") {
                 Util.getOperatingSystem().open("https://github.com/MeteorDevelopment/starscript/wiki")
             })
