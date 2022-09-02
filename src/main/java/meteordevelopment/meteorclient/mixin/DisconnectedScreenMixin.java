@@ -24,10 +24,15 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
 @Mixin(DisconnectedScreen.class)
 public abstract class DisconnectedScreenMixin extends Screen {
-    @Shadow private int reasonHeight;
+    @Shadow
+    private int reasonHeight;
 
-    @Unique private ButtonWidget reconnectBtn;
-    @Unique private double time = Modules.get().get(AutoReconnect.class).time.get() * 20;
+    @Unique
+    private ButtonWidget reconnectBtn;
+    @Unique
+    private ButtonWidget toggleAutoReconnectBtn;
+    @Unique
+    private double time = Modules.get().get(AutoReconnect.class).time.get() * 20;
 
     protected DisconnectedScreenMixin(Text title) {
         super(title);
@@ -39,7 +44,20 @@ public abstract class DisconnectedScreenMixin extends Screen {
             int x = width / 2 - 100;
             int y = Math.min((height / 2 + reasonHeight / 2) + 32, height - 30);
 
-            reconnectBtn = addDrawableChild(new ButtonWidget(x, y, 200, 20, Text.literal(getText()), button -> ConnectScreen.connect(new MultiplayerScreen(new TitleScreen()), client, ServerAddress.parse(Modules.get().get(AutoReconnect.class).lastServerInfo.address), Modules.get().get(AutoReconnect.class).lastServerInfo)));
+            reconnectBtn = addDrawableChild(new ButtonWidget(x, y, 200, 20, Text.literal(getText()),
+                button -> ConnectScreen.connect(
+                    new MultiplayerScreen(new TitleScreen()), client,
+                    ServerAddress.parse(Modules.get().get(AutoReconnect.class).lastServerInfo.address),
+                    Modules.get().get(AutoReconnect.class).lastServerInfo)
+                )
+            );
+
+            toggleAutoReconnectBtn = addDrawableChild(new ButtonWidget(x, y + 22, 200, 20, Text.literal("Toggle AutoReconnect"),
+                button -> {
+                    Modules.get().get(AutoReconnect.class).toggle();
+                    time = Modules.get().get(AutoReconnect.class).time.get() * 20;
+                })
+            );
         }
     }
 
@@ -49,7 +67,8 @@ public abstract class DisconnectedScreenMixin extends Screen {
         if (!autoReconnect.isActive() || autoReconnect.lastServerInfo == null) return;
 
         if (time <= 0) {
-            ConnectScreen.connect(new MultiplayerScreen(new TitleScreen()), client, ServerAddress.parse(autoReconnect.lastServerInfo.address), autoReconnect.lastServerInfo);
+            ConnectScreen.connect(new MultiplayerScreen(new TitleScreen()), client,
+                ServerAddress.parse(autoReconnect.lastServerInfo.address), autoReconnect.lastServerInfo);
         } else {
             time--;
             if (reconnectBtn != null) ((AbstractButtonWidgetAccessor) reconnectBtn).setText(Text.literal(getText()));

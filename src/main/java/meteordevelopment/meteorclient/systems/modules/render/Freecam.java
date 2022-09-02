@@ -10,6 +10,7 @@ import meteordevelopment.meteorclient.events.game.GameLeftEvent;
 import meteordevelopment.meteorclient.events.game.OpenScreenEvent;
 import meteordevelopment.meteorclient.events.meteor.KeyEvent;
 import meteordevelopment.meteorclient.events.meteor.MouseScrollEvent;
+import meteordevelopment.meteorclient.events.packets.PacketEvent;
 import meteordevelopment.meteorclient.events.world.ChunkOcclusionEvent;
 import meteordevelopment.meteorclient.events.world.TickEvent;
 import meteordevelopment.meteorclient.settings.BoolSetting;
@@ -27,6 +28,7 @@ import meteordevelopment.meteorclient.utils.player.Rotations;
 import meteordevelopment.orbit.EventHandler;
 import meteordevelopment.orbit.EventPriority;
 import net.minecraft.client.option.Perspective;
+import net.minecraft.network.packet.s2c.play.DeathMessageS2CPacket;
 import net.minecraft.util.hit.BlockHitResult;
 import net.minecraft.util.hit.EntityHitResult;
 import net.minecraft.util.math.BlockPos;
@@ -55,22 +57,22 @@ public class Freecam extends Module {
             .build()
     );
 
-    private final Setting<Boolean> autoDisableOnDamage = sgGeneral.add(new BoolSetting.Builder()
+    private final Setting<Boolean> toggleOnDamage = sgGeneral.add(new BoolSetting.Builder()
             .name("toggle-on-damage")
             .description("Disables freecam when you take damage.")
             .defaultValue(false)
             .build()
     );
 
-    private final Setting<Boolean> autoDisableOnDeath = sgGeneral.add(new BoolSetting.Builder()
+    private final Setting<Boolean> toggleOnDeath = sgGeneral.add(new BoolSetting.Builder()
             .name("toggle-on-death")
             .description("Disables freecam when you die.")
             .defaultValue(false)
             .build()
     );
 
-    private final Setting<Boolean> autoDisableOnLog = sgGeneral.add(new BoolSetting.Builder()
-            .name("toggle-on-log")
+    private final Setting<Boolean> toggleOnDisconnect = sgGeneral.add(new BoolSetting.Builder()
+            .name("toggle-on-disconnect")
             .description("Disables freecam when you disconnect from a server.")
             .defaultValue(true)
             .build()
@@ -295,17 +297,28 @@ public class Freecam extends Module {
         if (event.entity.getUuid() == null) return;
         if (!event.entity.getUuid().equals(mc.player.getUuid())) return;
 
-        if (autoDisableOnDamage.get() || (autoDisableOnDeath.get() && event.entity.getHealth() <= 0)) {
+        if (toggleOnDamage.get()) {
             toggle();
-            info("Auto toggled because you took damage or died.");
+            info("You took damage; disabling.");
         }
     }
 
     @EventHandler
     private void onGameLeft(GameLeftEvent event) {
-        if (!autoDisableOnLog.get()) return;
+        if (!toggleOnDisconnect.get()) return;
 
         toggle();
+    }
+
+    @EventHandler
+    private void onPacketReceive(PacketEvent.Receive event) {
+        if (event.packet instanceof DeathMessageS2CPacket pkt) {
+            var entity = mc.world.getEntityById(pkt.getEntityId());
+            if (entity == mc.player && toggleOnDeath.get()) {
+                toggle();
+                info("Toggled off because you died.");
+            }
+        }
     }
 
     public void changeLookDirection(double deltaX, double deltaY) {
