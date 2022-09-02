@@ -57,6 +57,14 @@ public class RainbowColors {
         colors.add(color);
     }
 
+    public static void handle(SettingColor color) {
+        if (colors.contains(color) && !color.rainbow) {
+            colors.remove(color);
+        } else if (!colors.contains(color) && color.rainbow) {
+            colors.add(color);
+        }
+    }
+
     public static void register(Runnable runnable) {
         listeners.add(runnable);
     }
@@ -66,31 +74,29 @@ public class RainbowColors {
         GLOBAL.setSpeed(Config.get().rainbowSpeed.get() / 100);
         GLOBAL.getNext();
 
-        for (Setting<SettingColor> setting : colorSettings) {
-            if (setting.module == null || setting.module.isActive()) setting.get().update();
-        }
+        for (Setting<SettingColor> setting : colorSettings)
+            if (setting.module == null || setting.module.isActive())
+                setting.get().update();
 
-        for (Setting<List<SettingColor>> setting : colorListSettings) {
-            if (setting.module == null || setting.module.isActive()) {
-                for (SettingColor color : setting.get()) color.update();
-            }
-        }
 
-        for (SettingColor color : colors) {
+        for (Setting<List<SettingColor>> setting : colorListSettings)
+            if (setting.module == null || setting.module.isActive())
+                setting.get().forEach(SettingColor::update);
+
+
+        for (SettingColor color : colors)
             color.update();
-        }
 
-        for (Waypoint waypoint : Waypoints.get()) {
+
+        for (Waypoint waypoint : Waypoints.get())
             waypoint.color.get().update();
-        }
 
-        if (mc.currentScreen instanceof WidgetScreen) {
-            for (SettingGroup group : GuiThemes.get().settings) {
-                for (Setting<?> setting : group) {
-                    if (setting instanceof ColorSetting) ((SettingColor) setting.get()).update();
-                }
-            }
-        }
+        if (mc.currentScreen instanceof WidgetScreen)
+            for (SettingGroup group : GuiThemes.get().settings)
+                for (Setting<?> setting : group)
+                    if (setting instanceof ColorSetting)
+                        ((SettingColor) setting.get()).update();
+
 
         for (Runnable listener : listeners) listener.run();
     }

@@ -12,10 +12,12 @@ import meteordevelopment.meteorclient.renderer.text.FontFace;
 import meteordevelopment.meteorclient.settings.*;
 import meteordevelopment.meteorclient.systems.System;
 import meteordevelopment.meteorclient.systems.Systems;
+import meteordevelopment.meteorclient.systems.modules.Module;
 import meteordevelopment.meteorclient.utils.player.ChatUtils;
 import meteordevelopment.meteorclient.utils.render.FontUtils;
 import meteordevelopment.meteorclient.utils.render.color.RainbowColors;
 import meteordevelopment.meteorclient.utils.render.color.SettingColor;
+import net.greemdev.meteor.util.HiddenModules;
 import net.greemdev.meteor.util.PrefixBrackets;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.nbt.NbtElement;
@@ -24,6 +26,8 @@ import net.minecraft.nbt.NbtString;
 import net.minecraft.text.Text;
 
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 
 import static meteordevelopment.meteorclient.MeteorClient.mc;
@@ -36,7 +40,6 @@ public class Config extends System<Config> {
     private final SettingGroup sgMisc = settings.createGroup("Misc");
 
     // Visual
-
     public final Setting<Boolean> customFont = sgVisual.add(new BoolSetting.Builder()
         .name("custom-font")
         .description("Use a custom font.")
@@ -172,6 +175,14 @@ public class Config extends System<Config> {
     );
 
     // Misc
+
+    public final Setting<List<Module>> hiddenModules = sgMisc.add(new ModuleListSetting.Builder()
+        .name("hidden-modules")
+        .description("Modules to hide from Meteor's Modules screen.")
+        .defaultValue(Collections.emptyList())
+        .onChanged(HiddenModules::set)
+        .build()
+    );
 
     public final Setting<Integer> rotationHoldTicks = sgMisc.add(new IntSetting.Builder()
         .name("rotation-hold")

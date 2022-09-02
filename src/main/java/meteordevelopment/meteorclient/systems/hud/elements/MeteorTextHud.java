@@ -58,14 +58,14 @@ public class MeteorTextHud {
         return new TextHud(INFO);
     }
 
-    private static HudElementInfo<TextHud>.Preset addPreset(String title, String text, int updateDelay) {
+    public static HudElementInfo<TextHud>.Preset addPreset(String title, String text, int updateDelay) {
         return INFO.addPreset(title, textHud -> {
             if (text != null) textHud.text.set(text);
             if (updateDelay != -1) textHud.updateDelay.set(updateDelay);
         });
     }
 
-    private static HudElementInfo<TextHud>.Preset addPreset(String title, String text) {
+    public static HudElementInfo<TextHud>.Preset addPreset(String title, String text) {
         return addPreset(title, text, -1);
     }
 }

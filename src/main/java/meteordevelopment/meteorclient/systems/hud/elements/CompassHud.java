@@ -10,6 +10,7 @@ import meteordevelopment.meteorclient.systems.hud.Hud;
 import meteordevelopment.meteorclient.systems.hud.HudElement;
 import meteordevelopment.meteorclient.systems.hud.HudElementInfo;
 import meteordevelopment.meteorclient.systems.hud.HudRenderer;
+import meteordevelopment.meteorclient.utils.render.color.RainbowColors;
 import meteordevelopment.meteorclient.utils.render.color.SettingColor;
 import net.minecraft.util.math.MathHelper;
 
@@ -52,6 +53,7 @@ public class CompassHud extends HudElement {
         .name("color-north")
         .description("Color of north.")
         .defaultValue(new SettingColor(225, 45, 45))
+        .onChanged(RainbowColors::handle)
         .build()
     );
 
