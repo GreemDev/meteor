@@ -203,6 +203,11 @@ public class InventoryTweaks extends Module {
     private void sort() {
         if (!sortingEnabled.get() || !(mc.currentScreen instanceof HandledScreen<?> screen) || sorter != null) return;
 
+        if (!mc.player.currentScreenHandler.getCursorStack().isEmpty()) {
+            var empty = InvUtils.findEmpty();
+            InvUtils.click().slot(empty.found() ? empty.slot() : -999);
+        }
+
         Slot focusedSlot = ((HandledScreenAccessor) screen).getFocusedSlot();
         if (focusedSlot == null) return;
 

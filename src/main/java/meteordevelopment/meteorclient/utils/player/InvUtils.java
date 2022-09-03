@@ -144,7 +144,8 @@ public class InvUtils {
     }
 
     public static void dropHand() {
-        if (!mc.player.currentScreenHandler.getCursorStack().isEmpty()) mc.interactionManager.clickSlot(mc.player.currentScreenHandler.syncId, ScreenHandler.EMPTY_SPACE_SLOT_INDEX, 0, SlotActionType.PICKUP, mc.player);
+        if (!mc.player.currentScreenHandler.getCursorStack().isEmpty())
+            mc.interactionManager.clickSlot(mc.player.currentScreenHandler.syncId, ScreenHandler.EMPTY_SPACE_SLOT_INDEX, 0, SlotActionType.PICKUP, mc.player);
     }
 
     public static class Action {
