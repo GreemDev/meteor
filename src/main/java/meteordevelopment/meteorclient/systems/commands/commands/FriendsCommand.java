@@ -22,6 +22,7 @@ import meteordevelopment.meteorclient.systems.friends.Friends;
 import meteordevelopment.meteorclient.utils.player.ChatUtils;
 import net.minecraft.client.network.PlayerListEntry;
 import net.minecraft.command.CommandSource;
+import net.minecraft.util.Formatting;
 
 import java.util.Arrays;
 import java.util.Collection;
@@ -43,7 +44,8 @@ public class FriendsCommand extends Command {
                     PlayerListEntry entry = PlayerListEntryArgumentType.get(context);
                     Friend friend = new Friend(entry.getProfile().getName(), entry.getProfile().getId());
 
-                    if (Friends.get().add(friend)) info("Added (highlight)%s (default)to friends.", friend.name);
+                    if (Friends.get().add(friend))
+                        ChatUtils.sendMsg(friend.hashCode(), Formatting.GRAY, "Added (highlight)%s (default)to friends.", friend.name);
                     else error("Already friends with that player.");
 
                     return SINGLE_SUCCESS;
@@ -57,7 +59,8 @@ public class FriendsCommand extends Command {
                         return SINGLE_SUCCESS;
                     }
 
-                    if (Friends.get().remove(friend)) info("Removed (highlight)%s (default)from friends.", friend.name);
+                    if (Friends.get().remove(friend))
+                        ChatUtils.sendMsg(friend.hashCode(), Formatting.GRAY, "Removed (highlight)%s (default)from friends.", friend.name);
                     else error("Failed to remove that friend.");
 
                     return SINGLE_SUCCESS;
