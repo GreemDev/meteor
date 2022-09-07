@@ -45,7 +45,7 @@ public class FriendsCommand extends Command {
                     Friend friend = new Friend(entry.getProfile().getName(), entry.getProfile().getId());
 
                     if (Friends.get().add(friend))
-                        ChatUtils.sendMsg(friend.hashCode(), Formatting.GRAY, "Added (highlight)%s (default)to friends.", friend.name);
+                        ChatUtils.sendMsg(friend.hashCode(), Formatting.GRAY, "Added (highlight)%s (default)to friends.".formatted(friend.getName()));
                     else error("Already friends with that player.");
 
                     return SINGLE_SUCCESS;
@@ -60,7 +60,7 @@ public class FriendsCommand extends Command {
                     }
 
                     if (Friends.get().remove(friend))
-                        ChatUtils.sendMsg(friend.hashCode(), Formatting.GRAY, "Removed (highlight)%s (default)from friends.", friend.name);
+                        ChatUtils.sendMsg(friend.hashCode(), Formatting.GRAY, "Removed (highlight)%s (default)from friends.".formatted(friend.getName()));
                     else error("Failed to remove that friend.");
 
                     return SINGLE_SUCCESS;
@@ -69,7 +69,7 @@ public class FriendsCommand extends Command {
         ).then(literal("list")
             .executes(context -> {
                 info("--- Friends ((highlight)%s(default)) ---", Friends.get().count());
-                Friends.get().forEach(friend -> ChatUtils.info("(highlight)" + friend.name));
+                Friends.get().forEach(friend -> ChatUtils.info("(highlight)%s".formatted(friend.getName())));
                 return SINGLE_SUCCESS;
             })
         );

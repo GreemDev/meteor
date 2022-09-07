@@ -7,10 +7,9 @@ package net.greemdev.meteor.commands
 
 import meteordevelopment.meteorclient.utils.player.ChatUtils
 import net.greemdev.meteor.GCommand
-import net.greemdev.meteor.commands.api.argument
-import net.greemdev.meteor.commands.api.simpleCommandException
-import net.greemdev.meteor.commands.api.throwNew
-import net.greemdev.meteor.util.*
+import net.greemdev.meteor.commands.api.*
+import net.greemdev.meteor.util.misc.*
+import net.greemdev.meteor.util.text.*
 import net.minecraft.network.packet.c2s.play.RenameItemC2SPacket
 
 class RenameCommand : GCommand("rename", "Renames the item in your hand.", {

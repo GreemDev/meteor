@@ -69,7 +69,9 @@ object Greteor {
                         as MethodHandles.Lookup
                 }
             } catch (err: AbstractMethodError) {
-                val exc = AbstractMethodError("Improper implementations .")
+                val exc = AbstractMethodError("Improper implementations of overridden methods.")
+                exc.addSuppressed(err)
+                throw exc;
             }
         }
 }

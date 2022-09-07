@@ -7,7 +7,7 @@ package net.greemdev.meteor.commands
 
 import it.unimi.dsi.fastutil.ints.Int2ObjectOpenHashMap
 import net.greemdev.meteor.GCommand
-import net.greemdev.meteor.util.player
+import net.greemdev.meteor.util.misc.player
 import net.minecraft.item.ItemStack
 import net.minecraft.network.packet.c2s.play.ClickSlotC2SPacket
 import net.minecraft.screen.slot.SlotActionType

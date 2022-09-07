@@ -20,9 +20,9 @@ import java.util.Optional;
 import java.util.UUID;
 
 public class Friend implements ISerializable<Friend>, Comparable<Friend> {
-    public String name;
-    public @Nullable UUID id;
-    public Optional<PlayerHeadTexture> headTexture;
+    private String name;
+    private @Nullable UUID id;
+    private Optional<PlayerHeadTexture> headTexture;
 
     public Friend(String name, @Nullable UUID id) {
         this.name = name;
@@ -39,6 +39,9 @@ public class Friend implements ISerializable<Friend>, Comparable<Friend> {
 
     public PlayerHeadTexture getHeadTexture() {
         return headTexture.orElse(PlayerHeadUtils.STEVE_HEAD);
+    }
+    public String getName() {
+        return name;
     }
 
     public void updateInfo() {

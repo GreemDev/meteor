@@ -62,7 +62,11 @@ object Meteor {
     inline fun <reified T : Command> command(): T = commands().get(T::class.java)
 
     @JvmStatic
-    fun friend(uuid: UUID): Friend? = friends().get(uuid)
+    fun friend(name: String, ignoreCase: Boolean = false): Friend? = with(friends()) {
+        if (ignoreCase)
+            getIgnoreCase(name)
+        else get(name)
+    }
 
     @JvmStatic
     fun friend(player: PlayerEntity): Friend? = friends().get(player)

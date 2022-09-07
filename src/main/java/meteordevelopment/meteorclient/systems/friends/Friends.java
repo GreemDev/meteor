@@ -10,6 +10,7 @@ import meteordevelopment.meteorclient.systems.System;
 import meteordevelopment.meteorclient.systems.Systems;
 import meteordevelopment.meteorclient.utils.misc.NbtUtils;
 import meteordevelopment.meteorclient.utils.network.MeteorExecutor;
+import net.minecraft.client.network.PlayerListEntry;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.nbt.NbtCompound;
 import org.jetbrains.annotations.NotNull;
@@ -28,7 +29,7 @@ public class Friends extends System<Friends> implements Iterable<Friend> {
     }
 
     public boolean add(Friend friend) {
-        if (friend.name.isEmpty() || friend.name.contains(" ")) return false;
+        if (friend.getName().isEmpty() || friend.getName().contains(" ")) return false;
 
         if (!friends.contains(friend)) {
             friends.add(friend);
@@ -51,21 +52,32 @@ public class Friends extends System<Friends> implements Iterable<Friend> {
 
     public Friend get(String name) {
         return friends.stream()
-            .filter(f -> f.name.equals(name))
-            .findFirst().orElse(null);
+            .filter(f -> f.getName().equals(name))
+            .findFirst()
+            .orElse(null);
     }
 
-    public Friend get(UUID uuid) {
+    public Friend getIgnoreCase(String name) {
         return friends.stream()
-            .filter(f -> f.id != null && f.id.equals(uuid))
-            .findFirst().orElse(null);
+            .filter(f -> f.getName().equalsIgnoreCase(name))
+            .findFirst()
+            .orElse(null);
     }
+
 
     public Friend get(PlayerEntity player) {
-        return get(player.getUuid());
+        return get(player.getEntityName());
+    }
+
+    public Friend get(PlayerListEntry player) {
+        return get(player.getProfile().getName());
     }
 
     public boolean isFriend(PlayerEntity player) {
+        return get(player) != null;
+    }
+
+    public boolean isFriend(PlayerListEntry player) {
         return get(player) != null;
     }
 
