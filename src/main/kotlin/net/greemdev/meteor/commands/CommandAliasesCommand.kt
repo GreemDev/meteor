@@ -5,13 +5,14 @@
 
 package net.greemdev.meteor.commands
 
-import com.mojang.brigadier.exceptions.CommandSyntaxException
-import com.mojang.brigadier.exceptions.SimpleCommandExceptionType
 import meteordevelopment.meteorclient.utils.player.ChatUtils
 import net.greemdev.meteor.GCommand
 import net.greemdev.meteor.commands.api.*
 import net.greemdev.meteor.modules.CommandAliases
 import net.greemdev.meteor.util.*
+import net.greemdev.meteor.util.misc.sendCommand
+import net.greemdev.meteor.util.text.textOf
+import net.greemdev.meteor.util.meteor.*
 import net.minecraft.command.CommandSource
 
 class CommandAliasesCommand : GCommand(

@@ -10,7 +10,7 @@ import meteordevelopment.meteorclient.gui.widgets.WAccount
 import meteordevelopment.meteorclient.systems.accounts.Account
 import meteordevelopment.meteorclient.utils.render.color.Color
 import net.greemdev.meteor.gui.theme.round.RoundedWidget
-import net.greemdev.meteor.util.*
+import net.greemdev.meteor.util.meteor.*
 
 class WRoundedAccount(screen: WidgetScreen, account: Account<*>) : WAccount(screen, account), RoundedWidget {
     override fun loggedInColor(): Color = theme().loggedInColor()

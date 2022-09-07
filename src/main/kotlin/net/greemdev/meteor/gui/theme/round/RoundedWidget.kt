@@ -10,6 +10,7 @@ import meteordevelopment.meteorclient.gui.utils.BaseWidget
 import meteordevelopment.meteorclient.gui.widgets.WWidget
 import net.greemdev.meteor.gui.theme.round.util.*
 import net.greemdev.meteor.util.*
+import net.greemdev.meteor.util.meteor.*
 
 interface RoundedWidget : BaseWidget {
     fun theme() = theme as RoundedTheme
@@ -21,6 +22,6 @@ interface RoundedWidget : BaseWidget {
         r.quad(widget.x, widget.y + s,
             widget.width - s * 2, widget.height - s * 2,
             t.backgroundColor.get(pressed, mouseOver), t.round() - s)
-        r.quadOutline(widget, outlineColor, t.round(), s)
+        r.widgetQuadOutline(widget, outlineColor, t.round(), s)
     }
 }

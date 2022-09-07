@@ -26,7 +26,7 @@ public class FakePlayerCommand extends Command {
     public void build(LiteralArgumentBuilder<CommandSource> builder) {
         builder.then(literal("spawn")
             .executes(context -> {
-                if (active()) FakePlayerManager.add("Meteor on Crack", 36, true);
+                if (active()) FakePlayerManager.add(Modules.get().get(FakePlayer.class).name.get(), 36, true);
                 return SINGLE_SUCCESS;
             })
             .then(argument("name", StringArgumentType.word())
@@ -47,9 +47,7 @@ public class FakePlayerCommand extends Command {
                             return SINGLE_SUCCESS;
                         })
                     )))
-        );
-
-        builder.then(literal("clear").executes(context -> {
+        ).then(literal("clear").executes(context -> {
             if (active()) FakePlayerManager.clear();
             return SINGLE_SUCCESS;
         }));

@@ -6,6 +6,7 @@
 package meteordevelopment.meteorclient.settings;
 
 import com.google.common.collect.ImmutableList;
+import meteordevelopment.meteorclient.utils.render.color.Color;
 import meteordevelopment.meteorclient.utils.render.color.SettingColor;
 import net.minecraft.nbt.NbtCompound;
 
@@ -64,6 +65,10 @@ public class ColorSetting extends Setting<SettingColor> {
     public static class Builder extends SettingBuilder<Builder, SettingColor, ColorSetting> {
         public Builder() {
             super(new SettingColor());
+        }
+
+        public Builder defaultValue(Color defaultValue) {
+            return defaultValue(defaultValue.toSetting());
         }
 
         @Override

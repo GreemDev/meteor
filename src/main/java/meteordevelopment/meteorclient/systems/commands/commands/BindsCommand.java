@@ -11,6 +11,7 @@ import meteordevelopment.meteorclient.systems.modules.Module;
 import meteordevelopment.meteorclient.systems.modules.Modules;
 import meteordevelopment.meteorclient.utils.Utils;
 import meteordevelopment.meteorclient.utils.player.ChatUtils;
+import net.greemdev.meteor.util.text.FormattedText;
 import net.minecraft.command.CommandSource;
 import net.minecraft.text.HoverEvent;
 import net.minecraft.text.MutableText;
@@ -39,18 +40,19 @@ public class BindsCommand extends Command {
             for (Module module : modules) {
                 HoverEvent hoverEvent = new HoverEvent(HoverEvent.Action.SHOW_TEXT, getTooltip(module));
 
-                MutableText text = Text.literal(module.title).formatted(Formatting.WHITE);
-                text.setStyle(text.getStyle().withHoverEvent(hoverEvent));
-
-                MutableText sep = Text.literal(" - ");
-                sep.setStyle(sep.getStyle().withHoverEvent(hoverEvent));
-                text.append(sep.formatted(Formatting.GRAY));
-
-                MutableText key = Text.literal(module.keybind.toString());
-                key.setStyle(key.getStyle().withHoverEvent(hoverEvent));
-                text.append(key.formatted(Formatting.GRAY));
-
-                ChatUtils.sendMsg(text);
+                ChatUtils.sendMsg(msg -> {
+                    msg.append(module.title);
+                    msg.formatted(Formatting.WHITE);
+                    msg.onHovered(hoverEvent);
+                    msg.append(" - ", b -> {
+                        b.onHovered(hoverEvent);
+                        b.formatted(Formatting.GRAY);
+                    });
+                    msg.append(module.keybind.toString(), b -> {
+                        b.onHovered(hoverEvent);
+                        b.formatted(Formatting.GRAY);
+                    });
+                });
             }
 
             return SINGLE_SUCCESS;
@@ -58,9 +60,11 @@ public class BindsCommand extends Command {
     }
 
     private MutableText getTooltip(Module module) {
-        MutableText tooltip = Text.literal(Utils.nameToTitle(module.title)).formatted(Formatting.BLUE, Formatting.BOLD).append("\n\n");
-        tooltip.append(Text.literal(module.description).formatted(Formatting.WHITE));
-
-        return tooltip;
+        return FormattedText.builder()
+            .append(module.title)
+            .formatted(Formatting.BLUE).bold()
+            .append("\n\n")
+            .append(module.description, Formatting.WHITE)
+            .mutableText();
     }
 }

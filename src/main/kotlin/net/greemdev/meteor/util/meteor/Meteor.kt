@@ -3,7 +3,7 @@
  * Copyright (c) Meteor Development.
  */
 
-package net.greemdev.meteor.util
+package net.greemdev.meteor.util.meteor
 
 import meteordevelopment.meteorclient.systems.accounts.Accounts
 import meteordevelopment.meteorclient.systems.commands.Command

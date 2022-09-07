@@ -8,7 +8,7 @@ package net.greemdev.meteor.gui.theme.round.widget.pressable
 import meteordevelopment.meteorclient.gui.renderer.GuiRenderer
 import meteordevelopment.meteorclient.gui.widgets.pressable.WMinus
 import net.greemdev.meteor.gui.theme.round.RoundedWidget
-import net.greemdev.meteor.util.invoke
+import net.greemdev.meteor.util.meteor.invoke
 
 class WRoundedMinus : WMinus(), RoundedWidget {
 

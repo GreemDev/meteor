@@ -9,6 +9,8 @@ import meteordevelopment.meteorclient.events.game.SendMessageEvent
 import meteordevelopment.orbit.EventHandler
 import net.greemdev.meteor.GModule
 import net.greemdev.meteor.util.*
+import net.greemdev.meteor.util.misc.*
+import net.greemdev.meteor.util.meteor.*
 
 // based on https://github.com/Declipsonator/Meteor-Tweaks/blob/main/src/main/java/me/declipsonator/meteortweaks/modules/GroupChat.java
 class PrivateChat : GModule("private-chat", "Turns your chat into a private conversation.") {

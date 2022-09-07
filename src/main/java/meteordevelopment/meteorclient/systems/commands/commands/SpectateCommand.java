@@ -10,11 +10,9 @@ import meteordevelopment.meteorclient.MeteorClient;
 import meteordevelopment.meteorclient.events.meteor.KeyEvent;
 import meteordevelopment.meteorclient.systems.commands.Command;
 import meteordevelopment.meteorclient.systems.commands.arguments.PlayerArgumentType;
-import meteordevelopment.meteorclient.utils.player.ChatUtils;
+import net.greemdev.meteor.util.misc.KMC;
 import meteordevelopment.orbit.EventHandler;
-import net.greemdev.meteor.util.KMC;
 import net.minecraft.command.CommandSource;
-import net.minecraft.text.Text;
 
 import static com.mojang.brigadier.Command.SINGLE_SUCCESS;
 

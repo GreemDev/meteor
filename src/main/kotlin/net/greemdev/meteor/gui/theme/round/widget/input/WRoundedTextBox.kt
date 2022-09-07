@@ -8,15 +8,13 @@ package net.greemdev.meteor.gui.theme.round.widget.input
 import meteordevelopment.meteorclient.gui.renderer.GuiRenderer
 import meteordevelopment.meteorclient.gui.utils.CharFilter
 import meteordevelopment.meteorclient.gui.widgets.WWidget
-import meteordevelopment.meteorclient.gui.widgets.containers.WContainer
 import meteordevelopment.meteorclient.gui.widgets.containers.WVerticalList
 import meteordevelopment.meteorclient.gui.widgets.input.WTextBox
-import meteordevelopment.meteorclient.utils.Utils
 import meteordevelopment.meteorclient.utils.render.color.Color
 import net.greemdev.meteor.gui.theme.round.RoundedWidget
 import net.greemdev.meteor.gui.theme.round.widget.WRoundedLabel
-import net.greemdev.meteor.util.clamp
-import net.greemdev.meteor.util.invoke
+import net.greemdev.meteor.util.misc.clamp
+import net.greemdev.meteor.util.meteor.invoke
 
 class WRoundedTextBox(text: String, placeholder: String?, filter: CharFilter, renderer: Class<out Renderer>?)
     : WTextBox(text, placeholder, filter, renderer), RoundedWidget {
@@ -35,7 +33,7 @@ class WRoundedTextBox(text: String, placeholder: String?, filter: CharFilter, re
             cursorVisible = !cursorVisible
             cursorTimer = 0.0
         } else {
-            cursorTimer += delta * 1.75
+            cursorTimer += delta * 1.1
         }
 
         renderBackground(renderer, this, pressed = false, mouseOver = false)

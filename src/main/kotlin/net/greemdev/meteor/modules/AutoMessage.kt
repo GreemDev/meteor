@@ -11,13 +11,14 @@ import kotlinx.coroutines.*
 import meteordevelopment.meteorclient.events.world.TickEvent
 import meteordevelopment.meteorclient.gui.GuiTheme
 import meteordevelopment.meteorclient.gui.widgets.WWidget
-import meteordevelopment.meteorclient.utils.Utils
 import meteordevelopment.meteorclient.utils.misc.MeteorStarscript
 import meteordevelopment.orbit.EventHandler
 import meteordevelopment.starscript.Script
 import meteordevelopment.starscript.utils.StarscriptError
 import net.greemdev.meteor.GModule
 import net.greemdev.meteor.util.*
+import net.greemdev.meteor.util.meteor.*
+import net.greemdev.meteor.util.misc.*
 import net.minecraft.util.Util
 
 class AutoMessage : GModule(
@@ -65,7 +66,6 @@ class AutoMessage : GModule(
         saneSlider()
     }
 
-    @OptIn(DelicateCoroutinesApi::class)
     @EventHandler
     private fun postTick(ignored: TickEvent.Post) {
         if (messageScript == null) elapsedTicks = 0
@@ -79,7 +79,7 @@ class AutoMessage : GModule(
                 elapsedTicks = 0
             }
             if (elapsedTicksCommands >= commandsDelay.get()) {
-                GlobalScope.launch {
+                scope.launch {
                     commandScripts.forEach { script ->
                         delay(250)
                         MeteorStarscript.run(script)
@@ -100,7 +100,7 @@ class AutoMessage : GModule(
     override fun getWidget(theme: GuiTheme): WWidget =
         theme.table().apply {
             add(theme.button("Starscript Info") {
-                Util.getOperatingSystem().open("https://github.com/MeteorDevelopment/starscript/wiki")
+                Util.getOperatingSystem().open("https://github.com/GreemDev/meteor/wiki/Starscript")
             })
 
             add(theme.button("Test Current") {

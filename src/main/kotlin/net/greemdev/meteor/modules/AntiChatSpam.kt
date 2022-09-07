@@ -11,7 +11,7 @@ import meteordevelopment.meteorclient.events.game.ReceiveMessageEvent
 import meteordevelopment.orbit.EventHandler
 import net.greemdev.meteor.GModule
 import net.greemdev.meteor.type.StringComparisonType
-import net.greemdev.meteor.util.*
+import net.greemdev.meteor.util.meteor.*
 
 class AntiChatSpam : GModule(
     "anti-chat-spam",

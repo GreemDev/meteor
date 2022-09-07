@@ -4,16 +4,15 @@
  */
 @file:JvmName("KMC")
 
-package net.greemdev.meteor.util
+package net.greemdev.meteor.util.misc
 
+import net.greemdev.meteor.util.text.textOf
 import net.minecraft.client.MinecraftClient
-import net.minecraft.client.network.AbstractClientPlayerEntity
 import net.minecraft.entity.Entity
 import net.minecraft.entity.player.PlayerEntity
 import net.minecraft.item.ItemStack
 import net.minecraft.text.Text
-import net.minecraft.util.math.Vec2f
-import net.minecraft.util.math.Vec3d
+import net.minecraft.util.math.*
 
 fun MinecraftClient.setPlayerPos(x: Double = player!!.x, y: Double = player!!.y, z: Double = player!!.z) {
     player!!.setPos(x, y, z)

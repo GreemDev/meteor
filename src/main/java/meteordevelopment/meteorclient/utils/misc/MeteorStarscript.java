@@ -30,7 +30,7 @@ import meteordevelopment.starscript.utils.Error;
 import meteordevelopment.starscript.utils.StarscriptError;
 import meteordevelopment.starscript.value.Value;
 import meteordevelopment.starscript.value.ValueMap;
-import net.greemdev.meteor.util.KMC;
+import net.greemdev.meteor.util.misc.KMC;
 import net.minecraft.SharedConstants;
 import net.minecraft.block.BlockState;
 import net.minecraft.client.network.PlayerListEntry;
@@ -75,7 +75,7 @@ public class MeteorStarscript {
 
         // General
         ss.set("kotlin", MeteorClient.KOTLIN);
-        ss.set("game_version", SharedConstants.getGameVersion().getName());
+        ss.set("gameVersion", SharedConstants.getGameVersion().getName());
         ss.set("fps", () -> Value.number(MinecraftClientAccessor.getFps()));
         ss.set("ping", MeteorStarscript::ping);
         ss.set("time", () -> Value.string(LocalTime.now().format(DateTimeFormatter.ofLocalizedTime(FormatStyle.SHORT))));
@@ -84,18 +84,18 @@ public class MeteorStarscript {
         ss.set("meteor", new ValueMap()
             .set("version", MeteorClient.fullVersion())
             .set("modules", () -> Value.number(Modules.get().getAll().size()))
-            .set("active_modules", () -> Value.number(Modules.get().getActive().size()))
-            .set("is_module_active", MeteorStarscript::isModuleActive)
-            .set("get_module_info", MeteorStarscript::getModuleInfo)
+            .set("activeModules", () -> Value.number(Modules.get().getActive().size()))
+            .set("isModuleActive", MeteorStarscript::isModuleActive)
+            .set("getModuleInfo", MeteorStarscript::getModuleInfo)
             .set("prefix", MeteorStarscript::getMeteorPrefix)
         );
 
         // Baritone
         ss.set("baritone", new ValueMap()
-            .set("is_pathing", () -> Value.bool(BaritoneAPI.getProvider().getPrimaryBaritone().getPathingBehavior().isPathing()))
-            .set("distance_to_goal", MeteorStarscript::baritoneDistanceToGoal)
+            .set("isPathing", () -> Value.bool(BaritoneAPI.getProvider().getPrimaryBaritone().getPathingBehavior().isPathing()))
+            .set("distanceToGoal", MeteorStarscript::baritoneDistanceToGoal)
             .set("process", MeteorStarscript::baritoneProcess)
-            .set("process_name", MeteorStarscript::baritoneProcessName)
+            .set("processName", MeteorStarscript::baritoneProcessName)
         );
 
         // Camera
@@ -106,7 +106,7 @@ public class MeteorStarscript {
                 .set("y", () -> Value.number(mc.gameRenderer.getCamera().getPos().y))
                 .set("z", () -> Value.number(mc.gameRenderer.getCamera().getPos().z))
             )
-            .set("opposite_dim_pos", new ValueMap()
+            .set("posOpposite", new ValueMap()
                 .set("_toString", () -> posString(true, true))
                 .set("x", () -> oppositeX(true))
                 .set("y", () -> Value.number(mc.gameRenderer.getCamera().getPos().y))
@@ -125,11 +125,11 @@ public class MeteorStarscript {
             .set("hunger", () -> Value.number(mc.player != null ? mc.player.getHungerManager().getFoodLevel() : 0))
             .set("speed", () -> Value.number(Utils.getPlayerSpeed()))
 
-            .set("breaking_progress", () -> Value.number(mc.interactionManager != null ? ((ClientPlayerInteractionManagerAccessor) mc.interactionManager).getBreakingProgress() : 0))
+            .set("breakingProgress", () -> Value.number(mc.interactionManager != null ? ((ClientPlayerInteractionManagerAccessor) mc.interactionManager).getBreakingProgress() : 0))
             .set("biome", MeteorStarscript::biome)
 
             .set("dimension", () -> Value.string(PlayerUtils.getDimension().name()))
-            .set("opposite_dimension", () -> Value.string(PlayerUtils.getDimension().opposite().name()))
+            .set("dimensionOpposite", () -> Value.string(PlayerUtils.getDimension().opposite().name()))
 
             .set("pos", new ValueMap()
                 .set("_toString", () -> posString(false, false))
@@ -137,7 +137,7 @@ public class MeteorStarscript {
                 .set("y", () -> Value.number(mc.player != null ? mc.player.getY() : 0))
                 .set("z", () -> Value.number(mc.player != null ? mc.player.getZ() : 0))
             )
-            .set("opposite_dim_pos", new ValueMap()
+            .set("posOpposite", new ValueMap()
                 .set("_toString", () -> posString(true, false))
                 .set("x", () -> oppositeX(false))
                 .set("y", () -> Value.number(mc.player != null ? mc.player.getY() : 0))
@@ -150,11 +150,10 @@ public class MeteorStarscript {
 
             .set("hand", () -> mc.player != null ? wrap(mc.player.getMainHandStack()) : Value.null_())
             .set("offhand", () -> mc.player != null ? wrap(mc.player.getOffHandStack()) : Value.null_())
-            .set("effective_stack", () -> mc.player != null ? wrap(KMC.usableItemStack(mc.player)) : Value.null_())
-            .set("hand_or_offhand", MeteorStarscript::handOrOffhand)
-            .set("is_item_held", MeteorStarscript::isHoldingItem)
-            .set("get_item", MeteorStarscript::getItem)
-            .set("count_items", MeteorStarscript::countItems)
+            .set("handOrOffhand", MeteorStarscript::handOrOffhand)
+            .set("isItemHeld", MeteorStarscript::isHoldingItem)
+            .set("getItem", MeteorStarscript::getItem)
+            .set("countItems", MeteorStarscript::countItems)
 
             .set("xp", new ValueMap()
                 .set("level", () -> Value.number(mc.player != null ? mc.player.experienceLevel : 0))
@@ -162,14 +161,14 @@ public class MeteorStarscript {
                 .set("total", () -> Value.number(mc.player != null ? mc.player.totalExperience : 0))
             )
 
-            .set("has_potion_effect", MeteorStarscript::hasPotionEffect)
-            .set("get_potion_effect", MeteorStarscript::getPotionEffect)
+            .set("hasPotionEffect", MeteorStarscript::hasPotionEffect)
+            .set("getPotionEffect", MeteorStarscript::getPotionEffect)
 
-            .set("get_stat", MeteorStarscript::getStat)
+            .set("getStat", MeteorStarscript::getStat)
         );
 
         // Crosshair target
-        ss.set("crosshair_target", new ValueMap()
+        ss.set("crosshairTarget", new ValueMap()
             .set("type", MeteorStarscript::crosshairType)
             .set("value", MeteorStarscript::crosshairValue)
         );
@@ -180,7 +179,7 @@ public class MeteorStarscript {
             .set("ip", () -> Value.string(Utils.getWorldName()))
             .set("tps", () -> Value.number(TickRate.INSTANCE.getTickRate()))
             .set("time", () -> Value.string(Utils.getWorldTime()))
-            .set("player_count", () -> Value.number(mc.getNetworkHandler() != null ? mc.getNetworkHandler().getPlayerList().size() : 0))
+            .set("playerCount", () -> Value.number(mc.getNetworkHandler() != null ? mc.getNetworkHandler().getPlayerList().size() : 0))
             .set("difficulty", () -> Value.string(mc.world != null ? mc.world.getDifficulty().getName() : ""))
         );
     }
@@ -266,10 +265,10 @@ public class MeteorStarscript {
     private static long lastRequestedStatsTime = 0;
 
     private static Value hasPotionEffect(Starscript ss, int argCount) {
-        if (argCount < 1) ss.error("player.has_potion_effect() requires 1 argument, got %d.", argCount);
+        if (argCount < 1) ss.error("player.hasPotionEffect() requires 1 argument, got %d.", argCount);
         if (mc.player == null) return Value.bool(false);
 
-        Identifier name = popIdentifier(ss, "First argument to player.has_potion_effect() needs to a string.");
+        Identifier name = popIdentifier(ss, "First argument to player.hasPotionEffect() needs to a string.");
 
         StatusEffect effect = Registry.STATUS_EFFECT.get(name);
         if (effect == null) return Value.bool(false);
@@ -279,10 +278,10 @@ public class MeteorStarscript {
     }
 
     private static Value getPotionEffect(Starscript ss, int argCount) {
-        if (argCount < 1) ss.error("player.get_potion_effect() requires 1 argument, got %d.", argCount);
+        if (argCount < 1) ss.error("player.getPotionEffect() requires 1 argument, got %d.", argCount);
         if (mc.player == null) return Value.null_();
 
-        Identifier name = popIdentifier(ss, "First argument to player.get_potion_effect() needs to a string.");
+        Identifier name = popIdentifier(ss, "First argument to player.getPotionEffect() needs to a string.");
 
         StatusEffect effect = Registry.STATUS_EFFECT.get(name);
         if (effect == null) return Value.null_();
@@ -294,7 +293,7 @@ public class MeteorStarscript {
     }
 
     private static Value getStat(Starscript ss, int argCount) {
-        if (argCount < 1) ss.error("player.get_stat() requires 1 argument, got %d.", argCount);
+        if (argCount < 1) ss.error("player.getStat() requires 1 argument, got %d.", argCount);
         if (mc.player == null) return Value.number(0);
 
         long time = System.currentTimeMillis();
@@ -303,8 +302,8 @@ public class MeteorStarscript {
             lastRequestedStatsTime = time;
         }
 
-        String type = argCount > 1 ? ss.popString("First argument to player.get_stat() needs to be a string.") : "custom";
-        Identifier name = popIdentifier(ss, (argCount > 1 ? "Second" : "First") + " argument to player.get_stat() needs to be a string.");
+        String type = argCount > 1 ? ss.popString("First argument to player.getStat() needs to be a string.") : "custom";
+        Identifier name = popIdentifier(ss, (argCount > 1 ? "Second" : "First") + " argument to player.getStat() needs to be a string.");
 
         Stat<?> stat = switch (type) {
             case "mined" -> Stats.MINED.getOrCreateStat(Registry.BLOCK.get(name));
@@ -326,9 +325,9 @@ public class MeteorStarscript {
     }
 
     private static Value getModuleInfo(Starscript ss, int argCount) {
-        if (argCount != 1) ss.error("meteor.get_module_info() requires 1 argument, got %d.", argCount);
+        if (argCount != 1) ss.error("meteor.getModuleInfo() requires 1 argument, got %d.", argCount);
 
-        Module module = Modules.get().get(ss.popString("First argument to meteor.get_module_info() needs to be a string."));
+        Module module = Modules.get().get(ss.popString("First argument to meteor.getModuleInfo() needs to be a string."));
         if (module != null && module.isActive()) {
             String info = module.getInfoString();
             return Value.string(info == null ? "" : info);
@@ -338,15 +337,15 @@ public class MeteorStarscript {
     }
 
     private static Value isModuleActive(Starscript ss, int argCount) {
-        if (argCount != 1) ss.error("meteor.is_module_active() requires 1 argument, got %d.", argCount);
+        if (argCount != 1) ss.error("meteor.isModuleActive() requires 1 argument, got %d.", argCount);
 
-        Module module = Modules.get().get(ss.popString("First argument to meteor.is_module_active() needs to be a string."));
+        Module module = Modules.get().get(ss.popString("First argument to meteor.isKoduleActive() needs to be a string."));
         return Value.bool(module != null && module.isActive());
     }
 
     private static Value isHoldingItem(Starscript ss, int argCount) {
-        if (argCount != 1) ss.error("player.is_item_held() requires 1 argument, got %d", argCount);
-        String itemName = ss.popString("First argument to player.is_item_held() needs to be a string.");
+        if (argCount != 1) ss.error("player.isItemHeld() requires 1 argument, got %d", argCount);
+        String itemName = ss.popString("First argument to player.isItemHeld() needs to be a string.");
         if (mc.player == null) return Value.null_();
 
         ItemStack itemStack = mc.player.getMainHandStack();
@@ -358,16 +357,18 @@ public class MeteorStarscript {
     }
 
     private static Value getItem(Starscript ss, int argCount) {
-        if (argCount != 1) ss.error("player.get_item() requires 1 argument, got %d.", argCount);
+        if (argCount != 1) ss.error("player.getItem() requires 1 argument, got %d.", argCount);
 
-        int i = (int) ss.popNumber("First argument to player.get_item() needs to be a number.");
+        int i = (int) ss.popNumber("First argument to player.getItem() needs to be a number.");
+        if (i < 0 || i > 35)
+            ss.error("First argument to player.getItem() must be equal to or within range 0-35");
         return mc.player != null ? wrap(mc.player.getInventory().getStack(i)) : Value.null_();
     }
 
     private static Value countItems(Starscript ss, int argCount) {
-        if (argCount != 1) ss.error("player.count_items() requires 1 argument, got %d.", argCount);
+        if (argCount != 1) ss.error("player.countItems() requires 1 argument, got %d.", argCount);
 
-        String idRaw = ss.popString("First argument to player.count_items() needs to be a string.");
+        String idRaw = ss.popString("First argument to player.countItems() needs to be a string.");
         Identifier id = Identifier.tryParse(idRaw);
         if (id == null) return Value.number(0);
 
@@ -483,8 +484,7 @@ public class MeteorStarscript {
     private static Value handOrOffhand() {
         if (mc.player == null) return Value.null_();
 
-        ItemStack itemStack = mc.player.getMainHandStack();
-        if (itemStack.isEmpty()) itemStack = mc.player.getOffHandStack();
+        ItemStack itemStack = KMC.usableItemStack(mc.player);
 
         return itemStack != null ? wrap(itemStack) : Value.null_();
     }
@@ -559,7 +559,7 @@ public class MeteorStarscript {
         }
     }
 
-    // Wrapping
+    // Starscript ValueMap Wrapping
 
     public static Value wrap(ItemStack itemStack) {
         String name = itemStack.isEmpty() ? "" : Names.get(itemStack.getItem());
@@ -571,9 +571,9 @@ public class MeteorStarscript {
             .set("_toString", Value.string(itemStack.getCount() <= 1 ? name : String.format("%s %dx", name, itemStack.getCount())))
             .set("name", Value.string(name))
             .set("count", Value.number(itemStack.getCount()))
-            .set("is_tool", () -> Value.bool(itemStack.getMaxDamage() != 0))
+            .set("isTool", () -> Value.bool(itemStack.getMaxDamage() != 0))
             .set("durability", Value.number(durability))
-            .set("max_durability", Value.number(itemStack.getMaxDamage()))
+            .set("durabilityMax", Value.number(itemStack.getMaxDamage()))
         );
     }
 
@@ -612,6 +612,7 @@ public class MeteorStarscript {
 
     public static Value wrap(StatusEffectInstance effectInstance) {
         return Value.map(new ValueMap()
+            .set("_toString", effectInstance.getEffectType().getName().getString())
             .set("duration", effectInstance.getDuration())
             .set("level", effectInstance.getAmplifier() + 1)
         );

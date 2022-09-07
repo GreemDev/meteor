@@ -19,17 +19,10 @@ import meteordevelopment.meteorclient.utils.Utils;
 import meteordevelopment.meteorclient.utils.misc.Keybind;
 import meteordevelopment.meteorclient.utils.misc.input.KeyAction;
 import meteordevelopment.orbit.EventHandler;
-import net.greemdev.meteor.event.GameInputEvent;
-import net.greemdev.meteor.event.GameInputHandler;
-import net.minecraft.block.Blocks;
-import net.minecraft.block.SignBlock;
 import net.minecraft.block.entity.SignBlockEntity;
 import net.minecraft.client.gui.screen.ingame.SignEditScreen;
 import net.minecraft.network.packet.c2s.play.UpdateSignC2SPacket;
 import net.minecraft.util.math.BlockPos;
-import org.jetbrains.annotations.NotNull;
-
-import java.util.Arrays;
 
 public class AutoSign extends Module {
 

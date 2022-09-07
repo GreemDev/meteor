@@ -10,6 +10,7 @@ import meteordevelopment.meteorclient.gui.widgets.WWidget
 import meteordevelopment.meteorclient.gui.widgets.containers.WWindow
 import net.greemdev.meteor.gui.theme.round.RoundedWidget
 import net.greemdev.meteor.gui.theme.round.util.*
+import net.greemdev.meteor.util.meteor.*
 import net.greemdev.meteor.util.*
 
 class WRoundedWindow(icon: WWidget?, title: String?) : WWindow(icon, title), RoundedWidget {
@@ -25,7 +26,7 @@ class WRoundedWindow(icon: WWidget?, title: String?) : WWindow(icon, title), Rou
 
     private inner class WRoundedHeader(icon: WWidget?) : WHeader(icon) {
         override fun onRender(renderer: GuiRenderer, mouseX: Double, mouseY: Double, delta: Double) {
-            renderer.r2D().rounded().quad(this, theme().accentColor(), theme().round())
+            renderer.r2D().rounded().widgetQuad(this, theme().accentColor(), theme().round())
         }
     }
 

@@ -25,6 +25,21 @@ enum class StringComparisonType {
     }
 }
 
+@Suppress("unused")
+enum class PrefixBrackets(pairing: Pair<String, String>) {
+    Square("[" to "]"),
+    Curly("{" to "}"),
+    Parenthesis("(" to ")"),
+    Angled("<" to ">"),
+    Hashtag("#" to "#"),
+    Separator("|" to "|");
+
+    override fun toString() = "$left $right"
+
+    val left = pairing.first
+    val right = pairing.second
+}
+
 enum class ItemSelectMode {
     Sequential,
     Random

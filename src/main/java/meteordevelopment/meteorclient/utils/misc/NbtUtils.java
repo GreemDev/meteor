@@ -7,7 +7,7 @@ package meteordevelopment.meteorclient.utils.misc;
 
 import meteordevelopment.meteorclient.MeteorClient;
 import meteordevelopment.meteorclient.systems.System;
-import meteordevelopment.meteorclient.utils.render.prompts.OkPrompt;
+import net.greemdev.meteor.util.meteor.Prompts;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.nbt.NbtElement;
 import net.minecraft.nbt.NbtIo;
@@ -62,11 +62,10 @@ public class NbtUtils {
         } catch (Exception e) {
             MeteorClient.LOG.error(String.format("Error copying %s NBT to clipboard!", name));
 
-            OkPrompt.create()
-                .title(String.format("Error copying %s NBT to clipboard!", name))
-                .message("This shouldn't happen, please report it.")
-                .id("nbt-copying")
-                .show();
+            Prompts.java().showNotice("nbt-copying", p -> {
+                p.title("Error copying %s NBT to clipboard!".formatted(name));
+                p.message("This shouldn't happen, please report it.");
+            });
 
             mc.keyboard.setClipboard(preClipboard);
             return false;
@@ -97,11 +96,10 @@ public class NbtUtils {
         } catch (Exception e) {
             MeteorClient.LOG.error("Invalid NBT data pasted!");
 
-            OkPrompt.create()
-                .title("Error pasting NBT data!")
-                .message("Please check that the data you pasted is valid.")
-                .id("nbt-pasting")
-                .show();
+            Prompts.java().showNotice("nbt-pasting", (p) -> {
+                p.title("Error pasting NBT data!");
+                p.message("Please check that the data you pasted is valid.");
+            });
 
             return null;
         }

@@ -8,7 +8,7 @@ package net.greemdev.meteor.gui.theme.round.widget.pressable
 import meteordevelopment.meteorclient.gui.renderer.GuiRenderer
 import meteordevelopment.meteorclient.gui.widgets.pressable.WPlus
 import net.greemdev.meteor.gui.theme.round.RoundedWidget
-import net.greemdev.meteor.util.invoke
+import net.greemdev.meteor.util.meteor.invoke
 
 class WRoundedPlus : WPlus(), RoundedWidget {
     override fun onRender(renderer: GuiRenderer, mouseX: Double, mouseY: Double, delta: Double) {

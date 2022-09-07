@@ -14,6 +14,7 @@ import meteordevelopment.meteorclient.systems.modules.Modules
 import net.greemdev.meteor.gui.theme.round.RoundedTheme
 import net.greemdev.meteor.hud.element.*
 import net.greemdev.meteor.util.*
+import net.greemdev.meteor.util.meteor.*
 import net.minecraft.item.Items
 import java.lang.invoke.MethodHandles
 
@@ -62,9 +63,13 @@ object Greteor {
     @JvmStatic
     fun lambdaFactoriesFor(packages: List<String>, vararg extraPackages: String) =
         (packages + extraPackages).forEach {
-            MeteorClient.EVENT_BUS.registerLambdaFactory(it) { lookupInMethod, klass ->
-                lookupInMethod(null, klass, MethodHandles.lookup())
-                    as MethodHandles.Lookup
+            try {
+                MeteorClient.EVENT_BUS.registerLambdaFactory(it) { lookupInMethod, klass ->
+                    lookupInMethod(null, klass, MethodHandles.lookup())
+                        as MethodHandles.Lookup
+                }
+            } catch (err: AbstractMethodError) {
+                val exc = AbstractMethodError("Improper implementations .")
             }
         }
 }

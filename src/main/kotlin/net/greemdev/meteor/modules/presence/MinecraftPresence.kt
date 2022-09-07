@@ -23,6 +23,8 @@ import meteordevelopment.starscript.Script
 import net.greemdev.meteor.GModule
 import net.greemdev.meteor.type.ItemSelectMode
 import net.greemdev.meteor.util.*
+import net.greemdev.meteor.util.meteor.*
+import net.greemdev.meteor.util.misc.*
 import net.minecraft.SharedConstants
 import net.minecraft.client.gui.screen.*
 import net.minecraft.client.gui.screen.multiplayer.MultiplayerScreen
@@ -185,11 +187,11 @@ class MinecraftPresence : GModule("minecraft-presence", "Displays Minecraft as y
             lastInMainMenu = false
     }
 
-    override fun getWidget(theme: GuiTheme): WWidget {
-        return theme.button("Starscript Info") {
-            Util.getOperatingSystem().open("https://github.com/MeteorDevelopment/starscript/wiki")
+    override fun getWidget(theme: GuiTheme): WWidget =
+        theme.button("Starscript Info") {
+            Util.getOperatingSystem().open("https://github.com/GreemDev/meteor/wiki/Starscript")
         }
-    }
+
 
     @EventHandler
     private fun afterTick(unused: TickEvent.Post) {

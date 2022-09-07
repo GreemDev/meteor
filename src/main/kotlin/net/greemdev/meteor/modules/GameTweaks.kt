@@ -7,7 +7,7 @@ package net.greemdev.meteor.modules
 
 import net.greemdev.meteor.GModule
 import net.greemdev.meteor.util.*
-import net.minecraft.util.Identifier
+import net.greemdev.meteor.util.meteor.*
 
 // based on https://github.com/Declipsonator/Meteor-Tweaks/blob/main/src/main/java/me/declipsonator/meteortweaks/modules/GameTweaks.java
 class GameTweaks : GModule("game-tweaks", "Minor changes to the game experience to improve gameplay.") {

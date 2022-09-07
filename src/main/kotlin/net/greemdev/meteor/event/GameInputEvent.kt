@@ -13,11 +13,11 @@ import meteordevelopment.meteorclient.utils.misc.input.KeyAction
 import meteordevelopment.orbit.EventHandler
 import net.greemdev.meteor.util.invoking
 
-class GameInputEvent private constructor(private var backingEvent: Any) : Cancellable() {
+class GameInputEvent private constructor(private var backingEvent: Cancellable) : Cancellable() {
 
-    //both upcast to Any to prevent recursion
-    constructor(e: MouseButtonEvent) : this(e as Any)
-    constructor(e: KeyEvent) : this(e as Any)
+    //both upcast as Cancellable to prevent recursion
+    constructor(e: MouseButtonEvent) : this(e as Cancellable)
+    constructor(e: KeyEvent) : this(e as Cancellable)
 
     fun keyId() =
         if (isKey)
@@ -27,18 +27,15 @@ class GameInputEvent private constructor(private var backingEvent: Any) : Cancel
         else error("shouldn't happen")
 
 
-    fun action(): KeyAction =
-        if (isKey)
-            asKey.action
-        else if (isMouse)
-            asMouse.action
-        else error("shouldn't happen")
+    fun action(): KeyAction = when {
+        isKey -> asKey.action
+        isMouse -> asMouse.action
+        else -> error("shouldn't happen")
+    }
 
     fun isAction(action: KeyAction) = action == action()
 
-    fun matches(keybind: Keybind) = keybind.matches(isKey, keyId())
-
-
+    operator fun contains(keybind: Keybind) = keybind.matches(isKey, keyId())
 
     val isKey by invoking { backingEvent is KeyEvent }
     val isMouse by invoking { backingEvent is MouseButtonEvent }
@@ -52,18 +49,8 @@ class GameInputEvent private constructor(private var backingEvent: Any) : Cancel
             backingEvent as KeyEvent
         else error("backing event is a mouse input, not a keyboard input")
     }
-}
 
-interface GameInputHandler {
-    fun onGameInput(event: GameInputEvent)
-
-    @EventHandler
-    private fun onKey(e: KeyEvent) {
-        onGameInput(GameInputEvent(e))
-    }
-
-    @EventHandler
-    private fun onMouse(e: MouseButtonEvent) {
-        onGameInput(GameInputEvent(e))
+    override fun cancel() {
+        backingEvent.cancel()
     }
 }

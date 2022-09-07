@@ -7,13 +7,13 @@ package net.greemdev.meteor.hud.element
 
 import meteordevelopment.meteorclient.systems.hud.Alignment
 import meteordevelopment.meteorclient.systems.hud.HudElement
-import meteordevelopment.meteorclient.systems.hud.HudElementInfo
 import meteordevelopment.meteorclient.systems.hud.HudRenderer
 import meteordevelopment.meteorclient.systems.modules.Modules
 import meteordevelopment.meteorclient.utils.render.color.SettingColor
 import net.greemdev.meteor.Greteor
 import net.greemdev.meteor.hud.HudElementMetadata
 import net.greemdev.meteor.util.*
+import net.greemdev.meteor.util.meteor.*
 import kotlin.math.max
 
 class ModuleKeybindHud : HudElement(Companion.info) {

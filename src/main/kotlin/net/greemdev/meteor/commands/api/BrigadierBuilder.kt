@@ -12,6 +12,7 @@ import com.mojang.brigadier.suggestion.Suggestions
 import com.mojang.brigadier.suggestion.SuggestionsBuilder
 import kotlinx.coroutines.*
 import kotlinx.coroutines.future.asCompletableFuture
+import net.greemdev.meteor.util.scope
 import net.minecraft.command.CommandSource
 import java.util.concurrent.CompletableFuture
 
@@ -57,12 +58,11 @@ data class BrigadierBuilder<T : BArgBuilder<CommandSource, T>>(val builder: T) {
         return this
     }
 
-    @OptIn(DelicateCoroutinesApi::class)
     infix fun suggestsAsync(suggestionProvider: suspend SuggestionsBuilder.(MinecraftCommandContext) -> Suggestions): BrigadierBuilder<T> {
         if (this.builder is RequiredArgumentBuilder<*, *>) {
             this.builder.suggests { context, builder ->
                 @Suppress("UNCHECKED_CAST") //commands in minecraft should always be of this type, period
-                GlobalScope.async {
+                scope.async {
                     builder.suggestionProvider(context as MinecraftCommandContext)
                 }.asCompletableFuture()
             }

@@ -10,13 +10,12 @@ import meteordevelopment.meteorclient.gui.utils.StarscriptTextBoxRenderer
 import meteordevelopment.meteorclient.gui.widgets.pressable.WPressable
 import meteordevelopment.meteorclient.settings.*
 import net.fabricmc.loader.api.FabricLoader
-import net.minecraft.text.MutableText
-import net.minecraft.text.Text
 import org.apache.logging.log4j.LogManager
 import org.apache.logging.log4j.message.MessageFactory
 import org.reflections.Reflections
 import org.reflections.scanners.Scanners
 import org.reflections.util.ConfigurationBuilder
+import java.awt.Color
 import java.util.*
 import java.util.function.BiConsumer
 import java.util.function.Supplier
@@ -61,17 +60,15 @@ fun log4j(value: Any) = lazy {
 
 operator fun FabricLoader.contains(modId: String) = modLoader.isModLoaded(modId)
 
-fun<T> Collection<T>?.getOrEmpty() = this ?: emptySet()
+fun <T> Collection<T>?.getOrEmpty() = this ?: emptySet()
 
-fun textOf(content: String? = null, block: (MutableText.() -> Unit)?): MutableText = if (content == null)
-    Text.empty()
-else
-    Text.literal(content).apply { block?.invoke(this) }
 
-fun textOf(content: String?) = textOf(content, null)
-fun textOf() = textOf(null, null)
 
-fun<T> List<T>.indexedForEach(consumer: BiConsumer<Int, T>) = this.forEachIndexed { index, t -> consumer.accept(index, t) }
+fun <T> firstNotNull(vararg nullables: T?) = nullables.firstNotNullOf { it }
+fun <T> Iterable<T?>.firstNotNull(): T = firstNotNullOf { it }
+
+fun <T> List<T>.indexedForEach(consumer: BiConsumer<Int, T>) =
+    this.forEachIndexed { index, t -> consumer.accept(index, t) }
 
 fun String.toCamelCase(separator: String = "-"): String {
     return split(separator)
@@ -86,7 +83,7 @@ fun String.toCamelCase(separator: String = "-"): String {
 /**
  * Sets the [KMutableProperty]'s value and then returns the new value.
  */
-fun<T> KMutableProperty<T>.coalesce(newValue: T): T {
+fun <T> KMutableProperty<T>.coalesce(newValue: T): T {
     setter.call(newValue)
     return newValue
 }
@@ -167,3 +164,18 @@ fun String.withoutSuffix(suffix: String, ignoreCase: Boolean = false): String {
         substringBeforeLast(suffix)
     else this
 }
+
+/**
+ * Parses a 6-character long hexadecimal sequence to a [Color] with or without the preceding #.
+ */
+fun parseHexColor(hex: String): Color = Color(
+    optionalOf(hex.takeLast(6).uppercase()
+        .takeIf { chars ->
+            chars.all {
+                it in '0'..'9' || it in 'A'..'F'
+            }
+        }
+    ).orElseThrow { IllegalArgumentException("Illegal hexadecimal sequence.") }
+        .toInt(16)
+)
+

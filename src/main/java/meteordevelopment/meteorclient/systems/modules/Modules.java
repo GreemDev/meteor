@@ -42,7 +42,7 @@ import meteordevelopment.meteorclient.utils.misc.input.KeyAction;
 import meteordevelopment.orbit.EventHandler;
 import meteordevelopment.orbit.EventPriority;
 import net.greemdev.meteor.modules.IgnoreWorldBorder;
-import net.greemdev.meteor.util.HiddenModules;
+import net.greemdev.meteor.util.meteor.HiddenModules;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.nbt.NbtElement;
 import net.minecraft.nbt.NbtList;

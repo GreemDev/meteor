@@ -12,6 +12,7 @@ import meteordevelopment.starscript.Script
 import meteordevelopment.starscript.utils.StarscriptError
 import net.greemdev.meteor.GModule
 import net.greemdev.meteor.util.*
+import net.greemdev.meteor.util.meteor.stringList
 
 class CommandAliases : GModule(
     "command-aliases", "Use commands dynamically formatted with Starscript via Meteor command 'ca'."

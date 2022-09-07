@@ -3,7 +3,7 @@
  * Copyright (c) Meteor Development.
  */
 
-package net.greemdev.meteor.util
+package net.greemdev.meteor.util.misc
 
 import meteordevelopment.meteorclient.utils.Utils
 

@@ -15,7 +15,7 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 @Mixin(Main.class)
 public class MainMixin {
     @Inject(method = "main", at = @At("HEAD"), remap = false)
-    private static void fixAwt(CallbackInfo ci) {
+    private static void beforeStart(CallbackInfo ci) {
         MinecraftPresence.setGameStart(System.currentTimeMillis());
         System.setProperty("java.awt.headless", "false");
     }

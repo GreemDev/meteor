@@ -5,9 +5,12 @@
 
 package net.greemdev.meteor.modules
 
+import meteordevelopment.meteorclient.gui.screens.ModuleScreen
 import meteordevelopment.meteorclient.gui.screens.ModulesScreen
 import net.greemdev.meteor.GModule
 import net.greemdev.meteor.util.*
+import net.greemdev.meteor.util.meteor.*
+import net.greemdev.meteor.util.misc.*
 
 // Based on https://github.com/AntiCope/meteor-rejects/blob/master/src/main/java/anticope/rejects/modules/Boost.java
 class Dash : GModule("dash", "Boosts you forward in the direction you're looking.") {
@@ -26,8 +29,8 @@ class Dash : GModule("dash", "Boosts you forward in the direction you're looking
 
     override fun onActivate() {
         if (mc.player != null) {
-            if (mc.currentScreen is ModulesScreen)
-                info("Did not activate dash because you're in a menu. Please use the keybind in-game.")
+            if (mc.currentScreen is ModulesScreen || mc.currentScreen is ModuleScreen)
+                info("Did not activate dash because you're in a module menu. Please use the keybind in-game.")
             else mc.player() + mc.rotationVecClient() * power()
         }
         toggle()

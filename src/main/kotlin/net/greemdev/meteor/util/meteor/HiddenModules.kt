@@ -3,12 +3,10 @@
  * Copyright (c) Meteor Development.
  */
 
-package net.greemdev.meteor.util
+package net.greemdev.meteor.util.meteor
 
 import meteordevelopment.meteorclient.systems.modules.Category
 import meteordevelopment.meteorclient.systems.modules.Module
-import meteordevelopment.meteorclient.utils.render.prompts.OkPrompt
-import java.util.function.Function
 
 abstract class HiddenModules : HashSet<String>() {
 
@@ -30,10 +28,10 @@ abstract class HiddenModules : HashSet<String>() {
         @JvmStatic
         fun set(modules: Collection<Module?>) {
             if (modules.size < size)
-                confirm("hidden-modules-restart") {
+                showConfirm("hidden-modules-restart") {
                     title("Unhidden Modules")
                     message("In order to see the modules you've unhidden, you will need to restart Minecraft.")
-                }.show()
+                }
 
             clear()
             modules.filterNotNull().forEach {

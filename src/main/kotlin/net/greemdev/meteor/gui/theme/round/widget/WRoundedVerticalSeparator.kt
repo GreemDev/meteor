@@ -8,7 +8,7 @@ package net.greemdev.meteor.gui.theme.round.widget
 import meteordevelopment.meteorclient.gui.renderer.GuiRenderer
 import meteordevelopment.meteorclient.gui.widgets.WVerticalSeparator
 import net.greemdev.meteor.gui.theme.round.RoundedWidget
-import net.greemdev.meteor.util.*
+import net.greemdev.meteor.util.meteor.*
 import kotlin.math.round
 
 class WRoundedVerticalSeparator : WVerticalSeparator(), RoundedWidget {

@@ -9,7 +9,8 @@ import meteordevelopment.meteorclient.gui.renderer.GuiRenderer
 import meteordevelopment.meteorclient.gui.widgets.pressable.WCheckbox
 import net.greemdev.meteor.gui.theme.round.RoundedWidget
 import net.greemdev.meteor.gui.theme.round.util.*
-import net.greemdev.meteor.util.*
+import net.greemdev.meteor.util.meteor.*
+import net.greemdev.meteor.util.misc.clamp
 
 class WRoundedCheckbox(checked: Boolean) : WCheckbox(checked), RoundedWidget {
 

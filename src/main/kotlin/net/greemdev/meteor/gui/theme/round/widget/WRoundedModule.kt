@@ -11,6 +11,8 @@ import meteordevelopment.meteorclient.gui.widgets.pressable.WPressable
 import meteordevelopment.meteorclient.systems.modules.Module
 import net.greemdev.meteor.gui.theme.round.RoundedWidget
 import net.greemdev.meteor.util.*
+import net.greemdev.meteor.util.misc.clamp
+import net.greemdev.meteor.util.meteor.*
 import org.lwjgl.glfw.GLFW.GLFW_MOUSE_BUTTON_LEFT
 import org.lwjgl.glfw.GLFW.GLFW_MOUSE_BUTTON_RIGHT
 

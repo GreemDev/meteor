@@ -14,6 +14,7 @@ import meteordevelopment.meteorclient.gui.renderer.GuiRenderer
 import meteordevelopment.meteorclient.gui.tabs.Tabs
 import meteordevelopment.meteorclient.utils.render.color.Color
 import net.greemdev.meteor.gui.theme.round.util.*
+import net.greemdev.meteor.util.meteor.*
 import net.greemdev.meteor.util.*
 import org.lwjgl.glfw.GLFW.glfwSetCursorPos
 
@@ -58,9 +59,9 @@ class WRoundedTopBar : WTopBar(), RoundedWidget {
             val roundRenderer = renderer.r2D().rounded()
 
             when (buttonState(this)) {
-                1 -> roundRenderer.quadSide(this, color, theme().round(), false)
-                2 -> roundRenderer.quadSide(this, color, theme().round(), true)
-                3 -> roundRenderer.quad(this, color, theme().round())
+                1 -> roundRenderer.widgetQuadSide(this, color, theme().round(), false)
+                2 -> roundRenderer.widgetQuadSide(this, color, theme().round(), true)
+                3 -> roundRenderer.widgetQuad(this, color, theme().round())
                 else -> renderer.quad(this, color)
             }
             renderer.text(tab.name, x + pad, y + pad, nameColor, false)

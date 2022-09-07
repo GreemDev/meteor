@@ -8,7 +8,9 @@ package meteordevelopment.meteorclient.utils.player;
 import baritone.api.BaritoneAPI;
 import meteordevelopment.meteorclient.mixin.ChatHudAccessor;
 import meteordevelopment.meteorclient.systems.config.Config;
-import net.greemdev.meteor.util.ChatFeedback;
+import net.greemdev.meteor.util.text.ChatFeedback;
+import net.greemdev.meteor.util.text.FormattedText;
+import net.greemdev.meteor.util.text.FormattedTextBuilder;
 import net.minecraft.text.*;
 import net.minecraft.util.Formatting;
 import net.minecraft.util.Pair;
@@ -17,6 +19,7 @@ import org.jetbrains.annotations.Nullable;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.function.Consumer;
 import java.util.function.Supplier;
 
 import static meteordevelopment.meteorclient.MeteorClient.mc;
@@ -92,6 +95,10 @@ public class ChatUtils {
         sendMsg(null, message);
     }
 
+    public static void sendMsg(Consumer<FormattedTextBuilder> message) {
+        sendMsg(null, FormattedText.build(message));
+    }
+
     public static void sendMsg(String prefix, Text message) {
         sendMsg(0, prefix, Formatting.LIGHT_PURPLE, message);
     }
@@ -109,9 +116,7 @@ public class ChatUtils {
     }
 
     public static void sendMsg(int id, @Nullable String prefixTitle, @Nullable Formatting prefixColor, String messageContent, Formatting messageColor) {
-        MutableText message = Text.literal(messageContent);
-        message.setStyle(message.getStyle().withFormatting(messageColor));
-        sendMsg(id, prefixTitle, prefixColor, message);
+        sendMsg(id, prefixTitle, prefixColor, FormattedText.build(messageContent, b -> b.styled(s -> s.withFormatting(messageColor))));
     }
 
     public static void sendMsg(int id, @Nullable String prefixTitle, @Nullable Formatting prefixColor, Text msg) {
@@ -128,24 +133,20 @@ public class ChatUtils {
     }
 
     private static MutableText getCustomPrefix(String prefixTitle, Formatting prefixColor) {
-        MutableText prefix = Text.literal("");
-        prefix.setStyle(prefix.getStyle().withFormatting(Formatting.GRAY));
-
-        prefix.append("[");
-
-        MutableText moduleTitle = Text.literal(prefixTitle);
-        moduleTitle.setStyle(moduleTitle.getStyle().withFormatting(prefixColor));
-        prefix.append(moduleTitle);
-
-        prefix.append("] ");
-
-        return prefix;
+        return FormattedText.builder()
+            .formatted(Formatting.GRAY)
+            .append("[")
+            .append(prefixTitle, b -> {
+                b.formatted(prefixColor);
+            })
+            .append("] ")
+            .mutableText();
     }
 
     private static Text getPrefix() {
         if (customPrefixes.isEmpty()) {
             forcedPrefixClassName = null;
-            return ChatFeedback.feedbackPrefix();
+            return ChatFeedback.getFeedbackPrefix();
         }
 
         boolean foundChatUtils = false;
@@ -168,16 +169,16 @@ public class ChatUtils {
             }
         }
 
-        if (className == null) return ChatFeedback.feedbackPrefix();
+        if (className == null) return ChatFeedback.getFeedbackPrefix();
 
         for (Pair<String, Supplier<Text>> pair : customPrefixes) {
             if (className.startsWith(pair.getLeft())) {
                 Text prefix = pair.getRight().get();
-                return prefix != null ? prefix : ChatFeedback.feedbackPrefix();
+                return prefix != null ? prefix : ChatFeedback.getFeedbackPrefix();
             }
         }
 
-        return ChatFeedback.feedbackPrefix();
+        return ChatFeedback.getFeedbackPrefix();
     }
 
     private static String formatMsg(String format, Formatting defaultColor, Object... args) {

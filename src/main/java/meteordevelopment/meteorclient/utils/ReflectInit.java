@@ -23,9 +23,15 @@ public class ReflectInit {
     public static void registerPackages() {
         packages.add(MeteorClient.ADDON.getPackage());
         for (MeteorAddon addon : AddonManager.ADDONS) {
-            String pkg = addon.getPackage();
-            if (pkg != null && !pkg.isBlank()) {
-                packages.add(pkg);
+            try {
+                var pkg = addon.getPackage();
+                if (pkg != null && !pkg.isBlank()) {
+                    packages.add(pkg);
+                }
+            } catch (AbstractMethodError err) {
+                var exception = new AbstractMethodError("Addon \"%s\" is too old and cannot be ran.".formatted(addon.name));
+                exception.addSuppressed(err);
+                throw exception;
             }
         }
     }
@@ -59,6 +65,10 @@ public class ReflectInit {
             task.invoke(null);
         } catch (IllegalAccessException | InvocationTargetException e) {
             e.printStackTrace();
+        } catch (NullPointerException e) {
+            var exception = new IllegalStateException("Method \"%s\" is using PreInit/PostInit annotations from a non-static context.".formatted(task.getName()));
+            exception.addSuppressed(e);
+            throw exception;
         }
     }
 

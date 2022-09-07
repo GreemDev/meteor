@@ -9,7 +9,7 @@ import meteordevelopment.meteorclient.gui.GuiThemes
 import meteordevelopment.meteorclient.settings.ColorSetting
 import meteordevelopment.meteorclient.settings.SettingGroup
 import meteordevelopment.meteorclient.utils.render.color.SettingColor
-import net.greemdev.meteor.util.color
+import net.greemdev.meteor.util.meteor.color
 
 class TriStateColorSetting(
     private val group: SettingGroup,

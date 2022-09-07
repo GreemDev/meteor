@@ -14,19 +14,19 @@ import meteordevelopment.meteorclient.systems.System;
 import meteordevelopment.meteorclient.systems.Systems;
 import meteordevelopment.meteorclient.systems.modules.Module;
 import meteordevelopment.meteorclient.utils.player.ChatUtils;
-import meteordevelopment.meteorclient.utils.render.FontUtils;
+import meteordevelopment.meteorclient.utils.render.color.Color;
 import meteordevelopment.meteorclient.utils.render.color.RainbowColors;
 import meteordevelopment.meteorclient.utils.render.color.SettingColor;
-import net.greemdev.meteor.util.HiddenModules;
-import net.greemdev.meteor.util.PrefixBrackets;
+import net.greemdev.meteor.util.meteor.HiddenModules;
+import net.greemdev.meteor.type.PrefixBrackets;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.nbt.NbtElement;
 import net.minecraft.nbt.NbtList;
 import net.minecraft.nbt.NbtString;
 import net.minecraft.text.Text;
+import net.minecraft.util.Formatting;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 
@@ -155,6 +155,14 @@ public class Config extends System<Config> {
         .build()
     );
 
+    public final Setting<SettingColor> meteorPrefixColor = sgChat.add(new ColorSetting.Builder()
+        .name("chat-feedback-prefix-color")
+        .description("Color of the main prefix text.")
+        .defaultValue(MeteorClient.ADDON.color)
+        .onChanged(RainbowColors::handle)
+        .build()
+    );
+
     private void resetPrefix() {
         meteorPrefix.reset();
     }
@@ -166,16 +174,15 @@ public class Config extends System<Config> {
         .build()
     );
 
-    public final Setting<SettingColor> meteorPrefixColor = sgChat.add(new ColorSetting.Builder()
-        .name("chat-feedback-prefix-color")
-        .description("Sends chat feedback when meteor performs certain actions.")
-        .defaultValue(MeteorClient.ADDON.color.toSetting())
-        .onChanged(this::onChangePrefixColor)
+    public final Setting<SettingColor> meteorPrefixBracketsColor = sgChat.add(new ColorSetting.Builder()
+        .name("chat-feedback-prefix-brackets-color")
+        .description("Color of the brackets around the prefix text.")
+        .defaultValue(new Color(0xAAAAAA)) //Formatting.GRAY
+        .onChanged(RainbowColors::handle)
         .build()
     );
 
     // Misc
-
     public final Setting<List<Module>> hiddenModules = sgMisc.add(new ModuleListSetting.Builder()
         .name("hidden-modules")
         .description("Modules to hide from Meteor's Modules screen.")
@@ -237,12 +244,5 @@ public class Config extends System<Config> {
         List<String> list = new ArrayList<>();
         for (NbtElement item : tag.getList(key, 8)) list.add(item.asString());
         return list;
-    }
-
-    private void onChangePrefixColor(SettingColor color) {
-        if (color.rainbow)
-            RainbowColors.addSetting(meteorPrefixColor);
-        else
-            RainbowColors.removeSetting(meteorPrefixColor);
     }
 }

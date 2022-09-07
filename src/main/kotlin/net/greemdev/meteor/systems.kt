@@ -6,14 +6,29 @@
 package net.greemdev.meteor
 
 import com.mojang.brigadier.builder.LiteralArgumentBuilder
+import meteordevelopment.meteorclient.events.meteor.KeyEvent
+import meteordevelopment.meteorclient.events.meteor.MouseButtonEvent
 import meteordevelopment.meteorclient.systems.commands.Command
 import meteordevelopment.meteorclient.systems.modules.Module
+import meteordevelopment.orbit.EventHandler
 import net.greemdev.meteor.commands.api.CommandBuilder
-import net.greemdev.meteor.util.group
+import net.greemdev.meteor.event.GameInputEvent
+import net.greemdev.meteor.util.meteor.group
 import net.minecraft.command.CommandSource
 
 abstract class GModule(name: String, description: String) : Module(Greteor.category(), name, description) {
     protected val sg by lazy { settings.group() }
+    open fun onGameInput(event: GameInputEvent) {}
+
+    @EventHandler
+    private fun onKey(e: KeyEvent) {
+        onGameInput(GameInputEvent(e))
+    }
+
+    @EventHandler
+    private fun onMouse(e: MouseButtonEvent) {
+        onGameInput(GameInputEvent(e))
+    }
 }
 
 abstract class GCommand(
@@ -27,8 +42,8 @@ abstract class GCommand(
 
     override fun getAliases() = aliases.toMutableList()
 
-    protected open fun CommandBuilder.build() {
-        error("The base implementation of GCommand#build should never be called! " +
+    protected open fun CommandBuilder.injectBrigadier() {
+        error("The base implementation of GCommand#injectBrigadier should never be called! " +
             "You forgot to override the method or provide the builder in the abstract class constructor.")
     }
 
@@ -37,7 +52,7 @@ abstract class GCommand(
             if (b != null)
                 b.invoke(this)
             else
-                build()
+                injectBrigadier()
         }
     }
 }

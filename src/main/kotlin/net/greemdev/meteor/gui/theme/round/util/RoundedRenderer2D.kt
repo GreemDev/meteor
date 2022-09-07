@@ -5,6 +5,7 @@
 
 package net.greemdev.meteor.gui.theme.round.util
 
+import meteordevelopment.meteorclient.gui.widgets.WWidget
 import meteordevelopment.meteorclient.renderer.Mesh
 import meteordevelopment.meteorclient.renderer.Renderer2D
 import meteordevelopment.meteorclient.renderer.Renderer2D.*
@@ -22,13 +23,13 @@ fun Renderer2D.rounded() = RoundedRenderer2D.of(this)
 /*
  * Credit to meteor-rejects.
  */
-abstract class RoundedRenderer2D(val r2d: Renderer2D) {
+class RoundedRenderer2D(val r2d: Renderer2D) {
     companion object {
-        private val textured by lazy { object : RoundedRenderer2D(TEXTURE) {} }
-        private val normal by lazy { object : RoundedRenderer2D(COLOR) {} }
+        private val textured by lazy { RoundedRenderer2D(TEXTURE) }
+        private val normal by lazy { RoundedRenderer2D(COLOR) }
         fun textured() = textured
         fun normal() = normal
-        fun of(r2d: Renderer2D) = object : RoundedRenderer2D(r2d) {}
+        fun of(r2d: Renderer2D) = RoundedRenderer2D(r2d)
     }
 
     fun quad(x: Number, y: Number, width: Number, height: Number, color: Color, r: Number, roundTop: Boolean = true) =
@@ -45,6 +46,15 @@ abstract class RoundedRenderer2D(val r2d: Renderer2D) {
 
     fun circlePartOutline(x: Number, y: Number, r: Number, startAngle: Number, angle: Number, color: Color, outlineWidth: Number) =
         _circlePartOutline(x.toDouble(), y.toDouble(), r.toDouble(), startAngle.toDouble(), angle.toDouble(), color, outlineWidth.toDouble())
+
+    fun widgetQuad(widget: WWidget, color: Color, round: Double, roundTop: Boolean = true) =
+        quad(widget.x, widget.y, widget.width, widget.height, color, round, roundTop)
+
+    fun widgetQuadOutline(widget: WWidget, color: Color, round: Double, s: Double) =
+        quadOutline(widget.x, widget.y, widget.width, widget.height, color, round, s)
+
+    fun widgetQuadSide(widget: WWidget, color: Color, round: Double, right: Boolean) =
+        quadSide(widget.x, widget.y, widget.width, widget.height, color, round, right)
 
 
     private fun _quadRoundedOutline(x: Double, y: Double, width: Double, height: Double, color: Color, desiredR: Double, s: Double) {
@@ -154,7 +164,7 @@ abstract class RoundedRenderer2D(val r2d: Renderer2D) {
     }
 
     fun circleDepth(r: Double, angle: Double) =
-        max(1, (angle * r / circleQuarter).toInt())
+        (angle * r / circleQuarter).coerceAtLeast(1.0).toInt()
 
     private fun vecOnCircle(r2d: Renderer2D, x: Double, y: Double, r: Double, angle: Double, color: Color) =
         r2d.triangles.vec2(x + sin(angle) * r, y - cos(angle) * r).color(color).next()

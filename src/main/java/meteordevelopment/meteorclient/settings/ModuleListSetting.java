@@ -7,8 +7,6 @@ package meteordevelopment.meteorclient.settings;
 
 import meteordevelopment.meteorclient.systems.modules.Module;
 import meteordevelopment.meteorclient.systems.modules.Modules;
-import net.greemdev.meteor.Greteor;
-import net.greemdev.meteor.util.Meteor;
 import net.greemdev.meteor.util.Util;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.nbt.NbtElement;
@@ -19,7 +17,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.function.Consumer;
 import java.util.function.Predicate;
-import java.util.stream.Collectors;
 
 public class ModuleListSetting extends Setting<List<Module>> {
     private static List<String> suggestions;
