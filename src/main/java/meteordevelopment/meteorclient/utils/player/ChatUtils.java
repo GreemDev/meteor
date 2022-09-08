@@ -8,6 +8,7 @@ package meteordevelopment.meteorclient.utils.player;
 import baritone.api.BaritoneAPI;
 import meteordevelopment.meteorclient.mixin.ChatHudAccessor;
 import meteordevelopment.meteorclient.systems.config.Config;
+import net.greemdev.meteor.util.text.ChatColor;
 import net.greemdev.meteor.util.text.ChatFeedback;
 import net.greemdev.meteor.util.text.FormattedText;
 import net.greemdev.meteor.util.text.FormattedTextBuilder;

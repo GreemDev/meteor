@@ -60,12 +60,12 @@ class FormattedTextBuilder(private var internal: MutableText) {
     fun append(builder: FormattedTextBuilder.() -> Unit): FormattedTextBuilder = append(builder = builder)
     fun append(builder: Consumer<FormattedTextBuilder>) = append { builder.accept(this) }
     fun append(content: String, builder: Consumer<FormattedTextBuilder>) = append(content) { builder.accept(this) }
-
     fun onHovered(event: HoverEvent) = styled { withHoverEvent(event) }
     fun onClick(event: ClickEvent) = styled { withClickEvent(event) }
     fun font(fontId: Identifier) = styled { withFont(fontId) }
     fun colored(rgb: Int) = styled { withColor(rgb) }
     fun colored(color: java.awt.Color) = colored(color.rgb)
+    fun colored(color: ChatColor) = formatted(color.mc)
     fun colored(color: meteordevelopment.meteorclient.utils.render.color.Color) = colored(color.packed)
     fun bold() = styled { withBold(!isBold) }
     fun italicized() = styled { withItalic(!isItalic) }

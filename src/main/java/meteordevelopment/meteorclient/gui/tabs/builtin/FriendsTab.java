@@ -53,8 +53,7 @@ public class FriendsTab extends Tab {
             WTextBox nameW = list.add(theme.textBox("", (text, c) -> c != ' ')).expandX().widget();
             nameW.setFocused(true);
 
-            WPlus add = list.add(theme.plus()).widget();
-            add.action = () -> {
+            WPlus add = list.add(theme.plus(() -> {
                 String name = nameW.get().trim();
                 Friend friend = new Friend(name);
 
@@ -67,7 +66,7 @@ public class FriendsTab extends Tab {
                         reload();
                     });
                 }
-            };
+            })).widget();
 
             enterAction = add.action;
         }
@@ -80,13 +79,13 @@ public class FriendsTab extends Tab {
                 table.add(theme.texture(32, 32, friend.getHeadTexture().needsRotate() ? 90 : 0, friend.getHeadTexture()));
                 table.add(theme.label(friend.getName()));
 
-                WMinus remove = table.add(theme.minus()).expandCellX().right().widget();
-                remove.action = () -> {
-                    Friends.get().remove(friend);
+                table.add(theme.minus(() -> {
+                        Friends.get().remove(friend);
 
-                    table.clear();
-                    initTable(table);
-                };
+                        table.clear();
+                        initTable(table);
+                    })
+                ).expandCellX().right();
 
                 table.row();
             }

@@ -38,11 +38,10 @@ public class AddHudElementScreen extends WindowScreen {
         this.x = x;
         this.y = y;
 
-        searchBar = theme.textBox("");
-        searchBar.action = () -> {
+        searchBar = theme.textBox("", () -> {
             clear();
             initWidgets();
-        };
+        });
 
         enterAction = () -> runObject(firstObject);
     }
@@ -84,22 +83,17 @@ public class AddHudElementScreen extends WindowScreen {
                 title.tooltip = item.description;
 
                 if (item.object instanceof HudElementInfo.Preset preset) {
-                    WPlus add = l.add(theme.plus()).expandCellX().right().widget();
-                    add.action = () -> runObject(preset);
+                    l.add(theme.plus(() -> runObject(preset))).expandCellX().right();
 
                     if (firstObject == null) firstObject = preset;
                 }
                 else {
                     HudElementInfo<?> info = (HudElementInfo<?>) item.object;
 
-                    if (info.hasPresets()) {
-                        WButton open = l.add(theme.button(" > ")).expandCellX().right().widget();
-                        open.action = () -> runObject(info);
-                    }
-                    else {
-                        WPlus add = l.add(theme.plus()).expandCellX().right().widget();
-                        add.action = () -> runObject(info);
-                    }
+                    if (info.hasPresets())
+                        l.add(theme.button(" > ", () -> runObject(info))).expandCellX().right();
+                    else
+                        l.add(theme.plus(() -> runObject(info))).expandCellX().right();
 
                     if (firstObject == null) firstObject = info;
                 }

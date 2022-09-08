@@ -96,14 +96,22 @@ public abstract class GuiTheme implements ISerializable<GuiTheme> {
     }
 
     public abstract WMinus minus();
+
+    public WMinus minus(Runnable action) {
+        return minus().action(action);
+    }
     public abstract WPlus plus();
+
+    public WPlus plus(Runnable action) {
+        return plus().action(action);
+    }
+
 
     public abstract WCheckbox checkbox(boolean checked);
 
     public WCheckbox checkbox(boolean checked, Consumer<Boolean> action) {
-        var checkbox = checkbox(checked);
-        checkbox.action = () -> action.accept(checked);
-        return checkbox;
+        return checkbox(checked)
+            .action(() -> action.accept(checked));
     }
 
     public abstract WSlider slider(double value, double min, double max);
@@ -128,6 +136,14 @@ public abstract class GuiTheme implements ISerializable<GuiTheme> {
         return textBox(text, CharFilter.none(), null);
     }
 
+    public WTextBox textBox(String text, Runnable action) {
+        return textBox(text, CharFilter.none(), null).action(action);
+    }
+
+    public WTextBox textBox(String text, String placeholder, Runnable action) {
+        return textBox(text, placeholder).action(action);
+    }
+
     public abstract <T> WDropdown<T> dropdown(T[] values, T value);
     public <T extends Enum<?>> WDropdown<T> dropdown(T value) {
         Class<?> klass = value.getClass();
@@ -142,6 +158,10 @@ public abstract class GuiTheme implements ISerializable<GuiTheme> {
     }
 
     public abstract WTriangle triangle();
+
+    public WMinus triangle(Runnable action) {
+        return triangle().action(action);
+    }
 
     public abstract WTooltip tooltip(String text);
 
@@ -174,6 +194,10 @@ public abstract class GuiTheme implements ISerializable<GuiTheme> {
     public abstract WTopBar topBar();
 
     public abstract WFavorite favorite(boolean checked);
+
+    public WFavorite favorite(boolean checked, Runnable action) {
+        return favorite(checked).action(action);
+    }
 
     public WItem item(ItemStack itemStack) {
         return w(new WItem(itemStack));

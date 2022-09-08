@@ -46,14 +46,13 @@ public abstract class LeftRightListSettingScreen<T> extends WindowScreen {
     @Override
     public void initWidgets() {
         // Filter
-        filter = add(theme.textBox("")).minWidth(400).expandX().widget();
-        filter.setFocused(true);
-        filter.action = () -> {
+        filter = add(theme.textBox("", () -> {
             filterText = filter.get().trim();
 
             table.clear();
             initWidgets(registry);
-        };
+        })).minWidth(400).expandX().widget();
+        filter.setFocused(true);
 
         table = add(theme.table()).expandX().widget();
 
@@ -120,8 +119,9 @@ public abstract class LeftRightListSettingScreen<T> extends WindowScreen {
 
             table.add(getValueWidget(t));
 
-            WPressable button = table.add(isLeft ? theme.plus() : theme.minus()).expandCellX().right().widget();
-            button.action = () -> buttonAction.accept(t);
+            table.add((isLeft ? theme.plus() : theme.minus())
+                    .action(() -> buttonAction.accept(t)))
+                .expandCellX().right();
 
             table.row();
         };

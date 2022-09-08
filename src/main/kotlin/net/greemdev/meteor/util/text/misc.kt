@@ -16,9 +16,9 @@ fun textOf(content: String? = null, block: (MutableText.() -> Unit)?): MutableTe
 else
     Text.literal(content).apply { block?.invoke(this) }
 
-
-fun buildText(initial: MutableText = textOf(), block: FormattedTextBuilder.() -> Unit): Text = textBuilder(initial).apply(block).mutableText()
-fun textBuilder(initial: MutableText = textOf()): FormattedTextBuilder = FormattedTextBuilder(initial)
+fun buildText(initial: MutableText = textOf(), block: context(ChatColor.Companion) FormattedTextBuilder.() -> Unit): Text = FormattedTextBuilder(initial).apply {
+    block(ChatColor, this@apply)
+}.mutableText()
 
 object FormattedText {
     @JvmStatic
@@ -30,5 +30,5 @@ object FormattedText {
     @JvmStatic
     fun builder(): FormattedTextBuilder = builder(null) {}
     @JvmStatic
-    fun builder(initial: MutableText?, builder: Consumer<FormattedTextBuilder>): FormattedTextBuilder = textBuilder(initial ?: textOf()).apply { builder.accept(this) }
+    fun builder(initial: MutableText?, builder: Consumer<FormattedTextBuilder>): FormattedTextBuilder = FormattedTextBuilder(initial ?: textOf()).apply(builder::accept)
 }
