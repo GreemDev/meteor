@@ -9,13 +9,14 @@ import com.mojang.brigadier.builder.LiteralArgumentBuilder;
 import meteordevelopment.meteorclient.systems.commands.Command;
 import meteordevelopment.meteorclient.systems.modules.Module;
 import meteordevelopment.meteorclient.systems.modules.Modules;
-import meteordevelopment.meteorclient.utils.Utils;
 import meteordevelopment.meteorclient.utils.player.ChatUtils;
+import net.greemdev.meteor.util.text.ChatColor;
+import net.greemdev.meteor.util.text.ChatEvents;
 import net.greemdev.meteor.util.text.FormattedText;
+import net.greemdev.meteor.util.text.actions;
 import net.minecraft.command.CommandSource;
 import net.minecraft.text.HoverEvent;
 import net.minecraft.text.MutableText;
-import net.minecraft.text.Text;
 import net.minecraft.util.Formatting;
 
 import java.util.List;
@@ -38,19 +39,19 @@ public class BindsCommand extends Command {
             ChatUtils.info("--- Bound Modules ((highlight)%d(default)) ---", modules.size());
 
             for (Module module : modules) {
-                HoverEvent hoverEvent = new HoverEvent(HoverEvent.Action.SHOW_TEXT, getTooltip(module));
+                HoverEvent hoverEvent = ChatEvents.hover(actions.showText, getTooltip(module));
 
                 ChatUtils.sendMsg(msg -> {
-                    msg.append(module.title);
-                    msg.formatted(Formatting.WHITE);
+                    msg.addString(module.title);
+                    msg.colored(ChatColor.white);
                     msg.onHovered(hoverEvent);
-                    msg.append(" - ", b -> {
+                    msg.addString(" - ", b -> {
                         b.onHovered(hoverEvent);
-                        b.formatted(Formatting.GRAY);
+                        b.colored(ChatColor.grey);
                     });
-                    msg.append(module.keybind.toString(), b -> {
+                    msg.add(module.keybind, b -> {
                         b.onHovered(hoverEvent);
-                        b.formatted(Formatting.GRAY);
+                        b.colored(ChatColor.grey);
                     });
                 });
             }
@@ -61,10 +62,10 @@ public class BindsCommand extends Command {
 
     private MutableText getTooltip(Module module) {
         return FormattedText.builder()
-            .append(module.title)
-            .formatted(Formatting.BLUE).bold()
-            .append("\n\n")
-            .append(module.description, Formatting.WHITE)
-            .mutableText();
+            .addString(module.title)
+            .colored(ChatColor.blue).bold()
+            .newline(2)
+            .addString(module.description, ChatColor.white)
+            .getMutableText();
     }
 }

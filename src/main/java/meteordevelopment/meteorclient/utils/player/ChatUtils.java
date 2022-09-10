@@ -135,13 +135,13 @@ public class ChatUtils {
 
     private static MutableText getCustomPrefix(String prefixTitle, Formatting prefixColor) {
         return FormattedText.builder()
-            .formatted(Formatting.GRAY)
-            .append("[")
-            .append(prefixTitle, b -> {
+            .colored(ChatColor.grey)
+            .addString("[")
+            .addString(prefixTitle, b -> {
                 b.formatted(prefixColor);
             })
-            .append("] ")
-            .mutableText();
+            .addString("] ")
+            .getMutableText();
     }
 
     private static Text getPrefix() {

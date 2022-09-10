@@ -18,8 +18,8 @@ val feedbackPrefix by invoking {
 
     buildText {
         colored(bracketsColor)
-        append(brackets.left)
-        append(prefix, textColor)
-        append("${brackets.right} ")
+        addString(brackets.left)
+        addString(prefix, textColor)
+        addString("${brackets.right} ")
     }
 }
