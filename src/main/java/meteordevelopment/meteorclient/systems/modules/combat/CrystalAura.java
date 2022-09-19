@@ -666,7 +666,7 @@ public class CrystalAura extends Module {
         double bestDamage = 0;
         Entity crystal = null;
 
-        // Find best crystal to break
+        // Find the best crystal to break
         for (Entity entity : mc.world.getEntities()) {
             double damage = getBreakDamage(entity, true);
 

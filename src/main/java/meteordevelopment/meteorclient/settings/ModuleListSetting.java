@@ -44,19 +44,15 @@ public class ModuleListSetting extends Setting<List<Module>> {
         String[] values = str.split(",");
         List<Module> modules = new ArrayList<>(values.length);
 
-        Util.runOrIgnore(() -> {
+        try {
             for (String value : values) {
                 Module module = Modules.get().get(value.trim());
                 if (module != null && (filter == null || filter.test(module))) modules.add(module);
             }
-        });
+        } catch (Throwable ignored) {
+        }
 
         return modules;
-    }
-
-    @Override
-    protected boolean isValueValid(List<Module> value) {
-        return true;
     }
 
     @Override

@@ -14,17 +14,16 @@ import meteordevelopment.meteorclient.systems.System;
 import meteordevelopment.meteorclient.systems.Systems;
 import meteordevelopment.meteorclient.systems.modules.Module;
 import meteordevelopment.meteorclient.utils.player.ChatUtils;
-import meteordevelopment.meteorclient.utils.render.color.Color;
 import meteordevelopment.meteorclient.utils.render.color.RainbowColors;
 import meteordevelopment.meteorclient.utils.render.color.SettingColor;
 import net.greemdev.meteor.util.meteor.HiddenModules;
 import net.greemdev.meteor.type.PrefixBrackets;
+import net.greemdev.meteor.util.text.ChatColor;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.nbt.NbtElement;
 import net.minecraft.nbt.NbtList;
 import net.minecraft.nbt.NbtString;
 import net.minecraft.text.Text;
-import net.minecraft.util.Formatting;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -64,9 +63,9 @@ public class Config extends System<Config> {
         .build()
     );
 
-    public final Setting<Boolean> titleScreenCredits = sgVisual.add(new BoolSetting.Builder()
-        .name("title-screen-credits")
-        .description("Show Meteor credits on title screen")
+    public final Setting<Boolean> titleScreenVersionInfo = sgVisual.add(new BoolSetting.Builder()
+        .name("title-screen-version")
+        .description("Show Greteor version info on title screen")
         .defaultValue(true)
         .build()
     );
@@ -143,7 +142,7 @@ public class Config extends System<Config> {
     );
 
     public final Setting<String> meteorPrefix = sgChat.add(new StringSetting.Builder()
-        .name("chat-feedback-prefix")
+        .name("chat-prefix")
         .description("The prefix to appear before all Meteor chat feedback messages.")
         .defaultValue("Meteor")
         .onChanged(s -> {
@@ -156,9 +155,9 @@ public class Config extends System<Config> {
     );
 
     public final Setting<SettingColor> meteorPrefixColor = sgChat.add(new ColorSetting.Builder()
-        .name("chat-feedback-prefix-color")
+        .name("chat-prefix-color")
         .description("Color of the main prefix text.")
-        .defaultValue(MeteorClient.ADDON.color)
+        .defaultValue(MeteorClient.COLOR)
         .onChanged(RainbowColors::handle)
         .build()
     );
@@ -168,16 +167,16 @@ public class Config extends System<Config> {
     }
 
     public final Setting<PrefixBrackets> meteorPrefixBrackets = sgChat.add(new EnumSetting.Builder<PrefixBrackets>()
-        .name("chat-feedback-prefix-brackets")
+        .name("chat-prefix-brackets")
         .description("The brackets to be placed before and after the Meteor chat feedback prefix.")
         .defaultValue(PrefixBrackets.Square)
         .build()
     );
 
     public final Setting<SettingColor> meteorPrefixBracketsColor = sgChat.add(new ColorSetting.Builder()
-        .name("chat-feedback-prefix-brackets-color")
+        .name("chat-prefix-brackets-color")
         .description("Color of the brackets around the prefix text.")
-        .defaultValue(new Color(0xAAAAAA)) //Formatting.GRAY
+        .defaultValue(ChatColor.grey.asMeteor())
         .onChanged(RainbowColors::handle)
         .build()
     );

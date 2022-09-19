@@ -129,7 +129,7 @@ public class ArrowDodge extends Module {
         if (isValid(Vec3d.ZERO, false)) return; // no need to move
 
         double speed = moveSpeed.get();
-        for (int i = 0; i < 500; i++) { // its not a while loop so it doesn't freeze if something is wrong
+        for (int i = 0; i < 500; i++) { // it's not a while loop, so it doesn't freeze if something is wrong
             boolean didMove = false;
             Collections.shuffle(possibleMoveDirections); //Make the direction unpredictable
             for (Vec3d direction : possibleMoveDirections) {

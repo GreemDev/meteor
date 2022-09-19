@@ -5,6 +5,8 @@
 
 package net.greemdev.meteor.util.text
 
+import meteordevelopment.meteorclient.utils.render.color.Color
+import net.greemdev.meteor.util.awt
 import net.greemdev.meteor.util.invoking
 import net.minecraft.util.Formatting
 
@@ -61,8 +63,11 @@ data class ChatColor private constructor(private val fmt: Formatting) {
     val code by invoking(fmt::getCode)
     val isModifier by invoking(fmt::isModifier)
     val isColor by invoking(fmt::isColor)
-    val packedRgb by invoking(fmt::getColorValue)
+    val rgb by invoking(fmt::getColorValue)
     val mc = fmt
+
+    fun asMeteor() = Color(rgb ?: error("Cannot obtain color for a non-color formatting option."))
+    fun asAwt() = asMeteor().awt()
 
     override fun toString(): String = fmt.toString()
 }

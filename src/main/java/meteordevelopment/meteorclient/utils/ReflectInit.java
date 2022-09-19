@@ -5,9 +5,6 @@
 
 package meteordevelopment.meteorclient.utils;
 
-import meteordevelopment.meteorclient.MeteorClient;
-import meteordevelopment.meteorclient.addons.AddonManager;
-import meteordevelopment.meteorclient.addons.MeteorAddon;
 import org.reflections.Reflections;
 import org.reflections.scanners.Scanners;
 
@@ -18,35 +15,16 @@ import java.util.*;
 import java.util.stream.Collectors;
 
 public class ReflectInit {
-    private static final List<String> packages = new ArrayList<>();
-
-    public static void registerPackages() {
-        packages.add(MeteorClient.ADDON.getPackage());
-        for (MeteorAddon addon : AddonManager.ADDONS) {
-            try {
-                var pkg = addon.getPackage();
-                if (pkg != null && !pkg.isBlank()) {
-                    packages.add(pkg);
-                }
-            } catch (AbstractMethodError err) {
-                var exception = new AbstractMethodError("Addon \"%s\" is too old and cannot be ran.".formatted(addon.name));
-                exception.addSuppressed(err);
-                throw exception;
-            }
-        }
-    }
 
     public static void init(Class<? extends Annotation> annotation) {
-        for (String pkg : packages) {
-            Reflections reflections = new Reflections(pkg, Scanners.MethodsAnnotated);
-            Set<Method> initTasks = reflections.getMethodsAnnotatedWith(annotation);
-            if (initTasks == null) return;
-            Map<Class<?>, List<Method>> byClass = initTasks.stream().collect(Collectors.groupingBy(Method::getDeclaringClass));
-            Set<Method> left = new HashSet<>(initTasks);
+        Reflections reflections = new Reflections("meteordevelopment.meteorclient", Scanners.MethodsAnnotated);
+        Set<Method> initTasks = reflections.getMethodsAnnotatedWith(annotation);
+        if (initTasks == null) return;
+        Map<Class<?>, List<Method>> byClass = initTasks.stream().collect(Collectors.groupingBy(Method::getDeclaringClass));
+        Set<Method> left = new HashSet<>(initTasks);
 
-            for (Method m; (m = left.stream().findAny().orElse(null)) != null;) {
-                reflectInit(m, annotation, left, byClass);
-            }
+        for (Method m; (m = left.stream().findAny().orElse(null)) != null; ) {
+            reflectInit(m, annotation, left, byClass);
         }
     }
 
@@ -77,8 +55,7 @@ public class ReflectInit {
 
         if (init instanceof PreInit pre) {
             return pre.dependencies();
-        }
-        else if (init instanceof PostInit post) {
+        } else if (init instanceof PostInit post) {
             return post.dependencies();
         }
 

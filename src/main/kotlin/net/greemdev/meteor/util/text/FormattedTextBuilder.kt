@@ -66,6 +66,10 @@ class FormattedTextBuilder(private var internal: MutableText) {
         addText(textOf(), builder)
     fun addText(builder: Consumer<FormattedTextBuilder>) =
         addText { builder.accept(this) }
+    fun addBuilder(builder: FormattedTextBuilder): FormattedTextBuilder {
+        internal = internal.append(builder.getMutableText())
+        return this
+    }
     fun add(content: Any?, builder: Consumer<FormattedTextBuilder>) =
         addString(content.toString()) { builder.accept(this) }
     fun addString(content: String, builder: Consumer<FormattedTextBuilder>) =

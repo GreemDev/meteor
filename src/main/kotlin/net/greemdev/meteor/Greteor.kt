@@ -6,7 +6,6 @@
 package net.greemdev.meteor
 
 import meteordevelopment.meteorclient.MeteorClient
-import meteordevelopment.meteorclient.addons.*
 import meteordevelopment.meteorclient.gui.GuiThemes
 import meteordevelopment.meteorclient.systems.hud.HudGroup
 import meteordevelopment.meteorclient.systems.modules.Category
@@ -15,6 +14,7 @@ import net.greemdev.meteor.gui.theme.round.RoundedTheme
 import net.greemdev.meteor.hud.element.*
 import net.greemdev.meteor.util.*
 import net.greemdev.meteor.util.meteor.*
+import net.greemdev.meteor.util.misc.TitleScreenInfo
 import net.minecraft.item.Items
 import java.lang.invoke.MethodHandles
 
@@ -35,6 +35,7 @@ object Greteor {
             .forEach(Meteor.modules()::add)
         createSubtypesOf<GCommand>("net.greemdev.meteor.commands")
             .forEach(Meteor.commands()::add)
+        TitleScreenInfo.loadLatestRevision()
         initGStarscript()
     }
 
@@ -45,33 +46,18 @@ object Greteor {
 
     @JvmStatic
     fun roundedTheme() {
-        if ("meteor-rejects" !in modLoader)
-            GuiThemes.add(RoundedTheme())
+        GuiThemes.add(RoundedTheme())
     }
 
     @JvmStatic
     fun hudElements() = listOf(ModuleKeybindHud)
 
     @JvmStatic
-    fun getAddonPackages(): List<String> =
-        buildList {
-            add(MeteorClient.ADDON.`package`)
-            addAll(AddonManager.ADDONS.map(MeteorAddon::getPackage))
-        }
-
-
-    @JvmStatic
-    fun lambdaFactoriesFor(packages: List<String>, vararg extraPackages: String) =
-        (packages + extraPackages).forEach {
-            try {
-                MeteorClient.EVENT_BUS.registerLambdaFactory(it) { lookupInMethod, klass ->
-                    lookupInMethod(null, klass, MethodHandles.lookup())
-                        as MethodHandles.Lookup
-                }
-            } catch (err: AbstractMethodError) {
-                val exc = AbstractMethodError("Improper implementations of overridden methods.")
-                exc.addSuppressed(err)
-                throw exc;
+    fun lambdaFactoriesFor(vararg packages: String) =
+        packages.forEach {
+            MeteorClient.EVENT_BUS.registerLambdaFactory(it) { lookupInMethod, klass ->
+                lookupInMethod(null, klass, MethodHandles.lookup())
+                    as MethodHandles.Lookup
             }
         }
 }

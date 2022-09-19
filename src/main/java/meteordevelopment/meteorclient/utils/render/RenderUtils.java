@@ -65,7 +65,7 @@ public class RenderUtils {
         Entity cameraEntity = MinecraftClient.getInstance().getCameraEntity();
 
         if (cameraEntity instanceof PlayerEntity playerEntity) {
-            float f = MinecraftClient.getInstance().getTickDelta();
+            float f = mc.getTickDelta();
             float g = playerEntity.horizontalSpeed - playerEntity.prevHorizontalSpeed;
             float h = -(playerEntity.horizontalSpeed + g * f);
             float i = MathHelper.lerp(f, playerEntity.prevStrideDistance, playerEntity.strideDistance);
@@ -74,6 +74,10 @@ public class RenderUtils {
             matrices.multiply(Vec3f.POSITIVE_Z.getDegreesQuaternion(MathHelper.sin(h * 3.1415927f) * i * 3));
             matrices.multiply(Vec3f.POSITIVE_X.getDegreesQuaternion(Math.abs(MathHelper.cos(h * 3.1415927f - 0.2f) * i) * 5));
         }
+    }
+
+    public static void drawShadowed(MatrixStack stack, String text, int x, int y, int color) {
+        mc.textRenderer.drawWithShadow(stack, text, x, y, color);
     }
 }
 

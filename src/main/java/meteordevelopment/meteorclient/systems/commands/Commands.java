@@ -10,8 +10,7 @@ import com.mojang.brigadier.ParseResults;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import meteordevelopment.meteorclient.systems.System;
 import meteordevelopment.meteorclient.systems.Systems;
-import meteordevelopment.meteorclient.systems.commands.commands.*;
-import net.greemdev.meteor.Greteor;
+import meteordevelopment.meteorclient.systems.commands.builtin.*;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.network.ClientCommandSource;
 import net.minecraft.command.CommandRegistryAccess;
@@ -72,6 +71,8 @@ public class Commands extends System<Commands> {
         add(new FOVCommand());
         add(new RotationCommand());
         add(new WaypointCommand());
+
+        sortCommands();
     }
 
     public void sortCommands() {

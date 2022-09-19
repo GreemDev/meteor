@@ -171,7 +171,7 @@ public class BookBot extends Module {
             return;
         }
 
-        // If somehow it failed, just dont do anything until it tries again
+        // If somehow it failed, just don't do anything until it tries again
         FindItemResult finalBook = InvUtils.findInHotbar(Items.WRITABLE_BOOK);
         if (!finalBook.isMainHand()) return;
 

@@ -5,8 +5,6 @@
 
 package meteordevelopment.meteorclient;
 
-import meteordevelopment.meteorclient.addons.AddonManager;
-import meteordevelopment.meteorclient.addons.MeteorAddon;
 import meteordevelopment.meteorclient.events.game.OpenScreenEvent;
 import meteordevelopment.meteorclient.events.meteor.KeyEvent;
 import meteordevelopment.meteorclient.events.meteor.MouseButtonEvent;
@@ -15,35 +13,36 @@ import meteordevelopment.meteorclient.gui.GuiThemes;
 import meteordevelopment.meteorclient.gui.WidgetScreen;
 import meteordevelopment.meteorclient.gui.tabs.Tabs;
 import meteordevelopment.meteorclient.systems.Systems;
-import meteordevelopment.meteorclient.systems.commands.Commands;
 import meteordevelopment.meteorclient.systems.config.Config;
 import meteordevelopment.meteorclient.systems.modules.Categories;
-import meteordevelopment.meteorclient.systems.modules.Modules;
 import meteordevelopment.meteorclient.utils.*;
 import meteordevelopment.meteorclient.utils.misc.Version;
 import meteordevelopment.meteorclient.utils.misc.input.KeyAction;
 import meteordevelopment.meteorclient.utils.misc.input.KeyBinds;
 import meteordevelopment.meteorclient.utils.network.OnlinePlayers;
+import meteordevelopment.meteorclient.utils.render.color.Color;
 import meteordevelopment.orbit.*;
 import net.fabricmc.api.ClientModInitializer;
 import net.fabricmc.loader.api.FabricLoader;
 import net.fabricmc.loader.api.metadata.ModMetadata;
 import net.greemdev.meteor.Greteor;
+import net.greemdev.meteor.util.Util;
+import net.greemdev.meteor.util.misc.TitleScreenInfo;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.screen.ChatScreen;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.File;
-import java.lang.invoke.MethodHandles;
-import java.util.Arrays;
 
 public class MeteorClient implements ClientModInitializer {
     public static final String MOD_ID = "meteor-client";
     public static final ModMetadata MOD_META = FabricLoader.getInstance().getModContainer(MOD_ID).get().getMetadata();
     public final static Version VERSION;
-    public final static String DEV_BUILD, KOTLIN, FABRIC_KOTLIN;
-    public static MeteorAddon ADDON;
+
+    public final static Color COLOR;
+    public static int REVISION;
+    public final static String KOTLIN, FABRIC_KOTLIN;
 
     public static MinecraftClient mc;
     public static MeteorClient INSTANCE;
@@ -52,10 +51,7 @@ public class MeteorClient implements ClientModInitializer {
     public static final Logger LOG = LoggerFactory.getLogger("Meteor");
 
     public static String fullVersion() {
-        var sb = new StringBuilder(VERSION.toString());
-        if (DEV_BUILD != null && !DEV_BUILD.isEmpty())
-            sb.append("-rev").append(DEV_BUILD);
-        return sb.toString();
+        return "%s-rev%d".formatted(VERSION, REVISION);
     }
 
     static {
@@ -63,9 +59,9 @@ public class MeteorClient implements ClientModInitializer {
         if (versionString.contains("-")) versionString = versionString.split("-")[0];
 
         VERSION = new Version(versionString);
-        DEV_BUILD = MOD_META.getCustomValue(MeteorClient.MOD_ID + ":devbuild").getAsString();
-
-        FABRIC_KOTLIN = MOD_META.getCustomValue(MeteorClient.MOD_ID + ":kotlin").getAsString();
+        REVISION = Integer.parseInt(MOD_META.getCustomValue(MOD_ID + ":revision").getAsString());
+        COLOR = Util.colorOf(MOD_META.getCustomValue(MOD_ID + ":color").getAsString());
+        FABRIC_KOTLIN = MOD_META.getCustomValue(MOD_ID + ":kotlin").getAsString();
         KOTLIN = FABRIC_KOTLIN.split("kotlin")[1].substring(1);
     }
 
@@ -76,8 +72,6 @@ public class MeteorClient implements ClientModInitializer {
             return;
         }
 
-        LOG.info("Initializing Meteor Client");
-
         // Global minecraft client accessor
         mc = MinecraftClient.getInstance();
 
@@ -87,14 +81,8 @@ public class MeteorClient implements ClientModInitializer {
             FOLDER.mkdir();
         }
 
-        // Register addons
-        AddonManager.init();
-
         // Register event handlers
-        Greteor.lambdaFactoriesFor(Greteor.getAddonPackages(), "net.greemdev.meteor");
-
-        // Register init classes
-        ReflectInit.registerPackages();
+        Greteor.lambdaFactoriesFor("meteordevelopment.meteorclient", "net.greemdev.meteor");
 
         // Pre init
         ReflectInit.init(PreInit.class);
@@ -111,15 +99,6 @@ public class MeteorClient implements ClientModInitializer {
         // Subscribe after systems are loaded
         EVENT_BUS.subscribe(this);
 
-        // Initialise addons
-        AddonManager.ADDONS.forEach(MeteorAddon::onInitialize);
-
-        // Sort modules after addons have added their own
-        Modules.get().sortModules();
-
-        // Sort commands after addons have added their own
-        Commands.get().sortCommands();
-
         // Load configs
         Systems.load();
 
@@ -132,6 +111,9 @@ public class MeteorClient implements ClientModInitializer {
             Systems.save();
             GuiThemes.save();
         }));
+
+        if (TitleScreenInfo.isOutdated())
+            LOG.warn("Not currently on the latest revision! Currently running %d revisions behind. Latest revision is %s.".formatted(TitleScreenInfo.howManyBehind(), TitleScreenInfo.getLatestRevision()));
     }
 
     @EventHandler

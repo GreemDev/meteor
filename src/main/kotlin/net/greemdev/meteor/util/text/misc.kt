@@ -30,5 +30,7 @@ object FormattedText {
     @JvmStatic
     fun builder(): FormattedTextBuilder = builder(null) {}
     @JvmStatic
+    fun builder(initial: Any): FormattedTextBuilder = builder(textOf(initial.toString())) {}
+    @JvmStatic
     fun builder(initial: MutableText?, builder: Consumer<FormattedTextBuilder>): FormattedTextBuilder = FormattedTextBuilder(initial ?: textOf()).apply(builder::accept)
 }

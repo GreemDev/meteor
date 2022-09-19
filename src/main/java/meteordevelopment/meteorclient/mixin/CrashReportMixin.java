@@ -24,13 +24,12 @@ public class CrashReportMixin {
         if (Modules.get() != null) {
             sb.append("\n\n");
             sb.append("-- Meteor Client --\n");
-            sb.append("Version: ").append(MeteorClient.VERSION).append("\n");
+            sb.append("Do NOT report this to the original Meteor Client developers. Report only to GreemDev.\n");
+            sb.append("Version: ").append(MeteorClient.VERSION).append('\n');
+            sb.append("Revision: ").append(MeteorClient.REVISION).append('\n');
 
-            if (!MeteorClient.DEV_BUILD.isEmpty()) {
-                sb.append("Dev Build: ").append(MeteorClient.DEV_BUILD).append("\n");
-            }
 
-            for (Category category : Modules.loopCategories()) {
+            for (Category category : Modules.getCategories()) {
                 List<Module> modules = Modules.get().getGroup(category);
                 boolean active = false;
 

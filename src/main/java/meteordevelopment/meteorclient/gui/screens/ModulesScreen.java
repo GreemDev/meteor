@@ -190,7 +190,7 @@ public class ModulesScreen extends TabScreen {
 
         @Override
         public void init() {
-            for (Category category : Modules.loopCategories()) {
+            for (Category category : Modules.getCategories()) {
                 windows.add(createCategory(this, category));
             }
 

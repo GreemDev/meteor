@@ -101,7 +101,9 @@ public abstract class Setting<T> implements IGetter<T>, ISerializable<T> {
 
     protected abstract T parseImpl(String str);
 
-    protected abstract boolean isValueValid(T value);
+    protected boolean isValueValid(T value) {
+        return true;
+    }
 
     public Iterable<Identifier> getIdentifierSuggestions() {
         return null;

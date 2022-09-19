@@ -91,6 +91,8 @@ public class Modules extends System<Modules> {
         initRender();
         initWorld();
         initMisc();
+
+        sortModules();
     }
 
     @Override
@@ -117,7 +119,7 @@ public class Modules extends System<Modules> {
         CATEGORIES.add(category);
     }
 
-    public static Iterable<Category> loopCategories() {
+    public static List<Category> getCategories() {
         return CATEGORIES;
     }
 

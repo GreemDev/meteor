@@ -5,6 +5,8 @@
 
 package net.greemdev.meteor.util.meteor
 
+import meteordevelopment.meteorclient.gui.GuiTheme
+import meteordevelopment.meteorclient.gui.GuiThemes
 import meteordevelopment.meteorclient.systems.accounts.Accounts
 import meteordevelopment.meteorclient.systems.commands.Command
 import meteordevelopment.meteorclient.systems.commands.Commands
@@ -24,6 +26,9 @@ import net.minecraft.entity.player.PlayerEntity
 import java.util.*
 
 object Meteor {
+
+    @JvmStatic
+    fun currentTheme(): GuiTheme = GuiThemes.get()
 
     @JvmStatic
     fun config(): Config = Config.get()

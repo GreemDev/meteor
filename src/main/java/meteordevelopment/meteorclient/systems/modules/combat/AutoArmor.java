@@ -234,7 +234,7 @@ public class AutoArmor extends Module {
         }
 
         public void add(ItemStack itemStack, int slot) {
-            // Calculate armor piece score and check if its higher than the last one
+            // Calculate armor piece score and check if it's higher than the last one
             int score = getScore(itemStack);
 
             if (score > bestScore) {
@@ -248,7 +248,7 @@ public class AutoArmor extends Module {
 
             ItemStack itemStack = mc.player.getInventory().getArmorStack(id);
 
-            // Check if the item is an elytra
+            // Check if the item is an Elytra
             if ((ignoreElytra.get() || Modules.get().isActive(ChestSwap.class)) && itemStack.getItem() == Items.ELYTRA) {
                 score = Integer.MAX_VALUE; // Setting score to Integer.MAX_VALUE so its now swapped later
                 return;

@@ -119,7 +119,7 @@ public class EntityOwner extends Module {
         String name = uuidToName.get(uuid);
         if (name != null) return name;
 
-        // Makes a HTTP request to Mojang API
+        // Makes an HTTP request to Mojang API
         MeteorExecutor.execute(() -> {
             if (isActive()) {
                 List<UuidNameHistoryResponseItem> res = Http.get("https://api.mojang.com/user/profiles/" + uuid.toString().replace("-", "") + "/names").sendJson(RESPONSE_TYPE);

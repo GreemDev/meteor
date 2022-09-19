@@ -92,9 +92,8 @@ shadowJar {
 processResources {
     filesMatching("fabric.mod.json") {
         expand "version": project.mod_version,
-               "devbuild": project.findProperty("revision") ?: "",
-               "commit": project.findProperty("commit") ?: "",
-               "ktlangver": project.fabric_kotlin_version ?: ""
+               "rev": project.findProperty("revision") ?: "",
+               "kotlinVersion": project.fabric_kotlin_version ?: ""
     }
 }
 

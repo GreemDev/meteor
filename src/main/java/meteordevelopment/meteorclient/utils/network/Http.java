@@ -6,6 +6,7 @@
 package meteordevelopment.meteorclient.utils.network;
 
 import com.google.gson.Gson;
+import com.google.gson.JsonObject;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -105,6 +106,10 @@ public class Http {
 
         public Stream<String> sendLines() {
             return _send("*/*", HttpResponse.BodyHandlers.ofLines());
+        }
+
+        public JsonObject sendJson() {
+            return sendJson(JsonObject.class);
         }
 
         public <T> T sendJson(Type type) {

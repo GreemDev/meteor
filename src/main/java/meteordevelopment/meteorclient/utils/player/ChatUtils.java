@@ -100,6 +100,10 @@ public class ChatUtils {
         sendMsg(null, FormattedText.build(message));
     }
 
+    public static void sendMsg(FormattedTextBuilder textBuilder) {
+        sendMsg(null, textBuilder.getMutableText());
+    }
+
     public static void sendMsg(String prefix, Text message) {
         sendMsg(0, prefix, Formatting.LIGHT_PURPLE, message);
     }

@@ -131,9 +131,9 @@ public class AutoGap extends Module {
     @EventHandler
     private void onTick(TickEvent.Pre event) {
         if (eating) {
-            // If we are eating check if we should still be still eating
+            // If we are eating check if we should still be eating
             if (shouldEat()) {
-                // Check if the item in current slot is not gap or egap
+                // Check if the item in current slot is not gap or enchanted gap
                 if (isNotGapOrEGap(mc.player.getInventory().getStack(slot))) {
                     // If not try finding a new slot
                     int slot = findSlot();

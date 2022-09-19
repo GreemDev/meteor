@@ -104,3 +104,7 @@ val scope by lazy {
 }
 
 fun<T> coroutines(block: CoroutineScope.() -> T): T = scope.block()
+
+fun launchJob(builder: AsyncJobBuilder.() -> Job): Job {
+    return scope.jobBuilder {}.builder()
+}

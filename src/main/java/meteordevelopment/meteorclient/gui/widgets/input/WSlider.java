@@ -120,7 +120,7 @@ public abstract class WSlider extends WWidget {
 	@Override
 	public boolean onMouseScrolled(double amount) {
 		// when user starts to scroll over regular handle
-		// remember it's position and check only this "ghost"
+		// remember its position and check only this "ghost"
 		// position to allow scroll (until it leaves ghost area)
 		if (!scrollHandleMouseOver && handleMouseOver) {
 			scrollHandleX = x;

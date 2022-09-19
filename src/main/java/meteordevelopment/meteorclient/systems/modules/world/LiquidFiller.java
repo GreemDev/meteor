@@ -112,7 +112,7 @@ public class LiquidFiller extends Module {
 
         // Loop blocks around the player
         BlockIterator.register(horizontalRadius.get(), verticalRadius.get(), (blockPos, blockState) -> {
-            // Check if the block a source liquid block
+            // Check if the block is a source liquid block
             if (isSource(blockState)) {
                 Block liquid = blockState.getBlock();
 

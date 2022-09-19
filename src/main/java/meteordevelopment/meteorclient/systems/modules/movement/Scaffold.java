@@ -224,7 +224,7 @@ public class Scaffold extends Module {
             // Render block if was placed
             renderBlocks.add(renderBlockPool.get().set(bp));
 
-            // Move player down so they are on top of the placed block ready to jump again
+            // Move player down, so they are on top of the placed block ready to jump again
             if (mc.options.jumpKey.isPressed() && !mc.options.sneakKey.isPressed() && !mc.player.isOnGround() && !mc.world.getBlockState(bp).isAir() && fastTower.get()) {
                 mc.player.setVelocity(0, -0.28f, 0);
             }

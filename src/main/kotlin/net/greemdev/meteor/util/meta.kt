@@ -11,6 +11,7 @@ import meteordevelopment.meteorclient.gui.widgets.pressable.WPressable
 import meteordevelopment.meteorclient.settings.*
 import net.fabricmc.loader.api.FabricLoader
 import org.apache.logging.log4j.LogManager
+import org.apache.logging.log4j.Logger
 import org.apache.logging.log4j.message.MessageFactory
 import org.reflections.Reflections
 import org.reflections.scanners.Scanners
@@ -37,18 +38,18 @@ fun <T> supplyOrNull(func: Supplier<T>): T? = try {
     null
 }
 
-fun <T> tryOrIgnore(func: () -> Unit) = try {
+fun tryOrIgnore(func: () -> Unit) = try {
     func()
 } catch (ignored: Throwable) {
 }
 
-fun <T> runOrIgnore(runnable: Runnable) = try {
+fun runOrIgnore(runnable: Runnable) = try {
     runnable.run()
 } catch (ignored: Throwable) {
 }
 
 // Looks repetitive however each different type we check for has its own special logic in LogManager
-fun log4j(value: Any) = lazy {
+fun log4j(value: Any) = lazy<Logger> {
     when (value) {
         is String -> LogManager.getLogger(value)
         is Class<*> -> LogManager.getLogger(value)
@@ -60,9 +61,33 @@ fun log4j(value: Any) = lazy {
 
 operator fun FabricLoader.contains(modId: String) = modLoader.isModLoaded(modId)
 
+fun<T> T?.coalesce(other: T) = this ?: other
 fun <T> Collection<T>?.getOrEmpty() = this ?: emptySet()
+fun <T> Collection<T>?.lastIndex() = getOrEmpty().size - 1
 
-
+typealias MeteorColor = meteordevelopment.meteorclient.utils.render.color.Color
+typealias AwtColor = Color
+fun colorOf(value: Any): MeteorColor {
+    return try {
+        when (value) {
+            is String -> {
+                if (value.contains(",")) {
+                    MeteorColor().apply { parse(value) }
+                } else if ((value.startsWith("#") && value.length == 7) || value.length == 6) {
+                    MeteorColor(value.takeLast(6).toInt(16))
+                } else if ((value.startsWith("#") && value.length == 9) || value.length == 8) {
+                    MeteorColor(value.takeLast(8).toInt(16))
+                } else {
+                    throw NumberFormatException()
+                }
+            }
+            is Int -> MeteorColor(value)
+            else -> throw IllegalArgumentException()
+        }
+    } catch (e: Exception) {
+        throw IllegalArgumentException("Invalid color value. Only accepts R,G,B; #RRGGBB; and #RRGGBBAA.").apply { addSuppressed(e) }
+    }
+}
 
 fun <T> firstNotNull(vararg nullables: T?) = nullables.firstNotNullOf { it }
 fun <T> Iterable<T?>.firstNotNull(): T = firstNotNullOf { it }
