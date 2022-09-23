@@ -22,7 +22,7 @@ class CommandAliasesCommand : GCommand(
                 CommandSource.suggestMatching(Meteor.module<CommandAliases>().mapped.keys, this)
             }
             alwaysRuns { ctx ->
-                val name by ctx<String>("alias")
+                val name by ctx(arg.greedyString(),"alias")
                 val mapping = Meteor.module<CommandAliases>().mapped.entries.firstOrNull {
                     it.key.equals(name, true)
                 } ?: notFound.throwNew(name)

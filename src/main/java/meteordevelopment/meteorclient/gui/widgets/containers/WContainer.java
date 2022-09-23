@@ -10,9 +10,7 @@ import meteordevelopment.meteorclient.gui.utils.Cell;
 import meteordevelopment.meteorclient.gui.widgets.WWidget;
 import net.minecraft.client.Mouse;
 
-import java.util.ArrayList;
-import java.util.ConcurrentModificationException;
-import java.util.List;
+import java.util.*;
 
 import static meteordevelopment.meteorclient.MeteorClient.mc;
 import static meteordevelopment.meteorclient.utils.Utils.getWindowHeight;

@@ -94,7 +94,7 @@ class MinecraftPresence : GModule("minecraft-presence", "Displays Minecraft as y
     val l2Messages by sgL2 stringList {
         name("line-2-messages")
         description("Messages used on the second line of the Discord presence.")
-        defaultValue("Minecraft is good", "{round(server.tps, 1)} TPS", "Playing on {server.difficulty}", "Playing with {server.player_count} others!")
+        defaultValue("Minecraft is good", "{round(server.tps, 1)} TPS", "Playing on {server.difficulty}", "Playing with {server.playerCount} others!")
         onChanged { recompileLines(2, it) }
         renderStarscript()
     }

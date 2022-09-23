@@ -35,7 +35,7 @@ class AutoMessage : GModule(
     val message by sgm string {
         name("message")
         description("The message to send.")
-        defaultValue("I {baritone.is_pathing ? \"do\" : \"dont\"} like hackers!")
+        defaultValue("I {baritone.isPathing ? \"do\" : \"dont\"} like hackers!")
         onChanged { recompile(it) }
         renderStarscript()
     }

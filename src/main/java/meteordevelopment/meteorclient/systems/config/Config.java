@@ -104,7 +104,7 @@ public class Config extends System<Config> {
         .name("window-title-text")
         .description("The text it displays in the window title.")
         .visible(useCustomWindowTitle::get)
-        .defaultValue("Minecraft {game_version} - Meteor Client {meteor.version}")
+        .defaultValue("Minecraft {gameVersion} - Meteor Client {meteor.version}")
         .onChanged(value -> mc.updateWindowTitle())
         .renderer(StarscriptTextBoxRenderer.class)
         .build()
@@ -186,7 +186,8 @@ public class Config extends System<Config> {
         .name("hidden-modules")
         .description("Modules to hide from Meteor's Modules screen.")
         .defaultValue(Collections.emptyList())
-        .onChanged(HiddenModules::set)
+        .defaultValue(HiddenModules.getModules())
+        .onChanged(HiddenModules.get()::set)
         .build()
     );
 

@@ -18,33 +18,27 @@ import net.minecraft.util.math.Vec3d
 class ClipCommand : GCommand("clip", "Lets you clip through blocks vertically or horizontally.", {
     then("v") {
         then("distance", arg.double()) {
-            alwaysRuns(::vertical)
+            alwaysRuns {
+                val distance by it(arg.double(), "distance")
+                mc.player?.vehicle?.editPos(y = distance)
+                mc.player().editPos(y = distance)
+            }
         }
     }
     then("h") {
         then("distance", arg.double()) {
-            alwaysRuns(::horizontal)
+            alwaysRuns {
+                val distance by it(arg.double(), "distance")
+                val forward = Vec3d.fromPolar(0f, mc.player().yaw).normalize()
+                mc.player?.vehicle?.editPos(
+                    x = forward.x * distance,
+                    z = forward.z * distance
+                )
+                mc.player().editPos(
+                    x = forward.x * distance,
+                    z = forward.z * distance
+                )
+            }
         }
     }
-}) {
-    companion object {
-        private fun vertical(ctx: MinecraftCommandContext) {
-            val distance by ctx<Double>("distance")
-            mc.player?.vehicle?.editPos(y = distance)
-            mc.player().editPos(y = distance)
-        }
-
-        private fun horizontal(ctx: MinecraftCommandContext) {
-            val distance by ctx<Double>("distance")
-            val forward = Vec3d.fromPolar(0f, mc.player().yaw).normalize()
-            mc.player?.vehicle?.editPos(
-                x = forward.x * distance,
-                z = forward.z * distance
-            )
-            mc.player().editPos(
-                x = forward.x * distance,
-                z = forward.z * distance
-            )
-        }
-    }
-}
+})

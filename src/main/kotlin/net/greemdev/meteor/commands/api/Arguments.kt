@@ -14,6 +14,7 @@ import net.minecraft.command.argument.*
 import net.minecraft.predicate.NumberRange
 
 inline operator fun<reified T> MinecraftCommandContext.invoke(name: String) = lazy { argument<T>(name) }
+inline operator fun<reified T> MinecraftCommandContext.invoke(type: ArgumentType<T>, name: String = formatArgType(type)) = lazy { type.get(this, name) }
 
 inline infix fun <reified T> MinecraftCommandContext.argument(name: String) = getArgument(name, T::class.java)
 
@@ -21,7 +22,6 @@ inline fun<reified T> MinecraftCommandContext.argument(name: String, noinline pa
     = parser(this, name)
 
 object Arguments {
-
     fun module(): ModuleArgumentType = ModuleArgumentType.create()
     fun friend(): FriendArgumentType = FriendArgumentType.create()
     fun player(): PlayerArgumentType = PlayerArgumentType.create()
@@ -30,7 +30,6 @@ object Arguments {
     fun setting(): SettingArgumentType = SettingArgumentType.create()
     fun settingValue(): SettingValueArgumentType = SettingValueArgumentType.create()
     fun waypoint(): WaypointArgumentType = WaypointArgumentType.create()
-
     fun boolean(): BoolArgumentType = BoolArgumentType.bool()
     fun double(min: Double = -Double.MAX_VALUE, max: Double = Double.MAX_VALUE): DoubleArgumentType = DoubleArgumentType.doubleArg(min, max)
     fun float(min: Float = -Float.MAX_VALUE, max: Float = Float.MAX_VALUE): FloatArgumentType = FloatArgumentType.floatArg(min, max)
@@ -82,3 +81,11 @@ object Arguments {
     fun time(): TimeArgumentType = TimeArgumentType.time()
     fun uuid(): UuidArgumentType = UuidArgumentType.uuid()
 }
+
+fun formatArgType(argType: ArgumentType<*>) = buildString {
+    val typeName = argType::class.simpleName!!.dropLast("ArgumentType".length)
+    require(typeName.isNotEmpty()) { "Invalid ArgumentType name." }
+    append(typeName.replaceFirstChar { it.lowercase() })
+}
+
+inline fun<reified T> ArgumentType<T>.get(ctx: MinecraftCommandContext, name: String = formatArgType(this)): T = ctx.getArgument(name, T::class.java)

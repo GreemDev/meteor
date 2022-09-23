@@ -150,7 +150,7 @@ public class Modules extends System<Modules> {
     }
 
     public List<Module> getGroup(Category category) {
-        return HiddenModules.hideInCategory(category, groups);
+        return HiddenModules.get().hideInCategory(category, groups);
     }
 
     public Collection<Module> getAll() {

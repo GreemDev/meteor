@@ -71,21 +71,23 @@ fun colorOf(value: Any): MeteorColor {
     return try {
         when (value) {
             is String -> {
-                if (value.contains(",")) {
-                    MeteorColor().apply { parse(value) }
-                } else if ((value.startsWith("#") && value.length == 7) || value.length == 6) {
-                    MeteorColor(value.takeLast(6).toInt(16))
-                } else if ((value.startsWith("#") && value.length == 9) || value.length == 8) {
-                    MeteorColor(value.takeLast(8).toInt(16))
-                } else {
-                    throw NumberFormatException()
+                when {
+                    value.contains(",") -> MeteorColor().apply { parse(value) }
+
+                    (value.startsWith("#") && value.length == 7) || value.length == 6 ->
+                        MeteorColor(value.takeLast(6).toInt(16))
+
+                    (value.startsWith("#") && value.length == 9) || value.length == 8 ->
+                        MeteorColor(value.takeLast(8).toInt(16))
+
+                    else -> throw NumberFormatException()
                 }
             }
             is Int -> MeteorColor(value)
             else -> throw IllegalArgumentException()
         }
     } catch (e: Exception) {
-        throw IllegalArgumentException("Invalid color value. Only accepts R,G,B; #RRGGBB; and #RRGGBBAA.").apply { addSuppressed(e) }
+        throw IllegalArgumentException("Invalid color value. Only accepts R,G,B; (#)RRGGBB; and (#)AARRGGBB.").apply { addSuppressed(e) }
     }
 }
 
@@ -113,8 +115,8 @@ fun <T> KMutableProperty<T>.coalesce(newValue: T): T {
     return newValue
 }
 
-fun meteordevelopment.meteorclient.utils.render.color.Color.awt() = java.awt.Color(packed)
-fun java.awt.Color.meteor() = meteordevelopment.meteorclient.utils.render.color.Color(rgb)
+fun MeteorColor.awt() = AwtColor(packed)
+fun AwtColor.meteor() = MeteorColor(rgb)
 
 
 fun any(vararg conditions: Boolean) = conditions.any()

@@ -83,8 +83,16 @@ public class ModuleListSetting extends Setting<List<Module>> {
 
         NbtList valueTag = tag.getList("modules", 8);
         for (NbtElement tagI : valueTag) {
-            Module module = Modules.get().get(tagI.asString());
-            if (module != null && (bypassFilterWhenSavingAndLoading || (filter == null || filter.test(module)))) get().add(module);
+            Util.runOrIgnore(() -> {
+                // this only errors when loading HiddenModules in Config,
+                // and HiddenModules are stored in their own System impl anyway and injected into the Config screen to
+                // bypass its load order (Config loads before Modules, so Config can't
+                // load a ModuleListSetting because it's being loaded before Modules is even initialized).
+                // In this one specific case, we return an unmodified list (which, because we called clear right before this, means it's empty).
+
+                Module module = Modules.get().get(tagI.asString());
+                if (module != null && (bypassFilterWhenSavingAndLoading || (filter == null || filter.test(module)))) get().add(module);
+            });
         }
 
         return get();

@@ -5,40 +5,74 @@
 
 package net.greemdev.meteor.util.meteor
 
+import meteordevelopment.meteorclient.MeteorClient
+import meteordevelopment.meteorclient.systems.System
+import meteordevelopment.meteorclient.systems.Systems
 import meteordevelopment.meteorclient.systems.modules.Category
 import meteordevelopment.meteorclient.systems.modules.Module
+import net.greemdev.meteor.util.getOrNull
+import net.greemdev.meteor.util.misc.*
+import net.greemdev.meteor.util.tryOrIgnore
+import net.minecraft.nbt.NbtCompound
+import net.minecraft.nbt.NbtElement
 
-abstract class HiddenModules : HashSet<String>() {
+class HiddenModules : System<HiddenModules>("hidden-modules") {
 
-    operator fun contains(module: Module) = contains(module.name)
-    companion object : HiddenModules() {
+    private val hiddenModules = hashSetOf<String>()
+
+    init {
+        init()
+        load(MeteorClient.FOLDER)
+    }
+
+    operator fun contains(module: Module) = hiddenModules.contains(module.name)
+    fun hideInCategory(category: Category, mapped: MutableMap<Category, MutableList<Module>>): List<Module> {
+        val modules = mapped.computeIfAbsent(category) { mutableListOf() }
+        if (hiddenModules.isNotEmpty())
+            modules.removeAll { it.name in hiddenModules }
+
+        return modules
+    }
+
+    companion object {
+        @JvmStatic
+        fun get(): HiddenModules = Systems.get(HiddenModules::class.java)
 
         @JvmStatic
-        fun hideInCategory(category: Category, mapped: MutableMap<Category, MutableList<Module>>): List<Module> {
-            val modules = mapped.computeIfAbsent(category) { mutableListOf() }
-            if (this.isNotEmpty())
-                modules.removeAll { it in this }
-
-            return modules
-        }
+        fun getOrNull(): HiddenModules? = getOrNull { get() }
 
         @JvmStatic
-        fun get() = this
+        fun getModules() = getOrNull {
+            get().hiddenModules.mapNotNull { Meteor.modules().get(it) }
+        } ?: emptyList()
+    }
 
-        @JvmStatic
-        fun set(modules: Collection<Module?>) {
-            if (modules.size < size)
+    fun set(modules: Collection<Module?>) {
+        if (modules.size < hiddenModules.size)
+            tryOrIgnore {
                 showConfirm("hidden-modules-restart") {
                     title("Unhidden Modules")
-                    message("In order to see the modules you've unhidden, you will need to restart Minecraft.")
+                    message("In order to see the module you've unhidden, you will need to restart Minecraft.")
                 }
-
-            clear()
-            modules.filterNotNull().forEach {
-                if (it.isActive)
-                    it.toggle()
-                add(it.name)
             }
+
+        hiddenModules.clear()
+        modules.filterNotNull().forEach {
+            if (it.isActive)
+                it.toggle()
+            hiddenModules.add(it.name)
         }
     }
+
+
+    override fun toTag() = Nbt compound {
+        put("hiddenModules", hiddenModules.toNBT())
+    }
+
+    override fun fromTag(tag: NbtCompound): HiddenModules {
+        hiddenModules.clear()
+        hiddenModules.addAll(tag.getList("hiddenModules", NbtDataType.String).map(NbtElement::asString))
+        return this
+    }
+
 }

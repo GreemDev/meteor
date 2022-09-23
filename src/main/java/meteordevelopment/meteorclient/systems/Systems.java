@@ -18,6 +18,7 @@ import meteordevelopment.meteorclient.systems.profiles.Profiles;
 import meteordevelopment.meteorclient.systems.proxies.Proxies;
 import meteordevelopment.meteorclient.systems.waypoints.Waypoints;
 import meteordevelopment.orbit.EventHandler;
+import net.greemdev.meteor.util.meteor.HiddenModules;
 
 import java.io.File;
 import java.util.ArrayList;
@@ -35,6 +36,7 @@ public class Systems {
     }
 
     public static void init() {
+        add(new HiddenModules());
         System<?> config = add(new Config());
         config.init();
         config.load();

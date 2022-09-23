@@ -16,7 +16,7 @@ class RenameCommand : GCommand("rename", "Renames the item in your hand.", {
     then("name", arg.greedyString()) {
         alwaysRuns {
             val stack = mc.player().usableItemStack() ?: noItem.throwNew()
-            val newName = it.argument<String>("name").replace('&', '§')
+            val newName = arg.greedyString().get(it, "name").replace('&', '§')
 
             stack.setCustomName(textOf(newName))
             ChatUtils.info("Changed the item's name.")

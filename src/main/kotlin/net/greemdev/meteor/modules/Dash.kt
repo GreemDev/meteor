@@ -29,9 +29,12 @@ class Dash : GModule("dash", "Boosts you forward in the direction you're looking
 
     override fun onActivate() {
         if (mc.player != null) {
-            if (mc.currentScreen is ModulesScreen || mc.currentScreen is ModuleScreen)
-                info("Did not activate dash because you're in a module menu. Please use the keybind in-game.")
-            else mc.player() + mc.rotationVecClient() * power()
+            when (mc.currentScreen) {
+                is ModuleScreen, is ModulesScreen ->
+                    info("Did not activate dash because you're in a module menu. Please use the keybind in-game.")
+                else ->
+                    mc.player() + mc.rotationVecClient() * power()
+            }
         }
         toggle()
     }

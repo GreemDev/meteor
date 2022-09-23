@@ -7,13 +7,13 @@ package meteordevelopment.meteorclient.utils.render.color;
 
 import meteordevelopment.meteorclient.utils.misc.ICopyable;
 import meteordevelopment.meteorclient.utils.misc.ISerializable;
+import net.greemdev.meteor.util.Util;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.text.TextColor;
 import net.minecraft.util.math.Vec3d;
 
 @SuppressWarnings("unused")
 public class Color implements ICopyable<Color>, ISerializable<Color> {
-
     public static final Color WHITE = new Color(java.awt.Color.WHITE);
     public static final Color LIGHT_GRAY = new Color(java.awt.Color.LIGHT_GRAY);
     public static final Color GRAY = new Color(java.awt.Color.GRAY);
@@ -238,6 +238,28 @@ public class Color implements ICopyable<Color>, ISerializable<Color> {
     }
     public TextColor toTextColor() {
         return new TextColor(getPacked());
+    }
+
+    public Color darker() {
+        var darker = Util.awt(this).darker();
+        r = darker.getRed();
+        g = darker.getGreen();
+        b = darker.getBlue();
+
+        validate();
+
+        return this;
+    }
+
+    public Color brighter() {
+        var brighter = Util.awt(this).brighter();
+        r = brighter.getRed();
+        g = brighter.getGreen();
+        b = brighter.getBlue();
+
+        validate();
+
+        return this;
     }
 
     public void validate() {

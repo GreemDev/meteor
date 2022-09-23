@@ -12,6 +12,7 @@ import meteordevelopment.meteorclient.gui.tabs.WindowTabScreen;
 import meteordevelopment.meteorclient.settings.Settings;
 import meteordevelopment.meteorclient.systems.config.Config;
 import meteordevelopment.meteorclient.utils.misc.NbtUtils;
+import net.greemdev.meteor.util.meteor.HiddenModules;
 import net.greemdev.meteor.util.meteor.Prompts;
 import net.minecraft.client.gui.screen.Screen;
 
@@ -22,6 +23,7 @@ public class ConfigTab extends Tab {
 
     @Override
     public TabScreen createScreen(GuiTheme theme) {
+        Config.get().hiddenModules.set(HiddenModules.get().getModules());
         return new ConfigScreen(theme, this);
     }
 

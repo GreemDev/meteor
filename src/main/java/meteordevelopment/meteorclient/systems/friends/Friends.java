@@ -50,18 +50,17 @@ public class Friends extends System<Friends> implements Iterable<Friend> {
         return false;
     }
 
-    public Friend get(String name) {
+    public Friend get(String name, boolean ignoreCase) {
         return friends.stream()
-            .filter(f -> f.getName().equals(name))
+            .filter(f -> ignoreCase
+                ? f.getName().equalsIgnoreCase(name)
+                : f.getName().equals(name))
             .findFirst()
             .orElse(null);
     }
 
-    public Friend getIgnoreCase(String name) {
-        return friends.stream()
-            .filter(f -> f.getName().equalsIgnoreCase(name))
-            .findFirst()
-            .orElse(null);
+    public Friend get(String name) {
+        return get(name, false);
     }
 
 
