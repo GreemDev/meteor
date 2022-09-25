@@ -199,6 +199,9 @@ public class BetterChat extends Module {
         .build()
     );
 
+    private static final Pattern antiSpamRegex = Pattern.compile(".*(\\([0-9]+\\)$)");
+    private static final Pattern timestampRegex = Pattern.compile("^(<[0-9]{2}:[0-9]{2}>\\s)");
+
     private final Char2CharMap SMALL_CAPS = new Char2CharOpenHashMap();
     private final SimpleDateFormat dateFormat = new SimpleDateFormat("HH:mm");
 
@@ -211,7 +214,6 @@ public class BetterChat extends Module {
         compileFilterRegexList();
     }
 
-    private static final Pattern timestampRegex = Pattern.compile("^(<[0-9]{2}:[0-9]{2}>\\s)");
     @EventHandler
     private void onMessageReceive(ReceiveMessageEvent event) {
         ((ChatHudAccessor) mc.inGameHud.getChatHud()).getVisibleMessages().removeIf((message) -> message.getId() == event.id && event.id != 0);
@@ -251,7 +253,6 @@ public class BetterChat extends Module {
         event.setMessage(message);
     }
 
-    private static final Pattern antiSpamRegex = Pattern.compile(".*(\\([0-9]+\\)$)");
     private Text appendAntiSpam(Text text) {
         Text returnText = null;
         int messageIndex = -1;

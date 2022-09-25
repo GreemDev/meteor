@@ -30,7 +30,7 @@ fun Any.toNBT(): NbtElement = when (this) {
     else -> error("Unknown or unsupported object type.")
 }
 
-enum class NbtDataType(type: kotlin.Byte) {
+enum class NbtDataType(val byte: kotlin.Byte) {
     Byte(NbtElement.BYTE_TYPE),
     Short(NbtElement.SHORT_TYPE),
     Integer(NbtElement.INT_TYPE),
@@ -45,11 +45,11 @@ enum class NbtDataType(type: kotlin.Byte) {
     ByteArray(NbtElement.BYTE_ARRAY_TYPE),
     End(NbtElement.END_TYPE);
 
-
-    val int = type.toInt()
+    val int = byte.toInt()
 }
 
 fun NbtCompound.getList(name: String, type: NbtDataType): NbtList = getList(name, type.int)
+fun NbtCompound.collectList(name: String, type: NbtDataType): List<String> = getList(name, type).collect()
 
 @Suppress("UNCHECKED_CAST")
 inline fun<reified T> Array<T>.toNBT(): NbtElement = when (T::class) {
@@ -60,4 +60,6 @@ inline fun<reified T> Array<T>.toNBT(): NbtElement = when (T::class) {
 }
 
 fun Collection<*>.toNBT() = Nbt list mapNotNull { it?.toNBT() }
+
+fun NbtList.collect() = map { it.asString() }
 

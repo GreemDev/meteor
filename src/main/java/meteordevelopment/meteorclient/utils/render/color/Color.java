@@ -241,25 +241,11 @@ public class Color implements ICopyable<Color>, ISerializable<Color> {
     }
 
     public Color darker() {
-        var darker = Util.awt(this).darker();
-        r = darker.getRed();
-        g = darker.getGreen();
-        b = darker.getBlue();
-
-        validate();
-
-        return this;
+        return set(Util.meteor(Util.awt(this).darker()));
     }
 
     public Color brighter() {
-        var brighter = Util.awt(this).brighter();
-        r = brighter.getRed();
-        g = brighter.getGreen();
-        b = brighter.getBlue();
-
-        validate();
-
-        return this;
+        return set(Util.meteor(Util.awt(this).brighter()));
     }
 
     public void validate() {

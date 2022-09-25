@@ -110,8 +110,7 @@ public abstract class GuiTheme implements ISerializable<GuiTheme> {
     public abstract WCheckbox checkbox(boolean checked);
 
     public WCheckbox checkbox(boolean checked, Consumer<Boolean> action) {
-        return checkbox(checked)
-            .action(() -> action.accept(checked));
+        return checkbox(checked).action(action);
     }
 
     public abstract WSlider slider(double value, double min, double max);
@@ -159,7 +158,7 @@ public abstract class GuiTheme implements ISerializable<GuiTheme> {
 
     public abstract WTriangle triangle();
 
-    public WMinus triangle(Runnable action) {
+    public WTriangle triangle(Runnable action) {
         return triangle().action(action);
     }
 

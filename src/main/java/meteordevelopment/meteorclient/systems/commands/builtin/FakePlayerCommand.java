@@ -10,6 +10,7 @@ import com.mojang.brigadier.arguments.FloatArgumentType;
 import com.mojang.brigadier.arguments.StringArgumentType;
 import com.mojang.brigadier.builder.LiteralArgumentBuilder;
 import meteordevelopment.meteorclient.systems.commands.Command;
+import meteordevelopment.meteorclient.systems.commands.arguments.FakePlayerArgumentType;
 import meteordevelopment.meteorclient.systems.modules.Modules;
 import meteordevelopment.meteorclient.systems.modules.player.FakePlayer;
 import meteordevelopment.meteorclient.utils.entity.fakeplayer.FakePlayerManager;
@@ -24,33 +25,41 @@ public class FakePlayerCommand extends Command {
 
     @Override
     public void build(LiteralArgumentBuilder<CommandSource> builder) {
-        builder.then(literal("spawn")
-            .executes(context -> {
-                if (active()) FakePlayerManager.add(Modules.get().get(FakePlayer.class).name.get(), 36, true);
-                return SINGLE_SUCCESS;
-            })
-            .then(argument("name", StringArgumentType.word())
+        builder.then(literal("add")
                 .executes(context -> {
-                    if (active()) FakePlayerManager.add(StringArgumentType.getString(context, "name"), 36, true);
+                    FakePlayer fakePlayer = Modules.get().get(FakePlayer.class);
+                    if (active())
+                        FakePlayerManager.add(fakePlayer.name.get(), fakePlayer.health.get(), fakePlayer.copyInv.get());
                     return SINGLE_SUCCESS;
                 })
-                .then(argument("health", FloatArgumentType.floatArg(0))
+                .then(argument("name", StringArgumentType.word())
                     .executes(context -> {
+                        FakePlayer fakePlayer = Modules.get().get(FakePlayer.class);
                         if (active())
-                            FakePlayerManager.add(StringArgumentType.getString(context, "name"), FloatArgumentType.getFloat(context, "health"), true);
+                            FakePlayerManager.add(StringArgumentType.getString(context, "name"), fakePlayer.health.get(), fakePlayer.copyInv.get());
                         return SINGLE_SUCCESS;
-                    })
-                    .then(argument("copy-inv", BoolArgumentType.bool())
-                        .executes(context -> {
-                            if (active())
-                                FakePlayerManager.add(StringArgumentType.getString(context, "name"), FloatArgumentType.getFloat(context, "health"), BoolArgumentType.getBool(context, "copy-inv"));
-                            return SINGLE_SUCCESS;
-                        })
-                    )))
-        ).then(literal("clear").executes(context -> {
-            if (active()) FakePlayerManager.clear();
-            return SINGLE_SUCCESS;
-        }));
+                    }))
+            ).then(literal("remove").then(argument("fp", FakePlayerArgumentType.create()))
+                .executes(context -> {
+                    var fp = FakePlayerArgumentType.get(context);
+                    if (fp == null || !FakePlayerManager.contains(fp)) {
+                        error("Couldn't find a fake player with that name.");
+                    } else {
+                        FakePlayerManager.remove(fp);
+                        info("Removed fake player %s.".formatted(fp.getEntityName()));
+                    }
+                    return SINGLE_SUCCESS;
+                })
+            ).then(literal("list")
+                .executes(context -> {
+                    info("--- Fake Players ((highlight)%s(default)) ---", FakePlayerManager.count());
+                    FakePlayerManager.forEach(fp -> info("(highlight)%s".formatted(fp.getEntityName())));
+                    return SINGLE_SUCCESS;
+                })
+            ).then(literal("clear").executes(context -> {
+                if (active()) FakePlayerManager.clear();
+                return SINGLE_SUCCESS;
+            }));
     }
 
     private boolean active() {

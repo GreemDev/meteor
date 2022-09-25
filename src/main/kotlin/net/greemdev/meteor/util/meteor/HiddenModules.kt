@@ -12,6 +12,7 @@ import meteordevelopment.meteorclient.systems.modules.Category
 import meteordevelopment.meteorclient.systems.modules.Module
 import net.greemdev.meteor.util.getOrNull
 import net.greemdev.meteor.util.misc.*
+import net.greemdev.meteor.util.text.textOf
 import net.greemdev.meteor.util.tryOrIgnore
 import net.minecraft.nbt.NbtCompound
 import net.minecraft.nbt.NbtElement
@@ -71,7 +72,7 @@ class HiddenModules : System<HiddenModules>("hidden-modules") {
 
     override fun fromTag(tag: NbtCompound): HiddenModules {
         hiddenModules.clear()
-        hiddenModules.addAll(tag.getList("hiddenModules", NbtDataType.String).map(NbtElement::asString))
+        hiddenModules.addAll(tag.collectList("hiddenModules", NbtDataType.String))
         return this
     }
 

@@ -9,29 +9,12 @@ import com.mojang.brigadier.ImmutableStringReader
 import com.mojang.brigadier.Message
 import com.mojang.brigadier.exceptions.*
 
-fun simpleCommandException(message: Message) = lazy {
-    SimpleCommandExceptionType(message)
-}
-
-fun dynamicCommandException(func: (Any) -> Message) = lazy {
-    DynamicCommandExceptionType(func)
-}
-
-fun dynamic2CommandException(func: (Any, Any) -> Message) = lazy {
-    Dynamic2CommandExceptionType(func)
-}
-
-fun dynamic3CommandException(func: (Any, Any, Any) -> Message) = lazy {
-    Dynamic3CommandExceptionType(func)
-}
-
-fun dynamic4CommandException(func: (Any, Any, Any, Any) -> Message) = lazy {
-    Dynamic4CommandExceptionType(func)
-}
-
-fun dynamicNCommandException(func: (List<Any>) -> Message) = lazy {
-    DynamicNCommandExceptionType { func(it.toList()) }
-}
+fun simpleCommandException(message: Message) = lazy { SimpleCommandExceptionType(message) }
+fun dynamicCommandException(func: (Any) -> Message) = lazy { DynamicCommandExceptionType(func) }
+fun dynamic2CommandException(func: (Any, Any) -> Message) = lazy { Dynamic2CommandExceptionType(func) }
+fun dynamic3CommandException(func: (Any, Any, Any) -> Message) = lazy { Dynamic3CommandExceptionType(func) }
+fun dynamic4CommandException(func: (Any, Any, Any, Any) -> Message) = lazy { Dynamic4CommandExceptionType(func) }
+fun dynamicNCommandException(func: (List<Any>) -> Message) = lazy { DynamicNCommandExceptionType { func(it.toList()) } }
 
 fun SimpleCommandExceptionType.throwNew(readerContext: ImmutableStringReader? = null): Nothing =
     throw if (readerContext != null)

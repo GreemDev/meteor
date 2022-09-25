@@ -13,6 +13,7 @@ import net.minecraft.command.CommandSource
 typealias MinecraftCommandContext = CommandContext<CommandSource>
 typealias MinecraftLiteralBuilder = LiteralArgumentBuilder<CommandSource>
 typealias MinecraftArgumentBuilder<T> = RequiredArgumentBuilder<CommandSource, T>
+typealias arg = Arguments
 
 fun command(name: String, block: CommandBuilder.() -> Unit = {}) =
     CommandBuilder(LiteralArgumentBuilder.literal(name))

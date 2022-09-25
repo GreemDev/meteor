@@ -5,6 +5,8 @@
 
 package meteordevelopment.meteorclient.gui.widgets.pressable;
 
+import java.util.function.Consumer;
+
 public abstract class WCheckbox extends WPressable {
     public boolean checked;
 
@@ -24,5 +26,9 @@ public abstract class WCheckbox extends WPressable {
     @Override
     protected void onPressed(int button) {
         checked = !checked;
+    }
+
+    public WCheckbox action(Consumer<Boolean> action) {
+        return action(() -> action.accept(checked));
     }
 }
