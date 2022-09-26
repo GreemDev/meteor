@@ -23,7 +23,7 @@ public class ConfigTab extends Tab {
 
     @Override
     public TabScreen createScreen(GuiTheme theme) {
-        Config.get().hiddenModules.set(HiddenModules.get().getModules());
+        Config.get().hiddenModules.set(HiddenModules.getModules());
         return new ConfigScreen(theme, this);
     }
 

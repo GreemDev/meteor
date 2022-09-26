@@ -11,11 +11,14 @@ import meteordevelopment.meteorclient.systems.modules.world.Ambience;
 import meteordevelopment.meteorclient.utils.render.color.Color;
 import meteordevelopment.meteorclient.utils.render.postprocess.EntityShader;
 import meteordevelopment.meteorclient.utils.render.postprocess.PostProcessShaders;
+import net.greemdev.meteor.modules.DamageNumbers;
+import net.greemdev.meteor.util.render.EntityState;
 import net.minecraft.block.BlockState;
 import net.minecraft.client.gl.Framebuffer;
 import net.minecraft.client.render.*;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.entity.Entity;
+import net.minecraft.entity.LivingEntity;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Matrix4f;
 import org.spongepowered.asm.mixin.Mixin;
@@ -63,6 +66,23 @@ public abstract class WorldRendererMixin {
     private void method_43788(Camera camera, CallbackInfoReturnable<Boolean> info) {
         if (Modules.get().get(NoRender.class).noBlind())
             info.setReturnValue(null);
+    }
+
+    // Damage Numbers
+
+    @Inject(method = "renderEntity", at = @At(value = "RETURN"))
+    private void onRenderEntityReturn(Entity entity, double x, double y, double z, float g,
+                              MatrixStack matrix, VertexConsumerProvider v, CallbackInfo info) {
+        if (entity instanceof LivingEntity le)
+            EntityState.Companion.getOrTrack(le);
+    }
+
+    @Inject(method = "render", at = @At(value = "RETURN"))
+    private void onRenderReturn(MatrixStack matrices, float tickDelta, long limitTime,
+                                boolean renderBlockOutline, Camera camera, GameRenderer gameRenderer,
+                                LightmapTextureManager lightmapTextureManager, Matrix4f matrix, CallbackInfo info) {
+        if (Modules.get().isActive(DamageNumbers.class))
+            DamageNumbers.Companion.renderParticles(matrices, camera);
     }
 
     // Entity Shaders

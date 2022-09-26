@@ -5,7 +5,6 @@
 
 package meteordevelopment.meteorclient.systems.modules;
 
-import kotlin.reflect.KClass;
 import meteordevelopment.meteorclient.MeteorClient;
 import meteordevelopment.meteorclient.gui.GuiTheme;
 import meteordevelopment.meteorclient.gui.widgets.WWidget;
@@ -28,7 +27,7 @@ import java.util.Objects;
 public abstract class Module implements ISerializable<Module>, Comparable<Module> {
     protected final MinecraftClient mc;
 
-    public final Category category;
+    public Category category;
     public final String name;
     public final String title;
     public final String description;
@@ -37,6 +36,11 @@ public abstract class Module implements ISerializable<Module>, Comparable<Module
     public final Settings settings = new Settings();
 
     private boolean active;
+
+    public boolean allowBinds = true;
+    public boolean allowChatFeedback = true;
+
+    public boolean showActive = true;
 
     public boolean serialize = true;
     public boolean runInMainMenu = false;

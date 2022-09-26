@@ -66,7 +66,7 @@ data class ChatColor private constructor(private val fmt: Formatting) {
     val rgb by invoking(fmt::getColorValue)
     val mc = fmt
 
-    fun asMeteor() = Color(rgb ?: error("Cannot obtain color for a non-color formatting option."))
+    fun asMeteor() = Color(rgb ?: error("Cannot obtain color for a non-color formatting option.")).apply { a = 255 }
     fun asAwt() = asMeteor().awt()
 
     override fun toString(): String = fmt.toString()

@@ -19,6 +19,8 @@ class CommandAliases : GModule(
 ) {
     init {
         runInMainMenu = true
+        allowBinds = false
+        showActive = false
     }
 
     private var commandScripts = listOf<Script>()
@@ -31,11 +33,6 @@ class CommandAliases : GModule(
         defaultValue("sp :: gamemode {player.name} spectator", "cr :: gamemode {player.name} creative")
         onChanged { recompile(it) }
         renderStarscript()
-    }
-
-    override fun onActivate() {
-        error("This module is meant for configuration; disabling.")
-        toggle()
     }
 
     private fun recompile(scripts: List<String>) {

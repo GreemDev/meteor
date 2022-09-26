@@ -9,6 +9,7 @@ import com.mojang.brigadier.builder.LiteralArgumentBuilder
 import meteordevelopment.meteorclient.events.meteor.KeyEvent
 import meteordevelopment.meteorclient.events.meteor.MouseButtonEvent
 import meteordevelopment.meteorclient.systems.commands.Command
+import meteordevelopment.meteorclient.systems.modules.Categories
 import meteordevelopment.meteorclient.systems.modules.Module
 import meteordevelopment.orbit.EventHandler
 import net.greemdev.meteor.commands.api.CommandBuilder
@@ -28,6 +29,42 @@ abstract class GModule(name: String, description: String) : Module(Greteor.categ
     @EventHandler
     private fun onMouse(e: MouseButtonEvent) {
         onGameInput(GameInputEvent(e))
+    }
+
+    abstract class Combat(name: String, description: String) : GModule(name, description) {
+        init {
+            category = Categories.Combat
+        }
+    }
+
+    abstract class Player(name: String, description: String) : GModule(name, description) {
+        init {
+            category = Categories.Player
+        }
+    }
+
+    abstract class Movement(name: String, description: String) : GModule(name, description) {
+        init {
+            category = Categories.Movement
+        }
+    }
+
+    abstract class Render(name: String, description: String) : GModule(name, description) {
+        init {
+            category = Categories.Render
+        }
+    }
+
+    abstract class World(name: String, description: String) : GModule(name, description) {
+        init {
+            category = Categories.World
+        }
+    }
+
+    abstract class Misc(name: String, description: String) : GModule(name, description) {
+        init {
+            category = Categories.Misc
+        }
     }
 }
 

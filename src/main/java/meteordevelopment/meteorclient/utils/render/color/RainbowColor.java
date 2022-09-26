@@ -6,6 +6,9 @@
 package meteordevelopment.meteorclient.utils.render.color;
 
 public class RainbowColor extends Color {
+
+    public static final RainbowColor GLOBAL = new RainbowColor();
+
     private double speed;
     private static final float[] hsb = new float[3];
 

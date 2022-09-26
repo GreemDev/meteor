@@ -30,8 +30,6 @@ public class RainbowColors {
     private static final List<SettingColor> colors = new UnorderedArrayList<>();
     private static final List<Runnable> listeners = new UnorderedArrayList<>();
 
-    public static final RainbowColor GLOBAL = new RainbowColor();
-
     @PostInit
     public static void init() {
         MeteorClient.EVENT_BUS.subscribe(RainbowColors.class);
@@ -71,8 +69,8 @@ public class RainbowColors {
 
     @EventHandler
     private static void onTick(TickEvent.Post event) {
-        GLOBAL.setSpeed(Config.get().rainbowSpeed.get() / 100);
-        GLOBAL.getNext();
+        RainbowColor.GLOBAL.setSpeed(Config.get().rainbowSpeed.get() / 100);
+        RainbowColor.GLOBAL.getNext();
 
         for (Setting<SettingColor> setting : colorSettings)
             if (setting.module == null || setting.module.isActive())

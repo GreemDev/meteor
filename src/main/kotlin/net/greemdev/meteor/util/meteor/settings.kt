@@ -27,7 +27,7 @@ class SettingDelegate<ST : Setting<S>, S : Any, B : Setting.SettingBuilder<B, S,
     // result of builder#build is always of type ST, and ST is a subtype of Setting<S>.
     // the result is upcast to the superclass for storing in the delegate.
     @Suppress("UNCHECKED_CAST")
-    fun get()
+    fun get(): ST
         = s as? ST ?: error("setting value is of type ${s.javaClass.simpleName}, and not required type")
 
 

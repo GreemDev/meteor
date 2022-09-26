@@ -2,6 +2,7 @@
  * This file is part of the Meteor Client distribution (https://github.com/MeteorDevelopment/meteor-client).
  * Copyright (c) Meteor Development.
  */
+@file:Suppress("unused")
 
 package net.greemdev.meteor.type
 
@@ -25,7 +26,7 @@ enum class StringComparisonType {
     }
 }
 
-@Suppress("unused")
+
 enum class PrefixBrackets(pairing: Pair<String, String>) {
     Square("[" to "]"),
     Curly("{" to "}"),
@@ -43,4 +44,15 @@ enum class PrefixBrackets(pairing: Pair<String, String>) {
 enum class ItemSelectMode {
     Sequential,
     Random
+}
+
+enum class DamageOperatorType(val friendly: String, val prefixFormat: String) {
+    OperatorOnly("+/- only", "%s"),
+    OperatorWithSpace("+/-, then space", "%s "),
+    None("No +/-", "");
+
+    val supportsRainbow = prefixFormat.isNotEmpty()
+    fun formatPrefix(operator: Char) = prefixFormat.format(operator)
+    fun formatNumber(operator: Char, number: String) = formatPrefix(operator) + number
+    override fun toString() = friendly
 }

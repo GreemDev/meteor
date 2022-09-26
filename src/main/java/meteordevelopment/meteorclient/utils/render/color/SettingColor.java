@@ -50,7 +50,7 @@ public class SettingColor extends Color {
     }
 
     public void update() {
-        if (rainbow) set(RainbowColors.GLOBAL.r, RainbowColors.GLOBAL.g, RainbowColors.GLOBAL.b, a);
+        if (rainbow) set(RainbowColor.GLOBAL.r, RainbowColor.GLOBAL.g, RainbowColor.GLOBAL.b, a);
     }
 
     @Override

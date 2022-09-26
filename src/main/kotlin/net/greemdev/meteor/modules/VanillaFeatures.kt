@@ -12,8 +12,8 @@ class VanillaFeatures : GModule(
     "vanilla-features", "Adds Meteor settings for easier access to Minecraft's toggle settings.") {
 
     init {
-        if (isActive)
-            toggle()
+        allowBinds = false
+        showActive = false
     }
 
     val hideHud by sg bool {
@@ -67,10 +67,5 @@ class VanillaFeatures : GModule(
         onChanged {
             mc.options.advancedItemTooltips = it
         }
-    }
-
-    override fun onActivate() {
-        error("This module cannot be enabled; it is representative of existing Minecraft options.")
-        toggle()
     }
 }

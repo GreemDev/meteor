@@ -14,8 +14,7 @@ import net.greemdev.meteor.type.StringComparisonType
 import net.greemdev.meteor.util.meteor.*
 
 class AntiChatSpam : GModule(
-    "anti-chat-spam",
-    "Prevent messages from displaying. Useful for hiding automated messages."
+    "anti-chat-spam", "Prevent messages from displaying. Useful for hiding automated messages."
 ) {
     val filters by sg stringList {
         name("filters")

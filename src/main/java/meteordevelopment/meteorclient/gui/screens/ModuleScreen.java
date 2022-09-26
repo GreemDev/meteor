@@ -57,36 +57,41 @@ public class ModuleScreen extends WindowScreen {
             if (widget instanceof WContainer) cell.expandX();
         }
 
-        // Bind
-        WSection section = add(theme.section("Bind", true)).expandX().widget();
-        keybind = section.add(theme.keybind(module.keybind)).expandX().widget();
-        keybind.actionOnSet = () -> Modules.get().setModuleToBind(module);
+        if (module.allowBinds) {
+            // Bind
+            WSection section = add(theme.section("Bind", true)).expandX().widget();
+            keybind = section.add(theme.keybind(module.keybind)).expandX().widget();
+            keybind.actionOnSet = () -> Modules.get().setModuleToBind(module);
 
-        // Toggle on bind release
-        WHorizontalList tobr = section.add(theme.horizontalList()).widget();
+            // Toggle on bind release
+            WHorizontalList tobr = section.add(theme.horizontalList()).widget();
 
-        tobr.add(theme.label("Toggle on bind release: "));
-        WCheckbox tobrC = tobr.add(theme.checkbox(module.toggleOnBindRelease)).widget();
-        tobrC.action = () -> module.toggleOnBindRelease = tobrC.checked;
+            tobr.add(theme.label("Toggle on bind release: "));
+            WCheckbox tobrC = tobr.add(theme.checkbox(module.toggleOnBindRelease)).widget();
+            tobrC.action = () -> module.toggleOnBindRelease = tobrC.checked;
 
-        // Chat feedback
-        WHorizontalList cf = section.add(theme.horizontalList()).widget();
+            if (module.allowChatFeedback) {
+                // Chat feedback
+                WHorizontalList cf = section.add(theme.horizontalList()).widget();
 
-        cf.add(theme.label("Chat Feedback: "));
-        WCheckbox cfC = cf.add(theme.checkbox(module.chatFeedback)).widget();
-        cfC.action = () -> module.chatFeedback = cfC.checked;
+                cf.add(theme.label("Chat Feedback: "));
+                WCheckbox cfC = cf.add(theme.checkbox(module.chatFeedback)).widget();
+                cfC.action = () -> module.chatFeedback = cfC.checked;
+            }
+            add(theme.horizontalSeparator()).expandX();
+        }
 
-        add(theme.horizontalSeparator()).expandX();
+        if (module.showActive) {
+            // Bottom
+            WHorizontalList bottom = add(theme.horizontalList()).expandX().widget();
 
-        // Bottom
-        WHorizontalList bottom = add(theme.horizontalList()).expandX().widget();
-
-        //   Active
-        bottom.add(theme.label("Active: "));
-        WCheckbox active = bottom.add(theme.checkbox(module.isActive())).expandCellX().widget();
-        active.action = () -> {
-            if (module.isActive() != active.checked) module.toggle();
-        };
+            //   Active
+            bottom.add(theme.label("Active: "));
+            WCheckbox active = bottom.add(theme.checkbox(module.isActive())).expandCellX().widget();
+            active.action = () -> {
+                if (module.isActive() != active.checked) module.toggle();
+            };
+        }
     }
 
     @Override

@@ -25,6 +25,7 @@ class Dash : GModule("dash", "Boosts you forward in the direction you're looking
 
     init {
         chatFeedback = false
+        allowChatFeedback = false
     }
 
     override fun onActivate() {

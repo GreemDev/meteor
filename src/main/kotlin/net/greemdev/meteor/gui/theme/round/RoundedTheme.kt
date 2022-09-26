@@ -62,7 +62,7 @@ class RoundedTheme : GuiTheme("Rounded") {
     val showCategoryIcons by sg bool {
         name("category-icons")
         description("Adds item icons to module categories.")
-        defaultValue(false)
+        defaultValue(true)
     }
 
     val hideHud by sg bool {

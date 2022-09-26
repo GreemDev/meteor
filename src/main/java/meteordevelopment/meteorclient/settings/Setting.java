@@ -195,6 +195,11 @@ public abstract class Setting<T> implements IGetter<T>, ISerializable<T> {
             return (B) this;
         }
 
+        public B invisible() {
+            this.visible = () -> false;
+            return (B) this;
+        }
+
         public B onChanged(Consumer<V> onChanged) {
             this.onChanged = onChanged;
             return (B) this;
