@@ -9,7 +9,7 @@ import meteordevelopment.meteorclient.utils.render.color.Color
 import net.greemdev.meteor.util.*
 import net.minecraft.util.Formatting
 
-data class ChatColor private constructor(private val mc: Formatting) {
+data class ChatColor private constructor(val mc: Formatting) {
 
     companion object {
         @JvmField
