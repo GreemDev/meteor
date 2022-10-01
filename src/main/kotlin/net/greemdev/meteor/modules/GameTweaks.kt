@@ -13,14 +13,20 @@ import net.greemdev.meteor.util.meteor.*
 class GameTweaks : GModule(
     "game-tweaks", "Minor changes to the game experience to improve gameplay."
 ) {
-    private val sgGP = settings.group("Gameplay")
-    private val sgR = settings.group("Render")
+    private val sgGP = settings group "Gameplay"
+    private val sgR = settings group "Render"
 
     val lessAnnoyingBats by sgGP bool {
         name("less-annoying-bats")
         description("Makes bats less annoying and obtrusive.")
         defaultValue(true)
     }
+
+    /*val silenceNarrator by sgGP bool {
+        name("silence-narrator")
+        description("Silences Narrator. Permanently. As long as the checkbox is ticked.")
+        defaultValue(false)
+    }*/
 
     val migratorCapes by sgR bool {
         name("migrator-capes")
@@ -42,6 +48,7 @@ class GameTweaks : GModule(
 
     fun bats() = isActive and lessAnnoyingBats()
     fun noMigrators() = isActive and !migratorCapes()
+    //fun silenceNarrator() = isActive and silenceNarrator.get()
     fun noScore() = isActive and !showScore()
     fun screenshots() = isActive and clipboardScreenshots()
 }

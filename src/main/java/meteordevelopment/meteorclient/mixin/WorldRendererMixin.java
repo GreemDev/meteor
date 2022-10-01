@@ -11,8 +11,8 @@ import meteordevelopment.meteorclient.systems.modules.world.Ambience;
 import meteordevelopment.meteorclient.utils.render.color.Color;
 import meteordevelopment.meteorclient.utils.render.postprocess.EntityShader;
 import meteordevelopment.meteorclient.utils.render.postprocess.PostProcessShaders;
-import net.greemdev.meteor.modules.DamageNumbers;
-import net.greemdev.meteor.util.render.EntityState;
+import net.greemdev.meteor.modules.dn.DamageNumbers;
+import net.greemdev.meteor.modules.dn.EntityState;
 import net.minecraft.block.BlockState;
 import net.minecraft.client.gl.Framebuffer;
 import net.minecraft.client.render.*;
@@ -74,7 +74,7 @@ public abstract class WorldRendererMixin {
     private void onRenderEntityReturn(Entity entity, double x, double y, double z, float g,
                               MatrixStack matrix, VertexConsumerProvider v, CallbackInfo info) {
         if (entity instanceof LivingEntity le)
-            EntityState.Companion.getOrTrack(le);
+            EntityState.track(le);
     }
 
     @Inject(method = "render", at = @At(value = "RETURN"))
@@ -82,7 +82,7 @@ public abstract class WorldRendererMixin {
                                 boolean renderBlockOutline, Camera camera, GameRenderer gameRenderer,
                                 LightmapTextureManager lightmapTextureManager, Matrix4f matrix, CallbackInfo info) {
         if (Modules.get().isActive(DamageNumbers.class))
-            DamageNumbers.Companion.renderParticles(matrices, camera);
+            DamageNumbers.render(matrices, camera);
     }
 
     // Entity Shaders

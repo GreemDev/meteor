@@ -3,10 +3,9 @@
  * Copyright (c) Meteor Development.
  */
 
-package net.greemdev.meteor.util.render
+package net.greemdev.meteor.modules.dn
 
 import com.mojang.blaze3d.systems.RenderSystem
-import net.greemdev.meteor.modules.DamageNumbers
 import net.greemdev.meteor.util.meteor.Meteor
 import net.greemdev.meteor.util.meteor.invoke
 import net.greemdev.meteor.util.minecraft
@@ -19,7 +18,7 @@ import net.minecraft.util.math.Vec3f
 import org.lwjgl.opengl.GL11
 import java.util.concurrent.ThreadLocalRandom
 
-class DamageParticle(val entityState: EntityState, val damage: Int) {
+class DamageNumber(val entityState: EntityState, val damage: Int) {
 
     private val rand = ThreadLocalRandom.current()
 

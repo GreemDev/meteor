@@ -27,7 +27,7 @@ import java.util.Objects;
 public abstract class Module implements ISerializable<Module>, Comparable<Module> {
     protected final MinecraftClient mc;
 
-    public Category category;
+    public final Category category;
     public final String name;
     public final String title;
     public final String description;
@@ -52,7 +52,7 @@ public abstract class Module implements ISerializable<Module>, Comparable<Module
     public boolean favorite = false;
 
     public Module(Category category, String name, String description) {
-        this.mc = MinecraftClient.getInstance();
+        this.mc = MeteorClient.mc;
         this.category = category;
         this.name = name;
         this.title = Utils.nameToTitle(name);

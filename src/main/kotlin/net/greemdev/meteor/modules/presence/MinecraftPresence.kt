@@ -54,8 +54,7 @@ class MinecraftPresence : GModule("minecraft-presence", "Displays Minecraft as y
         private val rpc = RichPresence()
         val states: CustomStates = hashMapOf()
         init {
-            states.register("com.terraformersmc.modmenu.gui", "Browsing Mods")
-            states.register("me.jellysquid.mods.sodium.client", "Changing options")
+
         }
     }
 
@@ -124,6 +123,25 @@ class MinecraftPresence : GModule("minecraft-presence", "Displays Minecraft as y
         name("dimension-aware")
         description("Whether or not to change the main Presence image to a dimension-specific image when in that dimension.")
         defaultValue(isUsingDefaultApp())
+    }
+
+    val customStates by sgO stringList {
+        name("custom-states")
+        description("Custom states you can display based on the screen's Java package prefix. Separated by a space.")
+        defaultValue(
+            "com.terraformersmc.modmenu.gui Browsing mods",
+            "me.jellysquid.mods.sodium.client Changing options"
+        )
+        onChanged {
+            states.clear()
+            it.mapNotNull { str ->
+                if (str.contains(" "))
+                    str.substringBefore(' ') to str.substringAfter(' ')
+                else null
+            }.forEach { (prefix, state) ->
+                states.register(prefix, state)
+            }
+        }
     }
 
     private var forceUpdate = false
@@ -283,15 +301,11 @@ class MinecraftPresence : GModule("minecraft-presence", "Displays Minecraft as y
                     else -> {
                         val className = mc.currentScreen?.javaClass?.name ?: ""
                         var stateChanged = false
-                        states.forEach { (prefix, state) ->
-                            if (className.startsWith(prefix)) {
-                                rpc.setState(state)
-                                stateChanged = true
-                                return@forEach
-                            }
+                        states.getStateOrNull(className)?.also {
+                            rpc.setState(it)
+                            stateChanged = true
                         }
                         if (!stateChanged) rpc.setState("In main menu")
-
                     }
                 }
                 update = true

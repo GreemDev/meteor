@@ -1,6 +1,6 @@
 plugins {
     id 'fabric-loom' version '0.12-SNAPSHOT'
-    id "org.jetbrains.kotlin.jvm" version "1.7.10"
+    id "org.jetbrains.kotlin.jvm" version "1.7.20"
     id 'maven-publish'
     id 'com.github.johnrengelman.shadow' version '7.1.2'
 }
@@ -8,7 +8,7 @@ plugins {
 sourceCompatibility = targetCompatibility = JavaVersion.VERSION_17
 
 archivesBaseName = project.archives_base_name
-version = project.mod_version + (project.hasProperty("revision") ? ("-rev" + project.findProperty("revision")) : "")
+version = project.mod_version + "-rev" + project.revision
 group = project.maven_group
 
 repositories {
@@ -65,9 +65,6 @@ dependencies {
     // Proxies
     library("io.netty:netty-handler-proxy:${project.netty_version}") { transitive = false }
     library("io.netty:netty-codec-socks:${project.netty_version}") { transitive = false }
-
-    // Launch sub project
-    shadow project(":launch")
 }
 
 compileKotlin {
@@ -92,17 +89,13 @@ shadowJar {
 processResources {
     filesMatching("fabric.mod.json") {
         expand "version": project.mod_version,
-               "rev": project.findProperty("revision") ?: "",
-               "kotlinVersion": project.fabric_kotlin_version ?: ""
+               "rev": project.revision,
+               "kotlinVersion": project.fabric_kotlin_version
     }
 }
 
 jar {
 	from "LICENSE"
-
-	manifest {
-		attributes("Main-Class": "meteordevelopment.meteorclient.Main")
-	}
 }
 
 remapJar {

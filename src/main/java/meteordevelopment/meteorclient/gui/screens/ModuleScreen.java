@@ -85,7 +85,7 @@ public class ModuleScreen extends WindowScreen {
             // Bottom
             WHorizontalList bottom = add(theme.horizontalList()).expandX().widget();
 
-            //   Active
+            // Active
             bottom.add(theme.label("Active: "));
             WCheckbox active = bottom.add(theme.checkbox(module.isActive())).expandCellX().widget();
             active.action = () -> {

@@ -11,6 +11,7 @@ import kotlin.properties.ReadOnlyProperty
 import kotlin.reflect.KProperty
 
 operator fun<T : Any> Setting<T>.invoke(): T = get()
+infix fun Settings.group(name: String) = group(name, true)
 
 fun Settings.group(name: String? = null, expanded: Boolean = true): SettingGroup =
     name?.let { getGroup(it) ?: createGroup(it, expanded) } ?: group("General", expanded)
@@ -28,7 +29,7 @@ class SettingDelegate<ST : Setting<S>, S : Any, B : Setting.SettingBuilder<B, S,
     // the result is upcast to the superclass for storing in the delegate.
     @Suppress("UNCHECKED_CAST")
     fun get(): ST
-        = s as? ST ?: error("setting value is of type ${s.javaClass.simpleName}, and not required type")
+        = s as? ST ?: error("setting value is of type ${s.javaClass.simpleName}, and not required type. this shouldn't happen")
 
 
     override fun getValue(thisRef: Any?, property: KProperty<*>) = get()

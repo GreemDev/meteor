@@ -3,7 +3,7 @@
  * Copyright (c) Meteor Development.
  */
 
-package net.greemdev.meteor.modules
+package net.greemdev.meteor.modules.dn
 
 import meteordevelopment.meteorclient.events.world.TickEvent
 import meteordevelopment.meteorclient.settings.ColorSetting
@@ -15,8 +15,6 @@ import net.greemdev.meteor.type.DamageOperatorType
 import net.greemdev.meteor.util.meteor.*
 import net.greemdev.meteor.util.minecraft
 import net.greemdev.meteor.util.misc.isZero
-import net.greemdev.meteor.util.render.DamageParticle
-import net.greemdev.meteor.util.render.EntityState
 import net.greemdev.meteor.util.saneSlider
 import net.greemdev.meteor.util.text.ChatColor
 import net.minecraft.client.render.Camera
@@ -28,14 +26,15 @@ class DamageNumbers : GModule(
     "damage-numbers", "Floating, disappearing text when you damage enemies showing how much damage was done."
 ) {
     companion object {
-        val particles = hashSetOf<DamageParticle>()
-        fun tickParticles() {
-            particles.forEach(DamageParticle::tick)
+        private val particles = hashSetOf<DamageNumber>()
+        fun add(particle: DamageNumber) = particles.add(particle)
+        fun tick() {
+            particles.forEach(DamageNumber::tick)
             particles.removeIf { it.age > Meteor.module<DamageNumbers>().maxAge() }
         }
-        fun renderParticles(matrices: MatrixStack, camera: Camera) =
+        @JvmStatic
+        fun render(matrices: MatrixStack, camera: Camera) =
             particles.forEach { it.render(matrices, camera) }
-        private var restoreDmgColor: SettingColor? = null
     }
 
     private val sgC = settings.group("Colors")
@@ -55,7 +54,6 @@ class DamageNumbers : GModule(
         description("With operators enabled, you have the option to make both types of damage indicator the same color.")
         defaultValue(false)
         visible { operatorPrefix().supportsRainbow }
-        onChanged(::toggleRainbow)
     }
 
     val showDecimal by sg bool {
@@ -87,7 +85,7 @@ class DamageNumbers : GModule(
     val damageColor: ColorSetting by sgC color {
         name("damage-color")
         description("The color of the numbers when an entity is damaged.")
-        defaultValue(ChatColor.darkRed.asMeteor())
+        defaultValue(ChatColor.darkRed.asMeteor().brighter())
         onChanged {
             if (it.rainbow) resetDmg()
         }
@@ -104,14 +102,14 @@ class DamageNumbers : GModule(
         visible { !rainbowIndicators() }
     }
 
-    private fun resetDmg() = damageColor.reset()
-    private fun resetHeal() = damageColor.reset()
+    private fun resetDmg() { damageColor.reset() }
+    private fun resetHeal() { healColor.reset() }
 
     val scaleFactor by sg double {
         name("scaling")
         description("The factor of scaling of the damage number.")
         defaultValue(-0.025)
-        range(-1.0, -0.001)
+        range(-0.250, -0.001)
         saneSlider()
     }
 
@@ -146,16 +144,6 @@ class DamageNumbers : GModule(
     @EventHandler
     private fun postTick(event: TickEvent.Post) {
         EntityState.tick()
-        tickParticles()
-    }
-
-    private fun toggleRainbow(enabled: Boolean) {
-        if (enabled) {
-            restoreDmgColor = damageColor()
-            damageColor.set(SettingColor.rainbow())
-        } else {
-            damageColor.set(restoreDmgColor ?: damageColor.defaultValue)
-            restoreDmgColor = null
-        }
+        tick()
     }
 }

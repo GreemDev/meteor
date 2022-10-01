@@ -24,7 +24,7 @@ import net.minecraft.util.Util
 class AutoMessage : GModule(
     "auto-message", "Sends a configurable Starscript message every so often."
 ) {
-    private val sgm = settings.group("Message")
+    private val sgm = settings group "Message"
     private val sgc = settings.group("Commands", false)
 
     private var elapsedTicks: Int = 0

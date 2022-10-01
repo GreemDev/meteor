@@ -10,6 +10,7 @@ import meteordevelopment.meteorclient.events.meteor.KeyEvent
 import meteordevelopment.meteorclient.events.meteor.MouseButtonEvent
 import meteordevelopment.meteorclient.systems.commands.Command
 import meteordevelopment.meteorclient.systems.modules.Categories
+import meteordevelopment.meteorclient.systems.modules.Category
 import meteordevelopment.meteorclient.systems.modules.Module
 import meteordevelopment.orbit.EventHandler
 import net.greemdev.meteor.commands.api.CommandBuilder
@@ -17,7 +18,7 @@ import net.greemdev.meteor.event.GameInputEvent
 import net.greemdev.meteor.util.meteor.group
 import net.minecraft.command.CommandSource
 
-abstract class GModule(name: String, description: String) : Module(Greteor.category(), name, description) {
+abstract class GModule(name: String, description: String, category: Category = Greteor.category()) : Module(category, name, description) {
     protected val sg by lazy { settings.group() }
     open fun onGameInput(event: GameInputEvent) {}
 
@@ -31,41 +32,12 @@ abstract class GModule(name: String, description: String) : Module(Greteor.categ
         onGameInput(GameInputEvent(e))
     }
 
-    abstract class Combat(name: String, description: String) : GModule(name, description) {
-        init {
-            category = Categories.Combat
-        }
-    }
-
-    abstract class Player(name: String, description: String) : GModule(name, description) {
-        init {
-            category = Categories.Player
-        }
-    }
-
-    abstract class Movement(name: String, description: String) : GModule(name, description) {
-        init {
-            category = Categories.Movement
-        }
-    }
-
-    abstract class Render(name: String, description: String) : GModule(name, description) {
-        init {
-            category = Categories.Render
-        }
-    }
-
-    abstract class World(name: String, description: String) : GModule(name, description) {
-        init {
-            category = Categories.World
-        }
-    }
-
-    abstract class Misc(name: String, description: String) : GModule(name, description) {
-        init {
-            category = Categories.Misc
-        }
-    }
+    abstract class Combat(name: String, description: String) : GModule(name, description, Categories.Combat)
+    abstract class Player(name: String, description: String) : GModule(name, description, Categories.Player)
+    abstract class Movement(name: String, description: String) : GModule(name, description, Categories.Movement)
+    abstract class Render(name: String, description: String) : GModule(name, description, Categories.Render)
+    abstract class World(name: String, description: String) : GModule(name, description, Categories.World)
+    abstract class Misc(name: String, description: String) : GModule(name, description, Categories.Misc)
 }
 
 abstract class GCommand(

@@ -22,25 +22,22 @@ class GameInputEvent private constructor(private var backingEvent: Cancellable) 
     fun keyId() =
         if (isKey)
             asKey.key
-        else if (isMouse)
+        else
             asMouse.button
-        else error("shouldn't happen")
 
 
     fun action(): KeyAction = when {
         isKey -> asKey.action
-        isMouse -> asMouse.action
-        else -> error("shouldn't happen")
+        else -> asMouse.action
     }
 
-    fun isAction(action: KeyAction) = action == action()
+    infix fun actionIs(action: KeyAction) = action == action()
 
-    operator fun contains(keybind: Keybind) = keybind.matches(isKey, keyId())
+    infix operator fun contains(keybind: Keybind) = keybind.matches(isKey, keyId())
 
     val isKey by invoking { backingEvent is KeyEvent }
-    val isMouse by invoking { backingEvent is MouseButtonEvent }
     val asMouse by invoking {
-        if (isMouse)
+        if (!isKey)
             backingEvent as MouseButtonEvent
         else error("backing event is a keyboard input, not a mouse input")
     }

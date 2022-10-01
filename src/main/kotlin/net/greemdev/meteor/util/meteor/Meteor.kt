@@ -24,6 +24,7 @@ import meteordevelopment.meteorclient.systems.waypoints.Waypoint
 import meteordevelopment.meteorclient.systems.waypoints.Waypoints
 import net.minecraft.entity.player.PlayerEntity
 import java.util.*
+import kotlin.reflect.KClass
 
 object Meteor {
 
@@ -60,10 +61,9 @@ object Meteor {
     @JvmStatic
     fun profiles(): Profiles = Profiles.get()
 
-    @JvmStatic
     inline fun <reified T : Module> module(): T = modules().get(T::class.java)
+    inline fun <T : Module, R> module(clazz: KClass<T>, func: T.() -> R) = modules().get(clazz.java).func()
 
-    @JvmStatic
     inline fun <reified T : Command> command(): T = commands().get(T::class.java)
 
     @JvmStatic

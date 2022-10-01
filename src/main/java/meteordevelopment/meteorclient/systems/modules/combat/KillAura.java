@@ -131,11 +131,24 @@ public class KillAura extends Module {
         .build()
     );
 
+    private final Setting<Boolean> targetPlayers = sgTargeting.add(new BoolSetting.Builder()
+        .name("target-players")
+        .description("Shortcut for adding/removing player entities in the targeted entities list.")
+        .onChanged(this::togglePlayers)
+        .build()
+    );
 
     private final Setting<Object2BooleanMap<EntityType<?>>> entities = sgTargeting.add(new EntityTypeListSetting.Builder()
         .name("entities")
         .description("Entities to attack.")
         .onlyAttackable()
+        .onChanged(map -> {
+            if (targetPlayers.get() && !map.getBoolean(EntityType.PLAYER))
+                targetPlayers.set(false);
+            else if (!targetPlayers.get() && map.getBoolean(EntityType.PLAYER))
+                targetPlayers.set(true);
+
+        })
         .build()
     );
 
@@ -251,6 +264,17 @@ public class KillAura extends Module {
     public void onDeactivate() {
         hitDelayTimer = 0;
         targets.clear();
+    }
+
+    public Entity getTarget() {
+        if (!targets.isEmpty()) return targets.get(0);
+        return null;
+    }
+
+    @Override
+    public String getInfoString() {
+        if (!targets.isEmpty()) EntityUtils.getName(getTarget());
+        return null;
     }
 
     @EventHandler
@@ -393,15 +417,12 @@ public class KillAura extends Module {
         };
     }
 
-    public Entity getTarget() {
-        if (!targets.isEmpty()) return targets.get(0);
-        return null;
-    }
+    private void togglePlayers(boolean enabled) {
+        if (enabled && !entities.get().getBoolean(EntityType.PLAYER))
+            entities.get().put(EntityType.PLAYER, true);
 
-    @Override
-    public String getInfoString() {
-        if (!targets.isEmpty()) EntityUtils.getName(getTarget());
-        return null;
+        else if (!enabled && entities.get().getBoolean(EntityType.PLAYER))
+            entities.get().removeBoolean(EntityType.PLAYER);
     }
 
     public enum Weapon {
