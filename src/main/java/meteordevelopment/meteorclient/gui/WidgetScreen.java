@@ -107,6 +107,11 @@ public abstract class WidgetScreen extends Screen {
         initWidgets();
     }
 
+    public void reloadParent() {
+        if (parent != null && parent instanceof WidgetScreen ws)
+            ws.reload();
+    }
+
     public void onClosed(Runnable action) {
         if (onClosed == null) onClosed = new ArrayList<>(2);
         onClosed.add(action);

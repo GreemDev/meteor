@@ -65,4 +65,9 @@ public class ItemSettingScreen extends WindowScreen {
             table.row();
         }
     }
+
+    @Override
+    protected void onClosed() {
+        reloadParent();
+    }
 }

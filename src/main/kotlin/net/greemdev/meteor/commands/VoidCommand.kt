@@ -12,9 +12,9 @@ import net.minecraft.item.ItemStack
 import net.minecraft.network.packet.c2s.play.ClickSlotC2SPacket
 import net.minecraft.screen.slot.SlotActionType
 
-class VoidCommand : GCommand("void", "Delete the item stack in your hand.", {
+object VoidCommand : GCommand("void", "Delete the item stack in your hand.", {
     alwaysRuns {
-        val id = 36 + mc.player().inventory.selectedSlot
+        val slotId = 36 + mc.player().inventory.selectedSlot
         val button = 50
 
         val screenHandler = mc.player().currentScreenHandler
@@ -33,7 +33,7 @@ class VoidCommand : GCommand("void", "Delete the item stack in your hand.", {
         }
 
         mc.networkHandler?.sendPacket(
-            ClickSlotC2SPacket(0, screenHandler.revision, id, button, SlotActionType.SWAP, screenHandler.cursorStack.copy(), stacks)
+            ClickSlotC2SPacket(0, screenHandler.revision, slotId, button, SlotActionType.SWAP, screenHandler.cursorStack.copy(), stacks)
         )
     }
 })

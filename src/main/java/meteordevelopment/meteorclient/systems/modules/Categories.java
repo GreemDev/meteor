@@ -28,8 +28,7 @@ public class Categories {
         Modules.registerCategory(Render);
         Modules.registerCategory(World);
         Modules.registerCategory(Misc);
-
-        Greteor.categories();
+        Modules.registerCategory(Greteor.INSTANCE.category());
 
         REGISTERING = false;
     }

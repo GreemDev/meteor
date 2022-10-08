@@ -280,4 +280,9 @@ public class EntityTypeListSettingScreen extends WindowScreen {
 
         table.row();
     }
+
+    @Override
+    protected void onClosed() {
+        reloadParent();
+    }
 }

@@ -44,6 +44,11 @@ public class WKeybind extends WHorizontalList {
         refreshLabel();
     }
 
+    public WKeybind onSet(Runnable onSet) {
+        actionOnSet = onSet;
+        return this;
+    }
+
     public boolean onAction(boolean isKey, int value) {
         if (listening && keybind.canBindTo(isKey, value)) {
             keybind.set(isKey, value);

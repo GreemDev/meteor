@@ -21,6 +21,8 @@ import java.util.Collections;
 import java.util.List;
 
 public abstract class Command {
+    public static String DEFAULT_PREFIX = System.getProperty("meteor.command.defaultPrefix", ".");
+
     protected static MinecraftClient mc;
 
     private final String name;

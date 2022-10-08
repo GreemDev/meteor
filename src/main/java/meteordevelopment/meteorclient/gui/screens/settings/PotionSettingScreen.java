@@ -37,4 +37,9 @@ public class PotionSettingScreen extends WindowScreen {
             table.row();
         }
     }
+
+    @Override
+    protected void onClosed() {
+        reloadParent();
+    }
 }

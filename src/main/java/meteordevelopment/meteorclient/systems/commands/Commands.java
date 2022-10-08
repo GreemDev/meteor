@@ -66,7 +66,6 @@ public class Commands extends System<Commands> {
         add(new ModulesCommand());
         add(new BindsCommand());
         add(new GiveCommand());
-        add(new NameHistoryCommand());
         add(new BindCommand());
         add(new FOVCommand());
         add(new RotationCommand());

@@ -535,7 +535,6 @@ public class Modules extends System<Modules> {
         add(new EndermanLook());
         add(new Flamethrower());
         add(new InfinityMiner());
-        add(new IgnoreWorldBorder());
         add(new LiquidFiller());
         add(new MountBypass());
         add(new Nuker());

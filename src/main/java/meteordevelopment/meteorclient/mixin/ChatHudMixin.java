@@ -9,6 +9,7 @@ import com.mojang.blaze3d.systems.RenderSystem;
 import meteordevelopment.meteorclient.MeteorClient;
 import meteordevelopment.meteorclient.events.game.ReceiveMessageEvent;
 import meteordevelopment.meteorclient.mixininterface.IChatHud;
+import meteordevelopment.meteorclient.systems.config.Config;
 import meteordevelopment.meteorclient.systems.modules.Modules;
 import meteordevelopment.meteorclient.systems.modules.misc.BetterChat;
 import meteordevelopment.meteorclient.utils.misc.MeteorIdentifier;
@@ -39,10 +40,8 @@ import java.util.regex.Pattern;
 @Mixin(ChatHud.class)
 public abstract class ChatHudMixin implements IChatHud {
     private static final MinecraftClient mc = MinecraftClient.getInstance();
-
     private static final Pattern METEOR_PREFIX_REGEX = Pattern.compile("^\\s{0,2}(<[0-9]{1,2}:[0-9]{1,2}>\\s)?\\[Meteor\\]");
     private static final Pattern BARITONE_PREFIX_REGEX = Pattern.compile("^\\s{0,2}(<[0-9]{1,2}:[0-9]{1,2}>\\s)?\\[Baritone\\]");
-    private static final Identifier METEOR_CHAT_ICON = new MeteorIdentifier("textures/icons/chat/meteor.png");
     private static final Identifier BARITONE_CHAT_ICON = new MeteorIdentifier("textures/icons/chat/baritone.png");
 
     @Shadow @Final private List<ChatHudLine<OrderedText>> visibleMessages;
@@ -125,26 +124,28 @@ public abstract class ChatHudMixin implements IChatHud {
     protected abstract void addMessage(Text message, int messageId);
 
     private void drawIcon(MatrixStack matrices, String line, int y, float opacity) {
-        if (METEOR_PREFIX_REGEX.matcher(line).find()) {
-            RenderSystem.setShaderTexture(0, METEOR_CHAT_ICON);
-            matrices.push();
-            RenderSystem.setShaderColor(1, 1, 1, opacity);
-            matrices.translate(0, y, 0);
-            matrices.scale(0.125f, 0.125f, 1);
-            DrawableHelper.drawTexture(matrices, 0, 0, 0f, 0f, 64, 64, 64, 64);
-            RenderSystem.setShaderColor(1, 1, 1, 1);
-            matrices.pop();
-            return;
-        } else if (BARITONE_PREFIX_REGEX.matcher(line).find()) {
-            RenderSystem.setShaderTexture(0, BARITONE_CHAT_ICON);
-            matrices.push();
-            RenderSystem.setShaderColor(1, 1, 1, opacity);
-            matrices.translate(0, y, 10);
-            matrices.scale(0.125f, 0.125f, 1);
-            DrawableHelper.drawTexture(matrices, 0, 0, 0f, 0f, 64, 64, 64, 64);
-            RenderSystem.setShaderColor(1, 1, 1, 1);
-            matrices.pop();
-            return;
+        if (Config.get().chatLogo.get().allowsLogo()) {
+            if (METEOR_PREFIX_REGEX.matcher(line).find()) {
+                RenderSystem.setShaderTexture(0, Config.get().chatLogo.get().icon().orElseThrow());
+                matrices.push();
+                RenderSystem.setShaderColor(1, 1, 1, opacity);
+                matrices.translate(0, y, 0);
+                matrices.scale(0.125f, 0.125f, 1);
+                DrawableHelper.drawTexture(matrices, 0, 0, 0f, 0f, 64, 64, 64, 64);
+                RenderSystem.setShaderColor(1, 1, 1, 1);
+                matrices.pop();
+                return;
+            } else if (BARITONE_PREFIX_REGEX.matcher(line).find()) {
+                RenderSystem.setShaderTexture(0, BARITONE_CHAT_ICON);
+                matrices.push();
+                RenderSystem.setShaderColor(1, 1, 1, opacity);
+                matrices.translate(0, y, 10);
+                matrices.scale(0.125f, 0.125f, 1);
+                DrawableHelper.drawTexture(matrices, 0, 0, 0f, 0f, 64, 64, 64, 64);
+                RenderSystem.setShaderColor(1, 1, 1, 1);
+                matrices.pop();
+                return;
+            }
         }
 
         Identifier skin = getMessageTexture(line);

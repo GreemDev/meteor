@@ -53,7 +53,6 @@ public class CompassHud extends HudElement {
         .name("color-north")
         .description("Color of north.")
         .defaultValue(new SettingColor(225, 45, 45))
-        .onChanged(RainbowColors::handle)
         .build()
     );
 

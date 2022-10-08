@@ -24,6 +24,7 @@ import meteordevelopment.meteorclient.utils.render.color.SettingColor
 import net.greemdev.meteor.gui.theme.round.widget.*
 import net.greemdev.meteor.gui.theme.round.widget.pressable.*
 import net.greemdev.meteor.gui.theme.round.widget.input.*
+import net.greemdev.meteor.type.ColorSettingScreenMode
 import net.greemdev.meteor.type.setting.TriStateColorSetting
 import net.greemdev.meteor.util.*
 import net.greemdev.meteor.util.meteor.*
@@ -85,6 +86,12 @@ class RoundedTheme : GuiTheme("Rounded") {
     }
 
     // Colors
+
+    val colorSettingScreenMode by sgC.enum<ColorSettingScreenMode> {
+        name("color-editing-mode")
+        description("Which fields to display in the color editing screen.")
+        defaultValue(ColorSettingScreenMode.All)
+    }
 
     val accentColor by colorSetting("accent", "Main color of the GUI.", SettingColor.rainbow())
     val checkboxColor by colorSetting("checkbox", "Color of checkbox.", SettingColor.rainbow())
@@ -226,6 +233,8 @@ class RoundedTheme : GuiTheme("Rounded") {
     override fun scale(value: Double) = value * scale()
     override fun categoryIcons() = showCategoryIcons()
     override fun hideHUD() = hideHud()
+
+    override fun colorScreenMode() = colorSettingScreenMode.get()
 
     private fun colorSetting(name: String, description: String, defaultValue: SettingColor) = colorSetting(sgC, name, description, defaultValue)
 

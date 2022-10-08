@@ -97,4 +97,9 @@ public class BlockDataSettingScreen extends WindowScreen {
 
         BLOCKS.clear();
     }
+
+    @Override
+    protected void onClosed() {
+        reloadParent();
+    }
 }

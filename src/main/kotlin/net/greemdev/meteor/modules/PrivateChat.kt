@@ -13,7 +13,7 @@ import net.greemdev.meteor.util.misc.*
 import net.greemdev.meteor.util.meteor.*
 
 // based on https://github.com/Declipsonator/Meteor-Tweaks/blob/main/src/main/java/me/declipsonator/meteortweaks/modules/GroupChat.java
-class PrivateChat : GModule("private-chat", "Turns your chat into a private conversation.") {
+object PrivateChat : GModule("private-chat", "Turns your chat into a private conversation.") {
 
     val players by sg stringList {
         name("players")
@@ -28,16 +28,15 @@ class PrivateChat : GModule("private-chat", "Turns your chat into a private conv
 
     @EventHandler
     private fun interceptMessage(event: SendMessageEvent) {
-        val playerList = mc.networkHandler?.playerList.getOrEmpty()
         var foundAny: Boolean
         players().mapNotNull { p ->
-            playerList.firstOrNull {
+            mc.networkHandler.findFirstPlayerListEntry {
                 it.profile.name.equals(p, true)
             }
         }.also {
             foundAny = it.isNotEmpty()
         }.forEach {
-            mc.player().sendCommand(dmFormat().withoutPrefix("/")
+            mc.sendCommand(dmFormat()
                 .replace("{player}", it.profile.name)
                 .replace("{message}", event.message)
             )

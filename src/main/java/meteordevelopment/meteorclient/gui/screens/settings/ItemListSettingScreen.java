@@ -37,4 +37,9 @@ public class ItemListSettingScreen extends LeftRightListSettingScreen<Item> {
     protected String getValueName(Item value) {
         return Names.get(value);
     }
+
+    @Override
+    protected void onClosed() {
+        reloadParent();
+    }
 }

@@ -86,4 +86,9 @@ public class FontFaceSettingScreen extends WindowScreen {
             table.row();
         }
     }
+
+    @Override
+    protected void onClosed() {
+        reloadParent();
+    }
 }

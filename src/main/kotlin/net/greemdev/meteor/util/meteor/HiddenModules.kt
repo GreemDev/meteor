@@ -40,12 +40,14 @@ class HiddenModules : System<HiddenModules>("hidden-modules") {
         fun get(): HiddenModules = Systems.get(HiddenModules::class.java)
 
         @JvmStatic
-        fun getOrNull(): HiddenModules? = getOrNull { get() }
+        fun getOrNull() = getOrNull { get() }
 
         @JvmStatic
-        fun getModules() = getOrNull {
-            get().hiddenModules.mapNotNull { Meteor.modules().get(it) }
-        } ?: emptyList()
+        fun getModules() = getOrNull()?.run {
+            hiddenModules.mapNotNull {
+                getOrNull { Meteor.modules().get(it) }
+            }
+        }.orEmpty()
     }
 
     fun set(modules: Collection<Module?>) {
@@ -75,5 +77,4 @@ class HiddenModules : System<HiddenModules>("hidden-modules") {
         hiddenModules.addAll(tag.collectList("hiddenModules", NbtDataType.String))
         return this
     }
-
 }

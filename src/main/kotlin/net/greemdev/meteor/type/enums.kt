@@ -6,6 +6,10 @@
 
 package net.greemdev.meteor.type
 
+import meteordevelopment.meteorclient.utils.misc.MeteorIdentifier
+import net.greemdev.meteor.util.optionalOf
+import java.util.Optional
+
 enum class StringComparisonType {
     Equals,
     Contains,
@@ -55,4 +59,42 @@ enum class DamageOperatorType(val friendly: String, val prefixFormat: String) {
     fun formatPrefix(operator: Char) = prefixFormat.format(operator)
     fun formatNumber(operator: Char, number: String) = formatPrefix(operator) + number
     override fun toString() = friendly
+}
+
+enum class ColorSettingScreenMode {
+    RGBAFields,
+    HexField,
+    All;
+
+    override fun toString(): String = when (this) {
+        RGBAFields -> "RGBA fields & sliders"
+        HexField -> "Hex field only"
+        All -> "All color options"
+    }
+
+    fun isHexVisible() = isAll() || this == HexField
+    fun isRgbaVisible() = isAll() || this == RGBAFields
+    fun isAll() = this == All
+}
+
+enum class ChatLogo {
+    Meteor,
+    Greteor,
+    None;
+
+    override fun toString() = when (this) {
+        Meteor -> "Default Meteor"
+        Greteor -> "Greteor Custom"
+        None -> "No logo"
+    }
+
+    fun allowsLogo() = this != None
+
+    fun icon(): Optional<MeteorIdentifier> = optionalOf(
+        when (this) {
+            Meteor -> MeteorIdentifier("textures/icons/chat/meteor.png")
+            Greteor -> MeteorIdentifier("textures/icons/chat/greteor.png")
+            else -> null
+        }
+    )
 }

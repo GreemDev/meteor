@@ -27,6 +27,7 @@ import meteordevelopment.meteorclient.utils.misc.ISerializable;
 import meteordevelopment.meteorclient.utils.misc.Keybind;
 import meteordevelopment.meteorclient.utils.misc.Names;
 import meteordevelopment.meteorclient.utils.render.color.Color;
+import net.greemdev.meteor.type.ColorSettingScreenMode;
 import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NbtCompound;
@@ -56,6 +57,8 @@ public abstract class GuiTheme implements ISerializable<GuiTheme> {
     public void beforeRender() {
         disableHoverColor = false;
     }
+
+    public abstract ColorSettingScreenMode colorScreenMode();
 
     // Widgets
 
@@ -238,6 +241,10 @@ public abstract class GuiTheme implements ISerializable<GuiTheme> {
 
     public WKeybind keybind(Keybind keybind) {
         return keybind(keybind, Keybind.none());
+    }
+
+    public WKeybind keybind(Keybind keybind, Runnable onSet) {
+        return keybind(keybind, Keybind.none()).onSet(onSet);
     }
 
     public WKeybind keybind(Keybind keybind, Keybind defaultValue) {

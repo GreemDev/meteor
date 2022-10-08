@@ -7,6 +7,7 @@ package meteordevelopment.meteorclient.settings;
 
 import com.google.common.collect.ImmutableList;
 import meteordevelopment.meteorclient.utils.render.color.Color;
+import meteordevelopment.meteorclient.utils.render.color.RainbowColors;
 import meteordevelopment.meteorclient.utils.render.color.SettingColor;
 import net.minecraft.nbt.NbtCompound;
 
@@ -73,6 +74,9 @@ public class ColorSetting extends Setting<SettingColor> {
 
         @Override
         public ColorSetting build() {
+            if (onChanged == null)
+                onChanged = RainbowColors::handle;
+
             return new ColorSetting(name, description, defaultValue, onChanged, onModuleActivated, visible);
         }
     }

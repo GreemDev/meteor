@@ -12,9 +12,6 @@ import meteordevelopment.meteorclient.gui.utils.Cell;
 import meteordevelopment.meteorclient.gui.widgets.WKeybind;
 import meteordevelopment.meteorclient.gui.widgets.WWidget;
 import meteordevelopment.meteorclient.gui.widgets.containers.WContainer;
-import meteordevelopment.meteorclient.gui.widgets.containers.WHorizontalList;
-import meteordevelopment.meteorclient.gui.widgets.containers.WSection;
-import meteordevelopment.meteorclient.gui.widgets.pressable.WCheckbox;
 import meteordevelopment.meteorclient.gui.widgets.pressable.WFavorite;
 import meteordevelopment.meteorclient.systems.modules.Module;
 import meteordevelopment.meteorclient.systems.modules.Modules;
@@ -57,40 +54,45 @@ public class ModuleScreen extends WindowScreen {
             if (widget instanceof WContainer) cell.expandX();
         }
 
-        if (module.allowBinds) {
+        if (module.canBind) {
             // Bind
-            WSection section = add(theme.section("Bind", true)).expandX().widget();
-            keybind = section.add(theme.keybind(module.keybind)).expandX().widget();
-            keybind.actionOnSet = () -> Modules.get().setModuleToBind(module);
+            within(add(theme.section("Bind", true)).expandX(), sec -> {
+                keybind = sec.add(theme.keybind(module.keybind, () ->
+                    Modules.get().setModuleToBind(module))
+                ).expandX().widget();
 
-            // Toggle on bind release
-            WHorizontalList tobr = section.add(theme.horizontalList()).widget();
+                // Toggle on bind release
+                within(sec.add(theme.horizontalList()), list -> {
+                    list.add(theme.label("Toggle on bind release: "));
+                    list.add(theme.checkbox(module.toggleOnBindRelease, (c) ->
+                        module.toggleOnBindRelease = c)
+                    );
+                });
 
-            tobr.add(theme.label("Toggle on bind release: "));
-            WCheckbox tobrC = tobr.add(theme.checkbox(module.toggleOnBindRelease)).widget();
-            tobrC.action = () -> module.toggleOnBindRelease = tobrC.checked;
-
-            if (module.allowChatFeedback) {
-                // Chat feedback
-                WHorizontalList cf = section.add(theme.horizontalList()).widget();
-
-                cf.add(theme.label("Chat Feedback: "));
-                WCheckbox cfC = cf.add(theme.checkbox(module.chatFeedback)).widget();
-                cfC.action = () -> module.chatFeedback = cfC.checked;
-            }
+                if (module.allowChatFeedback) {
+                    within(sec.add(theme.horizontalList()), list -> {
+                        list.add(theme.label("Chat Feedback: "));
+                        list.add(theme.checkbox(module.chatFeedback, (c) ->
+                            module.chatFeedback = c)
+                        );
+                    });
+                }
+            });
             add(theme.horizontalSeparator()).expandX();
         }
 
-        if (module.showActive) {
+        if (module.canActivate) {
             // Bottom
-            WHorizontalList bottom = add(theme.horizontalList()).expandX().widget();
-
-            // Active
-            bottom.add(theme.label("Active: "));
-            WCheckbox active = bottom.add(theme.checkbox(module.isActive())).expandCellX().widget();
-            active.action = () -> {
-                if (module.isActive() != active.checked) module.toggle();
-            };
+            within(add(theme.horizontalList()).expandX(), list -> {
+                // Active
+                list.add(theme.label("Active: "));
+                list.add(theme.checkbox(module.isActive(), checked -> {
+                    if (module.isActive() != checked) {
+                        module.toggle();
+                        reload();
+                    }
+                })).expandCellX();
+            });
         }
     }
 
@@ -108,7 +110,8 @@ public class ModuleScreen extends WindowScreen {
 
     @EventHandler
     private void onModuleBindChanged(ModuleBindChangedEvent event) {
-        keybind.reset();
+        if (module.canBind)
+            keybind.reset();
     }
 
     @Override

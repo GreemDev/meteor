@@ -13,6 +13,7 @@ import meteordevelopment.meteorclient.systems.friends.Friend;
 import meteordevelopment.meteorclient.systems.friends.Friends;
 import meteordevelopment.meteorclient.utils.network.Capes;
 import meteordevelopment.meteorclient.utils.network.MeteorExecutor;
+import net.greemdev.meteor.util.misc.TitleScreenInfo;
 import net.minecraft.command.CommandSource;
 
 import static com.mojang.brigadier.Command.SINGLE_SUCCESS;
@@ -31,6 +32,7 @@ public class ReloadCommand extends Command {
             Capes.init();
             Fonts.refresh();
             MeteorExecutor.execute(() -> Friends.get().forEach(Friend::updateInfo));
+            MeteorExecutor.execute(TitleScreenInfo::loadLatestRevision);
 
             return SINGLE_SUCCESS;
         });

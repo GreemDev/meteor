@@ -12,19 +12,18 @@ import net.greemdev.meteor.util.misc.*
 import net.greemdev.meteor.util.text.*
 import net.minecraft.network.packet.c2s.play.RenameItemC2SPacket
 
-class RenameCommand : GCommand("rename", "Renames the item in your hand.", {
+object RenameCommand : GCommand("rename", "Renames the item in your hand.", {
     then("name", arg.greedyString()) {
         alwaysRuns {
             val stack = mc.player().usableItemStack() ?: noItem.throwNew()
-            val newName = arg.greedyString().get(it, "name").replace('&', '§')
+            val name by it(arg.greedyString(), "name")
+            val newName = name.replace('&', '§')
 
             stack.setCustomName(textOf(newName))
             ChatUtils.info("Changed the item's name.")
             mc.networkHandler?.sendPacket(RenameItemC2SPacket(newName))
         }
     }
-}) {
-    companion object {
-        val noItem by simpleCommandException(textOf("You aren't holding anything."))
-    }
-}
+})
+
+private val noItem by simpleCommandException(textOf("You aren't holding anything."))

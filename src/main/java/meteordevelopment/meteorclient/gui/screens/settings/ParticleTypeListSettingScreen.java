@@ -34,4 +34,9 @@ public class ParticleTypeListSettingScreen extends LeftRightListSettingScreen<Pa
     protected boolean skipValue(ParticleType<?> value) {
         return !(value instanceof ParticleEffect);
     }
+
+    @Override
+    protected void onClosed() {
+        reloadParent();
+    }
 }

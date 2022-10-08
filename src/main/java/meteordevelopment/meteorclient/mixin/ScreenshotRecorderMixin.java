@@ -45,7 +45,7 @@ public abstract class ScreenshotRecorderMixin {
                 ci.cancel();
             } catch (IOException ioe) {
                 ChatUtils.error("Game Tweaks", "Internal error: " + ioe.getMessage());
-                Greteor.getLogger().catching(Level.ERROR, ioe);
+                Greteor.logger().catching(Level.ERROR, ioe);
             }
         }
     }

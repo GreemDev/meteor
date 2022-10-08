@@ -8,12 +8,12 @@ package net.greemdev.meteor.modules
 import net.greemdev.meteor.GModule
 import net.greemdev.meteor.util.meteor.bool
 
-class VanillaFeatures : GModule(
-    "vanilla-features", "Adds Meteor settings for easier access to Minecraft's toggle settings.") {
-
+object VanillaFeatures : GModule(
+    "vanilla-features", "Adds Meteor settings for easier access to Minecraft's toggle settings."
+) {
     init {
-        allowBinds = false
-        showActive = false
+        canBind = false
+        canActivate = false
     }
 
     val hideHud by sg bool {

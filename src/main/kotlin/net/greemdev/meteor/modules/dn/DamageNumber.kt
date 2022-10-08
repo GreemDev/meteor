@@ -15,12 +15,15 @@ import net.minecraft.client.render.GameRenderer
 import net.minecraft.client.util.math.MatrixStack
 import net.minecraft.util.math.MathHelper
 import net.minecraft.util.math.Vec3f
+import net.minecraft.util.math.random.Random
 import org.lwjgl.opengl.GL11
 import java.util.concurrent.ThreadLocalRandom
+import kotlin.random.asJavaRandom
+import kotlin.random.asKotlinRandom
 
 class DamageNumber(val entityState: EntityState, val damage: Int) {
 
-    private val rand = ThreadLocalRandom.current()
+    private val rand = Random.create()
 
     var x = 0.0
     var y = 0.0
@@ -31,13 +34,13 @@ class DamageNumber(val entityState: EntityState, val damage: Int) {
 
     var age = 0
 
-    var ax = 0.0
-    var ay = -0.01
-    var az = 0.0
+    var ax = 0.0f
+    var ay = -0.01f
+    var az = 0.0f
 
-    var vx = 0.0
-    var vy = 0.0
-    var vz = 0.0
+    var vx = 0.0f
+    var vy = 0.0f
+    var vz = 0.0f
 
     init {
         val entityLoc = entityState.entity.pos.add(0.0, (entityState.entity.height / 2).toDouble(), 0.0)
@@ -46,9 +49,9 @@ class DamageNumber(val entityState: EntityState, val damage: Int) {
         val offset = cameraLoc.subtract(entityLoc).normalize() * offsetBy
         val pos = entityLoc.add(offset)
 
-        vx = rand.nextGaussian() * 0.04
-        vy = 0.10 + (rand.nextGaussian() * 0.05)
-        vz = rand.nextGaussian() * 0.04
+        vx = MathHelper.nextGaussian(rand, 0f, 0.04f)
+        vy = MathHelper.nextGaussian(rand, 0.10f, 0.05f)
+        vz = MathHelper.nextGaussian(rand, 0f, 0.04f)
 
         x = pos.x
         y = pos.y

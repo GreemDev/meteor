@@ -28,4 +28,9 @@ public class EnchantmentListSettingScreen extends LeftRightListSettingScreen<Enc
     protected String getValueName(Enchantment value) {
         return Names.get(value);
     }
+
+    @Override
+    protected void onClosed() {
+        reloadParent();
+    }
 }

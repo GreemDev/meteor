@@ -28,4 +28,9 @@ public class SoundEventListSettingScreen extends LeftRightListSettingScreen<Soun
     protected String getValueName(SoundEvent value) {
         return Names.getSoundName(value.getId());
     }
+
+    @Override
+    protected void onClosed() {
+        reloadParent();
+    }
 }

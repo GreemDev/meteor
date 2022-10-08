@@ -55,6 +55,7 @@ public class TextHud extends HudElement {
             if (timer > integer) timer = integer;
         })
         .min(0)
+        .max(20000)
         .build()
     );
 

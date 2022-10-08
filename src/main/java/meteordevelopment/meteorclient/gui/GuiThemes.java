@@ -11,6 +11,7 @@ import meteordevelopment.meteorclient.utils.PostInit;
 import meteordevelopment.meteorclient.utils.PreInit;
 import net.fabricmc.loader.api.FabricLoader;
 import net.greemdev.meteor.Greteor;
+import net.greemdev.meteor.gui.theme.round.RoundedTheme;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.nbt.NbtIo;
 
@@ -31,11 +32,11 @@ public class GuiThemes {
     @PreInit
     public static void init() {
         add(new MeteorGuiTheme());
+        add(new RoundedTheme());
     }
 
     @PostInit
     public static void postInit() {
-        Greteor.roundedTheme();
         if (FILE.exists()) {
             try {
                 NbtCompound tag = NbtIo.read(FILE);

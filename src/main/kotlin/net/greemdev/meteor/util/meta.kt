@@ -61,51 +61,43 @@ fun log4j(value: Any) = lazy<Logger> {
 
 operator fun FabricLoader.contains(modId: String) = modLoader.isModLoaded(modId)
 
-fun<T> T?.coalesce(other: T) = this ?: other
-fun <T> Collection<T>?.getOrEmpty() = this ?: emptySet()
-fun <T> Collection<T>?.lastIndex() = getOrEmpty().size - 1
+fun <T> T?.coalesce(other: T) = this ?: other
+fun <T> Collection<T>?.lastIndex() = orEmpty().size - 1
 
 typealias MeteorColor = meteordevelopment.meteorclient.utils.render.color.Color
 typealias AwtColor = Color
-fun colorOf(value: Any): MeteorColor {
-    return try {
-        when (value) {
-            is String -> {
-                when {
-                    value.contains(",") -> MeteorColor().apply { parse(value) }
 
-                    (value.startsWith("#") && value.length == 7) || value.length == 6 ->
-                        MeteorColor(value.takeLast(6).toInt(16))
+fun colorOf(value: Any): MeteorColor = try {
+    when (value) {
+        is String -> {
+            when {
+                value.contains(",") -> MeteorColor.fromString(value)
 
-                    (value.startsWith("#") && value.length == 9) || value.length == 8 ->
-                        MeteorColor(value.takeLast(8).toInt(16))
+                (value.startsWith("#") && value.length == 7) || value.length == 6 ->
+                    MeteorColor(value.takeLast(6).toInt(16))
 
-                    else -> throw NumberFormatException()
-                }
+                (value.startsWith("#") && value.length == 9) || value.length == 8 ->
+                    MeteorColor(value.takeLast(8).toInt(16))
+
+                else -> throw NumberFormatException()
             }
-            is Int -> MeteorColor(value)
-            else -> throw IllegalArgumentException()
         }
-    } catch (e: Exception) {
-        throw IllegalArgumentException("Invalid color value. Only accepts R,G,B; (#)RRGGBB; and (#)AARRGGBB.").apply { addSuppressed(e) }
+
+        is Int -> MeteorColor(value)
+        else -> throw IllegalArgumentException()
+    }
+} catch (e: Exception) {
+    throw IllegalArgumentException("Invalid color value. Only accepts R,G,B(,A); (#)RRGGBB; and (#)AARRGGBB.").apply {
+        addSuppressed(e)
     }
 }
+
 
 fun <T> firstNotNull(vararg nullables: T?) = nullables.firstNotNullOf { it }
 fun <T> Iterable<T?>.firstNotNull(): T = firstNotNullOf { it }
 
 fun <T> List<T>.indexedForEach(consumer: BiConsumer<Int, T>) =
     this.forEachIndexed { index, t -> consumer.accept(index, t) }
-
-fun String.toCamelCase(separator: String = "-"): String {
-    return split(separator)
-        .mapIndexed { i, part ->
-            if (i == 0)
-                part.lowercase()
-            else
-                part.replaceFirstChar { it.uppercase() }
-        }.joinToString("")
-}
 
 /**
  * Sets the [KMutableProperty]'s value and then returns the new value.
@@ -166,43 +158,25 @@ inline fun <reified T : Any> createSubtypesOf(pkg: String): List<T> =
         getOrNull { it.primaryConstructor?.call() }
     }
 
+inline fun <reified T : Any> findInstancesOfSubtypesOf(pkg: String): List<T> =
+    subtypesOf<T>(pkg).mapNotNull {
+        getOrNull { it.findInstance() }
+    }
+
+fun <T : Any> KClass<T>.findInstance(vararg args: Any?) = objectInstance ?: primaryConstructor?.call(args)
+
 infix fun <T : WPressable> T.action(func: (T) -> Unit): T = action { func(this) }
-
-fun String.ensurePrefix(prefix: String, ignoreCase: Boolean = false): String {
-    return if (startsWith(prefix, ignoreCase))
-        this
-    else "$prefix$this"
-}
-
-fun String.withoutPrefix(prefix: String, ignoreCase: Boolean = false): String {
-    return if (startsWith(prefix, ignoreCase))
-        substringAfter(prefix)
-    else this
-}
-
-fun String.ensureSuffix(suffix: String, ignoreCase: Boolean = false): String {
-    return if (endsWith(suffix, ignoreCase))
-        this
-    else "$this$suffix"
-}
-
-fun String.withoutSuffix(suffix: String, ignoreCase: Boolean = false): String {
-    return if (endsWith(suffix, ignoreCase))
-        substringBeforeLast(suffix)
-    else this
-}
 
 /**
  * Parses a 6-character long hexadecimal sequence to a [Color] with or without the preceding #.
  */
 fun parseHexColor(hex: String): Color = Color(
     optionalOf(hex.takeLast(6).uppercase()
-        .takeIf { chars ->
-            chars.all {
-                it in '0'..'9' || it in 'A'..'F'
+        .takeIf {
+            it.all { ch ->
+                ch in '0'..'9' || ch in 'A'..'F'
             }
         }
     ).orElseThrow { IllegalArgumentException("Illegal hexadecimal sequence.") }
         .toInt(16)
 )
-

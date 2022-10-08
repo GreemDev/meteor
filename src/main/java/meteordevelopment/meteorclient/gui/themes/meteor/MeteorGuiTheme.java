@@ -30,6 +30,7 @@ import meteordevelopment.meteorclient.systems.accounts.Account;
 import meteordevelopment.meteorclient.systems.modules.Module;
 import meteordevelopment.meteorclient.utils.render.color.Color;
 import meteordevelopment.meteorclient.utils.render.color.SettingColor;
+import net.greemdev.meteor.type.ColorSettingScreenMode;
 
 import static meteordevelopment.meteorclient.MeteorClient.mc;
 
@@ -84,6 +85,13 @@ public class MeteorGuiTheme extends GuiTheme {
     );
 
     // Colors
+
+    public final Setting<ColorSettingScreenMode> colorScreenMode = sgColors.add(new EnumSetting.Builder<ColorSettingScreenMode>()
+        .name("color-editing-mode")
+        .description("Which fields to display in the color editing screen.")
+        .defaultValue(ColorSettingScreenMode.All)
+        .build()
+    );
 
     public final Setting<SettingColor> accentColor = color("accent", "Main color of the GUI.", new SettingColor(145, 61, 226));
     public final Setting<SettingColor> checkboxColor = color("checkbox", "Color of checkbox.", new SettingColor(145, 61, 226));
@@ -368,6 +376,11 @@ public class MeteorGuiTheme extends GuiTheme {
     @Override
     public boolean hideHUD() {
         return hideHUD.get();
+    }
+
+    @Override
+    public ColorSettingScreenMode colorScreenMode() {
+        return colorScreenMode.get();
     }
 
     public class ThreeStateColorSetting {

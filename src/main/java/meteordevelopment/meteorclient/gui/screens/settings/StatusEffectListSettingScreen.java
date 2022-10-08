@@ -39,4 +39,9 @@ public class StatusEffectListSettingScreen extends LeftRightListSettingScreen<St
         potion.getOrCreateNbt().putInt("CustomPotionColor", PotionUtil.getColor(new Potion(new StatusEffectInstance(effect))));
         return potion;
     }
+
+    @Override
+    protected void onClosed() {
+        reloadParent();
+    }
 }

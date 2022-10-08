@@ -15,7 +15,8 @@ import net.minecraft.util.math.Vec3d
  * Kotlin reimplementation of the previously divided HClip and VClip commands.
  * Reimplemented because there's no real need to have 2 functionally similar commands be separate.
  */
-class ClipCommand : GCommand("clip", "Lets you clip through blocks vertically or horizontally.", {
+object ClipCommand : GCommand("clip", "Lets you clip through blocks vertically or horizontally.", {
+
     then("v") {
         then("distance", arg.double()) {
             alwaysRuns {

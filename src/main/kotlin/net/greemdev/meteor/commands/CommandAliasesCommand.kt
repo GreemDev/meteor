@@ -15,7 +15,7 @@ import net.greemdev.meteor.util.text.textOf
 import net.greemdev.meteor.util.meteor.*
 import net.minecraft.command.CommandSource
 
-class CommandAliasesCommand : GCommand(
+object CommandAliasesCommand : GCommand(
     "command-aliases", "Configured by the module of the same name.", {
         then("alias", arg.greedyString()) {
             suggests {
@@ -34,10 +34,8 @@ class CommandAliasesCommand : GCommand(
             }
         }
     }, "ca"
-) {
-    companion object {
-        private val notFound by dynamicCommandException {
-            textOf("No alias with the name '$it' was found.")
-        }
-    }
+)
+
+private val notFound by dynamicCommandException {
+    textOf("No alias with the name '$it' was found.")
 }

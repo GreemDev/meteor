@@ -95,7 +95,6 @@ public class MixinPlugin implements IMixinConfigPlugin {
             return isCanvasPresent;
         }
 
-
         return true;
     }
 

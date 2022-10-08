@@ -30,17 +30,15 @@ object TitleScreenInfo {
         private set
 
     @JvmStatic
-    fun howManyBehind() =
-        if (latestRevision == -1)
-            0
-        else
-            latestRevision - MeteorClient.REVISION
+    fun howManyBehind(): Int {
+        return (latestRevision.takeUnless { it == -1 } ?: return 0) - MeteorClient.REVISION
+    }
 
     @JvmStatic
-    fun isOutdated() = latestRevision != -1 && MeteorClient.REVISION < latestRevision
+    fun isOutdated() = howManyBehind() > 0
 
     @JvmStatic
-    fun isUpToDate() = latestRevision != -1 && MeteorClient.REVISION == latestRevision
+    fun isUpToDate() = howManyBehind() == 0
 
     val updateChecker by invoking {
         if (latestRevision == -1)

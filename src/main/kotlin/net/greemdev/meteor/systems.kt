@@ -51,17 +51,14 @@ abstract class GCommand(
 
     override fun getAliases() = aliases.toMutableList()
 
-    protected open fun CommandBuilder.injectBrigadier() {
+    protected open fun CommandBuilder.inject() {
         error("The base implementation of GCommand#injectBrigadier should never be called! " +
             "You forgot to override the method or provide the builder in the abstract class constructor.")
     }
 
     override fun build(builder: LiteralArgumentBuilder<CommandSource>) {
         CommandBuilder(builder).apply {
-            if (b != null)
-                b.invoke(this)
-            else
-                injectBrigadier()
+            b?.also { it() } ?: inject()
         }
     }
 }

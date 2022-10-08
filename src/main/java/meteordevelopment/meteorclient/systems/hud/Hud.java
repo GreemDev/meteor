@@ -112,7 +112,9 @@ public class Hud extends System<Hud> implements Iterable<HudElement> {
         register(ModuleInfosHud.INFO);
         register(PotionTimersHud.INFO);
         register(CombatHud.INFO);
-        Greteor.hudElements().forEach(this::register);
+        Greteor.hudElements().stream()
+            .map(HudElementMetadata::getInfo)
+            .forEach(this::register);
 
         // Default config
         if (isFirstInit) resetToDefaultElements();
@@ -120,9 +122,6 @@ public class Hud extends System<Hud> implements Iterable<HudElement> {
 
     public void register(HudElementInfo<?> info) {
         infos.put(info.name, info);
-    }
-    public void register(HudElementMetadata<?> meta) {
-        register(meta.getInfo());
     }
 
     private void add(HudElement element, int x, int y, XAnchor xAnchor, YAnchor yAnchor) {

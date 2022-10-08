@@ -37,4 +37,9 @@ public class PacketBoolSettingScreen extends LeftRightListSettingScreen<Class<? 
     protected String getValueName(Class<? extends Packet<?>> value) {
         return PacketUtils.getName(value);
     }
+
+    @Override
+    protected void onClosed() {
+        reloadParent();
+    }
 }

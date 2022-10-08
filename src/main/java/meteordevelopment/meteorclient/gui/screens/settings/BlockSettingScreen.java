@@ -70,4 +70,9 @@ public class BlockSettingScreen extends WindowScreen {
     protected boolean skipValue(Block value) {
         return value == Blocks.AIR || Registry.BLOCK.getId(value).getPath().endsWith("_wall_banner");
     }
+
+    @Override
+    protected void onClosed() {
+        reloadParent();
+    }
 }

@@ -18,6 +18,7 @@ import meteordevelopment.meteorclient.utils.misc.BaritoneUtils;
 import meteordevelopment.meteorclient.utils.misc.text.TextUtils;
 import meteordevelopment.meteorclient.utils.render.color.Color;
 import meteordevelopment.meteorclient.utils.world.Dimension;
+import net.greemdev.meteor.util.misc.KMC;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.entity.BedBlockEntity;
 import net.minecraft.block.entity.BlockEntity;
@@ -261,19 +262,11 @@ public class PlayerUtils {
     }
 
     public static Dimension getDimension() {
-        if (mc.world == null) return Dimension.Overworld;
-
-        return switch (mc.world.getRegistryKey().getValue().getPath()) {
-            case "the_nether" -> Dimension.Nether;
-            case "the_end" -> Dimension.End;
-            default -> Dimension.Overworld;
-        };
+        return KMC.currentDimension(mc.world);
     }
 
     public static GameMode getGameMode() {
-        PlayerListEntry playerListEntry = mc.getNetworkHandler().getPlayerListEntry(mc.player.getUuid());
-        if (playerListEntry == null) return GameMode.SPECTATOR;
-        return playerListEntry.getGameMode();
+        return KMC.currentGameMode(KMC.player(mc));
     }
 
     public static double getTotalHealth() {
@@ -285,10 +278,6 @@ public class PlayerUtils {
     }
 
     public static int getPing() {
-        if (mc.getNetworkHandler() == null) return 0;
-
-        PlayerListEntry playerListEntry = mc.getNetworkHandler().getPlayerListEntry(mc.player.getUuid());
-        if (playerListEntry == null) return 0;
-        return playerListEntry.getLatency();
+        return KMC.ping(KMC.player(mc));
     }
 }

@@ -6,14 +6,13 @@
 package net.greemdev.meteor
 
 import meteordevelopment.meteorclient.MeteorClient
-import meteordevelopment.meteorclient.gui.GuiThemes
 import meteordevelopment.meteorclient.systems.hud.HudGroup
 import meteordevelopment.meteorclient.systems.modules.Category
-import meteordevelopment.meteorclient.systems.modules.Modules
-import net.greemdev.meteor.gui.theme.round.RoundedTheme
+import net.greemdev.meteor.hud.HudElementMetadata
 import net.greemdev.meteor.hud.element.*
 import net.greemdev.meteor.util.*
 import net.greemdev.meteor.util.meteor.*
+import net.greemdev.meteor.util.meteor.starscript.initGStarscript
 import net.greemdev.meteor.util.misc.TitleScreenInfo
 import net.minecraft.item.Items
 import java.lang.invoke.MethodHandles
@@ -24,33 +23,27 @@ private val hudGroup = HudGroup("Greteor")
 object Greteor {
 
     @JvmStatic
-    val logger by log4j("Greteor")
+    fun logger() = logger
+
+    internal val logger by log4j("Greteor")
 
     fun category() = category
     fun hudGroup() = hudGroup
 
     @JvmStatic
     fun init() {
-        createSubtypesOf<GModule>("net.greemdev.meteor.modules")
+        findInstancesOfSubtypesOf<GModule>("net.greemdev.meteor.modules")
             .forEach(Meteor.modules()::add)
-        createSubtypesOf<GCommand>("net.greemdev.meteor.commands")
+
+        findInstancesOfSubtypesOf<GCommand>("net.greemdev.meteor.commands")
             .forEach(Meteor.commands()::add)
+
         TitleScreenInfo.loadLatestRevision()
         initGStarscript()
     }
 
     @JvmStatic
-    fun categories() {
-        Modules.registerCategory(category())
-    }
-
-    @JvmStatic
-    fun roundedTheme() {
-        GuiThemes.add(RoundedTheme())
-    }
-
-    @JvmStatic
-    fun hudElements() = listOf(ModuleKeybindHud)
+    fun hudElements() = listOf<HudElementMetadata<*>>(ModuleKeybindHud)
 
     @JvmStatic
     fun lambdaFactoriesFor(vararg packages: String) =

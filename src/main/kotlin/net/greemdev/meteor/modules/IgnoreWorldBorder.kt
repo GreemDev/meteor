@@ -7,7 +7,7 @@ package net.greemdev.meteor.modules
 
 import net.greemdev.meteor.GModule
 
-class IgnoreWorldBorder : GModule.World(
+object IgnoreWorldBorder : GModule.World(
     "ignore-border",
     "Removes world border collision client-side."
 )

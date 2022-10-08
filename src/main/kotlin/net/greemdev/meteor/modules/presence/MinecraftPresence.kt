@@ -34,9 +34,13 @@ import net.minecraft.client.gui.screen.world.*
 import net.minecraft.client.realms.gui.screen.RealmsScreen
 import net.minecraft.util.Util
 
-val safeAppId: Long = 1013634358927691846
+const val safeAppId = 1013634358927691846L
 
-class MinecraftPresence : GModule("minecraft-presence", "Displays Minecraft as your presence on Discord.") {
+var gameStart: Long = 0
+private val rpc = RichPresence()
+val states: CustomStates = hashMapOf()
+
+object MinecraftPresence : GModule("minecraft-presence", "Displays Minecraft as your presence on Discord.") {
 
     private val sgL1 = settings.group("Line 1")
     private val sgL2 = settings.group("Line 2")
@@ -46,16 +50,6 @@ class MinecraftPresence : GModule("minecraft-presence", "Displays Minecraft as y
 
     init {
         runInMainMenu = true
-    }
-
-    companion object {
-        @JvmStatic
-        var gameStart: Long = 0
-        private val rpc = RichPresence()
-        val states: CustomStates = hashMapOf()
-        init {
-
-        }
     }
 
     val appId by sgO string {
@@ -210,7 +204,6 @@ class MinecraftPresence : GModule("minecraft-presence", "Displays Minecraft as y
             Util.getOperatingSystem().open("https://github.com/GreemDev/meteor/wiki/Starscript")
         }
 
-
     @EventHandler
     private fun afterTick(unused: TickEvent.Post) {
         var update = false
@@ -256,11 +249,10 @@ class MinecraftPresence : GModule("minecraft-presence", "Displays Minecraft as y
             } else line2Ticks++
 
             if (dimensionAware()) {
-                val keyPair = when(PlayerUtils.getDimension()) {
+                val keyPair = when(mc.world.currentDimension()) {
                     Dimension.Overworld -> "overworld" to "Currently in the Overworld"
                     Dimension.Nether -> "nether" to "Currently in the Nether"
                     Dimension.End -> "the_end" to "Currently in The End"
-                    else -> "c418" to "Minecraft ${SharedConstants.getGameVersion().name}"
                 }
                 if (currentLargeImage.first != keyPair.first) {
                     update = true
@@ -299,9 +291,8 @@ class MinecraftPresence : GModule("minecraft-presence", "Displays Minecraft as y
                     is CreditsScreen -> rpc.setState("Reading credits")
                     is RealmsScreen -> rpc.setState("Finding a Realm")
                     else -> {
-                        val className = mc.currentScreen?.javaClass?.name ?: ""
                         var stateChanged = false
-                        states.getStateOrNull(className)?.also {
+                        states.getStateOrNull(mc.currentScreen?.javaClass?.name ?: "")?.also {
                             rpc.setState(it)
                             stateChanged = true
                         }

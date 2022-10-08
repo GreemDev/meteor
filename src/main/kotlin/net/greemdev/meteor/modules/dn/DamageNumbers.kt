@@ -22,21 +22,12 @@ import net.minecraft.client.util.math.MatrixStack
 import kotlin.math.abs
 import kotlin.math.round
 
-class DamageNumbers : GModule(
+
+private val particles = hashSetOf<DamageNumber>()
+
+object DamageNumbers : GModule(
     "damage-numbers", "Floating, disappearing text when you damage enemies showing how much damage was done."
 ) {
-    companion object {
-        private val particles = hashSetOf<DamageNumber>()
-        fun add(particle: DamageNumber) = particles.add(particle)
-        fun tick() {
-            particles.forEach(DamageNumber::tick)
-            particles.removeIf { it.age > Meteor.module<DamageNumbers>().maxAge() }
-        }
-        @JvmStatic
-        fun render(matrices: MatrixStack, camera: Camera) =
-            particles.forEach { it.render(matrices, camera) }
-    }
-
     private val sgC = settings.group("Colors")
 
     val operatorPrefix: EnumSetting<DamageOperatorType> by sg.enum<DamageOperatorType> {
@@ -109,7 +100,7 @@ class DamageNumbers : GModule(
         name("scaling")
         description("The factor of scaling of the damage number.")
         defaultValue(-0.025)
-        range(-0.250, -0.001)
+        range(-0.050, -0.010)
         saneSlider()
     }
 
@@ -146,4 +137,13 @@ class DamageNumbers : GModule(
         EntityState.tick()
         tick()
     }
+
+    fun add(particle: DamageNumber) = particles.add(particle)
+    fun tick() {
+        particles.forEach(DamageNumber::tick)
+        particles.removeIf { it.age > Meteor.module<DamageNumbers>().maxAge() }
+    }
+    @JvmStatic
+    fun render(matrices: MatrixStack, camera: Camera) =
+        particles.forEach { it.render(matrices, camera) }
 }

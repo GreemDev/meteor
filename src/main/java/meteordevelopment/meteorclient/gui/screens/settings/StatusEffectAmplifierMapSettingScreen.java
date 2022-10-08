@@ -69,4 +69,9 @@ public class StatusEffectAmplifierMapSettingScreen extends WindowScreen {
             table.row();
         }
     }
+
+    @Override
+    protected void onClosed() {
+        reloadParent();
+    }
 }

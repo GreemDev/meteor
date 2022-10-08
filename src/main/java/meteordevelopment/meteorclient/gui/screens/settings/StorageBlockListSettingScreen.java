@@ -57,4 +57,9 @@ public class StorageBlockListSettingScreen extends LeftRightListSettingScreen<Bl
 
         return name;
     }
+
+    @Override
+    protected void onClosed() {
+        reloadParent();
+    }
 }

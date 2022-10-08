@@ -21,7 +21,7 @@ import net.greemdev.meteor.util.meteor.*
 import net.greemdev.meteor.util.misc.*
 import net.minecraft.util.Util
 
-class AutoMessage : GModule(
+object AutoMessage : GModule(
     "auto-message", "Sends a configurable Starscript message every so often."
 ) {
     private val sgm = settings group "Message"

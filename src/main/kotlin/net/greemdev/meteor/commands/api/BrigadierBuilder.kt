@@ -25,32 +25,27 @@ data class BrigadierBuilder<T : BArgBuilder<CommandSource, T>>(val builder: T) {
     val arg = Arguments
 
     infix fun requires(predicate: CommandSource.() -> Boolean): BrigadierBuilder<T> {
-        this.builder.requires(predicate)
+        builder.requires(predicate)
         return this
     }
-    infix fun then(builder: MinecraftLiteralBuilder): BrigadierBuilder<T> {
-        this.builder.then(builder)
+    infix fun then(literal: MinecraftLiteralBuilder): BrigadierBuilder<T> {
+        builder.then(literal)
         return this
     }
-    fun then(name: String, builder: CommandBuilder.() -> Unit = {}): BrigadierBuilder<T> {
-        this then command(name, builder)
-        return this
-    }
-    infix fun then(command: Pair<String, CommandBuilder.() -> Unit>): BrigadierBuilder<T>  {
-        this then command(command.first, command.second)
-        return this
-    }
+
     infix fun<A> then(builder: MinecraftArgumentBuilder<A>): BrigadierBuilder<T> {
         this.builder.then(builder)
         return this
     }
-    fun<A> then(name: String, argType: ArgumentType<A>, builder: ArgumentBuilder<A>.() -> Unit = {}): BrigadierBuilder<T> {
-        this then BrigadierBuilder(MinecraftArgumentBuilder.argument(name, argType)).apply(builder).builder
-        return this
-    }
+    fun then(name: String, builder: CommandBuilder.() -> Unit = {}) = then(command(name, builder))
+    infix fun then(command: Pair<String, CommandBuilder.() -> Unit>) = then(command(command.first, command.second))
+    fun<A> then(name: String, argType: ArgumentType<A>, builder: ArgumentBuilder<A>.() -> Unit = {}) =
+        then(BrigadierBuilder(argument(name, argType)).apply(builder).builder)
+    fun<A> then(argType: ArgumentType<A>, builder: ArgumentBuilder<A>.() -> Unit = {}) = then(formatArgType(argType), argType, builder)
+
     infix fun suggests(suggestionProvider: SuggestionsBuilder.(MinecraftCommandContext) -> CompletableFuture<Suggestions>): BrigadierBuilder<T> {
-        if (this.builder is RequiredArgumentBuilder<*, *>) {
-            this.builder.suggests { context, builder ->
+        if (builder is RequiredArgumentBuilder<*, *>) {
+            builder.suggests { context, builder ->
                 @Suppress("UNCHECKED_CAST") //commands in minecraft should always be of this type, period
                 builder.suggestionProvider(context as MinecraftCommandContext)
             }
@@ -59,8 +54,8 @@ data class BrigadierBuilder<T : BArgBuilder<CommandSource, T>>(val builder: T) {
     }
 
     infix fun suggestsAsync(suggestionProvider: suspend SuggestionsBuilder.(MinecraftCommandContext) -> Suggestions): BrigadierBuilder<T> {
-        if (this.builder is RequiredArgumentBuilder<*, *>) {
-            this.builder.suggests { context, builder ->
+        if (builder is RequiredArgumentBuilder<*, *>) {
+            builder.suggests { context, builder ->
                 @Suppress("UNCHECKED_CAST") //commands in minecraft should always be of this type, period
                 scope.async {
                     builder.suggestionProvider(context as MinecraftCommandContext)
@@ -71,15 +66,15 @@ data class BrigadierBuilder<T : BArgBuilder<CommandSource, T>>(val builder: T) {
     }
 
     infix fun runs(command: (MinecraftCommandContext) -> Int): BrigadierBuilder<T> {
-        this.builder.executes(command)
+        builder.executes(command)
         return this
     }
     infix fun canRun(command: (MinecraftCommandContext) -> Boolean): BrigadierBuilder<T> {
-        this.builder.executes { ctx -> if (command(ctx)) Command.SINGLE_SUCCESS else 0 }
+        builder.executes { ctx -> if (command(ctx)) Command.SINGLE_SUCCESS else 0 }
         return this
     }
     infix fun alwaysRuns(command: (MinecraftCommandContext) -> Unit): BrigadierBuilder<T> {
-        this.builder.executes { ctx -> 1.also { command(ctx) }}
+        builder.executes { ctx -> 1.also { command(ctx) }}
         return this
     }
 }

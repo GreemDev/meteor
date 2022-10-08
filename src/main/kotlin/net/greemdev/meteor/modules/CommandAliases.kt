@@ -14,13 +14,13 @@ import net.greemdev.meteor.GModule
 import net.greemdev.meteor.util.*
 import net.greemdev.meteor.util.meteor.stringList
 
-class CommandAliases : GModule(
+object CommandAliases : GModule(
     "command-aliases", "Use commands dynamically formatted with Starscript via Meteor command 'ca'."
 ) {
     init {
         runInMainMenu = true
-        allowBinds = false
-        showActive = false
+        canBind = false
+        canActivate = false
     }
 
     private var commandScripts = listOf<Script>()

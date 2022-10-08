@@ -159,6 +159,14 @@ public class Color implements ICopyable<Color>, ISerializable<Color> {
         return new Color((int) (r * 255), (int) (g * 255), (int) (b * 255), 255);
     }
 
+    public static Color fromString(String text) {
+        var color = new Color();
+        if (color.parse(text))
+            return color;
+        else
+            throw new IllegalArgumentException("Invalid RGB(A) number sequence provided.");
+    }
+
     public Color set(int r, int g, int b, int a) {
         this.r = r;
         this.g = g;
@@ -238,6 +246,13 @@ public class Color implements ICopyable<Color>, ISerializable<Color> {
     }
     public TextColor toTextColor() {
         return new TextColor(getPacked());
+    }
+
+    public String hexString() {
+        var hex = "#%02x%02x%02x".formatted(r, g, b);
+        if (a != 255)
+            hex += "%02x".formatted(a);
+        return hex.toUpperCase();
     }
 
     public Color darker() {

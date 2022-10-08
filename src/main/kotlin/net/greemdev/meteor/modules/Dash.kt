@@ -13,7 +13,7 @@ import net.greemdev.meteor.util.meteor.*
 import net.greemdev.meteor.util.misc.*
 
 // Based on https://github.com/AntiCope/meteor-rejects/blob/master/src/main/java/anticope/rejects/modules/Boost.java
-class Dash : GModule("dash", "Boosts you forward in the direction you're looking.") {
+object Dash : GModule("dash", "Boosts you forward in the direction you're looking.") {
     val power by sg double {
         name("power")
         description("The strength of your dash.")
@@ -34,7 +34,7 @@ class Dash : GModule("dash", "Boosts you forward in the direction you're looking
                 is ModuleScreen, is ModulesScreen ->
                     info("Did not activate dash because you're in a module menu. Please use the keybind in-game.")
                 else ->
-                    mc.player() + mc.rotationVecClient() * power()
+                    mc.player() + mc.clientRotationVec() * power()
             }
         }
         toggle()

@@ -57,4 +57,9 @@ public class BlockListSettingScreen extends LeftRightListSettingScreen<Block> {
         ((IdentifierAccessor) ID).setPath(path.substring(0, path.length() - 6) + "wall_banner");
         return Registry.BLOCK.get(ID);
     }
+
+    @Override
+    protected void onClosed() {
+        reloadParent();
+    }
 }

@@ -34,4 +34,9 @@ public class ModuleListSettingScreen extends LeftRightListSettingScreen<Module> 
         return setting instanceof ModuleListSetting mls &&
             mls.filter != null && !mls.filter.test(value);
     }
+
+    @Override
+    protected void onClosed() {
+        reloadParent();
+    }
 }

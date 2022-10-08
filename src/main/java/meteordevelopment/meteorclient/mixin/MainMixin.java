@@ -5,7 +5,7 @@
 
 package meteordevelopment.meteorclient.mixin;
 
-import net.greemdev.meteor.modules.presence.MinecraftPresence;
+import net.greemdev.meteor.modules.presence.MinecraftPresenceKt;
 import net.minecraft.client.main.Main;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
@@ -16,7 +16,7 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 public class MainMixin {
     @Inject(method = "main", at = @At("HEAD"), remap = false)
     private static void beforeStart(CallbackInfo ci) {
-        MinecraftPresence.setGameStart(System.currentTimeMillis());
+        MinecraftPresenceKt.setGameStart(System.currentTimeMillis());
         System.setProperty("java.awt.headless", "false");
     }
 }

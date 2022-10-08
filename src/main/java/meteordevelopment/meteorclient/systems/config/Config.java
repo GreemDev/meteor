@@ -12,10 +12,12 @@ import meteordevelopment.meteorclient.renderer.text.FontFace;
 import meteordevelopment.meteorclient.settings.*;
 import meteordevelopment.meteorclient.systems.System;
 import meteordevelopment.meteorclient.systems.Systems;
+import meteordevelopment.meteorclient.systems.commands.Command;
 import meteordevelopment.meteorclient.systems.modules.Module;
 import meteordevelopment.meteorclient.utils.player.ChatUtils;
 import meteordevelopment.meteorclient.utils.render.color.RainbowColors;
 import meteordevelopment.meteorclient.utils.render.color.SettingColor;
+import net.greemdev.meteor.type.ChatLogo;
 import net.greemdev.meteor.util.meteor.HiddenModules;
 import net.greemdev.meteor.type.PrefixBrackets;
 import net.greemdev.meteor.util.text.ChatColor;
@@ -118,11 +120,10 @@ public class Config extends System<Config> {
     );
 
     // Chat
-
     public final Setting<String> prefix = sgChat.add(new StringSetting.Builder()
-        .name("prefix")
+        .name("command-prefix")
         .description("Meteor command prefix.")
-        .defaultValue(".")
+        .defaultValue(Command.DEFAULT_PREFIX)
         .build()
     );
 
@@ -138,6 +139,14 @@ public class Config extends System<Config> {
         .description("Delete previous matching chat feedback to keep chat clear.")
         .visible(chatFeedback::get)
         .defaultValue(true)
+        .build()
+    );
+
+    public final Setting<ChatLogo> chatLogo = sgChat.add(new EnumSetting.Builder<ChatLogo>()
+        .name("chat-feedback-icon")
+        .description("The icon to appear before Meteor-related chat feedback.")
+        .defaultValue(ChatLogo.Meteor)
+        .visible(chatFeedback::get)
         .build()
     );
 
@@ -158,7 +167,6 @@ public class Config extends System<Config> {
         .name("chat-prefix-color")
         .description("Color of the main prefix text.")
         .defaultValue(MeteorClient.COLOR)
-        .onChanged(RainbowColors::handle)
         .build()
     );
 
@@ -177,7 +185,6 @@ public class Config extends System<Config> {
         .name("chat-prefix-brackets-color")
         .description("Color of the brackets around the prefix text.")
         .defaultValue(ChatColor.grey.asMeteor())
-        .onChanged(RainbowColors::handle)
         .build()
     );
 
@@ -185,7 +192,6 @@ public class Config extends System<Config> {
     public final Setting<List<Module>> hiddenModules = sgMisc.add(new ModuleListSetting.Builder()
         .name("hidden-modules")
         .description("Modules to hide from Meteor's Modules screen.")
-        .defaultValue(Collections.emptyList())
         .defaultValue(HiddenModules.getModules())
         .onChanged(HiddenModules.get()::set)
         .build()

@@ -55,14 +55,12 @@ class ModuleKeybindHud : HudElement(Companion.info) {
         name("module-color")
         description("The module name color to display.")
         defaultValue(SettingColor())
-        onChanged(RainbowColors::handle)
     }
 
     val keybindColor by sg color {
         name("keybind-color")
         description("The module keybind color to display.")
         defaultValue(SettingColor(25, 25, 255))
-        onChanged(RainbowColors::handle)
     }
 
     val alignment by sg.enum<Alignment> {
