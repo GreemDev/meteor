@@ -5,41 +5,55 @@
 
 package net.greemdev.meteor.gui.theme.round.widget
 
+import meteordevelopment.meteorclient.gui.renderer.GuiRenderer
 import meteordevelopment.meteorclient.gui.tabs.Tab
+import meteordevelopment.meteorclient.gui.tabs.TabScreen
+import meteordevelopment.meteorclient.gui.tabs.Tabs
 import meteordevelopment.meteorclient.gui.widgets.WTopBar
 import meteordevelopment.meteorclient.gui.widgets.pressable.WPressable
-import meteordevelopment.meteorclient.gui.tabs.TabScreen
-import net.greemdev.meteor.gui.theme.round.RoundedWidget
-import meteordevelopment.meteorclient.gui.renderer.GuiRenderer
-import meteordevelopment.meteorclient.gui.tabs.Tabs
 import meteordevelopment.meteorclient.utils.render.color.Color
-import net.greemdev.meteor.gui.theme.round.util.*
-import net.greemdev.meteor.util.meteor.*
-import net.greemdev.meteor.util.*
+import net.greemdev.meteor.gui.theme.round.RoundedWidget
+import net.greemdev.meteor.gui.theme.round.util.rounded
+import net.greemdev.meteor.util.invoking
+import net.greemdev.meteor.util.meteor.invoke
+import net.greemdev.meteor.util.meteor.renderable
+import net.greemdev.meteor.util.minecraft
 import org.lwjgl.glfw.GLFW.glfwSetCursorPos
-
 
 class WRoundedTopBar : WTopBar(), RoundedWidget {
     override fun getButtonColor(pressed: Boolean, hovered: Boolean) = theme().backgroundColor.get(pressed, hovered)
     override fun getNameColor(): Color = theme().textColor()
 
     override fun init() {
-        Tabs.get().forEach { add(WTopBarButton(it)) }
+        clear()
+        val (tabs, iconTabs) = Tabs.get().renderable()
+
+        tabs.forEach { add(WRoundedTopBarButton(it)) }
+
+        if (tabs.isNotEmpty())
+            add(theme.verticalSeparator()).expandWidgetY()
+
+        iconTabs.forEach { add(WRoundedTopBarButton(it)) }
     }
 
-    private fun buttonState(button: WTopBarButton): Int {
-        var a = 0
-        if (button == cells.first().widget())
-            a = a or 1
-        if (button == cells.last().widget())
-            a = a or 2
-        return a
-    }
-    private inner class WTopBarButton(val tab: Tab) : WPressable() {
+    private inner class WRoundedTopBarButton(val tab: Tab) : WPressable() {
+        private val state by invoking {
+            var a = 0
+            if (this == cells.first().widget())
+                a = a or 1
+            if (this == cells.last().widget())
+                a = a or 2
+            a
+        }
+
         override fun onCalculateSize() {
             val pad = pad()
 
-            width = pad + theme.textWidth(tab.name) + pad
+            width = if (tab.displayIcon.get())
+                pad + theme.textHeight() + pad
+            else
+                pad + theme.textWidth(tab.name) + pad
+
             height = pad + theme.textHeight() + pad
         }
 
@@ -52,19 +66,34 @@ class WRoundedTopBar : WTopBar(), RoundedWidget {
             }
         }
 
+
         override fun onRender(renderer: GuiRenderer, mouseX: Double, mouseY: Double, delta: Double) {
             val pad = pad()
-            val color = getButtonColor(pressed || (minecraft.currentScreen is TabScreen && (minecraft.currentScreen as TabScreen).tab == tab), mouseOver)
+            val color = getButtonColor(
+                pressed || (minecraft.currentScreen is TabScreen && (minecraft.currentScreen as TabScreen).tab == tab),
+                mouseOver
+            )
 
             val roundRenderer = renderer.r2D().rounded()
 
-            when (buttonState(this)) {
+            when (state) {
                 1 -> roundRenderer.widgetQuadSide(this, color, theme().round(), false)
                 2 -> roundRenderer.widgetQuadSide(this, color, theme().round(), true)
                 3 -> roundRenderer.widgetQuad(this, color, theme().round())
                 else -> renderer.quad(this, color)
             }
-            renderer.text(tab.name, x + pad, y + pad, nameColor, false)
+
+            if (tab.displayIcon.get())
+                renderer.quad(
+                    x + pad,
+                    y + pad,
+                    theme.textHeight(),
+                    theme.textHeight(),
+                    tab.icon,
+                    nameColor
+                )
+            else
+                renderer.text(tab.name, x + pad, y + pad, nameColor, false)
         }
     }
 }

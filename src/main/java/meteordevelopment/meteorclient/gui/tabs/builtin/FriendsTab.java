@@ -6,6 +6,7 @@
 package meteordevelopment.meteorclient.gui.tabs.builtin;
 
 import meteordevelopment.meteorclient.gui.GuiTheme;
+import meteordevelopment.meteorclient.gui.renderer.GuiRenderer;
 import meteordevelopment.meteorclient.gui.tabs.Tab;
 import meteordevelopment.meteorclient.gui.tabs.TabScreen;
 import meteordevelopment.meteorclient.gui.tabs.WindowTabScreen;
@@ -14,6 +15,7 @@ import meteordevelopment.meteorclient.gui.widgets.containers.WTable;
 import meteordevelopment.meteorclient.gui.widgets.input.WTextBox;
 import meteordevelopment.meteorclient.gui.widgets.pressable.WMinus;
 import meteordevelopment.meteorclient.gui.widgets.pressable.WPlus;
+import meteordevelopment.meteorclient.systems.config.Config;
 import meteordevelopment.meteorclient.systems.friends.Friend;
 import meteordevelopment.meteorclient.systems.friends.Friends;
 import meteordevelopment.meteorclient.utils.misc.NbtUtils;
@@ -21,8 +23,11 @@ import meteordevelopment.meteorclient.utils.network.MeteorExecutor;
 import net.minecraft.client.gui.screen.Screen;
 
 public class FriendsTab extends Tab {
+
+    public static final String NAME = "Friends";
+
     public FriendsTab() {
-        super("Friends");
+        super(NAME, GuiRenderer.FRIENDS, Config.get().friendsIcon::get);
     }
 
     @Override
@@ -84,8 +89,8 @@ public class FriendsTab extends Tab {
 
                         table.clear();
                         initTable(table);
-                    })
-                ).expandCellX().right();
+                    }
+                )).expandCellX().right();
 
                 table.row();
             }

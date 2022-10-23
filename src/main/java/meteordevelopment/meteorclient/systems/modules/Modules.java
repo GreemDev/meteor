@@ -42,6 +42,7 @@ import meteordevelopment.meteorclient.utils.misc.input.KeyAction;
 import meteordevelopment.orbit.EventHandler;
 import meteordevelopment.orbit.EventPriority;
 import net.greemdev.meteor.modules.IgnoreWorldBorder;
+import net.greemdev.meteor.util.Util;
 import net.greemdev.meteor.util.meteor.HiddenModules;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.nbt.NbtElement;
@@ -268,7 +269,7 @@ public class Modules extends System<Modules> {
     private void onAction(boolean isKey, int value, boolean isPress) {
         if (mc.currentScreen == null && !Input.isKeyPressed(GLFW.GLFW_KEY_F3)) {
             for (Module module : moduleInstances.values()) {
-                if (module.keybind.matches(isKey, value) && (isPress || module.toggleOnBindRelease)) {
+                if (module.keybind.matches(isKey, value) && (isPress || module.keybind.onRelease)) {
                     module.toggle();
                     module.sendToggledMsg();
                 }
@@ -283,7 +284,7 @@ public class Modules extends System<Modules> {
         if (!Utils.canUpdate()) return;
 
         for (Module module : moduleInstances.values()) {
-            if (module.toggleOnBindRelease && module.isActive()) {
+            if (module.keybind.onRelease && module.isActive()) {
                 module.toggle();
                 module.sendToggledMsg();
             }

@@ -6,11 +6,15 @@
 
 package net.greemdev.meteor.util.misc
 
+import meteordevelopment.meteorclient.mixin.ChatHudAccessor
+import meteordevelopment.meteorclient.utils.Utils
 import meteordevelopment.meteorclient.utils.world.Dimension
+import net.greemdev.meteor.util.getOrNull
 import net.greemdev.meteor.util.minecraft
 import net.greemdev.meteor.util.text.textOf
 import net.greemdev.meteor.util.withoutPrefix
 import net.minecraft.client.MinecraftClient
+import net.minecraft.client.gui.hud.ChatHud
 import net.minecraft.client.network.ClientPlayNetworkHandler
 import net.minecraft.client.network.PlayerListEntry
 import net.minecraft.client.world.ClientWorld
@@ -38,6 +42,8 @@ fun MinecraftClient?.isInGame() = this != null && player != null && world != nul
 
 fun MinecraftClient.player() = player ?: error("The client's PlayerEntity is unavailable.")
 fun MinecraftClient.currentWorld() = world ?: error("There is no world loaded currently.")
+fun MinecraftClient.network() = networkHandler ?: error("There is no network handler available.")
+infix fun MinecraftClient.network(func: ClientPlayNetworkHandler.() -> Unit) = getOrNull { network() }?.func()
 
 fun ClientWorld?.currentDimension() =
     when (this?.registryKey?.value?.path) {
@@ -45,6 +51,15 @@ fun ClientWorld?.currentDimension() =
         "the_end" -> Dimension.End
         else -> Dimension.Overworld
     }
+
+fun ChatHud.clearChat(includeHistory: Boolean = false) {
+    val access = Utils.cast<ChatHudAccessor>(this)
+    access.messageQueue.clear()
+    access.visibleMessages.clear()
+    access.messages.clear()
+    if (includeHistory)
+        access.messageHistory.clear()
+}
 
 fun PlayerEntity.ping(): Int =
     minecraft.networkHandler?.getPlayerListEntry(uuid)?.latency ?: 0

@@ -36,6 +36,7 @@ fun String.withoutSuffix(suffix: String, ignoreCase: Boolean = false) =
         dropLast(suffix.length)
     else this
 
+@JvmOverloads
 fun String.pluralize(quantity: Number, useES: Boolean = false, prefixQuantity: Boolean = true) =
     if (quantity != 1) buildString {
         if (prefixQuantity) append("$quantity ")

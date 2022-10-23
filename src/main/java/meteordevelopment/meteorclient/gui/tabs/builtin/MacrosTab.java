@@ -15,6 +15,7 @@ import meteordevelopment.meteorclient.gui.widgets.containers.WTable;
 import meteordevelopment.meteorclient.gui.widgets.pressable.WButton;
 import meteordevelopment.meteorclient.gui.widgets.pressable.WMinus;
 import meteordevelopment.meteorclient.settings.Settings;
+import meteordevelopment.meteorclient.systems.config.Config;
 import meteordevelopment.meteorclient.systems.macros.Macro;
 import meteordevelopment.meteorclient.systems.macros.Macros;
 import meteordevelopment.meteorclient.utils.misc.NbtUtils;
@@ -23,8 +24,10 @@ import net.minecraft.client.gui.screen.Screen;
 import static meteordevelopment.meteorclient.MeteorClient.mc;
 
 public class MacrosTab extends Tab {
+
+    public static final String NAME = "Macros";
     public MacrosTab() {
-        super("Macros");
+        super(NAME, GuiRenderer.MACROS, Config.get().macrosIcon::get);
     }
 
     @Override

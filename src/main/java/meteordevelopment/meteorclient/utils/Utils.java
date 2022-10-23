@@ -22,7 +22,6 @@ import meteordevelopment.meteorclient.utils.render.color.Color;
 import meteordevelopment.meteorclient.utils.world.BlockEntityIterator;
 import meteordevelopment.meteorclient.utils.world.ChunkIterator;
 import meteordevelopment.orbit.EventHandler;
-import net.greemdev.meteor.util.Util;
 import net.minecraft.block.Block;
 import net.minecraft.block.Blocks;
 import net.minecraft.block.ShulkerBoxBlock;
@@ -62,7 +61,6 @@ import static org.lwjgl.glfw.GLFW.*;
 
 public class Utils {
     private static final Random random = new Random();
-    public static boolean firstTimeTitleScreen = true;
     public static boolean isReleasingTrident;
     public static final Color WHITE = new Color(255, 255, 255);
     public static boolean rendering3D = true;
@@ -248,6 +246,11 @@ public class Utils {
         return wordsFound;
     }
 
+    public static <T> T cast(Object value) {
+        //noinspection unchecked
+        return (T)value;
+    }
+
     public static double squaredDistance(double x1, double y1, double z1, double x2, double y2, double z2) {
         double dX = x2 - x1;
         double dY = y2 - y1;
@@ -398,9 +401,9 @@ public class Utils {
     }
 
     public static boolean canOpenGui() {
-        if (canUpdate()) return mc.currentScreen == null;
-
-        return mc.currentScreen instanceof TitleScreen || mc.currentScreen instanceof MultiplayerScreen || mc.currentScreen instanceof SelectWorldScreen;
+        return canUpdate()
+            ? mc.currentScreen == null
+            : mc.currentScreen instanceof TitleScreen || mc.currentScreen instanceof MultiplayerScreen || mc.currentScreen instanceof SelectWorldScreen;
     }
 
     public static int random(int min, int max) {
@@ -555,16 +558,5 @@ public class Utils {
         if (port <= 0 || port > 65535 || address == null || address.isBlank()) return false;
         InetSocketAddress socketAddress = new InetSocketAddress(address, port);
         return !socketAddress.isUnresolved();
-    }
-
-    // Filters
-
-    public static boolean nameFilter(String text, char character) {
-        return (character >= 'a' && character <= 'z') || (character >= 'A' && character <= 'Z') || (character >= '0' && character <= '9') || character == '_' || character == '-' || character == '.' || character == ' ';
-    }
-
-    public static boolean ipFilter(String text, char character) {
-        if (text.contains(":") && character == ':') return false;
-        return (character >= 'a' && character <= 'z') || (character >= 'A' && character <= 'Z') || (character >= '0' && character <= '9') || character == '.';
     }
 }

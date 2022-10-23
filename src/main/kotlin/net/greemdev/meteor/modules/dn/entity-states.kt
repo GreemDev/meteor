@@ -5,9 +5,10 @@
 
 package net.greemdev.meteor.modules.dn
 
-import net.greemdev.meteor.util.meteor.Meteor
+import net.greemdev.meteor.util.meteor.*
 import net.greemdev.meteor.util.minecraft
 import net.greemdev.meteor.util.misc.currentWorld
+import net.greemdev.meteor.util.misc.player
 import net.minecraft.entity.LivingEntity
 import net.minecraft.util.math.MathHelper
 
@@ -52,7 +53,7 @@ data class EntityState(val entity: LivingEntity) {
 
         lastDamageDelay = healthIndicatorDelay * 2
         lastHealth = health
-        if (Meteor.module<DamageNumbers>().isActive)
+        if (DamageNumbers.isActive)
             DamageNumbers.add(DamageNumber(this, lastDamage))
     }
 
@@ -61,24 +62,28 @@ data class EntityState(val entity: LivingEntity) {
         const val healthIndicatorDelay = 10f
         private var ticked = 0
 
-        @Suppress("DEPRECATION")
-        fun removeExpired() = entries.removeIf {
+        fun clean() = entries.removeIf {
             val entity = minecraft.currentWorld().getEntityById(it.key)
             if (entity !is LivingEntity)
                 true
-            else if (!minecraft.currentWorld().isChunkLoaded(entity.blockPos))
+            else if (!minecraft.currentWorld().chunkManager.isChunkLoaded(entity.blockPos.x, entity.blockPos.z))
+                true
+            else if (DamageNumbers.ignoreSelf() && minecraft.player().uuid == it.value.entity.uuid)
                 true
             else !entity.isAlive
         }
         @JvmStatic
-        fun track(entity: LivingEntity) =
+        fun track(entity: LivingEntity) {
+            if (DamageNumbers.ignoreSelf() && minecraft.player().uuid == entity.uuid) return
+
             computeIfAbsent(entity.id) {
                 EntityState(entity)
             }
+        }
         fun tick() {
             forEach { _, state -> state.tick() }
             if (ticked >= 200) {
-                removeExpired()
+                clean()
                 ticked = 0
             } else ticked++
         }

@@ -8,11 +8,13 @@ package meteordevelopment.meteorclient.gui.tabs.builtin;
 import baritone.api.BaritoneAPI;
 import baritone.api.utils.SettingsUtil;
 import meteordevelopment.meteorclient.gui.GuiTheme;
+import meteordevelopment.meteorclient.gui.renderer.GuiRenderer;
 import meteordevelopment.meteorclient.gui.tabs.Tab;
 import meteordevelopment.meteorclient.gui.tabs.TabScreen;
 import meteordevelopment.meteorclient.gui.tabs.WindowTabScreen;
 import meteordevelopment.meteorclient.gui.widgets.input.WTextBox;
 import meteordevelopment.meteorclient.settings.*;
+import meteordevelopment.meteorclient.systems.config.Config;
 import meteordevelopment.meteorclient.utils.render.color.SettingColor;
 import net.minecraft.block.Block;
 import net.minecraft.client.gui.screen.Screen;
@@ -25,10 +27,11 @@ import java.lang.reflect.Type;
 import java.util.List;
 
 public class BaritoneTab extends Tab {
+    public static final String NAME = "Baritone";
     private static Settings settings;
 
     public BaritoneTab() {
-        super("Baritone");
+        super(NAME, GuiRenderer.CLEF, Config.get().baritoneIcon::get);
     }
 
     @SuppressWarnings("unchecked")

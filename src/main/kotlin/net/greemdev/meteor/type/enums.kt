@@ -30,7 +30,6 @@ enum class StringComparisonType {
     }
 }
 
-
 enum class PrefixBrackets(pairing: Pair<String, String>) {
     Square("[" to "]"),
     Curly("{" to "}"),

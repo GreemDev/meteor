@@ -12,8 +12,10 @@ import meteordevelopment.meteorclient.gui.tabs.TabScreen;
 import net.minecraft.client.gui.screen.Screen;
 
 public class ModulesTab extends Tab {
+    public static final String NAME = "Modules";
+
     public ModulesTab() {
-        super("Modules");
+        super(NAME);
     }
 
     @Override

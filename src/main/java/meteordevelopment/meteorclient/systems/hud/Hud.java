@@ -19,6 +19,8 @@ import meteordevelopment.meteorclient.utils.render.color.SettingColor;
 import meteordevelopment.orbit.EventHandler;
 import net.greemdev.meteor.Greteor;
 import net.greemdev.meteor.hud.HudElementMetadata;
+import net.greemdev.meteor.type.ErrorPrompt;
+import net.greemdev.meteor.util.meteor.Prompts;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.nbt.NbtElement;
 import org.jetbrains.annotations.NotNull;
@@ -139,7 +141,16 @@ public class Hud extends System<Hud> implements Iterable<HudElement> {
     }
 
     public void add(HudElementInfo<?> info, int x, int y, XAnchor xAnchor, YAnchor yAnchor) {
-        add(info.create(), x, y, xAnchor, yAnchor);
+        HudElement element;
+        try {
+            element = info.create();
+        } catch (ErrorPrompt err) {
+            err.tryShow();
+            return;
+        }
+
+
+        add(element, x, y, xAnchor, yAnchor);
     }
 
     public void add(HudElementInfo<?> info, int x, int y) {
@@ -148,7 +159,13 @@ public class Hud extends System<Hud> implements Iterable<HudElement> {
 
     @SuppressWarnings({"unchecked", "rawtypes"})
     public void add(HudElementInfo.Preset preset, int x, int y, XAnchor xAnchor, YAnchor yAnchor) {
-        HudElement element = preset.info.create();
+        HudElement element;
+        try {
+            element = preset.info.create();
+        } catch (ErrorPrompt err) {
+            err.tryShow();
+            return;
+        }
         preset.callback.accept(element);
         add(element, x, y, xAnchor, yAnchor);
     }
@@ -277,7 +294,13 @@ public class Hud extends System<Hud> implements Iterable<HudElement> {
 
             HudElementInfo<?> info = infos.get(c.getString("name"));
             if (info != null) {
-                HudElement element = info.create();
+                HudElement element;
+                try {
+                    element = info.create();
+                } catch (ErrorPrompt err) {
+                    err.tryShow();
+                    continue;
+                }
                 element.fromTag(c);
                 elements.add(element);
             }

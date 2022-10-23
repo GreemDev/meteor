@@ -49,7 +49,7 @@ enum class NbtDataType(val byte: kotlin.Byte) {
 }
 
 fun NbtCompound.getList(name: String, type: NbtDataType): NbtList = getList(name, type.int)
-fun NbtCompound.collectList(name: String, type: NbtDataType): List<String> = getList(name, type).collect()
+fun NbtCompound.collectList(name: String, type: NbtDataType) = getList(name, type).collect()
 
 @Suppress("UNCHECKED_CAST")
 inline fun<reified T> Array<T>.toNBT(): NbtElement = when (T::class) {
@@ -61,5 +61,5 @@ inline fun<reified T> Array<T>.toNBT(): NbtElement = when (T::class) {
 
 fun Collection<*>.toNBT() = Nbt list mapNotNull { it?.toNBT() }
 
-fun NbtList.collect() = map { it.asString() }
+fun NbtList.collect() = mapNotNull(NbtElement::asString)
 

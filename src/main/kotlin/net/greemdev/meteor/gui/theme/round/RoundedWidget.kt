@@ -14,7 +14,7 @@ import net.greemdev.meteor.util.meteor.*
 
 interface RoundedWidget : BaseWidget {
     fun theme() = theme as RoundedTheme
-    fun renderBackground(renderer: GuiRenderer, widget: WWidget, pressed: Boolean, mouseOver: Boolean) {
+    fun renderBackground(renderer: GuiRenderer, widget: WWidget, pressed: Boolean, mouseOver: Boolean, outline: Boolean = true) {
         val t = theme()
         val s = t.scale(2.0)
         val outlineColor = t.outlineColor.get(pressed, mouseOver)
@@ -22,6 +22,7 @@ interface RoundedWidget : BaseWidget {
         r.quad(widget.x + s, widget.y + s,
             widget.width - s * 2, widget.height - s * 2,
             t.backgroundColor.get(pressed, mouseOver), t.round() - s)
-        r.widgetQuadOutline(widget, outlineColor, t.round(), s)
+        if (outline)
+            r.widgetQuadOutline(widget, outlineColor, t.round(), s)
     }
 }

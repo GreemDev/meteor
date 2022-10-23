@@ -37,7 +37,6 @@ import java.util.UUID;
 public class EntityOwner extends Module {
     private static final Color BACKGROUND = new Color(0, 0, 0, 75);
     private static final Color TEXT = new Color(255, 255, 255);
-    private static final Type RESPONSE_TYPE = new TypeToken<List<UuidNameHistoryResponseItem>>() {}.getType();
 
     private final SettingGroup sgGeneral = settings.getDefaultGroup();
 
@@ -122,12 +121,13 @@ public class EntityOwner extends Module {
         // Makes an HTTP request to Mojang API
         MeteorExecutor.execute(() -> {
             if (isActive()) {
-                List<UuidNameHistoryResponseItem> res = Http.get("https://api.mojang.com/user/profiles/" + uuid.toString().replace("-", "") + "/names").sendJson(RESPONSE_TYPE);
+                ProfileResponse res = Http.get("https://sessionserver.mojang.com/session/minecraft/profile/" + uuid.toString().replace("-", "")).sendJson(ProfileResponse.class);
 
-                if (isActive()) {
-                    if (res == null || res.size() <= 0) uuidToName.put(uuid, "Failed to get name");
-                    else uuidToName.put(uuid, res.get(res.size() - 1).name);
-                }
+                if (isActive())
+                    if (res == null)
+                        uuidToName.put(uuid, "Failed to get name");
+                    else
+                        uuidToName.put(uuid, res.name);
             }
         });
 
@@ -136,7 +136,7 @@ public class EntityOwner extends Module {
         return name;
     }
 
-    public static class UuidNameHistoryResponseItem {
+    private static class ProfileResponse {
         public String name;
     }
 }

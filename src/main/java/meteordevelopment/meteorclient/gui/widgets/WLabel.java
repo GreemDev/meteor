@@ -7,21 +7,31 @@ package meteordevelopment.meteorclient.gui.widgets;
 
 import meteordevelopment.meteorclient.gui.widgets.pressable.WPressable;
 import meteordevelopment.meteorclient.utils.render.color.Color;
+import net.greemdev.meteor.util.meteor.LegacyText;
 
 public abstract class WLabel extends WPressable {
     public Color color;
 
     protected String text;
     protected boolean title;
+    public boolean legacyColorCodes;
 
     public WLabel(String text, boolean title) {
+        this(text, title, false);
+    }
+
+    public WLabel(String text, boolean title, boolean colorCodes) {
         this.text = text;
         this.title = title;
+        this.legacyColorCodes = colorCodes;
     }
 
     @Override
     protected void onCalculateSize() {
-        width = theme.textWidth(text, text.length(), title);
+        width = legacyColorCodes
+            ? LegacyText.getWidth(theme.textRenderer(), text)
+            : theme.textWidth(text, text.length(), title);
+
         height = theme.textHeight(title);
     }
 
@@ -38,7 +48,13 @@ public abstract class WLabel extends WPressable {
     }
 
     public void set(String text) {
-        if (Math.round(theme.textWidth(text, text.length(), title)) != width) invalidate();
+        if (useColorCodes())
+            if (Math.round(LegacyText.getWidth(theme.textRenderer(), text)) != width)
+                invalidate();
+        else
+            if (Math.round(theme.textWidth(text, text.length(), title)) != width)
+                invalidate();
+
 
         this.text = text;
     }
@@ -50,5 +66,9 @@ public abstract class WLabel extends WPressable {
     public WLabel color(Color color) {
         this.color = color;
         return this;
+    }
+
+    public boolean useColorCodes() {
+        return legacyColorCodes && LegacyText.getColorCodeRegex().containsMatchIn(text);
     }
 }

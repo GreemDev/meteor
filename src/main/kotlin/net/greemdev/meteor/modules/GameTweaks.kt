@@ -22,12 +22,6 @@ object GameTweaks : GModule(
         defaultValue(true)
     }
 
-    /*val silenceNarrator by sgGP bool {
-        name("silence-narrator")
-        description("Silences Narrator. Permanently. As long as the checkbox is ticked.")
-        defaultValue(false)
-    }*/
-
     val migratorCapes by sgR bool {
         name("migrator-capes")
         description("Whether or not to render Migrator capes on players.")
@@ -48,7 +42,6 @@ object GameTweaks : GModule(
 
     fun bats() = isActive and lessAnnoyingBats()
     fun noMigrators() = isActive and !migratorCapes()
-    //fun silenceNarrator() = isActive and silenceNarrator.get()
     fun noScore() = isActive and !showScore()
     fun screenshots() = isActive and clipboardScreenshots()
 }

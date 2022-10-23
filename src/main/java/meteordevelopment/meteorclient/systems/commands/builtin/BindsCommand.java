@@ -24,7 +24,7 @@ import static com.mojang.brigadier.Command.SINGLE_SUCCESS;
 
 public class BindsCommand extends Command {
     public BindsCommand() {
-        super("binds", "List of all bound modules.");
+        super("binds", "List all bound modules.");
     }
 
     @Override
@@ -65,6 +65,6 @@ public class BindsCommand extends Command {
             .colored(ChatColor.blue).bold()
             .newline(2)
             .addString(module.description, ChatColor.white)
-            .getMutableText();
+            .text();
     }
 }

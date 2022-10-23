@@ -14,6 +14,7 @@ import meteordevelopment.meteorclient.renderer.GL;
 import meteordevelopment.meteorclient.renderer.Renderer2D;
 import meteordevelopment.meteorclient.renderer.Texture;
 import meteordevelopment.meteorclient.utils.PostInit;
+import meteordevelopment.meteorclient.utils.PreInit;
 import meteordevelopment.meteorclient.utils.Utils;
 import meteordevelopment.meteorclient.utils.misc.MeteorIdentifier;
 import meteordevelopment.meteorclient.utils.misc.Pool;
@@ -35,11 +36,7 @@ public class GuiRenderer {
     private static final TexturePacker TEXTURE_PACKER = new TexturePacker();
     private static ByteTexture TEXTURE;
 
-    public static GuiTexture CIRCLE;
-    public static GuiTexture TRIANGLE;
-    public static GuiTexture EDIT;
-    public static GuiTexture RESET;
-    public static GuiTexture FAVORITE_NO, FAVORITE_YES;
+    public static GuiTexture CIRCLE, CLEF, COG, EDIT, FAVORITE_NO, FAVORITE_YES, FRIENDS, GUI, MACROS, PROFILES, RESET, TRIANGLE, WAYPOINTS;
 
     public GuiTheme theme;
 
@@ -68,14 +65,21 @@ public class GuiRenderer {
         return TEXTURE_PACKER.add(id);
     }
 
-    @PostInit
+    @PreInit
     public static void init() {
         CIRCLE = addTexture(new MeteorIdentifier("textures/icons/gui/circle.png"));
-        TRIANGLE = addTexture(new MeteorIdentifier("textures/icons/gui/triangle.png"));
+        CLEF = addTexture(new MeteorIdentifier("textures/icons/gui/clef.png"));
+        COG = addTexture(new MeteorIdentifier("textures/icons/gui/cog.png"));
         EDIT = addTexture(new MeteorIdentifier("textures/icons/gui/edit.png"));
-        RESET = addTexture(new MeteorIdentifier("textures/icons/gui/reset.png"));
         FAVORITE_NO = addTexture(new MeteorIdentifier("textures/icons/gui/favorite_no.png"));
         FAVORITE_YES = addTexture(new MeteorIdentifier("textures/icons/gui/favorite_yes.png"));
+        FRIENDS = addTexture(new MeteorIdentifier("textures/icons/gui/friends.png"));
+        GUI = addTexture(new MeteorIdentifier("textures/icons/gui/gui.png"));
+        MACROS = addTexture(new MeteorIdentifier("textures/icons/gui/macros.png"));
+        PROFILES = addTexture(new MeteorIdentifier("textures/icons/gui/profiles.png"));
+        RESET = addTexture(new MeteorIdentifier("textures/icons/gui/reset.png"));
+        TRIANGLE = addTexture(new MeteorIdentifier("textures/icons/gui/triangle.png"));
+        WAYPOINTS = addTexture(new MeteorIdentifier("textures/icons/gui/waypoints.png"));
 
         TEXTURE = TEXTURE_PACKER.pack();
     }

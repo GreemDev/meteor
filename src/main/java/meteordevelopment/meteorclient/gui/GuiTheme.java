@@ -5,6 +5,7 @@
 
 package meteordevelopment.meteorclient.gui;
 
+import kotlin.StandardKt;
 import meteordevelopment.meteorclient.gui.renderer.packer.GuiTexture;
 import meteordevelopment.meteorclient.gui.screens.AccountsScreen;
 import meteordevelopment.meteorclient.gui.screens.ModuleScreen;
@@ -23,10 +24,13 @@ import meteordevelopment.meteorclient.renderer.text.TextRenderer;
 import meteordevelopment.meteorclient.settings.Settings;
 import meteordevelopment.meteorclient.systems.accounts.Account;
 import meteordevelopment.meteorclient.systems.modules.Module;
+import meteordevelopment.meteorclient.systems.waypoints.Waypoint;
 import meteordevelopment.meteorclient.utils.misc.ISerializable;
 import meteordevelopment.meteorclient.utils.misc.Keybind;
 import meteordevelopment.meteorclient.utils.misc.Names;
 import meteordevelopment.meteorclient.utils.render.color.Color;
+import net.greemdev.meteor.gui.widget.WGuiTexture;
+import net.greemdev.meteor.gui.widget.WWaypointIcon;
 import net.greemdev.meteor.type.ColorSettingScreenMode;
 import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.item.ItemStack;
@@ -76,6 +80,22 @@ public abstract class GuiTheme implements ISerializable<GuiTheme> {
     }
     public WLabel label(String text) {
         return label(text, false);
+    }
+
+    public WLabel legacyLabel(String text, boolean title, double maxWidth) {
+        WLabel label = label(text, title, maxWidth);
+        label.legacyColorCodes = true;
+        return label;
+    }
+
+    public WLabel legacyLabel(String text, boolean title) {
+        return legacyLabel(text, title, 0);
+    }
+    public WLabel legacyLabel(String text, double maxWidth) {
+        return legacyLabel(text, false, maxWidth);
+    }
+    public WLabel legacyLabel(String text) {
+        return legacyLabel(text, false);
     }
 
     public abstract WHorizontalSeparator horizontalSeparator(String text);
@@ -179,6 +199,10 @@ public abstract class GuiTheme implements ISerializable<GuiTheme> {
         return w(new WTable());
     }
 
+    public WWaypointIcon waypointIcon(Waypoint waypoint) {
+        return w(new WWaypointIcon(waypoint));
+    }
+
     public abstract WSection section(String title, boolean expanded, WWidget headerWidget);
     public WSection section(String title, boolean expanded) {
         return section(title, expanded, null);
@@ -197,7 +221,7 @@ public abstract class GuiTheme implements ISerializable<GuiTheme> {
 
     public abstract WFavorite favorite(boolean checked);
 
-    public WFavorite favorite(boolean checked, Runnable action) {
+    public WFavorite favorite(boolean checked, Consumer<Boolean> action) {
         return favorite(checked).action(action);
     }
 
@@ -213,6 +237,10 @@ public abstract class GuiTheme implements ISerializable<GuiTheme> {
 
     public WTexture texture(double width, double height, double rotation, Texture texture) {
         return w(new WTexture(width, height, rotation, texture));
+    }
+
+    public WGuiTexture texture(GuiTexture texture, Color color) {
+        return w(new WGuiTexture(texture, color));
     }
 
     public WIntEdit intEdit(int value, int min, int max, int sliderMin, int sliderMax, boolean noSlider) {
@@ -244,7 +272,13 @@ public abstract class GuiTheme implements ISerializable<GuiTheme> {
     }
 
     public WKeybind keybind(Keybind keybind, Runnable onSet) {
-        return keybind(keybind, Keybind.none()).onSet(onSet);
+        return keybind(keybind).onSet(onSet);
+    }
+
+    public WKeybind moduleKeybind(Keybind keybind, Runnable onSet) {
+        var kb = keybind(keybind, onSet);
+        kb.module = true;
+        return kb;
     }
 
     public WKeybind keybind(Keybind keybind, Keybind defaultValue) {

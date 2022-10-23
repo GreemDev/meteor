@@ -6,7 +6,9 @@
 package meteordevelopment.meteorclient.systems.config;
 
 import meteordevelopment.meteorclient.MeteorClient;
+import meteordevelopment.meteorclient.gui.tabs.TabScreen;
 import meteordevelopment.meteorclient.gui.utils.StarscriptTextBoxRenderer;
+import meteordevelopment.meteorclient.gui.widgets.WTopBar;
 import meteordevelopment.meteorclient.renderer.Fonts;
 import meteordevelopment.meteorclient.renderer.text.FontFace;
 import meteordevelopment.meteorclient.settings.*;
@@ -40,6 +42,8 @@ public class Config extends System<Config> {
     private final SettingGroup sgChat = settings.createGroup("Chat");
     private final SettingGroup sgMisc = settings.createGroup("Misc");
 
+    private final SettingGroup sgTopBar = settings.createGroup("Top Bar", false);
+
     // Visual
     public final Setting<Boolean> customFont = sgVisual.add(new BoolSetting.Builder()
         .name("custom-font")
@@ -69,27 +73,6 @@ public class Config extends System<Config> {
         .name("title-screen-version")
         .description("Show Greteor version info on title screen")
         .defaultValue(true)
-        .build()
-    );
-
-    public final Setting<Boolean> useCustomSplashes = sgVisual.add(new BoolSetting.Builder()
-        .name("use-custom-splashes")
-        .description("Show custom splash texts on title screen")
-        .defaultValue(false)
-        .build()
-    );
-
-    public final Setting<List<String>> customSplashes = sgVisual.add(new StringListSetting.Builder()
-        .name("custom-splashes")
-        .description("Custom splash texts to use on the title screen")
-        .defaultValue("Meteor on Crack!",
-            "Star Meteor Client on GitHub!",
-            "Based utility mod.",
-            "&6MineGame159 &fbased god",
-            "&4meteorclient.com",
-            "&4Meteor on Crack!",
-            "&6Meteor on Crack!")
-        .visible(useCustomSplashes::get)
         .build()
     );
 
@@ -197,6 +180,34 @@ public class Config extends System<Config> {
         .build()
     );
 
+    public final Setting<Boolean> lastTabMemory = sgMisc.add(new BoolSetting.Builder()
+        .name("remember-last-tab")
+        .description("Reopen the last tab you were using in Meteor's GUI.")
+        .defaultValue(false)
+        .build()
+    );
+
+    public final Setting<Boolean> useCustomSplashes = sgMisc.add(new BoolSetting.Builder()
+        .name("use-custom-splashes")
+        .description("Show custom splash texts on title screen")
+        .defaultValue(false)
+        .build()
+    );
+
+    public final Setting<List<String>> customSplashes = sgMisc.add(new StringListSetting.Builder()
+        .name("custom-splashes")
+        .description("Custom splash texts to use on the title screen")
+        .defaultValue("Meteor on Crack!",
+            "Star Meteor Client on GitHub!",
+            "Based utility mod.",
+            "&6MineGame159 &fbased god",
+            "&4meteorclient.com",
+            "&4Meteor on Crack!",
+            "&6Meteor on Crack!")
+        .visible(useCustomSplashes::get)
+        .build()
+    );
+
     public final Setting<Integer> rotationHoldTicks = sgMisc.add(new IntSetting.Builder()
         .name("rotation-hold")
         .description("How long to hold server side rotation when not sending any packets.")
@@ -204,10 +215,66 @@ public class Config extends System<Config> {
         .build()
     );
 
+    public final Setting<Integer> moduleSearchCount = sgMisc.add(new IntSetting.Builder()
+        .name("module-search-count")
+        .description("Amount of modules and settings to be shown in the module search bar.")
+        .defaultValue(10)
+        .range(1, 25)
+        .build()
+    );
+
     public final Setting<Boolean> useTeamColor = sgMisc.add(new BoolSetting.Builder()
         .name("use-team-color")
         .description("Uses player's team color for rendering things like esp and tracers.")
         .defaultValue(true)
+        .build()
+    );
+
+    public final Setting<Boolean> baritoneIcon = sgTopBar.add(new BoolSetting.Builder()
+        .name("baritone-icon")
+        .description("Replace Baritone in top bar with the Baritone bass clef icon.")
+        .defaultValue(true)
+        .onChanged(b -> WTopBar.NEEDS_REFRESH = true)
+        .build()
+    );
+
+    public final Setting<Boolean> friendsIcon = sgTopBar.add(new BoolSetting.Builder()
+        .name("friends-icon")
+        .description("Replace Friends in top bar with the friends icon.")
+        .defaultValue(false)
+        .onChanged(b -> WTopBar.NEEDS_REFRESH = true)
+        .build()
+    );
+
+    public final Setting<Boolean> profilesIcon = sgTopBar.add(new BoolSetting.Builder()
+        .name("profiles-icon")
+        .description("Replace Profiles in top bar with a profile icon.")
+        .defaultValue(false)
+        .onChanged(b -> WTopBar.NEEDS_REFRESH = true)
+        .build()
+    );
+
+    public final Setting<Boolean> guiIcon = sgTopBar.add(new BoolSetting.Builder()
+        .name("GUI-icon")
+        .description("Replace GUI in top bar with a GUI icon.")
+        .defaultValue(false)
+        .onChanged(b -> WTopBar.NEEDS_REFRESH = true)
+        .build()
+    );
+
+    public final Setting<Boolean> waypointsIcon = sgTopBar.add(new BoolSetting.Builder()
+        .name("waypoints-icon")
+        .description("Replace Waypoints in top bar with a location pin icon.")
+        .defaultValue(true)
+        .onChanged(b -> WTopBar.NEEDS_REFRESH = true)
+        .build()
+    );
+
+    public final Setting<Boolean> macrosIcon = sgTopBar.add(new BoolSetting.Builder()
+        .name("macros-icon")
+        .description("Replace Macros in top bar with an M icon.")
+        .defaultValue(true)
+        .onChanged(b -> WTopBar.NEEDS_REFRESH = true)
         .build()
     );
 

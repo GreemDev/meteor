@@ -12,12 +12,16 @@ import meteordevelopment.meteorclient.gui.tabs.Tabs;
 import meteordevelopment.meteorclient.gui.widgets.containers.WHorizontalList;
 import meteordevelopment.meteorclient.gui.widgets.pressable.WPressable;
 import meteordevelopment.meteorclient.utils.render.color.Color;
+import net.greemdev.meteor.util.meteor.MetaKt;
 import net.minecraft.client.gui.screen.Screen;
 
 import static meteordevelopment.meteorclient.MeteorClient.mc;
 import static org.lwjgl.glfw.GLFW.glfwSetCursorPos;
 
 public abstract class WTopBar extends WHorizontalList {
+
+    public static boolean NEEDS_REFRESH = false;
+
     protected abstract Color getButtonColor(boolean pressed, boolean hovered);
 
     protected abstract Color getNameColor();
@@ -28,9 +32,17 @@ public abstract class WTopBar extends WHorizontalList {
 
     @Override
     public void init() {
-        for (Tab tab : Tabs.get()) {
+        clear();
+        var tabs = MetaKt.renderable(Tabs.get());
+
+        for (Tab tab : tabs.getFirst())
             add(new WTopBarButton(tab));
-        }
+
+        if (!tabs.getFirst().isEmpty())
+            add(theme.verticalSeparator()).expandWidgetY();
+
+        for (Tab tab : tabs.getSecond())
+            add(new WTopBarButton(tab));
     }
 
     protected class WTopBarButton extends WPressable {
@@ -44,7 +56,10 @@ public abstract class WTopBar extends WHorizontalList {
         protected void onCalculateSize() {
             double pad = pad();
 
-            width = pad + theme.textWidth(tab.name) + pad;
+            width = tab.displayIcon.get()
+                ? pad + theme.textHeight() + pad
+                : pad + theme.textWidth(tab.name) + pad;
+
             height = pad + theme.textHeight() + pad;
         }
 
@@ -67,7 +82,10 @@ public abstract class WTopBar extends WHorizontalList {
             Color color = getButtonColor(pressed || (mc.currentScreen instanceof TabScreen && ((TabScreen) mc.currentScreen).tab == tab), mouseOver);
 
             renderer.quad(x, y, width, height, color);
-            renderer.text(tab.name, x + pad, y + pad, getNameColor(), false);
+            if (tab.displayIcon.get())
+                renderer.quad(x + pad, y + pad, theme.textHeight(), theme.textHeight(), tab.icon, getNameColor());
+            else
+                renderer.text(tab.name, x + pad, y + pad, getNameColor(), false);
         }
     }
 }

@@ -21,7 +21,7 @@ object RenameCommand : GCommand("rename", "Renames the item in your hand.", {
 
             stack.setCustomName(textOf(newName))
             ChatUtils.info("Changed the item's name.")
-            mc.networkHandler?.sendPacket(RenameItemC2SPacket(newName))
+            mc network { sendPacket(RenameItemC2SPacket(newName)) }
         }
     }
 })

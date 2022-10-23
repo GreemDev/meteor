@@ -14,6 +14,12 @@ import meteordevelopment.meteorclient.utils.misc.NbtUtils;
 import meteordevelopment.meteorclient.utils.misc.input.KeyAction;
 import meteordevelopment.orbit.EventHandler;
 import meteordevelopment.orbit.EventPriority;
+import net.greemdev.meteor.event.GameInputEvent;
+import net.greemdev.meteor.hud.element.NotificationHud;
+import net.greemdev.meteor.hud.element.NotificationSource;
+import net.greemdev.meteor.hud.notification.Notification;
+import net.greemdev.meteor.hud.notification.Notifications;
+import net.greemdev.meteor.util.text.ChatColor;
 import net.minecraft.nbt.NbtCompound;
 
 import java.util.ArrayList;
@@ -53,7 +59,10 @@ public class Macros extends System<Macros> implements Iterable<Macro> {
         if (event.action == KeyAction.Release) return;
 
         for (Macro macro : macros) {
-            if (macro.onAction(true, event.key)) return;
+            if (macro.onAction(true, event.key)) {
+                Notification.macro(macro, ChatColor.aqua.asAwt()).send();
+                return;
+            }
         }
     }
 
@@ -62,7 +71,10 @@ public class Macros extends System<Macros> implements Iterable<Macro> {
         if (event.action == KeyAction.Release) return;
 
         for (Macro macro : macros) {
-            if (macro.onAction(false, event.button)) return;
+            if (macro.onAction(false, event.button)) {
+                Notification.macro(macro, ChatColor.aqua.asAwt()).send();
+                return;
+            }
         }
     }
 

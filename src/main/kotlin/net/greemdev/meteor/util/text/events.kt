@@ -38,9 +38,6 @@ object actions {
     val clipboardCopy: ClickAction = ClickAction.COPY_TO_CLIPBOARD
 }
 
-fun FormattedTextBuilder.onClick(action: ClickAction, value: String) = onClick(clicked(action, value))
-fun<T> FormattedTextBuilder.onHovered(action: HoverAction<T>, value: T) = onHovered(hovered(action, value))
-
 @JvmName("click")
 fun clicked(action: ClickAction, value: String): ClickEvent = ClickEvent(action, value)
 

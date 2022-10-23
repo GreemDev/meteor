@@ -8,16 +8,24 @@ package net.greemdev.meteor.gui.theme.round.widget
 import meteordevelopment.meteorclient.gui.renderer.GuiRenderer
 import meteordevelopment.meteorclient.gui.widgets.WMultiLabel
 import net.greemdev.meteor.gui.theme.round.RoundedWidget
+import net.greemdev.meteor.util.awt
+import net.greemdev.meteor.util.meteor.colorCodeRegex
+import net.greemdev.meteor.util.meteor.legacyRender
 
 class WRoundedMultiLabel(text: String?, title: Boolean, maxWidth: Double)
     : WMultiLabel(text, title, maxWidth), RoundedWidget {
 
     override fun onRender(renderer: GuiRenderer, mouseX: Double, mouseY: Double, delta: Double) {
         val h = theme.textHeight(title)
-        val color = theme().textColor()
+        val defaultColor = theme().textColor()
 
-        lines.forEachIndexed { i, text ->
-            renderer.text(text, x, y + h * i, color, false)
+        lines.forEachIndexed { i, line ->
+            if (legacyColorCodes && colorCodeRegex in line) {
+                theme.textRenderer().begin()
+                theme.textRenderer().legacyRender(line, x, y + h * i, (color ?: defaultColor).awt())
+                theme.textRenderer().end()
+            } else
+                renderer.text(line, x, y + h * i, color ?: defaultColor, false)
         }
     }
 }

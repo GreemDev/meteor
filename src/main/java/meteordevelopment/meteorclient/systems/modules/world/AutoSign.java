@@ -34,8 +34,8 @@ public class AutoSign extends Module {
         super(Categories.World, "auto-sign", "Automatically writes signs.");
     }
 
-    private Setting<Keybind> copyThis = sgGeneral.add(new KeybindSetting.Builder()
-        .name("copy-target-sign")
+    private Setting<Keybind> copyThat = sgGeneral.add(new KeybindSetting.Builder()
+        .name("copy-sign")
         .description("Use this keybind to copy the currently looked at sign's content.")
         .defaultValue(Keybind.none())
         .build()
@@ -43,13 +43,13 @@ public class AutoSign extends Module {
 
     @EventHandler
     private void onKey(KeyEvent event) {
-        if (event.action == KeyAction.Press && copyThis.get().matches(true, event.key))
+        if (copyThat.get().matches(event))
             copyTarget();
     }
 
     @EventHandler
     private void onMouseButton(MouseButtonEvent event) {
-        if (event.action == KeyAction.Press && copyThis.get().matches(false, event.button))
+        if (copyThat.get().matches(event))
             copyTarget();
     }
 

@@ -9,14 +9,19 @@ package net.greemdev.meteor.util
 import meteordevelopment.meteorclient.gui.utils.StarscriptTextBoxRenderer
 import meteordevelopment.meteorclient.gui.widgets.pressable.WPressable
 import meteordevelopment.meteorclient.settings.*
+import meteordevelopment.meteorclient.utils.Utils
 import net.fabricmc.loader.api.FabricLoader
+import net.minecraft.network.Packet
 import org.apache.logging.log4j.LogManager
 import org.apache.logging.log4j.Logger
 import org.apache.logging.log4j.message.MessageFactory
 import org.reflections.Reflections
 import org.reflections.scanners.Scanners
 import org.reflections.util.ConfigurationBuilder
+import kotlin.math.*
 import java.awt.Color
+import java.io.File
+import java.text.SimpleDateFormat
 import java.util.*
 import java.util.function.BiConsumer
 import java.util.function.Supplier
@@ -59,6 +64,8 @@ fun log4j(value: Any) = lazy<Logger> {
     }
 }
 
+fun getLogger(value: Any) = log4j(value).getValue(null, ::meteor)
+
 operator fun FabricLoader.contains(modId: String) = modLoader.isModLoaded(modId)
 
 fun <T> T?.coalesce(other: T) = this ?: other
@@ -77,7 +84,9 @@ fun colorOf(value: Any): MeteorColor = try {
                     MeteorColor(value.takeLast(6).toInt(16))
 
                 (value.startsWith("#") && value.length == 9) || value.length == 8 ->
-                    MeteorColor(value.takeLast(8).toInt(16))
+                    MeteorColor(value.takeLast(8).take(6).toInt(16)).apply {
+                        a = value.takeLast(2).toInt(16)
+                    }
 
                 else -> throw NumberFormatException()
             }
@@ -87,10 +96,12 @@ fun colorOf(value: Any): MeteorColor = try {
         else -> throw IllegalArgumentException()
     }
 } catch (e: Exception) {
-    throw IllegalArgumentException("Invalid color value. Only accepts R,G,B(,A); (#)RRGGBB; and (#)AARRGGBB.").apply {
+    throw IllegalArgumentException("Invalid color value. Only accepts R,G,B(,A); (#)RRGGBB; and (#)RRGGBBAA.").apply {
         addSuppressed(e)
     }
 }
+
+fun Date.format(fmt: String): String = SimpleDateFormat(fmt).format(this)
 
 
 fun <T> firstNotNull(vararg nullables: T?) = nullables.firstNotNullOf { it }
@@ -106,6 +117,9 @@ fun <T> KMutableProperty<T>.coalesce(newValue: T): T {
     setter.call(newValue)
     return newValue
 }
+
+fun Class<out Packet<*>>.isC2S() = simpleName.contains("C2S")
+fun Class<out Packet<*>>.isS2C() = simpleName.contains("S2C")
 
 fun MeteorColor.awt() = AwtColor(packed)
 fun AwtColor.meteor() = MeteorColor(rgb)
@@ -162,6 +176,8 @@ inline fun <reified T : Any> findInstancesOfSubtypesOf(pkg: String): List<T> =
     subtypesOf<T>(pkg).mapNotNull {
         getOrNull { it.findInstance() }
     }
+
+operator fun File.div(child: String) = File(this, child)
 
 fun <T : Any> KClass<T>.findInstance(vararg args: Any?) = objectInstance ?: primaryConstructor?.call(args)
 

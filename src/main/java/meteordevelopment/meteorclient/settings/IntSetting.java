@@ -61,10 +61,7 @@ public class IntSetting extends Setting<Integer> {
             super(0);
         }
 
-        public Builder min(int min) {
-            this.min = min;
-            return this;
-        }
+
 
         public int getMin() {
             return min;
@@ -74,14 +71,22 @@ public class IntSetting extends Setting<Integer> {
             return max;
         }
 
+        public Builder min(int min) {
+            this.min = min;
+            this.sliderMin = min;
+            return this;
+        }
+
         public Builder max(int max) {
             this.max = max;
+            this.sliderMax = max;
             return this;
         }
 
         public Builder range(int min, int max) {
             this.min = Math.min(min, max);
             this.max = Math.max(min, max);
+            sliderRange(min, max);
             return this;
         }
 

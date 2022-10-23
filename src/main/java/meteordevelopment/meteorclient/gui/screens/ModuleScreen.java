@@ -8,6 +8,7 @@ package meteordevelopment.meteorclient.gui.screens;
 import meteordevelopment.meteorclient.events.meteor.ModuleBindChangedEvent;
 import meteordevelopment.meteorclient.gui.GuiTheme;
 import meteordevelopment.meteorclient.gui.WindowScreen;
+import meteordevelopment.meteorclient.gui.renderer.GuiRenderer;
 import meteordevelopment.meteorclient.gui.utils.Cell;
 import meteordevelopment.meteorclient.gui.widgets.WKeybind;
 import meteordevelopment.meteorclient.gui.widgets.WWidget;
@@ -28,8 +29,9 @@ public class ModuleScreen extends WindowScreen {
     private WKeybind keybind;
 
     public ModuleScreen(GuiTheme theme, Module module) {
-        super(theme, theme.favorite(module.favorite), module.title);
-        ((WFavorite) window.icon).action = () -> module.favorite = ((WFavorite) window.icon).checked;
+        super(theme, theme.favorite(module.favorite, c ->
+            module.favorite = c
+        ), module.title);
 
         this.module = module;
     }
@@ -57,17 +59,9 @@ public class ModuleScreen extends WindowScreen {
         if (module.canBind) {
             // Bind
             within(add(theme.section("Bind", true)).expandX(), sec -> {
-                keybind = sec.add(theme.keybind(module.keybind, () ->
+                keybind = sec.add(theme.moduleKeybind(module.keybind, () ->
                     Modules.get().setModuleToBind(module))
                 ).expandX().widget();
-
-                // Toggle on bind release
-                within(sec.add(theme.horizontalList()), list -> {
-                    list.add(theme.label("Toggle on bind release: "));
-                    list.add(theme.checkbox(module.toggleOnBindRelease, (c) ->
-                        module.toggleOnBindRelease = c)
-                    );
-                });
 
                 if (module.allowChatFeedback) {
                     within(sec.add(theme.horizontalList()), list -> {

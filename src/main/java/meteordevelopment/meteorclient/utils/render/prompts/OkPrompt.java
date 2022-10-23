@@ -13,7 +13,9 @@ import meteordevelopment.meteorclient.gui.widgets.containers.WHorizontalList;
 import meteordevelopment.meteorclient.gui.widgets.pressable.WButton;
 import meteordevelopment.meteorclient.gui.widgets.pressable.WCheckbox;
 import meteordevelopment.meteorclient.systems.config.Config;
+import net.greemdev.meteor.type.ErrorPrompt;
 import net.minecraft.client.gui.screen.Screen;
+import org.jetbrains.annotations.Nullable;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -72,9 +74,9 @@ public class OkPrompt {
         return this;
     }
 
-    public void show() {
+    public boolean show() {
         if (id == null) this.id(this.title);
-        if (Config.get().dontShowAgainPrompts.contains(id)) return;
+        if (Config.get().dontShowAgainPrompts.contains(id)) return false;
 
         if (!RenderSystem.isOnRenderThread()) {
             RenderSystem.recordRenderCall(() -> mc.setScreen(new PromptScreen(theme)));
@@ -82,6 +84,15 @@ public class OkPrompt {
         else {
             mc.setScreen(new PromptScreen(theme));
         }
+        return true;
+    }
+
+    public void error() throws ErrorPrompt {
+        error(null);
+    }
+
+    public void error(@Nullable Throwable cause) throws ErrorPrompt {
+        throw new ErrorPrompt(cause, () -> this);
     }
 
     private class PromptScreen extends WindowScreen {

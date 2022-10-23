@@ -8,12 +8,11 @@ package net.greemdev.meteor
 import meteordevelopment.meteorclient.MeteorClient
 import meteordevelopment.meteorclient.systems.hud.HudGroup
 import meteordevelopment.meteorclient.systems.modules.Category
-import net.greemdev.meteor.hud.HudElementMetadata
 import net.greemdev.meteor.hud.element.*
 import net.greemdev.meteor.util.*
 import net.greemdev.meteor.util.meteor.*
 import net.greemdev.meteor.util.meteor.starscript.initGStarscript
-import net.greemdev.meteor.util.misc.TitleScreenInfo
+import net.greemdev.meteor.util.misc.GVersioning
 import net.minecraft.item.Items
 import java.lang.invoke.MethodHandles
 
@@ -38,12 +37,12 @@ object Greteor {
         findInstancesOfSubtypesOf<GCommand>("net.greemdev.meteor.commands")
             .forEach(Meteor.commands()::add)
 
-        TitleScreenInfo.loadLatestRevision()
+        GVersioning.loadLatestRevision()
         initGStarscript()
     }
 
     @JvmStatic
-    fun hudElements() = listOf<HudElementMetadata<*>>(ModuleKeybindHud)
+    fun hudElements() = listOf(ModuleKeybindHud, NotificationHud)
 
     @JvmStatic
     fun lambdaFactoriesFor(vararg packages: String) =

@@ -8,9 +8,11 @@ package net.greemdev.meteor.gui.theme.round.widget
 import meteordevelopment.meteorclient.gui.renderer.GuiRenderer
 import meteordevelopment.meteorclient.gui.widgets.WLabel
 import net.greemdev.meteor.gui.theme.round.RoundedWidget
+import net.greemdev.meteor.util.awt
 import net.greemdev.meteor.util.meteor.invoke
+import net.greemdev.meteor.util.meteor.legacyRender
 
-open class WRoundedLabel(text: String?, title: Boolean) : WLabel(text, title), RoundedWidget {
+open class WRoundedLabel(text: String?, title: Boolean, colorCodes: Boolean = false) : WLabel(text, title, colorCodes), RoundedWidget {
     override fun onRender(renderer: GuiRenderer, mouseX: Double, mouseY: Double, delta: Double) {
         if (!text.isNullOrEmpty()) {
             val color = if (color != null)
@@ -20,7 +22,14 @@ open class WRoundedLabel(text: String?, title: Boolean) : WLabel(text, title), R
             else
                 theme().textColor()
 
-            renderer.text(text, x, y, color, title)
+            if (useColorCodes()) {
+                renderer.post {
+                    theme.textRenderer().begin()
+                    theme.textRenderer().legacyRender(text, x, y, color.awt())
+                    theme.textRenderer().end()
+                }
+            } else
+                renderer.text(text, x, y, color, title)
         }
     }
 }

@@ -5,6 +5,7 @@
 
 package meteordevelopment.meteorclient.gui.screens;
 
+import kotlin.collections.CollectionsKt;
 import meteordevelopment.meteorclient.gui.GuiTheme;
 import meteordevelopment.meteorclient.gui.tabs.TabScreen;
 import meteordevelopment.meteorclient.gui.tabs.Tabs;
@@ -14,6 +15,7 @@ import meteordevelopment.meteorclient.gui.widgets.containers.WSection;
 import meteordevelopment.meteorclient.gui.widgets.containers.WVerticalList;
 import meteordevelopment.meteorclient.gui.widgets.containers.WWindow;
 import meteordevelopment.meteorclient.gui.widgets.input.WTextBox;
+import meteordevelopment.meteorclient.systems.config.Config;
 import meteordevelopment.meteorclient.systems.modules.Category;
 import meteordevelopment.meteorclient.systems.modules.Module;
 import meteordevelopment.meteorclient.systems.modules.Modules;
@@ -31,7 +33,7 @@ public class ModulesScreen extends TabScreen {
     private WCategoryController controller;
 
     public ModulesScreen(GuiTheme theme) {
-        super(theme, Tabs.get().get(0));
+        super(theme, Tabs.modules());
     }
 
     @Override
@@ -85,7 +87,7 @@ public class ModulesScreen extends TabScreen {
                 WSection section = w.add(theme.section("Modules")).expandX().widget();
                 section.spacing = 0;
 
-                for (Module module : modules) {
+                for (Module module : CollectionsKt.take(modules, Config.get().moduleSearchCount.get())) {
                     section.add(theme.module(module)).expandX();
                 }
             }
@@ -97,7 +99,7 @@ public class ModulesScreen extends TabScreen {
                 WSection section = w.add(theme.section("Settings")).expandX().widget();
                 section.spacing = 0;
 
-                for (Module module : modules) {
+                for (Module module : CollectionsKt.take(modules, Config.get().moduleSearchCount.get())) {
                     section.add(theme.module(module)).expandX();
                 }
             }

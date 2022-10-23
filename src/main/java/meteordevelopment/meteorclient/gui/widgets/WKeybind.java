@@ -21,6 +21,8 @@ public class WKeybind extends WHorizontalList {
     private final Keybind defaultValue;
     private boolean listening;
 
+    public boolean module = false;
+
     public WKeybind(Keybind keybind, Keybind defaultValue) {
         this.keybind = keybind;
         this.defaultValue = defaultValue;
@@ -28,20 +30,22 @@ public class WKeybind extends WHorizontalList {
 
     @Override
     public void init() {
-        label = add(theme.label("")).widget();
-
-        WButton set = add(theme.button("Set")).widget();
-        set.action = () -> {
+        if (!module)
+            add(theme.label("  "));
+        label = add(theme.label(fixLabel(keybind.toString()))).widget();
+        add(theme.button("Set", () -> {
             listening = true;
-            label.set(appendBindText("..."));
+            setLabel("...");
 
             if (actionOnSet != null) actionOnSet.run();
-        };
+        }));
 
-        WButton reset = add(theme.button(GuiRenderer.RESET)).expandCellX().right().widget();
-        reset.action = this::resetBind;
+        WLabel release = add(theme.label("  Released: ")).widget();
+        release.tooltip = "Activate this keybind when the specified key/mouse button is &zreleased&r.";
 
-        refreshLabel();
+        add(theme.checkbox(keybind.onRelease, (c) -> keybind.onRelease = c));
+
+        add(theme.button(GuiRenderer.RESET, this::resetBind)).expandCellX().right();
     }
 
     public WKeybind onSet(Runnable onSet) {
@@ -68,16 +72,21 @@ public class WKeybind extends WHorizontalList {
     public void reset() {
         listening = false;
         refreshLabel();
-        if (Modules.get().isBinding()) {
+        if (Modules.get().isBinding())
             Modules.get().setModuleToBind(null);
-        }
     }
 
     private void refreshLabel() {
-        label.set(appendBindText(keybind.toString()));
+        setLabel(keybind.toString());
     }
 
-    private String appendBindText(String text) {
-        return "Bind: " + text;
+    private void setLabel(String label) {
+        this.label.set(fixLabel(label));
+    }
+
+    private String fixLabel(String label) {
+        return module
+            ? "Toggle: " + label
+            : label;
     }
 }

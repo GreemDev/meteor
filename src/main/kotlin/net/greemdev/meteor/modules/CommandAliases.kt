@@ -23,6 +23,10 @@ object CommandAliases : GModule(
         canActivate = false
     }
 
+    fun find(name: String) = mapped.entries.firstOrNull {
+        it.key.equals(name, true)
+    }
+
     private var commandScripts = listOf<Script>()
     var mapped = mapOf<String, String>()
         private set

@@ -7,6 +7,9 @@ package net.greemdev.meteor.commands
 
 import it.unimi.dsi.fastutil.ints.Int2ObjectOpenHashMap
 import net.greemdev.meteor.GCommand
+import net.greemdev.meteor.hud.element.NotificationSource
+import net.greemdev.meteor.hud.notification.Notification
+import net.greemdev.meteor.hud.notification.notifications
 import net.greemdev.meteor.util.misc.player
 import net.minecraft.item.ItemStack
 import net.minecraft.network.packet.c2s.play.ClickSlotC2SPacket
@@ -35,5 +38,7 @@ object VoidCommand : GCommand("void", "Delete the item stack in your hand.", {
         mc.networkHandler?.sendPacket(
             ClickSlotC2SPacket(0, screenHandler.revision, slotId, button, SlotActionType.SWAP, screenHandler.cursorStack.copy(), stacks)
         )
+
+        Notification("&zItem Stack Deleted",  NotificationSource.Default).send()
     }
 })

@@ -10,7 +10,6 @@ import meteordevelopment.meteorclient.events.meteor.KeyEvent
 import meteordevelopment.meteorclient.events.meteor.MouseButtonEvent
 import meteordevelopment.meteorclient.utils.misc.Keybind
 import meteordevelopment.meteorclient.utils.misc.input.KeyAction
-import meteordevelopment.orbit.EventHandler
 import net.greemdev.meteor.util.invoking
 
 class GameInputEvent private constructor(private var backingEvent: Cancellable) : Cancellable() {
@@ -19,7 +18,7 @@ class GameInputEvent private constructor(private var backingEvent: Cancellable) 
     constructor(e: MouseButtonEvent) : this(e as Cancellable)
     constructor(e: KeyEvent) : this(e as Cancellable)
 
-    fun keyId() =
+    fun button() =
         if (isKey)
             asKey.key
         else
@@ -33,21 +32,19 @@ class GameInputEvent private constructor(private var backingEvent: Cancellable) 
 
     infix fun actionIs(action: KeyAction) = action == action()
 
-    infix operator fun contains(keybind: Keybind) = keybind.matches(isKey, keyId())
+    fun wasReleased() = actionIs(KeyAction.Release)
+    fun wasPressed() = actionIs(KeyAction.Press)
+    fun isHeld() = actionIs(KeyAction.Repeat)
+
+    infix operator fun contains(keybind: Keybind) = keybind.matches(isKey, button())
 
     val isKey by invoking { backingEvent is KeyEvent }
     val asMouse by invoking {
-        if (!isKey)
-            backingEvent as MouseButtonEvent
-        else error("backing event is a keyboard input, not a mouse input")
+        backingEvent as? MouseButtonEvent ?: error("backing event is a keyboard input, not a mouse input")
     }
     val asKey by invoking {
-        if (isKey)
-            backingEvent as KeyEvent
-        else error("backing event is a mouse input, not a keyboard input")
+        backingEvent as? KeyEvent ?: error("backing event is a mouse input, not a keyboard input")
     }
 
-    override fun cancel() {
-        backingEvent.cancel()
-    }
+    override fun cancel() = backingEvent.cancel()
 }

@@ -96,7 +96,7 @@ public class DefaultSettingsWidgetFactory implements SettingsWidgetFactory {
         return list;
     }
 
-    // If a different theme uses has different heights of widgets this can method can be overwritten to account for it in the setting titles
+    // If a different theme has different heights of widgets this method can be overridden to account for it in the setting titles
     protected double settingTitleTopMargin() {
         return 6;
     }
@@ -188,7 +188,8 @@ public class DefaultSettingsWidgetFactory implements SettingsWidgetFactory {
 
     private void stringW(WTable table, StringSetting setting) {
         Cell<WTextBox> cell = table.add(theme.textBox(setting.get(), CharFilter.orNone(setting.filter), setting.renderer));
-        if (setting.wide) cell.minWidth(Utils.getWindowWidth() - Utils.getWindowWidth() / 4.0);
+        if (setting.wide)
+            cell.minWidth(Utils.getWindowWidth() / 2.5);
 
         WTextBox textBox = cell.expandX().widget();
         textBox.action = () -> setting.set(textBox.get());
@@ -227,8 +228,8 @@ public class DefaultSettingsWidgetFactory implements SettingsWidgetFactory {
 
         WQuad quad = list.add(theme.quad(setting.get())).widget();
 
-        WButton edit = list.add(theme.button(GuiRenderer.EDIT)).widget();
-        edit.action = () -> mc.setScreen(new ColorSettingScreen(theme, setting));
+        list.add(theme.button(GuiRenderer.EDIT, () ->
+            mc.setScreen(new ColorSettingScreen(theme, setting))));
 
         reset(table, setting, () -> quad.color = setting.get());
     }

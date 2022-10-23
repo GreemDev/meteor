@@ -6,6 +6,7 @@
 package meteordevelopment.meteorclient.systems.hud;
 
 import meteordevelopment.meteorclient.utils.Utils;
+import net.greemdev.meteor.type.ErrorPrompt;
 
 import java.util.ArrayList;
 import java.util.Comparator;
@@ -49,7 +50,7 @@ public class HudElementInfo<T extends HudElement> {
         return presets.size() > 0;
     }
 
-    public HudElement create() {
+    public HudElement create() throws ErrorPrompt {
         return factory.get();
     }
 

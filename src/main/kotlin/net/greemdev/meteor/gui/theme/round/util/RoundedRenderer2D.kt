@@ -20,9 +20,8 @@ const val circle3Quarter = circleQuarter * 3
 
 fun Renderer2D.rounded() = RoundedRenderer2D.of(this)
 
-/*
- * Credit to meteor-rejects.
- */
+// Credit to meteor-rejects.
+@Suppress("FunctionName") //internal names
 class RoundedRenderer2D(val r2d: Renderer2D) {
     companion object {
         private val textured by lazy { RoundedRenderer2D(TEXTURE) }
@@ -164,7 +163,7 @@ class RoundedRenderer2D(val r2d: Renderer2D) {
     }
 
     fun circleDepth(r: Double, angle: Double) =
-        (angle * r / circleQuarter).coerceAtLeast(1.0).toInt()
+        (angle * r / circleQuarter).toInt().coerceAtLeast(1)
 
     private fun vecOnCircle(r2d: Renderer2D, x: Double, y: Double, r: Double, angle: Double, color: Color) =
         r2d.triangles.vec2(x + sin(angle) * r, y - cos(angle) * r).color(color).next()

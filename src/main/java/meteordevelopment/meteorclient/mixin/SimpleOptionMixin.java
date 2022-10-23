@@ -58,44 +58,34 @@ public class SimpleOptionMixin<T> {
     }
 
     @Unique
+    private SimpleOption.Callbacks<T> dummyCallback() {
+        return new SimpleOption.Callbacks<>() {
+            @Override
+            public Function<SimpleOption<T>, ClickableWidget> getButtonCreator(SimpleOption.TooltipFactory<T> tooltipFactory, GameOptions gameOptions, int x, int y, int width) {
+                return null;
+            }
+
+            @Override
+            public Optional<T> validate(T value) {
+                return Optional.of(value);
+            }
+
+            @Override
+            public Codec<T> codec() {
+                return null;
+            }
+        };
+    }
+
+    @Unique
     private SimpleOption.Callbacks<T> getCallbacks() {
         GameOptions options = MinecraftClient.getInstance().options;
 
         if ((Object) this == options.getGamma()) {
-            return new SimpleOption.Callbacks<>() {
-                @Override
-                public Function<SimpleOption<T>, ClickableWidget> getButtonCreator(SimpleOption.TooltipFactory<T> tooltipFactory, GameOptions gameOptions, int x, int y, int width) {
-                    return null;
-                }
-
-                @Override
-                public Optional<T> validate(T value) {
-                    return Optional.of(value);
-                }
-
-                @Override
-                public Codec<T> codec() {
-                    return null;
-                }
-            };
+            return dummyCallback();
         }
         else if ((Object) this == options.getFov()) {
-            return new SimpleOption.Callbacks<>() {
-                @Override
-                public Function<SimpleOption<T>, ClickableWidget> getButtonCreator(SimpleOption.TooltipFactory<T> tooltipFactory, GameOptions gameOptions, int x, int y, int width) {
-                    return null;
-                }
-
-                @Override
-                public Optional<T> validate(T value) {
-                    return Optional.of(value);
-                }
-
-                @Override
-                public Codec<T> codec() {
-                    return null;
-                }
-            };
+            return dummyCallback();
         }
 
         return null;

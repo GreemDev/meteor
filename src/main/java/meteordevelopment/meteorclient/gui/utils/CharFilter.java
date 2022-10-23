@@ -30,5 +30,52 @@ public interface CharFilter {
         return (t, c) -> true;
     }
 
+    /**
+     * {@link CharFilter} for only alphanumeric characters, with leniency for periods, hyphens, underscores, and spaces.
+     * @return A lenient alphanumeric {@link CharFilter}.
+     */
+    static CharFilter lenientAlphanumeric() {
+        return alphanumeric(true, true, true, true);
+    }
+
+    /**
+     * {@link CharFilter} for only alphanumeric characters.
+     * @return A strictly alphanumeric {@link CharFilter}.
+     */
+    static CharFilter strictAlphanumeric() {
+        return alphanumeric(false, false, false, false);
+    }
+
+    /**
+     * An adjustable alphanumeric {@link CharFilter}.
+     * @param period Allow .
+     * @param hyphen Allow -
+     * @param underscore Allow _
+     * @param space Allow spaces
+     * @return A {@link CharFilter} accepting alphanumeric characters.
+     */
+    static CharFilter alphanumeric(boolean period, boolean hyphen, boolean underscore, boolean space) {
+        return (t, c) ->
+            (c >= 'a' && c <= 'z') ||
+                (c >= 'A' && c <= 'Z') ||
+                (c >= '0' && c <= '9') ||
+                (underscore && c == '_') ||
+                (hyphen && c == '-') ||
+                (period && c == '.') ||
+                (space && c == ' ');
+    }
+
+    /**
+     * A {@link CharFilter} that accepts only IP addresses/hostnames.
+     * @return An IP/hostname {@link CharFilter}.
+     */
+    static CharFilter ip(boolean allowPorts) {
+        return (t, c) -> {
+            if (!allowPorts && (t.contains(":") && c == ':')) return false;
+            return alphanumeric(true, false, false, false).filter(t, c);
+        };
+    }
+
+
     boolean filter(String text, char c);
 }

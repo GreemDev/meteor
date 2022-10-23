@@ -22,8 +22,10 @@ import net.minecraft.nbt.NbtCompound;
 import static meteordevelopment.meteorclient.MeteorClient.mc;
 
 public class HudTab extends Tab {
+
+    public static final String NAME = "HUD";
     public HudTab() {
-        super("HUD");
+        super(NAME);
     }
 
     @Override

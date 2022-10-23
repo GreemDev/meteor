@@ -41,7 +41,7 @@ public abstract class WidgetScreen extends Screen {
     protected Runnable enterAction;
 
     public Screen parent;
-    private final WContainer root;
+    protected final WContainer root;
 
     protected final GuiTheme theme;
 
@@ -78,6 +78,14 @@ public abstract class WidgetScreen extends Screen {
 
     public <W extends WWidget> Cell<W> add(W widget) {
         return root.add(widget);
+    }
+
+    protected <W extends WContainer> void within(W container, Consumer<W> widgets) {
+        widgets.accept(container);
+    }
+
+    protected <W extends WContainer> void within(Cell<W> containerCell, Consumer<W> widgets) {
+        widgets.accept(containerCell.widget());
     }
 
     public void clear() {

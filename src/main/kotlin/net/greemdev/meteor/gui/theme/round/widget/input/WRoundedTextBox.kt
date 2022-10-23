@@ -60,7 +60,7 @@ class WRoundedTextBox(text: String, placeholder: String?, filter: CharFilter, re
 
         // Cursor
         animProgress += delta * 10 * (if (focused and cursorVisible) 1 else -1)
-        animProgress += animProgress.clamp(0, 1)
+        animProgress = animProgress.clamp(0, 1)
 
         if ((focused and cursorVisible) || animProgress > 0.0) {
             renderer.setAlpha(animProgress)

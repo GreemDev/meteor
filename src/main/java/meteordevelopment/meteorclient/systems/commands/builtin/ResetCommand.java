@@ -14,6 +14,7 @@ import meteordevelopment.meteorclient.systems.commands.arguments.ModuleArgumentT
 import meteordevelopment.meteorclient.systems.hud.Hud;
 import meteordevelopment.meteorclient.systems.modules.Module;
 import meteordevelopment.meteorclient.systems.modules.Modules;
+import meteordevelopment.meteorclient.utils.misc.Keybind;
 import meteordevelopment.meteorclient.utils.player.ChatUtils;
 import net.minecraft.command.CommandSource;
 
@@ -50,14 +51,14 @@ public class ResetCommand extends Command {
                 .executes(context -> {
                     Module module = ModuleArgumentType.get(context);
 
-                    module.keybind.set(true, -1);
+                    module.keybind.unset();
                     module.info("Reset bind.");
 
                     return SINGLE_SUCCESS;
                 })
             ).then(literal("all")
                 .executes(context -> {
-                    Modules.get().getAll().forEach(module -> module.keybind.set(true, -1));
+                    Modules.get().getAll().forEach(module -> module.keybind.unset());
                     ChatUtils.info("Modules", "Reset all binds.");
                     return SINGLE_SUCCESS;
                 }))

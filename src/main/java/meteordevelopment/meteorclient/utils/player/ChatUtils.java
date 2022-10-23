@@ -101,7 +101,7 @@ public class ChatUtils {
     }
 
     public static void sendMsg(FormattedTextBuilder textBuilder) {
-        sendMsg(null, textBuilder.getMutableText());
+        sendMsg(null, textBuilder.text());
     }
 
     public static void sendMsg(String prefix, Text message) {
@@ -145,7 +145,7 @@ public class ChatUtils {
                 b.formatted(prefixColor);
             })
             .addString("] ")
-            .getMutableText();
+            .text();
     }
 
     private static Text getPrefix() {

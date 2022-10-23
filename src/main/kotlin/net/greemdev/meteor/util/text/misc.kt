@@ -18,15 +18,15 @@ else
 
 fun buildText(initial: MutableText = textOf(), block: context(ChatColor.Companion) FormattedTextBuilder.() -> Unit): Text = FormattedTextBuilder(initial).apply {
     block(ChatColor, this@apply)
-}.getMutableText()
+}.text()
 
 object FormattedText {
     @JvmStatic
     fun build(builder: Consumer<FormattedTextBuilder>): MutableText = build(null, builder)
     @JvmStatic
-    fun build(initial: MutableText?, builder: Consumer<FormattedTextBuilder>): MutableText = builder(initial, builder).getMutableText()
+    fun build(initial: MutableText?, builder: Consumer<FormattedTextBuilder>): MutableText = builder(initial, builder).text()
     @JvmStatic
-    fun build(initial: String, builder: Consumer<FormattedTextBuilder>): MutableText = builder(textOf(initial), builder).getMutableText()
+    fun build(initial: String, builder: Consumer<FormattedTextBuilder>): MutableText = builder(textOf(initial), builder).text()
     @JvmStatic
     fun builder(): FormattedTextBuilder = builder(null) {}
     @JvmStatic

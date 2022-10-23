@@ -5,59 +5,27 @@
 
 package net.greemdev.meteor.util.misc
 
-import meteordevelopment.meteorclient.MeteorClient
-import meteordevelopment.meteorclient.utils.network.Http
 import meteordevelopment.meteorclient.utils.render.RenderUtils
 import net.greemdev.meteor.util.*
 import net.greemdev.meteor.util.text.ChatColor
 import net.minecraft.client.util.math.MatrixStack
 
 object TitleScreenInfo {
-
-    @JvmStatic
-    fun loadLatestRevision() {
-        val response = Http.get("https://raw.githubusercontent.com/GreemDev/meteor/main/gradle.properties").sendLines()
-        latestRevision = response
-            .filter { it.startsWith("revision") }
-            .map { it.split("=").last() }
-            .findFirst()
-            .map(String::toInt)
-            .orElseThrow()
-    }
-
-    @JvmStatic
-    var latestRevision: Int = -1
-        private set
-
-    @JvmStatic
-    fun howManyBehind(): Int {
-        return (latestRevision.takeUnless { it == -1 } ?: return 0) - MeteorClient.REVISION
-    }
-
-    @JvmStatic
-    fun isOutdated() = howManyBehind() > 0
-
-    @JvmStatic
-    fun isUpToDate() = howManyBehind() == 0
-
     val updateChecker by invoking {
-        if (latestRevision == -1)
+        if (GVersioning.latestRevision == -1)
             null
         else {
             infoLine {
-                if (isUpToDate())
+                if (GVersioning.isUpToDate())
                     newSection("Up to date!", green)
-                else if (isOutdated()) {
-                    newSection(howManyBehind(), red)
+                else if (GVersioning.isOutdated()) {
+                    newSection(GVersioning.revisionsBehind(), red)
                     newSection(grey) {
-                        append(" revision")
-                        if (howManyBehind() != 1)
-                            append('s')
+                        append(" revision".pluralize(GVersioning.revisionsBehind(), prefixQuantity = false))
                         append(" behind!")
                     }
-                } else {
+                } else
                     newSection("dev build", lightPurple)
-                }
             }
         }
     }

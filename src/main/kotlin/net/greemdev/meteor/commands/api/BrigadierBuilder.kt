@@ -43,7 +43,7 @@ data class BrigadierBuilder<T : BArgBuilder<CommandSource, T>>(val builder: T) {
         then(BrigadierBuilder(argument(name, argType)).apply(builder).builder)
     fun<A> then(argType: ArgumentType<A>, builder: ArgumentBuilder<A>.() -> Unit = {}) = then(formatArgType(argType), argType, builder)
 
-    infix fun suggests(suggestionProvider: SuggestionsBuilder.(MinecraftCommandContext) -> CompletableFuture<Suggestions>): BrigadierBuilder<T> {
+    infix fun suggests(suggestionProvider: SuggestionsBuilder.(ctx: MinecraftCommandContext) -> CompletableFuture<Suggestions>): BrigadierBuilder<T> {
         if (builder is RequiredArgumentBuilder<*, *>) {
             builder.suggests { context, builder ->
                 @Suppress("UNCHECKED_CAST") //commands in minecraft should always be of this type, period
@@ -53,7 +53,7 @@ data class BrigadierBuilder<T : BArgBuilder<CommandSource, T>>(val builder: T) {
         return this
     }
 
-    infix fun suggestsAsync(suggestionProvider: suspend SuggestionsBuilder.(MinecraftCommandContext) -> Suggestions): BrigadierBuilder<T> {
+    infix fun suggestsAsync(suggestionProvider: suspend SuggestionsBuilder.(ctx: MinecraftCommandContext) -> Suggestions): BrigadierBuilder<T> {
         if (builder is RequiredArgumentBuilder<*, *>) {
             builder.suggests { context, builder ->
                 @Suppress("UNCHECKED_CAST") //commands in minecraft should always be of this type, period
@@ -65,15 +65,15 @@ data class BrigadierBuilder<T : BArgBuilder<CommandSource, T>>(val builder: T) {
         return this
     }
 
-    infix fun runs(command: (MinecraftCommandContext) -> Int): BrigadierBuilder<T> {
+    infix fun runs(command: (ctx: MinecraftCommandContext) -> Int): BrigadierBuilder<T> {
         builder.executes(command)
         return this
     }
-    infix fun canRun(command: (MinecraftCommandContext) -> Boolean): BrigadierBuilder<T> {
+    infix fun canRun(command: (ctx: MinecraftCommandContext) -> Boolean): BrigadierBuilder<T> {
         builder.executes { ctx -> if (command(ctx)) Command.SINGLE_SUCCESS else 0 }
         return this
     }
-    infix fun alwaysRuns(command: (MinecraftCommandContext) -> Unit): BrigadierBuilder<T> {
+    infix fun alwaysRuns(command: (ctx: MinecraftCommandContext) -> Unit): BrigadierBuilder<T> {
         builder.executes { ctx -> 1.also { command(ctx) }}
         return this
     }

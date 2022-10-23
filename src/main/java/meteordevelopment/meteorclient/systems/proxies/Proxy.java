@@ -5,6 +5,7 @@
 
 package meteordevelopment.meteorclient.systems.proxies;
 
+import meteordevelopment.meteorclient.gui.utils.CharFilter;
 import meteordevelopment.meteorclient.settings.*;
 import meteordevelopment.meteorclient.utils.Utils;
 import meteordevelopment.meteorclient.utils.misc.ISerializable;
@@ -36,9 +37,9 @@ public class Proxy implements ISerializable<Proxy> {
 
     public Setting<String> address = sgGeneral.add(new StringSetting.Builder()
         .name("address")
-        .description("The ip address of the proxy.")
+        .description("The IP address of the proxy.")
         .defaultValue("")
-        .filter(Utils::ipFilter)
+        .filter(CharFilter.ip(false))
         .build()
     );
 

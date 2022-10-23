@@ -22,6 +22,7 @@ public abstract class Setting<T> implements IGetter<T>, ISerializable<T> {
     private static final List<String> NO_SUGGESTIONS = new ArrayList<>(0);
 
     public final String name, title, description;
+
     private final IVisible visible;
 
     protected final T defaultValue;

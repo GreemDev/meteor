@@ -21,7 +21,7 @@ object ClipCommand : GCommand("clip", "Lets you clip through blocks vertically o
         then("distance", arg.double()) {
             alwaysRuns {
                 val distance by it(arg.double(), "distance")
-                mc.player?.vehicle?.editPos(y = distance)
+                mc.player().vehicle?.editPos(y = distance)
                 mc.player().editPos(y = distance)
             }
         }
@@ -31,7 +31,7 @@ object ClipCommand : GCommand("clip", "Lets you clip through blocks vertically o
             alwaysRuns {
                 val distance by it(arg.double(), "distance")
                 val forward = Vec3d.fromPolar(0f, mc.player().yaw).normalize()
-                mc.player?.vehicle?.editPos(
+                mc.player().vehicle?.editPos(
                     x = forward.x * distance,
                     z = forward.z * distance
                 )

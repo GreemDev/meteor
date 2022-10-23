@@ -30,6 +30,12 @@ object DamageNumbers : GModule(
 ) {
     private val sgC = settings.group("Colors")
 
+    val ignoreSelf by sg bool {
+        name("ignore-self")
+        description("Don't render damage numbers for damage you take.")
+        defaultValue(true)
+    }
+
     val operatorPrefix: EnumSetting<DamageOperatorType> by sg.enum<DamageOperatorType> {
         name("operator-prefix")
         description("The type of prefixing you want on the indicators.")

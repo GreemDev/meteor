@@ -9,6 +9,8 @@ import meteordevelopment.meteorclient.gui.renderer.GuiRenderer;
 import meteordevelopment.meteorclient.gui.themes.meteor.MeteorWidget;
 import meteordevelopment.meteorclient.gui.widgets.WMultiLabel;
 import meteordevelopment.meteorclient.utils.render.color.Color;
+import net.greemdev.meteor.util.Util;
+import net.greemdev.meteor.util.meteor.LegacyText;
 
 public class WMeteorMultiLabel extends WMultiLabel implements MeteorWidget {
     public WMeteorMultiLabel(String text, boolean title, double maxWidth) {
@@ -21,7 +23,16 @@ public class WMeteorMultiLabel extends WMultiLabel implements MeteorWidget {
         Color defaultColor = theme().textColor.get();
 
         for (int i = 0; i < lines.size(); i++) {
-            renderer.text(lines.get(i), x, y + h * i, color != null ? color : defaultColor, false);
+            if (legacyColorCodes && LegacyText.getColorCodeRegex().containsMatchIn(lines.get(i))) {
+                theme.textRenderer().begin();
+                LegacyText.render(theme.textRenderer(), lines.get(i), x, y + h * i, Util.awt(
+                        color != null
+                            ? color
+                            : defaultColor),
+                    false);
+                theme.textRenderer().end();
+            } else
+                renderer.text(lines.get(i), x, y + h * i, color != null ? color : defaultColor, false);
         }
     }
 }

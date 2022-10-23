@@ -11,6 +11,8 @@ import meteordevelopment.meteorclient.events.meteor.MouseButtonEvent;
 import meteordevelopment.meteorclient.events.world.TickEvent;
 import meteordevelopment.meteorclient.gui.GuiThemes;
 import meteordevelopment.meteorclient.gui.WidgetScreen;
+import meteordevelopment.meteorclient.gui.tabs.Tab;
+import meteordevelopment.meteorclient.gui.tabs.TabScreen;
 import meteordevelopment.meteorclient.gui.tabs.Tabs;
 import meteordevelopment.meteorclient.systems.Systems;
 import meteordevelopment.meteorclient.systems.config.Config;
@@ -27,6 +29,8 @@ import net.fabricmc.loader.api.FabricLoader;
 import net.fabricmc.loader.api.metadata.ModMetadata;
 import net.greemdev.meteor.Greteor;
 import net.greemdev.meteor.util.Util;
+import net.greemdev.meteor.util.meteor.Meteor;
+import net.greemdev.meteor.util.misc.GVersioning;
 import net.greemdev.meteor.util.misc.TitleScreenInfo;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.screen.ChatScreen;
@@ -112,33 +116,44 @@ public class MeteorClient implements ClientModInitializer {
             GuiThemes.save();
         }));
 
-        if (TitleScreenInfo.isOutdated())
-            LOG.warn("Not currently on the latest revision! Currently running %d revisions behind. Latest revision is %s.".formatted(TitleScreenInfo.howManyBehind(), TitleScreenInfo.getLatestRevision()));
+        if (GVersioning.isOutdated())
+            LOG.warn("Not currently on the latest revision! Running %d revisions behind. Latest is %s.".formatted(GVersioning.revisionsBehind(), GVersioning.getLatestRevision()));
     }
 
     @EventHandler
     private void onTick(TickEvent.Post event) {
-        if (mc.currentScreen == null && mc.getOverlay() == null && KeyBinds.OPEN_COMMANDS.wasPressed()) {
+        if (mc.currentScreen == null && mc.getOverlay() == null && KeyBinds.OPEN_COMMANDS.wasPressed())
             mc.setScreen(new ChatScreen(Config.get().prefix.get()));
-        }
     }
 
     @EventHandler
     private void onKey(KeyEvent event) {
-        if (event.action == KeyAction.Press && KeyBinds.OPEN_GUI.matchesKey(event.key, 0)) {
-            openGui();
-        }
+        if (event.action == KeyAction.Press && KeyBinds.OPEN_GUI.matchesKey(event.key, 0))
+            toggleGui();
     }
 
     @EventHandler
     private void onMouseButton(MouseButtonEvent event) {
-        if (event.action == KeyAction.Press && KeyBinds.OPEN_GUI.matchesMouse(event.button)) {
-            openGui();
-        }
+        if (event.action == KeyAction.Press && KeyBinds.OPEN_GUI.matchesMouse(event.button))
+            toggleGui();
     }
 
-    private void openGui() {
-        if (Utils.canOpenGui()) Tabs.get().get(0).openScreen(GuiThemes.get());
+    private static Tab lastOpenTab;
+
+    private void toggleGui() {
+        if (mc.currentScreen instanceof TabScreen ts) {
+            if (Config.get().lastTabMemory.get())
+                lastOpenTab = ts.tab;
+
+            ts.close();
+        }
+        else if (Utils.canOpenGui()) {
+            var tab = Config.get().lastTabMemory.get() && lastOpenTab != null
+                ? lastOpenTab
+                : Tabs.modules();
+
+            tab.openScreen(Meteor.currentTheme());
+        }
     }
 
     // Hide HUD

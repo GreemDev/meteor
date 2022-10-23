@@ -8,6 +8,7 @@ import net.greemdev.meteor.util.*
 import net.minecraft.text.*
 import net.minecraft.util.Formatting
 import net.minecraft.util.Identifier
+import org.jetbrains.annotations.Range
 import java.util.function.Consumer
 
 class FormattedTextBuilder(private var internal: MutableText) {
@@ -21,7 +22,7 @@ class FormattedTextBuilder(private var internal: MutableText) {
         return this
     }
 
-    fun getMutableText() = internal
+    fun text() = internal
 
     operator fun MutableList<ChatColor>.plus(color: ChatColor): MutableList<ChatColor> = apply { add(color) }
     operator fun ChatColor.plus(color: ChatColor): MutableList<ChatColor> = mutableListOf(this, color)
@@ -31,8 +32,8 @@ class FormattedTextBuilder(private var internal: MutableText) {
         return this
     }
 
-    fun newline() = newline(1)
-    fun newline(amount: Int): FormattedTextBuilder = addString("\n".repeat(amount.coerceAtLeast(1)))
+    @JvmOverloads
+    fun newline(amount: Int = 1): FormattedTextBuilder = addString("\n".repeat(amount.coerceAtLeast(1)))
 
     /**
      * @throws IllegalArgumentException thrown when the provided [colorHex] is invalid
@@ -58,16 +59,18 @@ class FormattedTextBuilder(private var internal: MutableText) {
 
     fun addString(content: String, builder: FormattedTextBuilder.() -> Unit): FormattedTextBuilder =
         addText(textOf(content), builder)
-    fun addText(initial: MutableText, builder: FormattedTextBuilder.() -> Unit): FormattedTextBuilder {
-        internal = internal.append(FormattedTextBuilder(initial).apply(builder).getMutableText())
+    @JvmOverloads
+    fun addText(initial: MutableText, builder: (FormattedTextBuilder.() -> Unit)? = null): FormattedTextBuilder {
+        internal = internal.append(FormattedTextBuilder(initial).apply { builder?.invoke(this) }.text())
         return this
     }
+
     fun addText(builder: FormattedTextBuilder.() -> Unit) =
         addText(textOf(), builder)
     fun addText(builder: Consumer<FormattedTextBuilder>) =
         addText { builder.accept(this) }
     fun addBuilder(builder: FormattedTextBuilder): FormattedTextBuilder {
-        internal = internal.append(builder.getMutableText())
+        internal = internal.append(builder.text())
         return this
     }
     fun add(content: Any?, builder: Consumer<FormattedTextBuilder>) =
@@ -76,6 +79,9 @@ class FormattedTextBuilder(private var internal: MutableText) {
         addString(content) { builder.accept(this) }
     fun onHovered(event: HoverEvent) = styled { withHoverEvent(event) }
     fun onClick(event: ClickEvent) = styled { withClickEvent(event) }
+
+    fun clicked(action: ClickAction, value: String) = onClick(net.greemdev.meteor.util.text.clicked(action, value))
+    fun<T> hovered(action: HoverAction<T>, value: T) = onHovered(net.greemdev.meteor.util.text.hovered(action, value))
     fun font(fontId: Identifier) = styled { withFont(fontId) }
     fun colored(rgb: Int) = styled { withColor(rgb) }
     fun colored(colors: Collection<ChatColor>) = formatted(*colors.map(ChatColor::mc).toTypedArray())

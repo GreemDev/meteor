@@ -5,8 +5,6 @@
 
 package net.greemdev.meteor.gui.theme.round.widget.input
 
-import com.sun.jna.platform.win32.Wdm
-import meteordevelopment.meteorclient.gui.GuiTheme
 import meteordevelopment.meteorclient.gui.renderer.GuiRenderer
 import meteordevelopment.meteorclient.gui.widgets.input.WDropdown
 import net.greemdev.meteor.gui.theme.round.RoundedWidget
@@ -34,7 +32,7 @@ class WRoundedDropdown<T>(values: Array<out T>, value: T) : WDropdown<T>(values,
             val s = theme.scale(2.0)
             val c = theme.outlineColor()
 
-            renderBackground(renderer, this, pressed, mouseOver)
+            renderBackground(renderer, this, pressed, mouseOver, false)
 
             renderer.quad(x, y + height - s, width, s, c)
             renderer.quad(x, y, s, height - s, c)
@@ -65,7 +63,5 @@ class WRoundedDropdown<T>(values: Array<out T>, value: T) : WDropdown<T>(values,
             val text = value.toString()
             renderer.text(text, x + width / 2 - theme.textWidth(text) / 2, y + pad(), theme.textColor(), false)
         }
-
     }
-
 }

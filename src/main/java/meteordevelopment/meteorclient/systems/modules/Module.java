@@ -15,6 +15,8 @@ import meteordevelopment.meteorclient.utils.misc.ISerializable;
 import meteordevelopment.meteorclient.utils.misc.Keybind;
 import meteordevelopment.meteorclient.utils.player.ChatUtils;
 import meteordevelopment.meteorclient.utils.render.color.Color;
+import net.greemdev.meteor.hud.notification.Notification;
+import net.greemdev.meteor.hud.notification.Notifications;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.nbt.NbtElement;
@@ -47,7 +49,6 @@ public abstract class Module implements ISerializable<Module>, Comparable<Module
     public boolean autoSubscribe = true;
 
     public final Keybind keybind = Keybind.none();
-    public boolean toggleOnBindRelease = false;
     public boolean chatFeedback = true;
     public boolean favorite = false;
 
@@ -91,10 +92,13 @@ public abstract class Module implements ISerializable<Module>, Comparable<Module
     }
 
     public void sendToggledMsg() {
-        if (Config.get().chatFeedback.get() && chatFeedback) {
-            ChatUtils.forceNextPrefixClass(getClass());
-            ChatUtils.sendMsg(this.hashCode(), Formatting.GRAY, "Toggled (highlight)%s(default) %s(default).", title, isActive() ? Formatting.GREEN + "on" : Formatting.RED + "off");
-        }
+        Notifications.sendOrRun(Notification.module(this, active),
+            "Toggled (highlight)%s(default) %s(default).", (alt) -> {
+                if (Config.get().chatFeedback.get() && chatFeedback) {
+                    ChatUtils.forceNextPrefixClass(getClass());
+                    ChatUtils.sendMsg(this.hashCode(), Formatting.GRAY, alt, title, isActive() ? Formatting.GREEN + "on" : Formatting.RED + "off");
+                }
+        });
     }
 
     public void info(Text message) {
@@ -132,7 +136,6 @@ public abstract class Module implements ISerializable<Module>, Comparable<Module
 
         tag.putString("name", name);
         tag.put("keybind", keybind.toTag());
-        tag.putBoolean("toggleOnKeyRelease", toggleOnBindRelease);
         tag.putBoolean("chatFeedback", chatFeedback);
         tag.putBoolean("favorite", favorite);
         tag.put("settings", settings.toTag());
@@ -148,7 +151,6 @@ public abstract class Module implements ISerializable<Module>, Comparable<Module
         if (tag.contains("key")) keybind.set(true, tag.getInt("key"));
         else keybind.fromTag(tag.getCompound("keybind"));
 
-        toggleOnBindRelease = tag.getBoolean("toggleOnKeyRelease");
         chatFeedback = !tag.contains("chatFeedback") || tag.getBoolean("chatFeedback");
         favorite = tag.getBoolean("favorite");
 

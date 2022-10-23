@@ -78,9 +78,9 @@ public class YesNoPrompt {
         return this;
     }
 
-    public void show() {
+    public boolean show() {
         if (id == null) this.id(this.title);
-        if (Config.get().dontShowAgainPrompts.contains(id)) return;
+        if (Config.get().dontShowAgainPrompts.contains(id)) return false;
 
         if (!RenderSystem.isOnRenderThread()) {
             RenderSystem.recordRenderCall(() -> mc.setScreen(new PromptScreen(theme)));
@@ -88,6 +88,7 @@ public class YesNoPrompt {
         else {
             mc.setScreen(new PromptScreen(theme));
         }
+        return true;
     }
 
     private class PromptScreen extends WindowScreen {

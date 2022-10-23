@@ -7,11 +7,13 @@ package meteordevelopment.meteorclient.gui.tabs.builtin;
 
 import meteordevelopment.meteorclient.gui.GuiTheme;
 import meteordevelopment.meteorclient.gui.GuiThemes;
+import meteordevelopment.meteorclient.gui.renderer.GuiRenderer;
 import meteordevelopment.meteorclient.gui.tabs.Tab;
 import meteordevelopment.meteorclient.gui.tabs.TabScreen;
 import meteordevelopment.meteorclient.gui.tabs.WindowTabScreen;
 import meteordevelopment.meteorclient.gui.widgets.containers.WTable;
 import meteordevelopment.meteorclient.gui.widgets.input.WDropdown;
+import meteordevelopment.meteorclient.systems.config.Config;
 import meteordevelopment.meteorclient.utils.misc.NbtUtils;
 import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.nbt.NbtCompound;
@@ -19,8 +21,9 @@ import net.minecraft.nbt.NbtCompound;
 import static meteordevelopment.meteorclient.MeteorClient.mc;
 
 public class GuiTab extends Tab {
+    public static final String NAME = "GUI";
     public GuiTab() {
-        super("GUI");
+        super(NAME, GuiRenderer.GUI, Config.get().guiIcon::get);
     }
 
     @Override

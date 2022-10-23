@@ -86,8 +86,8 @@ data class ChatColor private constructor(val mc: Formatting) {
     val rgb by invoking(mc::getColorValue)
 
 
-    fun asMeteor() = Color(rgb ?: error("Cannot obtain color for a non-color formatting option.")).apply { a = 255 }
-    fun asAwt() = asMeteor().awt()
+    fun asMeteor() = MeteorColor(rgb ?: error("Cannot obtain color for a non-color formatting option.")).apply { a = 255 }
+    fun asAwt(): AwtColor = asMeteor().awt()
 
 
     override fun hashCode() = asMeteor().hashCode()

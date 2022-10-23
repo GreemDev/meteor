@@ -6,7 +6,10 @@
 package meteordevelopment.meteorclient.gui.widgets.pressable;
 
 import meteordevelopment.meteorclient.gui.renderer.GuiRenderer;
+import meteordevelopment.meteorclient.gui.widgets.WWidget;
 import meteordevelopment.meteorclient.utils.render.color.Color;
+
+import java.util.function.Consumer;
 
 public abstract class WFavorite extends WPressable {
     public boolean checked;
@@ -22,6 +25,11 @@ public abstract class WFavorite extends WPressable {
 
         width = pad + s + pad;
         height = pad + s + pad;
+    }
+
+    public <T extends WFavorite> T action(Consumer<Boolean> action) {
+        this.action = () -> action.accept(checked);
+        return (T)this;
     }
 
     @Override

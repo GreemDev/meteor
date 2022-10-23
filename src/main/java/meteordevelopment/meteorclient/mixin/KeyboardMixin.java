@@ -10,22 +10,32 @@ import meteordevelopment.meteorclient.events.meteor.CharTypedEvent;
 import meteordevelopment.meteorclient.events.meteor.KeyEvent;
 import meteordevelopment.meteorclient.gui.GuiKeyEvents;
 import meteordevelopment.meteorclient.gui.WidgetScreen;
+import meteordevelopment.meteorclient.systems.modules.Modules;
 import meteordevelopment.meteorclient.utils.Utils;
 import meteordevelopment.meteorclient.utils.misc.input.Input;
 import meteordevelopment.meteorclient.utils.misc.input.KeyAction;
+import net.greemdev.meteor.event.GameInputEvent;
+import net.greemdev.meteor.modules.GameTweaks;
 import net.minecraft.client.Keyboard;
 import net.minecraft.client.MinecraftClient;
+import net.minecraft.client.util.NarratorManager;
 import org.lwjgl.glfw.GLFW;
 import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
+import org.spongepowered.asm.mixin.injection.Redirect;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
 @Mixin(Keyboard.class)
 public abstract class KeyboardMixin {
     @Shadow @Final private MinecraftClient client;
+
+    @Redirect(method = "onKey", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/util/NarratorManager;isActive()Z"))
+    private boolean removeNarratorKeybind(NarratorManager instance) {
+        return false;
+    }
 
     @Inject(method = "onKey", at = @At("HEAD"), cancellable = true)
     public void onKey(long window, int key, int scancode, int action, int modifiers, CallbackInfo info) {

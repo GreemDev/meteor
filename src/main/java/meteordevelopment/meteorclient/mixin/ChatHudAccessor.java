@@ -13,6 +13,7 @@ import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.gen.Accessor;
 import org.spongepowered.asm.mixin.gen.Invoker;
 
+import java.util.Deque;
 import java.util.List;
 
 @Mixin(ChatHud.class)
@@ -25,4 +26,10 @@ public interface ChatHudAccessor {
 
     @Accessor("messages")
     List<ChatHudLine<Text>> getMessages();
+
+    @Accessor("messageQueue")
+    Deque<Text> getMessageQueue();
+
+    @Accessor("messageHistory")
+    List<String> getMessageHistory();
 }
