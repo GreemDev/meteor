@@ -24,8 +24,8 @@ public class ItemListSetting extends Setting<List<Item>> {
     public final Predicate<Item> filter;
     private final boolean bypassFilterWhenSavingAndLoading;
 
-    public ItemListSetting(String name, String description, List<Item> defaultValue, Consumer<List<Item>> onChanged, Consumer<Setting<List<Item>>> onModuleActivated, IVisible visible, Predicate<Item> filter, boolean bypassFilterWhenSavingAndLoading) {
-        super(name, description, defaultValue, onChanged, onModuleActivated, visible);
+    protected ItemListSetting(String name, String description, Object defaultValue, Consumer<List<Item>> onChanged, Consumer<Setting<List<Item>>> onModuleActivated, Predicate<Item> filter, IVisible visible, boolean serialize, boolean bypassFilterWhenSavingAndLoading) {
+        super(name, description, defaultValue, onChanged, onModuleActivated, visible, serialize);
 
         this.filter = filter;
         this.bypassFilterWhenSavingAndLoading = bypassFilterWhenSavingAndLoading;
@@ -48,7 +48,7 @@ public class ItemListSetting extends Setting<List<Item>> {
 
     @Override
     public void resetImpl() {
-        value = new ArrayList<>(defaultValue);
+        value = new ArrayList<>(getDefaultValue());
     }
 
     @Override
@@ -110,7 +110,7 @@ public class ItemListSetting extends Setting<List<Item>> {
 
         @Override
         public ItemListSetting build() {
-            return new ItemListSetting(name, description, defaultValue, onChanged, onModuleActivated, visible, filter, bypassFilterWhenSavingAndLoading);
+            return new ItemListSetting(name, description, defaultValue, onChanged, onModuleActivated, filter, visible, serialize, bypassFilterWhenSavingAndLoading);
         }
     }
 }

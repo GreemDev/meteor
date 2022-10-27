@@ -24,19 +24,19 @@ public class ModuleListSetting extends Setting<List<Module>> {
     public final Predicate<? super Module> filter;
     private final boolean bypassFilterWhenSavingAndLoading;
 
-    public ModuleListSetting(String name, String description, List<Module> defaultValue, Consumer<List<Module>> onChanged, Consumer<Setting<List<Module>>> onModuleActivated, IVisible visible, Predicate<? super Module> filter, boolean bypassFilterWhenSavingAndLoading) {
+    protected ModuleListSetting(String name, String description, Object defaultValue, Consumer<List<Module>> onChanged, Consumer<Setting<List<Module>>> onModuleActivated, Predicate<? super Module> filter, IVisible visible, boolean serialize,  boolean bypassFilterWhenSavingAndLoading) {
         super(name, description, defaultValue, onChanged, onModuleActivated, visible);
         this.filter = filter;
         this.bypassFilterWhenSavingAndLoading = bypassFilterWhenSavingAndLoading;
     }
 
-    public ModuleListSetting(String name, String description, List<Module> defaultValue, Consumer<List<Module>> onChanged, Consumer<Setting<List<Module>>> onModuleActivated, IVisible visible) {
-        this(name, description, defaultValue, onChanged, onModuleActivated, visible, null, false);
+    protected ModuleListSetting(String name, String description, Object defaultValue, Consumer<List<Module>> onChanged, Consumer<Setting<List<Module>>> onModuleActivated, IVisible visible, boolean serialize) {
+        this(name, description, defaultValue, onChanged, onModuleActivated, null, visible, serialize, false);
     }
 
     @Override
     public void resetImpl() {
-        value = new ArrayList<>(defaultValue);
+        value = new ArrayList<>(getDefaultValue());
     }
 
     @Override
@@ -118,7 +118,7 @@ public class ModuleListSetting extends Setting<List<Module>> {
             return defaultValue(modules);
         }
 
-        public final Builder filteredBy(Predicate<? super Module> predicate) {
+        public final Builder filter(Predicate<? super Module> predicate) {
             modulePredicate = predicate;
             return this;
         }
@@ -130,7 +130,7 @@ public class ModuleListSetting extends Setting<List<Module>> {
 
         @Override
         public ModuleListSetting build() {
-            return new ModuleListSetting(name, description, defaultValue, onChanged, onModuleActivated, visible, modulePredicate, bypassFilterWhenSavingAndLoading);
+            return new ModuleListSetting(name, description, defaultValue, onChanged, onModuleActivated, modulePredicate, visible, serialize, bypassFilterWhenSavingAndLoading);
         }
     }
 }

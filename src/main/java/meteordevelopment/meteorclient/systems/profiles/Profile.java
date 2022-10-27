@@ -7,14 +7,21 @@ package meteordevelopment.meteorclient.systems.profiles;
 
 import meteordevelopment.meteorclient.gui.utils.CharFilter;
 import meteordevelopment.meteorclient.settings.*;
+import meteordevelopment.meteorclient.systems.config.Config;
 import meteordevelopment.meteorclient.systems.hud.Hud;
 import meteordevelopment.meteorclient.systems.macros.Macros;
 import meteordevelopment.meteorclient.systems.modules.Modules;
 import meteordevelopment.meteorclient.systems.waypoints.Waypoints;
 import meteordevelopment.meteorclient.utils.Utils;
 import meteordevelopment.meteorclient.utils.misc.ISerializable;
+import net.greemdev.meteor.util.meteor.HiddenModules;
+import net.greemdev.meteor.util.misc.Nbt;
+import net.greemdev.meteor.util.misc.NbtDataType;
+import net.greemdev.meteor.util.misc.NbtKt;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.nbt.NbtElement;
+import net.minecraft.nbt.NbtIo;
+import net.minecraft.nbt.NbtString;
 import org.apache.commons.io.FileUtils;
 
 import java.io.File;
@@ -71,27 +78,61 @@ public class Profile implements ISerializable<Profile> {
         .build()
     );
 
-    public Profile() {}
+    public Setting<Boolean> hiddenModules = sgSave.add(new BoolSetting.Builder()
+        .name("hidden-modules")
+        .description("Whether the profile should save Hidden Modules.")
+        .defaultValue(false)
+        .build()
+    );
+
+    public Profile() {
+    }
+
     public Profile(NbtElement tag) {
         fromTag((NbtCompound) tag);
     }
 
     public void load() {
         File folder = getFile();
+        if (folder.mkdirs()) return; //we just created the directories, there isn't anything to load.
 
         if (hud.get()) Hud.get().load(folder);
         if (macros.get()) Macros.get().load(folder);
         if (modules.get()) Modules.get().load(folder);
         if (waypoints.get()) Waypoints.get().load(folder);
+        if (hiddenModules.get())
+            try {
+                var file = new File(folder, "hidden-modules.nbt");
+                if (file.exists()) {
+                    var tag = NbtIo.read(new File(folder, "hidden-modules.nbt"));
+                    HiddenModules.set(NbtKt.collectList(tag, "value", NbtDataType.String).stream().map(Modules.get()::get).toList());
+                }
+
+            } catch (Exception ignored) {
+            }
     }
 
     public void save() {
         File folder = getFile();
+        if (!folder.mkdirs()) return; //couldn't create folder, can't save
 
         if (hud.get()) Hud.get().save(folder);
         if (macros.get()) Macros.get().save(folder);
         if (modules.get()) Modules.get().save(folder);
         if (waypoints.get()) Waypoints.get().save(folder);
+        if (hiddenModules.get())
+            try {
+                var file = new File(folder, "hidden-modules.nbt");
+                if (file.createNewFile()) {
+                    var tag = Nbt.newCompound(c ->
+                        c.put("value", Nbt.list(Config.hiddenModuleNames.stream().map(NbtString::of).toList()))
+                    );
+                    NbtIo.write(tag, file);
+                }
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+
     }
 
     public void delete() {

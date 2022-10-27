@@ -8,6 +8,7 @@ package meteordevelopment.meteorclient.gui.widgets;
 import meteordevelopment.meteorclient.gui.renderer.GuiRenderer;
 import meteordevelopment.meteorclient.gui.widgets.containers.WHorizontalList;
 import meteordevelopment.meteorclient.gui.widgets.pressable.WButton;
+import meteordevelopment.meteorclient.gui.widgets.pressable.WCheckbox;
 import meteordevelopment.meteorclient.systems.modules.Modules;
 import meteordevelopment.meteorclient.utils.misc.Keybind;
 
@@ -16,6 +17,7 @@ public class WKeybind extends WHorizontalList {
     public Runnable actionOnSet;
 
     private WLabel label;
+    private WCheckbox onRelease;
 
     private final Keybind keybind;
     private final Keybind defaultValue;
@@ -31,7 +33,7 @@ public class WKeybind extends WHorizontalList {
     @Override
     public void init() {
         if (!module)
-            add(theme.label("  "));
+            add(theme.label(" "));
         label = add(theme.label(fixLabel(keybind.toString()))).widget();
         add(theme.button("Set", () -> {
             listening = true;
@@ -43,7 +45,7 @@ public class WKeybind extends WHorizontalList {
         WLabel release = add(theme.label("  Released: ")).widget();
         release.tooltip = "Activate this keybind when the specified key/mouse button is &zreleased&r.";
 
-        add(theme.checkbox(keybind.onRelease, (c) -> keybind.onRelease = c));
+        onRelease = add(theme.checkbox(keybind.onRelease, (c) -> keybind.onRelease = c)).widget();
 
         add(theme.button(GuiRenderer.RESET, this::resetBind)).expandCellX().right();
     }
@@ -66,6 +68,7 @@ public class WKeybind extends WHorizontalList {
 
     public void resetBind() {
         keybind.set(defaultValue);
+        onRelease.checked = defaultValue.onRelease;
         reset();
     }
 

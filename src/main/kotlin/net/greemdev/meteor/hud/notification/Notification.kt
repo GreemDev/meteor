@@ -23,9 +23,9 @@ open class Notification(val title: String, val description: String?, color: AwtC
 
         @JvmStatic
         fun module(module: Module, isNowOn: Boolean) = Notification(
-            title = "&zModule ${module.title}&r: ${if (isNowOn) "&aON" else "&4OFF"}",
+            title = "&z${module.title}&r: ${if (isNowOn) "&aON" else "&4OFF"}",
             color = if (isNowOn) MeteorColor.GREEN else MeteorColor.RED,
-            event = ModuleToggledNEvent(module),
+            event = NotificationEvent.ModuleToggled(module),
             NotificationSource.Module
         )
         @JvmStatic

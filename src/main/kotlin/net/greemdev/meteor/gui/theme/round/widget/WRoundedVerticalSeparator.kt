@@ -11,10 +11,10 @@ import net.greemdev.meteor.gui.theme.round.RoundedWidget
 import net.greemdev.meteor.util.meteor.*
 import kotlin.math.round
 
-class WRoundedVerticalSeparator : WVerticalSeparator(), RoundedWidget {
+class WRoundedVerticalSeparator(unicolor: Boolean = false) : WVerticalSeparator(unicolor), RoundedWidget {
     override fun onRender(renderer: GuiRenderer, mouseX: Double, mouseY: Double, delta: Double) {
         val theme = theme()
-        val colorEdges = theme.separatorEdges()
+        val colorEdges = if (unicolor) theme.separatorCenter() else theme.separatorEdges()
         val colorCenter = theme.separatorCenter()
 
         val s = theme.scale(1.0)

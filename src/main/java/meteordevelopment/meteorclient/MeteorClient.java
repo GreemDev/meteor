@@ -138,7 +138,7 @@ public class MeteorClient implements ClientModInitializer {
             toggleGui();
     }
 
-    private static Tab lastOpenTab;
+    public static Tab lastOpenTab;
 
     private void toggleGui() {
         if (mc.currentScreen instanceof TabScreen ts) {

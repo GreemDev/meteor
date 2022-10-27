@@ -6,7 +6,6 @@
 package meteordevelopment.meteorclient.systems.config;
 
 import meteordevelopment.meteorclient.MeteorClient;
-import meteordevelopment.meteorclient.gui.tabs.TabScreen;
 import meteordevelopment.meteorclient.gui.utils.StarscriptTextBoxRenderer;
 import meteordevelopment.meteorclient.gui.widgets.WTopBar;
 import meteordevelopment.meteorclient.renderer.Fonts;
@@ -17,7 +16,6 @@ import meteordevelopment.meteorclient.systems.Systems;
 import meteordevelopment.meteorclient.systems.commands.Command;
 import meteordevelopment.meteorclient.systems.modules.Module;
 import meteordevelopment.meteorclient.utils.player.ChatUtils;
-import meteordevelopment.meteorclient.utils.render.color.RainbowColors;
 import meteordevelopment.meteorclient.utils.render.color.SettingColor;
 import net.greemdev.meteor.type.ChatLogo;
 import net.greemdev.meteor.util.meteor.HiddenModules;
@@ -30,7 +28,6 @@ import net.minecraft.nbt.NbtString;
 import net.minecraft.text.Text;
 
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 
 import static meteordevelopment.meteorclient.MeteorClient.mc;
@@ -65,7 +62,6 @@ public class Config extends System<Config> {
         .description("The global rainbow speed.")
         .defaultValue(0.5)
         .range(0, 10)
-        .sliderMax(5)
         .build()
     );
 
@@ -175,10 +171,13 @@ public class Config extends System<Config> {
     public final Setting<List<Module>> hiddenModules = sgMisc.add(new ModuleListSetting.Builder()
         .name("hidden-modules")
         .description("Modules to hide from Meteor's Modules screen.")
-        .defaultValue(HiddenModules.getModules())
-        .onChanged(HiddenModules.get()::set)
+        .defaultValue(HiddenModules::getModules)
+        .serialize(false)
+        .onChanged(HiddenModules::set)
         .build()
     );
+
+    public static List<String> hiddenModuleNames = new ArrayList<>();
 
     public final Setting<Boolean> lastTabMemory = sgMisc.add(new BoolSetting.Builder()
         .name("remember-last-tab")
@@ -295,6 +294,7 @@ public class Config extends System<Config> {
         tag.putString("version", MeteorClient.VERSION.toString());
         tag.put("settings", settings.toTag());
         tag.put("dontShowAgainPrompts", listToTag(dontShowAgainPrompts));
+        tag.put("hiddenModules", listToTag(hiddenModuleNames));
 
         return tag;
     }
@@ -303,6 +303,7 @@ public class Config extends System<Config> {
     public Config fromTag(NbtCompound tag) {
         if (tag.contains("settings")) settings.fromTag(tag.getCompound("settings"));
         if (tag.contains("dontShowAgainPrompts")) dontShowAgainPrompts = listFromTag(tag, "dontShowAgainPrompts");
+        if (tag.contains("hiddenModules")) hiddenModuleNames = listFromTag(tag, "hiddenModules");
 
         return this;
     }

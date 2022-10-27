@@ -14,9 +14,11 @@ import net.minecraft.util.Identifier;
 import net.minecraft.util.registry.Registry;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Objects;
 import java.util.function.Consumer;
+import java.util.function.Supplier;
 
 public abstract class Setting<T> implements IGetter<T>, ISerializable<T> {
     private static final List<String> NO_SUGGESTIONS = new ArrayList<>(0);
@@ -24,8 +26,9 @@ public abstract class Setting<T> implements IGetter<T>, ISerializable<T> {
     public final String name, title, description;
 
     private final IVisible visible;
+    public boolean serialize = true;
 
-    protected final T defaultValue;
+    protected final Object defaultValue;
     protected T value;
 
     public final Consumer<Setting<T>> onModuleActivated;
@@ -34,7 +37,7 @@ public abstract class Setting<T> implements IGetter<T>, ISerializable<T> {
     public Module module;
     public boolean lastWasVisible;
 
-    public Setting(String name, String description, T defaultValue, Consumer<T> onChanged, Consumer<Setting<T>> onModuleActivated, IVisible visible) {
+    public Setting(String name, String description, Object defaultValue, Consumer<T> onChanged, Consumer<Setting<T>> onModuleActivated, IVisible visible) {
         this.name = name;
         this.title = Utils.nameToTitle(name);
         this.description = description;
@@ -44,6 +47,11 @@ public abstract class Setting<T> implements IGetter<T>, ISerializable<T> {
         this.visible = visible;
 
         resetImpl();
+    }
+
+    public Setting(String name, String description, Object defaultValue, Consumer<T> onChanged, Consumer<Setting<T>> onModuleActivated, IVisible visible, boolean serialize) {
+        this(name, description, defaultValue, onChanged, onModuleActivated, visible);
+        this.serialize = serialize;
     }
 
     @Override
@@ -59,7 +67,7 @@ public abstract class Setting<T> implements IGetter<T>, ISerializable<T> {
     }
 
     protected void resetImpl() {
-        value = defaultValue;
+        value = getDefaultValue();
     }
 
     public void reset() {
@@ -68,7 +76,9 @@ public abstract class Setting<T> implements IGetter<T>, ISerializable<T> {
     }
 
     public T getDefaultValue() {
-        return defaultValue;
+        if (defaultValue instanceof Supplier<?> s)
+            return (T)s.get();
+        return (T)defaultValue;
     }
 
     public boolean parse(String str) {
@@ -167,10 +177,11 @@ public abstract class Setting<T> implements IGetter<T>, ISerializable<T> {
 
     public abstract static class SettingBuilder<B, V, S> {
         protected String name = "undefined", description = "";
-        protected V defaultValue;
+        protected Object defaultValue;
         protected IVisible visible;
         protected Consumer<V> onChanged;
         protected Consumer<Setting<V>> onModuleActivated;
+        protected boolean serialize = true;
 
         protected SettingBuilder(V defaultValue) {
             this.defaultValue = defaultValue;
@@ -189,6 +200,16 @@ public abstract class Setting<T> implements IGetter<T>, ISerializable<T> {
         public B defaultValue(V defaultValue) {
             this.defaultValue = defaultValue;
             return (B) this;
+        }
+
+        public B defaultValue(Supplier<V> defaultValue) {
+            this.defaultValue = defaultValue;
+            return (B) this;
+        }
+
+        public B serialize(boolean value) {
+            this.serialize = value;
+            return (B)this;
         }
 
         public B visible(IVisible visible) {

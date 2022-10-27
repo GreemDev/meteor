@@ -135,8 +135,9 @@ public class EChestFarmer extends Module {
 
         // Disable if the block is too far away
         if (PlayerUtils.distanceTo(target) > mc.interactionManager.getReachDistance()) {
-            error("Target block pos out of reach.");
+            error("Target block out of reach; disabling.");
             target = null;
+            toggle();
             return;
         }
 

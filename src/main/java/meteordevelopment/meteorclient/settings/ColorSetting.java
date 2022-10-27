@@ -9,6 +9,7 @@ import com.google.common.collect.ImmutableList;
 import meteordevelopment.meteorclient.utils.render.color.Color;
 import meteordevelopment.meteorclient.utils.render.color.RainbowColors;
 import meteordevelopment.meteorclient.utils.render.color.SettingColor;
+import net.greemdev.meteor.util.Util;
 import net.minecraft.nbt.NbtCompound;
 
 import java.util.List;
@@ -17,24 +18,27 @@ import java.util.function.Consumer;
 public class ColorSetting extends Setting<SettingColor> {
     private static final List<String> SUGGESTIONS = ImmutableList.of("0 0 0 255", "225 25 25 255", "25 225 25 255", "25 25 225 255", "255 255 255 255");
 
-    public ColorSetting(String name, String description, SettingColor defaultValue, Consumer<SettingColor> onChanged, Consumer<Setting<SettingColor>> onModuleActivated, IVisible visible) {
-        super(name, description, defaultValue, onChanged, onModuleActivated, visible);
+    protected ColorSetting(String name, String description, Object defaultValue, Consumer<SettingColor> onChanged, Consumer<Setting<SettingColor>> onModuleActivated, IVisible visible, boolean serialize) {
+        super(name, description, defaultValue, onChanged, onModuleActivated, visible, serialize);
+    }
+
+    public static ColorSetting create(String name, String description, SettingColor defaultValue, Consumer<SettingColor> onChanged, Consumer<Setting<SettingColor>> onModuleActivated, IVisible visible, boolean serialize) {
+        return new ColorSetting(name, description, defaultValue, onChanged, onModuleActivated, visible, serialize);
     }
 
     @Override
     protected SettingColor parseImpl(String str) {
         try {
-            String[] strs = str.split(" ");
-            return new SettingColor(Integer.parseInt(strs[0]), Integer.parseInt(strs[1]), Integer.parseInt(strs[2]), Integer.parseInt(strs[3]));
-        } catch (IndexOutOfBoundsException | NumberFormatException ignored) {
+            return Util.colorOf(str).toSetting();
+        } catch (IllegalArgumentException ignored) {
             return null;
         }
     }
 
     @Override
     public void resetImpl() {
-        if (value == null) value = new SettingColor(defaultValue);
-        else value.set(defaultValue);
+        if (value == null) value = new SettingColor(getDefaultValue());
+        else value.set(getDefaultValue());
     }
 
     @Override
@@ -71,13 +75,16 @@ public class ColorSetting extends Setting<SettingColor> {
         public Builder defaultValue(Color defaultValue) {
             return defaultValue(defaultValue.toSetting());
         }
+        public Builder defaultValue(String content) {
+            return defaultValue(Util.colorOf(content));
+        }
 
         @Override
         public ColorSetting build() {
             if (onChanged == null)
                 onChanged = RainbowColors::handle;
 
-            return new ColorSetting(name, description, defaultValue, onChanged, onModuleActivated, visible);
+            return new ColorSetting(name, description, defaultValue, onChanged, onModuleActivated, visible, serialize);
         }
     }
 }

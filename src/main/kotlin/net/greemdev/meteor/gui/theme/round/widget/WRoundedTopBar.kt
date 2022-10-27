@@ -31,7 +31,7 @@ class WRoundedTopBar : WTopBar(), RoundedWidget {
         tabs.forEach { add(WRoundedTopBarButton(it)) }
 
         if (tabs.isNotEmpty())
-            add(theme.verticalSeparator()).expandWidgetY()
+            add(theme.verticalSeparator(true)).expandWidgetY()
 
         iconTabs.forEach { add(WRoundedTopBarButton(it)) }
     }

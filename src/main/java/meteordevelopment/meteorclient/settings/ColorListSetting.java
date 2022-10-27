@@ -5,8 +5,13 @@
 
 package meteordevelopment.meteorclient.settings;
 
+import kotlin.text.CharsKt;
+import kotlin.text.StringsKt;
 import meteordevelopment.meteorclient.utils.misc.NbtUtils;
+import meteordevelopment.meteorclient.utils.render.color.Color;
 import meteordevelopment.meteorclient.utils.render.color.SettingColor;
+import net.greemdev.meteor.util.Strings;
+import net.greemdev.meteor.util.Util;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.nbt.NbtElement;
 
@@ -15,13 +20,32 @@ import java.util.List;
 import java.util.function.Consumer;
 
 public class ColorListSetting extends Setting<List<SettingColor>> {
-    public ColorListSetting(String name, String description, List<SettingColor> defaultValue, Consumer<List<SettingColor>> onChanged, Consumer<Setting<List<SettingColor>>> onModuleActivated, IVisible visible) {
-        super(name, description, defaultValue, onChanged, onModuleActivated, visible);
+    protected ColorListSetting(String name, String description, Object defaultValue, Consumer<List<SettingColor>> onChanged, Consumer<Setting<List<SettingColor>>> onModuleActivated, IVisible visible, boolean serialize) {
+        super(name, description, defaultValue, onChanged, onModuleActivated, visible, serialize);
     }
 
     @Override
     protected List<SettingColor> parseImpl(String str) {
-        // TODO: I cba to write a text parser for this
+        var split = StringsKt.split(str, new String[] {" "}, false, 0);
+
+        if (split.size() != 1 && !split.get(0).equals(str)) {
+            ArrayList<Color> colors = new ArrayList<>();
+
+            for (Object part : split) {
+                if (part instanceof String sp && sp.startsWith("(") && sp.endsWith(")") && sp.contains(","))
+                    part = Strings.withoutSuffix(Strings.withoutPrefix(sp, "("), ")");
+
+                if (part instanceof String sp && StringsKt.all(sp, Character::isDigit)) {
+                    part = Integer.parseInt(sp);
+                }
+
+                try {
+                    colors.add(Util.colorOf(part));
+                } catch (IllegalArgumentException ignored) {}
+            }
+            return colors.stream().map(Color::toSetting).toList();
+        }
+
         return new ArrayList<>();
     }
 
@@ -32,11 +56,10 @@ public class ColorListSetting extends Setting<List<SettingColor>> {
 
     @Override
     protected void resetImpl() {
-        value = new ArrayList<>(defaultValue.size());
+        var d = getDefaultValue();
+        value = new ArrayList<>(d.size());
 
-        for (SettingColor settingColor : defaultValue) {
-            value.add(new SettingColor(settingColor));
-        }
+        d.forEach(sc -> value.add(new SettingColor(sc)));
     }
 
     @Override
@@ -64,7 +87,7 @@ public class ColorListSetting extends Setting<List<SettingColor>> {
 
         @Override
         public ColorListSetting build() {
-            return new ColorListSetting(name, description, defaultValue, onChanged, onModuleActivated, visible);
+            return new ColorListSetting(name, description, defaultValue, onChanged, onModuleActivated, visible, serialize);
         }
     }
 }

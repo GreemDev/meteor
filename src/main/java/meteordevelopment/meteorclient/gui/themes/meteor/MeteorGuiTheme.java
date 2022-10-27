@@ -208,8 +208,8 @@ public class MeteorGuiTheme extends GuiTheme {
     }
 
     @Override
-    public WVerticalSeparator verticalSeparator() {
-        return w(new WMeteorVerticalSeparator());
+    public WVerticalSeparator verticalSeparator(boolean unicolor) {
+        return w(new WMeteorVerticalSeparator(unicolor));
     }
 
     @Override

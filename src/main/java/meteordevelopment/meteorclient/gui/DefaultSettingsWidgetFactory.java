@@ -399,10 +399,10 @@ public class DefaultSettingsWidgetFactory implements SettingsWidgetFactory {
                 SettingColor defaultValue = WHITE;
                 if (_i < setting.getDefaultValue().size()) defaultValue = setting.getDefaultValue().get(_i);
 
-                ColorSetting set = new ColorSetting(setting.name, setting.description, defaultValue, settingColor -> {
+                ColorSetting set = ColorSetting.create(setting.name, setting.description, defaultValue, settingColor -> {
                     setting.get().get(_i).set(settingColor);
                     setting.onChanged();
-                }, null, null);
+                }, null, null, setting.serialize);
                 set.set(setting.get().get(_i));
                 mc.setScreen(new ColorSettingScreen(theme, set));
             };

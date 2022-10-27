@@ -72,7 +72,7 @@ public interface CharFilter {
     static CharFilter ip(boolean allowPorts) {
         return (t, c) -> {
             if (!allowPorts && (t.contains(":") && c == ':')) return false;
-            return alphanumeric(true, false, false, false).filter(t, c);
+            return alphanumeric(true, true, true, false).filter(t, c);
         };
     }
 

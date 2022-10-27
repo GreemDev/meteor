@@ -27,8 +27,8 @@ val notifications = object : NotificationManager() {}
 
 abstract class NotificationManager {
     fun sendOrRun(n: Notification, altMessage: String? = null, func: ((String) -> Unit)? = null) {
-        if (NotificationHud.get().allowsSource(n.source) &&
-            (n.event !is ModuleToggledNEvent || NotificationHud.get().allowsModule(n.event.module))
+        if (NotificationHud.getOrNull()?.allowsSource(n.source) == true &&
+            (n.event !is NotificationEvent.ModuleToggled || NotificationHud.get().allowsModule(n.event.module))
         ) {
             n.send()
             if (overrideChatFeedback())

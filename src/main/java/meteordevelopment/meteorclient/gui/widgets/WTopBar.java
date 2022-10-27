@@ -35,14 +35,12 @@ public abstract class WTopBar extends WHorizontalList {
         clear();
         var tabs = MetaKt.renderable(Tabs.get());
 
-        for (Tab tab : tabs.getFirst())
-            add(new WTopBarButton(tab));
+        tabs.getFirst().forEach(t -> add(new WTopBarButton(t)));
 
         if (!tabs.getFirst().isEmpty())
-            add(theme.verticalSeparator()).expandWidgetY();
+            add(theme.verticalSeparator(true)).expandWidgetY();
 
-        for (Tab tab : tabs.getSecond())
-            add(new WTopBarButton(tab));
+        tabs.getSecond().forEach(t -> add(new WTopBarButton(t)));
     }
 
     protected class WTopBarButton extends WPressable {

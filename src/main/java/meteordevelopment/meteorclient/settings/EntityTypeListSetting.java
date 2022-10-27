@@ -18,20 +18,20 @@ import net.minecraft.util.Identifier;
 import net.minecraft.util.registry.Registry;
 
 import java.util.function.Consumer;
+import java.util.function.Predicate;
 
-// TODO: Change onlyAttackable to a filter
 public class EntityTypeListSetting extends Setting<Object2BooleanMap<EntityType<?>>> {
-    public final boolean onlyAttackable;
+    public final Predicate<EntityType<?>> filter;
 
-    public EntityTypeListSetting(String name, String description, Object2BooleanMap<EntityType<?>> defaultValue, Consumer<Object2BooleanMap<EntityType<?>>> onChanged, Consumer<Setting<Object2BooleanMap<EntityType<?>>>> onModuleActivated, IVisible visible, boolean onlyAttackable) {
-        super(name, description, defaultValue, onChanged, onModuleActivated, visible);
+    private EntityTypeListSetting(String name, String description, Object defaultValue, Consumer<Object2BooleanMap<EntityType<?>>> onChanged, Consumer<Setting<Object2BooleanMap<EntityType<?>>>> onModuleActivated, Predicate<EntityType<?>> filter, IVisible visible, boolean serialize) {
+        super(name, description, defaultValue, onChanged, onModuleActivated, visible, serialize);
 
-        this.onlyAttackable = onlyAttackable;
+        this.filter = filter;
     }
 
     @Override
     public void resetImpl() {
-        value = new Object2BooleanOpenHashMap<>(defaultValue);
+        value = new Object2BooleanOpenHashMap<>(getDefaultValue());
     }
 
     @Override
@@ -79,14 +79,15 @@ public class EntityTypeListSetting extends Setting<Object2BooleanMap<EntityType<
         NbtList valueTag = tag.getList("value", 8);
         for (NbtElement tagI : valueTag) {
             EntityType<?> type = Registry.ENTITY_TYPE.get(new Identifier(tagI.asString()));
-            if (!onlyAttackable || EntityUtils.isAttackable(type)) get().put(type, true);
+            if (filter == null || !filter.test(type))
+                get().put(type, true);
         }
 
         return get();
     }
 
     public static class Builder extends SettingBuilder<Builder, Object2BooleanMap<EntityType<?>>, EntityTypeListSetting> {
-        private boolean onlyAttackable = false;
+        private Predicate<EntityType<?>> filter = null;
 
         public Builder() {
             super(new Object2BooleanOpenHashMap<>(0));
@@ -96,14 +97,19 @@ public class EntityTypeListSetting extends Setting<Object2BooleanMap<EntityType<
             return defaultValue(defaults != null ? Utils.asO2BMap(defaults) : new Object2BooleanOpenHashMap<>(0));
         }
 
+        public Builder filter(Predicate<EntityType<?>> filter) {
+            this.filter = filter;
+            return this;
+        }
+
         public Builder onlyAttackable() {
-            onlyAttackable = true;
+            this.filter = EntityUtils::isAttackable;
             return this;
         }
 
         @Override
         public EntityTypeListSetting build() {
-            return new EntityTypeListSetting(name, description, defaultValue, onChanged, onModuleActivated, visible, onlyAttackable);
+            return new EntityTypeListSetting(name, description, defaultValue, onChanged, onModuleActivated, filter, visible, serialize);
         }
     }
 }

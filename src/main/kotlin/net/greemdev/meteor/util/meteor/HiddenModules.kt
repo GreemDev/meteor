@@ -5,76 +5,38 @@
 
 package net.greemdev.meteor.util.meteor
 
-import meteordevelopment.meteorclient.MeteorClient
-import meteordevelopment.meteorclient.systems.System
-import meteordevelopment.meteorclient.systems.Systems
+import meteordevelopment.meteorclient.systems.config.Config
 import meteordevelopment.meteorclient.systems.modules.Category
 import meteordevelopment.meteorclient.systems.modules.Module
 import net.greemdev.meteor.util.getOrNull
-import net.greemdev.meteor.util.misc.*
-import net.greemdev.meteor.util.text.textOf
 import net.greemdev.meteor.util.tryOrIgnore
-import net.minecraft.nbt.NbtCompound
-import net.minecraft.nbt.NbtElement
 
-class HiddenModules : System<HiddenModules>("hidden-modules") {
+object HiddenModules {
 
-    private val hiddenModules = hashSetOf<String>()
-
-    init {
-        init()
-        load(MeteorClient.FOLDER)
-    }
-
-    operator fun contains(module: Module) = hiddenModules.contains(module.name)
+    operator fun contains(module: Module) = Config.hiddenModuleNames.contains(module.name)
+    @JvmStatic
     fun hideInCategory(category: Category, mapped: MutableMap<Category, MutableList<Module>>): List<Module> {
         val modules = mapped.computeIfAbsent(category) { mutableListOf() }
-        if (hiddenModules.isNotEmpty())
-            modules.removeAll { it.name in hiddenModules }
-
-        return modules
+        return if (Config.hiddenModuleNames.isNotEmpty())
+            modules.filter { it !in this }
+        else
+            modules
     }
 
-    companion object {
-        @JvmStatic
-        fun get(): HiddenModules = Systems.get(HiddenModules::class.java)
+    @JvmStatic
+    fun getModules() =
+        Config.hiddenModuleNames.mapNotNull {
+            getOrNull { Meteor.modules().get(it) }
+        }
 
-        @JvmStatic
-        fun getOrNull() = getOrNull { get() }
 
-        @JvmStatic
-        fun getModules() = getOrNull()?.run {
-            hiddenModules.mapNotNull {
-                getOrNull { Meteor.modules().get(it) }
-            }
-        }.orEmpty()
-    }
-
+    @JvmStatic
     fun set(modules: Collection<Module?>) {
-        if (modules.size < hiddenModules.size)
-            tryOrIgnore {
-                showConfirm("hidden-modules-restart") {
-                    title("Unhidden Modules")
-                    message("In order to see the module you've unhidden, you will need to restart Minecraft.")
-                }
-            }
-
-        hiddenModules.clear()
+        Config.hiddenModuleNames.clear()
         modules.filterNotNull().forEach {
             if (it.isActive)
                 it.toggle()
-            hiddenModules.add(it.name)
+            Config.hiddenModuleNames.add(it.name)
         }
-    }
-
-
-    override fun toTag() = Nbt compound {
-        put("hiddenModules", hiddenModules.toNBT())
-    }
-
-    override fun fromTag(tag: NbtCompound): HiddenModules {
-        hiddenModules.clear()
-        hiddenModules.addAll(tag.collectList("hiddenModules", NbtDataType.String))
-        return this
     }
 }

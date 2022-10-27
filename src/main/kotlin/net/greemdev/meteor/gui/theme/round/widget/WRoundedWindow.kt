@@ -25,9 +25,7 @@ class WRoundedWindow(icon: WWidget?, title: String?) : WWindow(icon, title), Rou
     }
 
     private inner class WRoundedHeader(icon: WWidget?) : WHeader(icon) {
-        override fun onRender(renderer: GuiRenderer, mouseX: Double, mouseY: Double, delta: Double) {
+        override fun onRender(renderer: GuiRenderer, mouseX: Double, mouseY: Double, delta: Double) =
             renderer.r2D().rounded().widgetQuad(this, theme().accentColor(), theme().round())
-        }
     }
-
 }

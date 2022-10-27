@@ -14,12 +14,10 @@ import meteordevelopment.meteorclient.gui.widgets.WTopBar;
 import meteordevelopment.meteorclient.settings.Settings;
 import meteordevelopment.meteorclient.systems.commands.Command;
 import meteordevelopment.meteorclient.systems.config.Config;
-import meteordevelopment.meteorclient.utils.misc.MeteorIdentifier;
 import meteordevelopment.meteorclient.utils.misc.NbtUtils;
 import net.greemdev.meteor.util.meteor.HiddenModules;
 import net.greemdev.meteor.util.meteor.Prompts;
 import net.minecraft.client.gui.screen.Screen;
-import net.minecraft.util.Identifier;
 
 public class ConfigTab extends Tab {
     public static final String NAME = "Config";

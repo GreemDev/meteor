@@ -13,19 +13,21 @@ import net.minecraft.nbt.NbtCompound;
 import java.util.function.Consumer;
 
 public class GenericSetting<T extends ICopyable<T> & ISerializable<T> & IScreenFactory> extends Setting<T> {
-    public GenericSetting(String name, String description, T defaultValue, Consumer<T> onChanged, Consumer<Setting<T>> onModuleActivated, IVisible visible) {
-        super(name, description, defaultValue, onChanged, onModuleActivated, visible);
+    protected GenericSetting(String name, String description, Object defaultValue, Consumer<T> onChanged, Consumer<Setting<T>> onModuleActivated, IVisible visible, boolean serialize) {
+        super(name, description, defaultValue, onChanged, onModuleActivated, visible, serialize);
     }
 
     @Override
     public void resetImpl() {
-        if (value == null) value = defaultValue.copy();
-        value.set(defaultValue);
+        var d = getDefaultValue();
+        if (value == null)
+            value = d.copy();
+        else value.set(d);
     }
 
     @Override
     protected T parseImpl(String str) {
-        return defaultValue.copy();
+        return getDefaultValue().copy();
     }
 
     @Override
@@ -54,7 +56,7 @@ public class GenericSetting<T extends ICopyable<T> & ISerializable<T> & IScreenF
 
         @Override
         public GenericSetting<T> build() {
-            return new GenericSetting<>(name, description, defaultValue, onChanged, onModuleActivated, visible);
+            return new GenericSetting<>(name, description, defaultValue, onChanged, onModuleActivated, visible, serialize);
         }
     }
 }

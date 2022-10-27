@@ -186,7 +186,7 @@ class RoundedTheme : GuiTheme("Rounded") {
             w(WRoundedMultiLabel(text, title, maxWidth))
 
     override fun horizontalSeparator(text: String?) = w(WRoundedHorizontalSeparator(text))
-    override fun verticalSeparator() = w(WRoundedVerticalSeparator())
+    override fun verticalSeparator(unicolor: Boolean) = w(WRoundedVerticalSeparator(unicolor))
     override fun button(text: String?, texture: GuiTexture?) = w(WRoundedButton(text, texture))
     override fun minus() = w(WRoundedMinus())
 

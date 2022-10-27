@@ -2,6 +2,7 @@
  * This file is part of the Meteor Client distribution (https://github.com/MeteorDevelopment/meteor-client).
  * Copyright (c) Meteor Development.
  */
+@file:JvmName("Strings")
 
 package net.greemdev.meteor.util
 
@@ -16,21 +17,25 @@ fun String.toCamelCase(separator: String = "-") =
         }.joinToString("")
 
 
+@JvmOverloads
 fun String.ensurePrefix(prefix: String, ignoreCase: Boolean = false) =
     if (startsWith(prefix, ignoreCase))
         this
     else "$prefix$this"
 
+@JvmOverloads
 fun String.withoutPrefix(prefix: String, ignoreCase: Boolean = false) =
     if (startsWith(prefix, ignoreCase))
         drop(prefix.length)
     else this
 
+@JvmOverloads
 fun String.ensureSuffix(suffix: String, ignoreCase: Boolean = false) =
     if (endsWith(suffix, ignoreCase))
         this
     else "$this$suffix"
 
+@JvmOverloads
 fun String.withoutSuffix(suffix: String, ignoreCase: Boolean = false) =
     if (endsWith(suffix, ignoreCase))
         dropLast(suffix.length)

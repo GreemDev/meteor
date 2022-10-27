@@ -5,10 +5,7 @@
 
 package meteordevelopment.meteorclient.settings;
 
-import meteordevelopment.meteorclient.utils.misc.IChangeable;
-import meteordevelopment.meteorclient.utils.misc.ICopyable;
-import meteordevelopment.meteorclient.utils.misc.IGetter;
-import meteordevelopment.meteorclient.utils.misc.ISerializable;
+import meteordevelopment.meteorclient.utils.misc.*;
 import net.minecraft.block.Block;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.util.Identifier;
@@ -21,15 +18,15 @@ import java.util.function.Consumer;
 public class BlockDataSetting<T extends ICopyable<T> & ISerializable<T> & IChangeable & IBlockData<T>> extends Setting<Map<Block, T>> {
     public final IGetter<T> defaultData;
 
-    public BlockDataSetting(String name, String description, Map<Block, T> defaultValue, Consumer<Map<Block, T>> onChanged, Consumer<Setting<Map<Block, T>>> onModuleActivated, IGetter<T> defaultData, IVisible visible) {
-        super(name, description, defaultValue, onChanged, onModuleActivated, visible);
+    protected BlockDataSetting(String name, String description, Object defaultValue, Consumer<Map<Block, T>> onChanged, Consumer<Setting<Map<Block, T>>> onModuleActivated, IGetter<T> defaultData, IVisible visible, boolean serialize) {
+        super(name, description, defaultValue, onChanged, onModuleActivated, visible, serialize);
 
         this.defaultData = defaultData;
     }
 
     @Override
     public void resetImpl() {
-        value = new HashMap<>(defaultValue);
+        value = new HashMap<>(getDefaultValue());
     }
 
     @Override
@@ -79,7 +76,7 @@ public class BlockDataSetting<T extends ICopyable<T> & ISerializable<T> & IChang
 
         @Override
         public BlockDataSetting<T> build() {
-            return new BlockDataSetting<>(name, description, defaultValue, onChanged, onModuleActivated, defaultData, visible);
+            return new BlockDataSetting<>(name, description, defaultValue, onChanged, onModuleActivated, defaultData, visible, serialize);
         }
     }
 }

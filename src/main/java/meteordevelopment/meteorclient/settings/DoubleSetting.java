@@ -16,8 +16,8 @@ public class DoubleSetting extends Setting<Double> {
     public final int decimalPlaces;
     public final boolean noSlider;
 
-    private DoubleSetting(String name, String description, double defaultValue, Consumer<Double> onChanged, Consumer<Setting<Double>> onModuleActivated, IVisible visible, double min, double max, double sliderMin, double sliderMax, boolean onSliderRelease, int decimalPlaces, boolean noSlider) {
-        super(name, description, defaultValue, onChanged, onModuleActivated, visible);
+    protected DoubleSetting(String name, String description, Object defaultValue, Consumer<Double> onChanged, Consumer<Setting<Double>> onModuleActivated, IVisible visible, boolean serialize, double min, double max, double sliderMin, double sliderMax, boolean onSliderRelease, int decimalPlaces, boolean noSlider) {
+        super(name, description, defaultValue, onChanged, onModuleActivated, visible, serialize);
 
         this.min = min;
         this.max = max;
@@ -74,17 +74,20 @@ public class DoubleSetting extends Setting<Double> {
 
         public Builder min(double min) {
             this.min = min;
+            this.sliderMin = min;
             return this;
         }
 
         public Builder max(double max) {
             this.max = max;
+            this.sliderMax = max;
             return this;
         }
 
         public Builder range(double min, double max) {
             this.min = Math.min(min, max);
             this.max = Math.max(min, max);
+            sliderRange(min, max);
             return this;
         }
 
@@ -120,7 +123,7 @@ public class DoubleSetting extends Setting<Double> {
         }
 
         public DoubleSetting build() {
-            return new DoubleSetting(name, description, defaultValue, onChanged, onModuleActivated, visible, min, max, sliderMin, sliderMax, onSliderRelease, decimalPlaces, noSlider);
+            return new DoubleSetting(name, description, defaultValue, onChanged, onModuleActivated, visible, serialize, min, max, sliderMin, sliderMax, onSliderRelease, decimalPlaces, noSlider);
         }
     }
 }

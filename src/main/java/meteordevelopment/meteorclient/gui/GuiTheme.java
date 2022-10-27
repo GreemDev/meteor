@@ -102,7 +102,10 @@ public abstract class GuiTheme implements ISerializable<GuiTheme> {
     public WHorizontalSeparator horizontalSeparator() {
         return horizontalSeparator(null);
     }
-    public abstract WVerticalSeparator verticalSeparator();
+    public abstract WVerticalSeparator verticalSeparator(boolean unicolor);
+    public WVerticalSeparator verticalSeparator() {
+        return verticalSeparator(false);
+    }
 
     protected abstract WButton button(String text, GuiTexture texture);
     public WButton button(String text) {

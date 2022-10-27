@@ -16,8 +16,8 @@ import java.util.function.Predicate;
 public class ItemSetting extends Setting<Item> {
     public final Predicate<Item> filter;
 
-    public ItemSetting(String name, String description, Item defaultValue, Consumer<Item> onChanged, Consumer<Setting<Item>> onModuleActivated, IVisible visible, Predicate<Item> filter) {
-        super(name, description, defaultValue, onChanged, onModuleActivated, visible);
+    protected ItemSetting(String name, String description, Object defaultValue, Consumer<Item> onChanged, Consumer<Setting<Item>> onModuleActivated, Predicate<Item> filter, IVisible visible, boolean serialize) {
+        super(name, description, defaultValue, onChanged, onModuleActivated, visible, serialize);
 
         this.filter = filter;
     }
@@ -74,7 +74,7 @@ public class ItemSetting extends Setting<Item> {
 
         @Override
         public ItemSetting build() {
-            return new ItemSetting(name, description, defaultValue, onChanged, onModuleActivated, visible, filter);
+            return new ItemSetting(name, description, defaultValue, onChanged, onModuleActivated, filter, visible, serialize);
         }
     }
 }

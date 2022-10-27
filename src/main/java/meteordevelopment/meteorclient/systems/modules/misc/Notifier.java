@@ -21,7 +21,7 @@ import meteordevelopment.meteorclient.utils.entity.fakeplayer.FakePlayerEntity;
 import meteordevelopment.meteorclient.utils.player.ChatUtils;
 import meteordevelopment.orbit.EventHandler;
 import net.greemdev.meteor.hud.notification.Notification;
-import net.greemdev.meteor.util.StringKt;
+import net.greemdev.meteor.util.Strings;
 import net.greemdev.meteor.util.text.ChatColor;
 import net.greemdev.meteor.util.text.FormattedText;
 import net.minecraft.entity.Entity;
@@ -221,10 +221,10 @@ public class Notifier extends Module {
             totemPopMap.put(entity.getUuid(), pops.incrementAndGet());
             Notification.notifier(
                 "&zNotifier",
-                "&f%s&7 popped&z%d&r%s.".formatted(entity.getEntityName(), pops.get(), StringKt.pluralize("totem", pops.get())),
+                "&f%s&7 popped&z%d&r%s.".formatted(entity.getEntityName(), pops.get(), Strings.pluralize("totem", pops.get())),
                 color
             ).sendOrElse(n ->
-                ChatUtils.sendMsg(getChatId(entity), Formatting.GRAY, "(highlight)%s (default)popped (highlight)%d (default)%s.", entity.getEntityName(), pops, StringKt.pluralize("totem", pops))
+                ChatUtils.sendMsg(getChatId(entity), Formatting.GRAY, "(highlight)%s (default)popped (highlight)%d (default)%s.", entity.getEntityName(), pops, Strings.pluralize("totem", pops))
             );
         }
     }
@@ -241,10 +241,10 @@ public class Notifier extends Module {
 
                     Notification.notifier(
                         "&zNotifier",
-                        "&f%s&7 died after popping &z%d&r %s.".formatted(player.getEntityName(), pops, StringKt.pluralize("totem", pops)),
+                        "&f%s&7 died after popping &z%d&r %s.".formatted(player.getEntityName(), pops, Strings.pluralize("totem", pops)),
                         color
                     ).sendOrElse(n ->
-                        ChatUtils.sendMsg(getChatId(player), Formatting.GRAY, "(highlight)%s (default)died after popping (highlight)%d (default)%s.", player.getEntityName(), pops, StringKt.pluralize("totem", pops))
+                        ChatUtils.sendMsg(getChatId(player), Formatting.GRAY, "(highlight)%s (default)died after popping (highlight)%d (default)%s.", player.getEntityName(), pops, Strings.pluralize("totem", pops))
                     );
 
                     chatIdMap.removeInt(player.getUuid());

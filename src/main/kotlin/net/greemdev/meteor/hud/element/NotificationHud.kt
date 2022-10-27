@@ -162,9 +162,8 @@ class NotificationHud : HudElement(info) {
     }
 
     val modules by sgS moduleList {
-        name("modules-to-display")
-        description("The modules to display in notifications.")
-        defaultValue(Meteor.modules().list)
+        name("modules-to-ignore")
+        description("The modules to ignore in notifications.")
         visible(moduleSource::get)
     }
 
@@ -301,18 +300,14 @@ class NotificationHud : HudElement(info) {
                     n.startTime
                 else
                     currentTime - (notifications.size - i - 1) * timeToDisplay / amount()
+
                 val notifTime = currentTime - n.startTime
 
-                val x = baseX + (
-                    if (n.startTime == 0L)
-                        0f
-                    else if (notifTime <= animationDuration)
-                        (animationDuration - notifTime) * box.width / animationDuration
-                    else if (notifTime >= timeToDisplay - animationDuration)
-                        box.width - ((timeToDisplay - notifTime) * box.width / animationDuration)
-                    else
-                        0f
-                    )
+                val x = baseX + when {
+                    notifTime <= animationDuration -> (animationDuration - notifTime) * box.width / animationDuration
+                    notifTime >= timeToDisplay - animationDuration -> box.width - ((timeToDisplay - notifTime) * box.width / animationDuration)
+                    else -> 0f
+                }
 
                 val y = baseY + (notificationHeight + barHeight + notifPaddingY) * (
                     if (verticalAlign == VA.Top)
@@ -408,7 +403,7 @@ class NotificationHud : HudElement(info) {
     }
 
     fun allowsSource(src: NotificationSource?): Boolean = src?.predicate?.invoke(this) ?: false
-    fun allowsModule(module: Module?) = module != null && module in modules()
+    fun allowsModule(module: Module?) = module != null && module !in modules()
 }
 
 enum class NotificationSource(val predicate: (NotificationHud) -> Boolean) {

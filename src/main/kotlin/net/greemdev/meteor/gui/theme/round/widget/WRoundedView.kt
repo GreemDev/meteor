@@ -11,8 +11,7 @@ import net.greemdev.meteor.gui.theme.round.RoundedWidget
 
 class WRoundedView : WView(), RoundedWidget {
     override fun onRender(renderer: GuiRenderer, mouseX: Double, mouseY: Double, delta: Double) {
-        if (canScroll and hasScrollBar) {
+        if (canScroll and hasScrollBar)
             renderer.quad(handleX(), handleY(), handleWidth(), handleHeight(), theme().scrollbarColor.get(handlePressed, handleMouseOver))
-        }
     }
 }

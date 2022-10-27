@@ -18,15 +18,16 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.function.Consumer;
+import java.util.function.Supplier;
 
 public class ParticleTypeListSetting extends Setting<List<ParticleType<?>>> {
-    public ParticleTypeListSetting(String name, String description, List<ParticleType<?>> defaultValue, Consumer<List<ParticleType<?>>> onChanged, Consumer<Setting<List<ParticleType<?>>>> onModuleActivated, IVisible visible) {
-        super(name, description, defaultValue, onChanged, onModuleActivated, visible);
+    protected ParticleTypeListSetting(String name, String description, Object defaultValue, Consumer<List<ParticleType<?>>> onChanged, Consumer<Setting<List<ParticleType<?>>>> onModuleActivated, IVisible visible, boolean serialize) {
+        super(name, description, defaultValue, onChanged, onModuleActivated, visible, serialize);
     }
 
     @Override
     public void resetImpl() {
-        value = new ArrayList<>(defaultValue);
+        value = new ArrayList<>(getDefaultValue());
     }
 
     @Override
@@ -90,7 +91,7 @@ public class ParticleTypeListSetting extends Setting<List<ParticleType<?>>> {
 
         @Override
         public ParticleTypeListSetting build() {
-            return new ParticleTypeListSetting(name, description, defaultValue, onChanged, onModuleActivated, visible);
+            return new ParticleTypeListSetting(name, description, defaultValue, onChanged, onModuleActivated, visible, serialize);
         }
     }
 }

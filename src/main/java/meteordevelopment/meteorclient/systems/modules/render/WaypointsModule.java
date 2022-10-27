@@ -137,7 +137,7 @@ public class WaypointsModule extends Module {
         for (Waypoint waypoint : Waypoints.get()) {
             boolean validDim = Waypoints.checkDimension(waypoint);
 
-            table.add(new WIcon(waypoint));
+            table.add(theme.waypointIcon(waypoint));
 
             WLabel name = table.add(theme.label(waypoint.name.get())).expandCellX().widget();
             if (!validDim) name.color = GRAY;
@@ -198,27 +198,6 @@ public class WaypointsModule extends Module {
         @Override
         public Settings getSettings() {
             return value.settings;
-        }
-    }
-
-    private static class WIcon extends WWidget {
-        private final Waypoint waypoint;
-
-        public WIcon(Waypoint waypoint) {
-            this.waypoint = waypoint;
-        }
-
-        @Override
-        protected void onCalculateSize() {
-            double s = theme.scale(32);
-
-            width = s;
-            height = s;
-        }
-
-        @Override
-        protected void onRender(GuiRenderer renderer, double mouseX, double mouseY, double delta) {
-            renderer.post(() -> waypoint.renderIcon(x, y, 1, width));
         }
     }
 }

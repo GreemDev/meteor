@@ -28,7 +28,6 @@ class ModuleKeybindHud : HudElement(info) {
     val modules by sg moduleList {
         name("modules")
         description("The modules to display the keybinds of.")
-        filteredBy { it.keybind.isSet }
     }
 
     val sorted by sg bool {

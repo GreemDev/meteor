@@ -19,13 +19,13 @@ import java.util.List;
 import java.util.function.Consumer;
 
 public class StatusEffectListSetting extends Setting<List<StatusEffect>> {
-    public StatusEffectListSetting(String name, String description, List<StatusEffect> defaultValue, Consumer<List<StatusEffect>> onChanged, Consumer<Setting<List<StatusEffect>>> onModuleActivated, IVisible visible) {
-        super(name, description, defaultValue, onChanged, onModuleActivated, visible);
+    protected StatusEffectListSetting(String name, String description, Object defaultValue, Consumer<List<StatusEffect>> onChanged, Consumer<Setting<List<StatusEffect>>> onModuleActivated, IVisible visible, boolean serialize) {
+        super(name, description, defaultValue, onChanged, onModuleActivated, visible, serialize);
     }
 
     @Override
     public void resetImpl() {
-        value = new ArrayList<>(defaultValue);
+        value = new ArrayList<>(getDefaultValue());
     }
 
     @Override
@@ -90,7 +90,7 @@ public class StatusEffectListSetting extends Setting<List<StatusEffect>> {
 
         @Override
         public StatusEffectListSetting build() {
-            return new StatusEffectListSetting(name, description, defaultValue, onChanged, onModuleActivated, visible);
+            return new StatusEffectListSetting(name, description, defaultValue, onChanged, onModuleActivated, visible, serialize);
         }
     }
 }

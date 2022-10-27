@@ -36,7 +36,6 @@ public class Systems {
     }
 
     public static void init() {
-        add(new HiddenModules());
         System<?> config = add(new Config());
         config.init();
         config.load();

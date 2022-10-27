@@ -53,9 +53,8 @@ private class WorldListScreen(theme: GuiTheme, tab: Tab) : WindowTabScreen(theme
                     })
                     table.row()
                 }
-            } else {
-                table.add(theme.label("No Waypoints"))
-            }
+            } else
+                table.add(theme.label("No waypoint files."))
         }
     }
 }
@@ -76,30 +75,33 @@ private class ListScreen(
     }
 
     override fun initWidgets() {
-        within(add(theme.table())) { it.fill() }
-        add(theme.horizontalSeparator()).expandX()
-        within(add(theme.horizontalList()).expandX()) {
-            it.add(theme.button("Save") {
-                NbtIo.write(wp.toTag(), file)
-            }).expandX()
-            it.add(theme.button("Delete All") {
+        if (!wp.isEmpty) {
+            within(add(theme.table())) { it.fill() }
+            add(theme.horizontalSeparator()).expandX()
+            within(add(theme.horizontalList()).expandX()) {
+                it.add(theme.button("Save") {
+                    NbtIo.write(wp.toTag(), file)
+                }).expandX()
+                it.add(theme.button("Delete All") {
 
-                val prompt = confirm("delete-all-waypoints") {
-                    title("Are you sure?")
-                    message("This is a destructive and irreversible action. Are you sure you want to proceed?")
-                    onYes {
+                    val prompt = confirm("delete-all-waypoints") {
+                        title("Are you sure?")
+                        message("This is a destructive and irreversible action. Are you sure you want to proceed?")
+                        onYes {
+                            file.delete()
+                            close()
+                        }
+                    }
+
+                    if (!prompt.show()) {
                         file.delete()
                         close()
                     }
-                }
 
-                if (!prompt.show()) {
-                    file.delete()
-                    close()
-                }
-
-            }).expandX()
-        }
+                }).expandX()
+            }
+        } else
+            add(theme.label("This world has no waypoints."))
     }
 
     private fun WTable.fill() {
