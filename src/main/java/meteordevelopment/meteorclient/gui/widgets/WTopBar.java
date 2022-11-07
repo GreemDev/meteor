@@ -33,7 +33,7 @@ public abstract class WTopBar extends WHorizontalList {
     @Override
     public void init() {
         clear();
-        var tabs = MetaKt.renderable(Tabs.get());
+        var tabs = MetaKt.renderOrder(Tabs.get());
 
         tabs.getFirst().forEach(t -> add(new WTopBarButton(t)));
 

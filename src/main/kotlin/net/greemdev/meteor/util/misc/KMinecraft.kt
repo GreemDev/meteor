@@ -10,6 +10,7 @@ import meteordevelopment.meteorclient.mixin.ChatHudAccessor
 import meteordevelopment.meteorclient.utils.Utils
 import meteordevelopment.meteorclient.utils.world.Dimension
 import net.greemdev.meteor.util.getOrNull
+import net.greemdev.meteor.util.meteor.resource
 import net.greemdev.meteor.util.minecraft
 import net.greemdev.meteor.util.text.textOf
 import net.greemdev.meteor.util.withoutPrefix
@@ -21,9 +22,11 @@ import net.minecraft.client.world.ClientWorld
 import net.minecraft.entity.Entity
 import net.minecraft.entity.player.PlayerEntity
 import net.minecraft.item.ItemStack
+import net.minecraft.resource.Resource
 import net.minecraft.text.Text
 import net.minecraft.util.math.*
 import net.minecraft.world.GameMode
+import java.util.Optional
 
 fun MinecraftClient.setPlayerPos(x: Double = player!!.x, y: Double = player!!.y, z: Double = player!!.z) {
     player!!.setPos(x, y, z)
@@ -32,6 +35,8 @@ fun MinecraftClient.setPlayerPos(x: Double = player!!.x, y: Double = player!!.y,
 fun Entity.editPos(x: Double = 0.0, y: Double = 0.0, z: Double = 0.0) {
     setPosition(this.x + x, this.y + y, this.z + z)
 }
+
+fun MinecraftClient.getMeteorResource(path: String): Optional<Resource> = resourceManager.getResource(resource(path))
 
 operator fun Entity.plus(vec3d: Vec3d): Entity {
     addVelocity(vec3d.x, vec3d.y, vec3d.z)
@@ -61,6 +66,9 @@ fun ChatHud.clearChat(includeHistory: Boolean = false) {
         access.messageHistory.clear()
 }
 
+infix fun ItemStack.eq(other: ItemStack) = ItemStack.areEqual(this, other)
+infix fun ItemStack.neq(other: ItemStack) = !(this eq other)
+
 fun PlayerEntity.ping(): Int =
     minecraft.networkHandler?.getPlayerListEntry(uuid)?.latency ?: 0
 
@@ -68,20 +76,46 @@ fun PlayerEntity.currentGameMode() =
     minecraft.networkHandler?.getPlayerListEntry(uuid)?.gameMode ?: GameMode.SPECTATOR
 
 fun ClientPlayNetworkHandler?.findPlayerListEntries(predicate: (PlayerListEntry) -> Boolean) =
-    (this?.playerList.orEmpty()).filter(predicate).filterNotNull()
+    this?.playerList.orEmpty().filter(predicate).filterNotNull()
 
 fun ClientPlayNetworkHandler?.findFirstPlayerListEntry(predicate: (PlayerListEntry) -> Boolean) = this?.playerList.orEmpty().firstOrNull(predicate)
 
 fun PlayerEntity.usableItemStack(): ItemStack? =
-    if (!ItemStack.areEqual(mainHandStack, ItemStack.EMPTY))
+    if (mainHandStack neq ItemStack.EMPTY)
         mainHandStack
-    else if (!ItemStack.areEqual(offHandStack, ItemStack.EMPTY))
+    else if (offHandStack neq ItemStack.EMPTY)
         offHandStack
     else null
 
 fun MinecraftClient.clientRotationVec(): Vec3d = player().rotationVecClient
 
+/** Operator overload for [Vec3d.multiply]. */
 operator fun Vec3d.times(value: Double): Vec3d = multiply(value)
+
+/** Unary operator overload for [Vec3d.negate]. */
+operator fun Vec3d.unaryMinus(): Vec3d = negate()
+
+/** Operator overload for [Vec3d.add]. */
+operator fun Vec3d.plus(value: Vec3d): Vec3d = add(value)
+
+/** Operator overload for [Vec3d.add]. */
+operator fun Vec3d.plus(xyz: Triple<Double, Double, Double>): Vec3d = add(xyz.first, xyz.second, xyz.third)
+
+/** Operator overload for [Vec3d.subtract]. */
+operator fun Vec3d.minus(value: Vec3d): Vec3d = subtract(value)
+
+/** Operator overload for [Vec3d.subtract]. */
+operator fun Vec3d.minus(xyz: Triple<Double, Double, Double>): Vec3d = subtract(xyz.first, xyz.second, xyz.third)
+
+/** Operator overload for [Vec3d.distanceTo]. */
+operator fun Vec3d.rangeTo(value: Vec3d) = distanceTo(value)
+
+/** Operator overload for [Vec3d.relativize]. */
+operator fun Vec3d.rem(value: Vec3d): Vec3d = relativize(value)
+
+/** Operator overload for [Vec3d.crossProduct]. */
+operator fun Vec3d.div(value: Vec3d): Vec3d = crossProduct(value)
+
 fun MinecraftClient.rotation(): Vec2f = player().rotationClient
 fun MinecraftClient.rotationVec(): Vec3d = player().rotationVector
 

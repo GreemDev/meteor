@@ -2,10 +2,23 @@
  * This file is part of the Meteor Client distribution (https://github.com/MeteorDevelopment/meteor-client).
  * Copyright (c) Meteor Development.
  */
+@file:JvmName("NbtUtil")
+
 package net.greemdev.meteor.util.misc
 
+import net.greemdev.meteor.util.catchErrors
+import net.greemdev.meteor.util.getOrNull
 import net.minecraft.nbt.*
+import java.io.File
 import java.util.function.Consumer
+
+fun File.write(tag: NbtCompound) =
+    catchErrors { NbtIo.write(tag, this) }
+
+fun File.readNbt(): NbtCompound = NbtIo.read(this) ?: error("File at $absolutePath doesn't exist.")
+
+fun File.readNbtOrNull() =
+    getOrNull(this::readNbt)
 
 object Nbt {
     infix fun compound(builder: NbtCompound.() -> Unit) = NbtCompound().apply(builder)

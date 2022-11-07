@@ -12,6 +12,7 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.screen.ScreenHandler;
 import net.minecraft.screen.slot.SlotActionType;
 
+import java.util.Arrays;
 import java.util.function.Predicate;
 
 import static meteordevelopment.meteorclient.MeteorClient.mc;
@@ -21,12 +22,36 @@ public class InvUtils {
     public static int previousSlot = -1;
     // Predicates
 
+    public static boolean testInMainHand(Item... items) {
+        return testInMainHand(itemStack -> Arrays.stream(items).anyMatch(itemStack::isOf));
+    }
+
     public static boolean testInMainHand(Predicate<ItemStack> predicate) {
         return predicate.test(mc.player.getMainHandStack());
     }
 
     public static boolean testInOffHand(Predicate<ItemStack> predicate) {
         return predicate.test(mc.player.getOffHandStack());
+    }
+
+    public static boolean testInOffHand(Item... items) {
+        return testInOffHand(itemStack -> Arrays.stream(items).anyMatch(itemStack::isOf));
+    }
+
+    public static boolean testInHotbar(Predicate<ItemStack> predicate) {
+        if (testInMainHand(predicate)) return true;
+        if (testInOffHand(predicate)) return true;
+
+        for (int i = SlotUtils.HOTBAR_START; i < SlotUtils.HOTBAR_END; i++) {
+            ItemStack stack = mc.player.getInventory().getStack(i);
+            if (predicate.test(stack)) return true;
+        }
+
+        return false;
+    }
+
+    public static boolean testInHotbar(Item... items) {
+        return testInHotbar(itemStack -> Arrays.stream(items).anyMatch(itemStack::isOf));
     }
 
     // Finding items

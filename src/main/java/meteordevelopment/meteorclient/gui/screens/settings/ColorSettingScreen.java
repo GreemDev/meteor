@@ -107,13 +107,13 @@ public class ColorSettingScreen extends WindowScreen {
         hueQuad.calculateFromSetting(true);
         brightnessQuad.calculateFromColor(c, true);
 
-        if (theme.colorScreenMode().isRgbaVisible()) {
+        if (theme.colorScreenMode.get().isRgbaVisible()) {
             rItb.set(c.r);
             gItb.set(c.g);
             bItb.set(c.b);
             aItb.set(c.a);
         }
-        if (theme.colorScreenMode().isHexVisible())
+        if (theme.colorScreenMode.get().isHexVisible())
             hexTb.set(c.hexString());
 
         setting.onChanged();
@@ -139,7 +139,7 @@ public class ColorSettingScreen extends WindowScreen {
 
         // RGBA
         within(add(theme.table()).expandX(), table -> {
-            if (theme.colorScreenMode().isRgbaVisible()) {
+            if (theme.colorScreenMode.get().isRgbaVisible()) {
                 table.add(theme.label("R:"));
                 rItb = table.add(theme.intEdit(setting.get().r, 0, 255, 0, 255, false)).expandX().widget();
                 rItb.action = this::rgbaChanged;
@@ -160,10 +160,10 @@ public class ColorSettingScreen extends WindowScreen {
                 aItb.action = this::rgbaChanged;
             }
 
-            if (theme.colorScreenMode().isAll())
+            if (theme.colorScreenMode.get().isAll())
                 table.row();
 
-            if (theme.colorScreenMode().isHexVisible()) {
+            if (theme.colorScreenMode.get().isHexVisible()) {
                 table.add(theme.label("Hex:"));
                 hexTb = table.add(theme.textBox(setting.get().hexString(), this::hexChanged)).expandX().widget();
             }
@@ -197,7 +197,7 @@ public class ColorSettingScreen extends WindowScreen {
         SettingColor c = setting.get();
 
         refresh(c);
-        if (theme.colorScreenMode().isHexVisible())
+        if (theme.colorScreenMode.get().isHexVisible())
             hexTb.set(c.hexString());
     }
 
@@ -220,7 +220,7 @@ public class ColorSettingScreen extends WindowScreen {
         c.a = aItb.get();
 
         refresh(c);
-        if (theme.colorScreenMode().isHexVisible())
+        if (theme.colorScreenMode.get().isHexVisible())
             hexTb.set(c.hexString());
     }
 
@@ -240,7 +240,7 @@ public class ColorSettingScreen extends WindowScreen {
 
     private void refresh(Color newColor) {
         newColor.validate();
-        if (theme.colorScreenMode().isRgbaVisible()) {
+        if (theme.colorScreenMode.get().isRgbaVisible()) {
             if (newColor.r != rItb.get()) rItb.set(newColor.r);
             if (newColor.g != gItb.get()) gItb.set(newColor.g);
             if (newColor.b != bItb.get()) bItb.set(newColor.b);
@@ -324,12 +324,12 @@ public class ColorSettingScreen extends WindowScreen {
         c.b = (int) (b * 255);
         c.validate();
 
-        if (theme.colorScreenMode().isRgbaVisible()) {
+        if (theme.colorScreenMode.get().isRgbaVisible()) {
             rItb.set(c.r);
             gItb.set(c.g);
             bItb.set(c.b);
         }
-        if (theme.colorScreenMode().isHexVisible())
+        if (theme.colorScreenMode.get().isHexVisible())
             hexTb.set(c.hexString());
 
         displayQuad.color.set(c);

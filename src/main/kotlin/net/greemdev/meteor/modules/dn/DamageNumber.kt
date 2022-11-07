@@ -18,13 +18,11 @@ import net.minecraft.util.math.Vec3f
 import net.minecraft.util.math.random.Random
 import org.lwjgl.opengl.GL11
 import java.util.concurrent.ThreadLocalRandom
+import kotlin.math.min
 import kotlin.random.asJavaRandom
 import kotlin.random.asKotlinRandom
 
-class DamageNumber(val entityState: EntityState, val damage: Int) {
-
-    private val rand = Random.create()
-
+class DamageNumber(val entityState: EntityState, val damage: Float) {
     var x = 0.0
     var y = 0.0
     var z = 0.0
@@ -49,9 +47,9 @@ class DamageNumber(val entityState: EntityState, val damage: Int) {
         val offset = cameraLoc.subtract(entityLoc).normalize() * offsetBy
         val pos = entityLoc.add(offset)
 
-        vx = MathHelper.nextGaussian(rand, 0f, 0.04f)
-        vy = MathHelper.nextGaussian(rand, 0.10f, 0.05f)
-        vz = MathHelper.nextGaussian(rand, 0f, 0.04f)
+        vx = minecraftRandom.nextGaussian(0f, 0.04f)
+        vy = minecraftRandom.nextGaussian(0.10f, 0.05f)
+        vz = minecraftRandom.nextGaussian(0f, 0.04f)
 
         x = pos.x
         y = pos.y
@@ -76,17 +74,16 @@ class DamageNumber(val entityState: EntityState, val damage: Int) {
     }
 
     fun render(matrices: MatrixStack, camera: Camera) {
-        val dn = Meteor.module<DamageNumbers>()
-        if (camera.pos.squaredDistanceTo(x, y, z) > dn.distance() * dn.distance()) return
+        if (camera.pos.squaredDistanceTo(x, y, z) > DamageNumbers.distance().power(2)) return
 
-        val scaleFactor = dn.scaleFactor().toFloat()
+        val scaleFactor = DamageNumbers.scaleFactor().toFloat()
         val tickDelta = minecraft.tickDelta
 
-        val xx = MathHelper.lerp(tickDelta.toDouble(), prevX, x)
-        val yy = MathHelper.lerp(tickDelta.toDouble(), prevY, y)
-        val zz = MathHelper.lerp(tickDelta.toDouble(), prevZ, z)
+        val xx = lerp(tickDelta, prevX, x)
+        val yy = lerp(tickDelta, prevY, y)
+        val zz = lerp(tickDelta, prevZ, z)
 
-        val (camX, camY, camZ) = camera.pos.deconstructPos()
+        val (camX, camY, camZ) = camera.pos
 
         modifyTopCopy(matrices) {
             translate(xx - camX, yy - camY, zz - camZ)
@@ -99,11 +96,11 @@ class DamageNumber(val entityState: EntityState, val damage: Int) {
             RenderSystem.enableBlend()
             RenderSystem.blendFuncSeparate(GL11.GL_SRC_ALPHA, GL11.GL_ONE_MINUS_SRC_ALPHA, GL11.GL_ONE, GL11.GL_ZERO)
 
-            val dmg = if (Meteor.module<DamageNumbers>().cumulative())
+            val dmg = if (DamageNumbers.cumulative())
                 entityState.lastDamageCumulative
             else damage
 
-            dn.drawNumber(this, dmg, 0f, 0f, 10f)
+            DamageNumbers.drawNumber(this, dmg, 0f, 0f, 10f)
 
             RenderSystem.disableBlend()
         }

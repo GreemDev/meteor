@@ -10,7 +10,7 @@ import meteordevelopment.meteorclient.gui.widgets.WMultiLabel
 import net.greemdev.meteor.gui.theme.round.RoundedWidget
 import net.greemdev.meteor.util.awt
 import net.greemdev.meteor.util.meteor.colorCodeRegex
-import net.greemdev.meteor.util.meteor.legacyRender
+import net.greemdev.meteor.util.meteor.renderLegacy
 
 class WRoundedMultiLabel(text: String?, title: Boolean, maxWidth: Double)
     : WMultiLabel(text, title, maxWidth), RoundedWidget {
@@ -21,8 +21,8 @@ class WRoundedMultiLabel(text: String?, title: Boolean, maxWidth: Double)
 
         lines.forEachIndexed { i, line ->
             if (legacyColorCodes && colorCodeRegex in line) {
-                theme.textRenderer().begin()
-                theme.textRenderer().legacyRender(line, x, y + h * i, (color ?: defaultColor).awt())
+                theme.textRenderer().begin(theme.scale(1.0))
+                theme.textRenderer().renderLegacy(line, x, y + h * i, (color ?: defaultColor).awt())
                 theme.textRenderer().end()
             } else
                 renderer.text(line, x, y + h * i, color ?: defaultColor, false)

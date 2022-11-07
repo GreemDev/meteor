@@ -10,14 +10,13 @@ import net.greemdev.meteor.util.minecraft
 import net.greemdev.meteor.util.misc.currentWorld
 import net.greemdev.meteor.util.misc.player
 import net.minecraft.entity.LivingEntity
-import net.minecraft.util.math.MathHelper
 
 data class EntityState(val entity: LivingEntity) {
     var health = 0f
         private set
-    var lastDamage = 0
+    var lastDamage = 0f
         private set
-    var lastDamageCumulative = 0
+    var lastDamageCumulative = 0f
         private set
     var lastHealth = 0f
         private set
@@ -38,8 +37,8 @@ data class EntityState(val entity: LivingEntity) {
 
     private fun reset() {
         lastHealth = health
-        lastDamage = 0
-        lastDamageCumulative = 0
+        lastDamage = 0f
+        lastDamageCumulative = 0f
     }
 
     private fun tickTimer() {
@@ -48,13 +47,12 @@ data class EntityState(val entity: LivingEntity) {
     }
 
     private fun onHealthChange() {
-        lastDamage = MathHelper.ceil(lastHealth) - MathHelper.ceil(health)
+        lastDamage = lastHealth - health
         lastDamageCumulative += lastDamage
 
         lastDamageDelay = healthIndicatorDelay * 2
         lastHealth = health
-        if (DamageNumbers.isActive)
-            DamageNumbers.add(DamageNumber(this, lastDamage))
+        DamageNumbers.add(DamageNumber(this, lastDamage))
     }
 
     // Manager of EntityState instances

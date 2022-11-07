@@ -24,6 +24,8 @@ class TriStateColorSetting(
     private val pressed = createColorSetting("pressed-$name", "Color of $name when pressed.", pressed)
 
     operator fun invoke(): SettingColor = normal.get()
+    fun get() = this()
+    @JvmOverloads
     fun get(pressed: Boolean, hovered: Boolean, bypassDisableHoverColor: Boolean = false): SettingColor =
         if (pressed)
             this.pressed.get()

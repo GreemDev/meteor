@@ -64,7 +64,7 @@ public class SpawnProofer extends Module {
 
     private final Setting<Boolean> newMobSpawnLightLevel = sgGeneral.add(new BoolSetting.Builder()
             .name("new-mob-spawn-light-level")
-            .description("Use the new (1.18+) mob spawn behavior")
+            .description("Use the new (1.18+) mob spawn behavior.")
             .defaultValue(true)
             .build()
     );
@@ -86,9 +86,8 @@ public class SpawnProofer extends Module {
         }
 
         // Find slot
-        FindItemResult block = InvUtils.findInHotbar(itemStack -> blocks.get().contains(Block.getBlockFromItem(itemStack.getItem())));
-        if (!block.found()) {
-            error("Found none of the chosen blocks in hotbar");
+        if (!InvUtils.testInHotbar(itemStack -> blocks.get().contains(Block.getBlockFromItem(itemStack.getItem())))) {
+            error("Found none of the chosen blocks in hotbar; disabling.");
             toggle();
             return;
         }

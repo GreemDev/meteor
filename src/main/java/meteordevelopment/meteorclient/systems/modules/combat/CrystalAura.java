@@ -536,7 +536,7 @@ public class CrystalAura extends Module {
     }
 
     @EventHandler(priority = EventPriority.HIGH)
-    private void onPreTick(TickEvent.Pre event) {
+    private void onPreTick(TickEvent.Pre ignored) {
         // Update last rotation
         didRotateThisTick = false;
         lastRotationTimer++;
@@ -596,7 +596,7 @@ public class CrystalAura extends Module {
     }
 
     @EventHandler(priority = EventPriority.LOWEST - 666)
-    private void onPreTickLast(TickEvent.Pre event) {
+    private void onPreTickLast(TickEvent.Pre ignored) {
         // Rotate to last rotation
         if (rotate.get() && lastRotationTimer < getLastRotationStopDelay() && !didRotateThisTick) {
             Rotations.rotate(isLastRotationPos ? Rotations.getYaw(lastRotationPos) : lastYaw, isLastRotationPos ? Rotations.getPitch(lastRotationPos) : lastPitch, -100, null);
@@ -781,7 +781,7 @@ public class CrystalAura extends Module {
         if (!doPlace.get() || placeTimer > 0) return;
 
         // Return if there are no crystals in hotbar or offhand
-        if (!InvUtils.findInHotbar(Items.END_CRYSTAL).found()) return;
+        if (!InvUtils.testInHotbar(Items.END_CRYSTAL)) return;
 
         // Return if there are no crystals in either hand and auto switch mode is none
         if (autoSwitch.get() == AutoSwitchMode.None && mc.player.getOffHandStack().getItem() != Items.END_CRYSTAL && mc.player.getMainHandStack().getItem() != Items.END_CRYSTAL) return;

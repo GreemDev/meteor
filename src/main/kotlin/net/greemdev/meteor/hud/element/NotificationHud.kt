@@ -12,19 +12,14 @@ import meteordevelopment.meteorclient.systems.hud.HudElement
 import meteordevelopment.meteorclient.systems.hud.HudRenderer
 import meteordevelopment.meteorclient.systems.hud.screens.HudElementScreen
 import meteordevelopment.meteorclient.systems.modules.Module
-import meteordevelopment.meteorclient.utils.Utils
 import meteordevelopment.meteorclient.utils.render.color.SettingColor
-import meteordevelopment.meteorclient.utils.render.prompts.OkPrompt
 import net.greemdev.meteor.gui.theme.round.RoundedTheme
 import net.greemdev.meteor.gui.theme.round.util.RoundedRenderer2D
 import net.greemdev.meteor.hud.HudElementMetadata
 import net.greemdev.meteor.hud.notification.notifications
 import net.greemdev.meteor.type.ErrorPrompt
-import net.greemdev.meteor.util.AwtColor
 import net.greemdev.meteor.util.meteor.*
-import net.greemdev.meteor.util.meteor.Prompts.java
-import net.greemdev.meteor.util.minecraft
-import net.greemdev.meteor.util.saneSlider
+import net.greemdev.meteor.util.*
 import kotlin.math.min
 
 private var nInstance: NotificationHud? = null
@@ -76,9 +71,7 @@ class NotificationHud : HudElement(info) {
                 (minecraft.currentScreen as HudElementScreen).reload()
         }
         defaultValue(5000)
-        min(500)
-        max(60000)
-        saneSlider()
+        range(500, 60000)
     }
 
 
@@ -86,9 +79,7 @@ class NotificationHud : HudElement(info) {
         name("max-amount")
         description("The maximum amount of notifications that can be in the UI at any given time.")
         defaultValue(3)
-        min(1)
-        max(12)
-        saneSlider()
+        range(1, 12)
     }
 
     val verticalAlign by sg.enum<VA> {
@@ -130,21 +121,15 @@ class NotificationHud : HudElement(info) {
         name("roundness")
         description("How rounded the notification rectangles are. 0.0 forces un-rounded.")
         defaultValue(10.0)
-        min(0.0)
-        max(10.0)
-        visible {
-            !inheritRoundness()
-        }
-        saneSlider()
+        range(0.0, 10.0)
+        visible { !inheritRoundness() }
     }
 
     val animationDuration by sg int {
         name("animation-duration")
         description("The length of the animation, in milliseconds.")
         defaultValue(250)
-        min(0)
-        max(displayTime() / 5)
-        saneSlider()
+        range(0, displayTime() / 5)
     }
 
     // Sources
@@ -191,36 +176,28 @@ class NotificationHud : HudElement(info) {
         name("notification-height")
         description("The height of the individual notifications.")
         defaultValue(60)
-        min(40)
-        max(150)
-        saneSlider()
+        range(40, 150)
     }
 
     val progressBarHeight by sgP int {
         name("progress-bar-height")
         description("The height of the progress bar (0 to disable).")
         defaultValue(5)
-        min(0)
-        max(15)
-        saneSlider()
+        range(0, 15)
     }
 
     val notifPaddingY by sgP int {
         name("notification-padding-y")
         description("The padding between notifications on the vertical axis.")
         defaultValue(10)
-        min(0)
-        max(35)
-        saneSlider()
+        range(0, 35)
     }
 
     val notifTextPaddingX by sgP int {
         name("notification-text-padding-x")
         description("The padding between the border of the notification and the text on the X (horizontal) axis, in %.")
         defaultValue(10)
-        min(0)
-        max(50)
-        saneSlider()
+        range(0, 50)
     }
 
     val titleScaling by sgP bool {
@@ -241,25 +218,21 @@ class NotificationHud : HudElement(info) {
         visible(titleScaling::get)
         range(0.5, 2.0)
         defaultValue(1.25)
-        saneSlider()
     }
 
     val descScale by sgP double {
         name("description-scale")
         description("Scale the Notification description by this multiplier.")
-        visible(descScaling::get)
-        range(0.5, 2.5)
         defaultValue(1.5)
-        saneSlider()
+        range(0.5, 2.5)
+        visible(descScaling::get)
     }
 
     val width by sgP int {
         name("width")
         description("The width of the notifications.")
         defaultValue(250)
-        min(150)
-        max(750)
-        saneSlider()
+        range(150, 750)
     }
 
 
@@ -370,7 +343,7 @@ class NotificationHud : HudElement(info) {
                     AlignmentX.Left -> x + titlePaddingX
                     else -> x + box.width - titlePaddingX - textRenderer.getLegacyWidth(n.title)
                 }
-                textRenderer.legacyRender(
+                textRenderer.renderLegacy(
                     n.title,
                     titleX,
                     y + (titleHeight - textRenderer.height) / 2,
@@ -394,7 +367,7 @@ class NotificationHud : HudElement(info) {
                         AlignmentX.Left -> x + descPaddingX
                         else -> x + box.width - descPaddingX - textRenderer.getLegacyWidth(desc)
                     }
-                    textRenderer.legacyRender(desc, descX, y + titleHeight + (barHeight - textRenderer.height) / 2,
+                    textRenderer.renderLegacy(desc, descX, y + titleHeight + (barHeight - textRenderer.height) / 2,
                         AwtColor.WHITE, false)
                     textRenderer.end()
                 }

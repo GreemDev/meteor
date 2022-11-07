@@ -6,52 +6,65 @@
 package meteordevelopment.meteorclient.systems.modules.misc;
 
 import meteordevelopment.meteorclient.events.world.TickEvent;
-import meteordevelopment.meteorclient.settings.EnumSetting;
-import meteordevelopment.meteorclient.settings.IntSetting;
-import meteordevelopment.meteorclient.settings.Setting;
-import meteordevelopment.meteorclient.settings.SettingGroup;
+import meteordevelopment.meteorclient.settings.*;
 import meteordevelopment.meteorclient.systems.modules.Categories;
 import meteordevelopment.meteorclient.systems.modules.Module;
 import meteordevelopment.meteorclient.utils.Utils;
 import meteordevelopment.orbit.EventHandler;
 
 public class AutoClicker extends Module {
-    public enum Mode {
-        Hold,
-        Press
-    }
-
-    public enum Button {
-        Attack,
-        Use
-    }
-
     private final SettingGroup sgGeneral = settings.getDefaultGroup();
 
-    private final Setting<Mode> mode = sgGeneral.add(new EnumSetting.Builder<Mode>()
-            .name("mode")
-            .description("The method of clicking.")
+    private final Setting<Boolean> attack = sgGeneral.add(new BoolSetting.Builder()
+        .name("attack")
+        .description("Whether to automatically press Attack.")
+        .defaultValue(false)
+        .build()
+    );
+
+    private final Setting<Mode> aMode = sgGeneral.add(new EnumSetting.Builder<Mode>()
+            .name("attack-mode")
+            .description("The method of clicking the Attack button.")
             .defaultValue(Mode.Press)
+            .visible(attack::get)
             .build()
     );
 
-    private final Setting<Button> button = sgGeneral.add(new EnumSetting.Builder<Button>()
-            .name("button")
-            .description("Which button to press.")
-            .defaultValue(Button.Attack)
-            .build()
+    private final Setting<Integer> aDelay = sgGeneral.add(new IntSetting.Builder()
+        .name("attack-click-delay")
+        .description("The amount of delay between attack clicks in ticks.")
+        .defaultValue(2)
+        .range(0, 1200)
+        .visible(attack::get)
+        .build()
     );
 
-    private final Setting<Integer> delay = sgGeneral.add(new IntSetting.Builder()
-            .name("click-delay")
-            .description("The amount of delay between clicks in ticks.")
-            .defaultValue(2)
-            .min(0)
-            .sliderMax(1200)
-            .build()
+    private final Setting<Boolean> use = sgGeneral.add(new BoolSetting.Builder()
+        .name("use-item")
+        .description("Whether to automatically press Use Item.")
+        .defaultValue(false)
+        .build()
     );
 
-    private int timer;
+    private final Setting<Mode> uMode = sgGeneral.add(new EnumSetting.Builder<Mode>()
+        .name("use-mode")
+        .description("The method of clicking the Use Item button.")
+        .defaultValue(Mode.Press)
+        .visible(use::get)
+        .build()
+    );
+
+    private final Setting<Integer> uDelay = sgGeneral.add(new IntSetting.Builder()
+        .name("use-click-delay")
+        .description("The amount of delay between Use Item clicks in ticks.")
+        .defaultValue(2)
+        .range(0, 1200)
+        .visible(use::get)
+        .build()
+    );
+
+    private int attackTimer;
+    private int useTimer;
 
     public AutoClicker() {
         super(Categories.Player, "auto-clicker", "Automatically clicks.");
@@ -59,7 +72,8 @@ public class AutoClicker extends Module {
 
     @Override
     public void onActivate() {
-        timer = 0;
+        attackTimer = 0;
+        useTimer = 0;
         mc.options.attackKey.setPressed(false);
         mc.options.useKey.setPressed(false);
     }
@@ -71,24 +85,36 @@ public class AutoClicker extends Module {
     }
 
     @EventHandler
-    private void onTick(TickEvent.Post event) {
-        switch (mode.get()) {
-            case Hold:
-                switch (button.get()) {
-                    case Attack -> mc.options.attackKey.setPressed(true);
-                    case Use -> mc.options.useKey.setPressed(true);
-                }
-                break;
-            case Press:
-                timer++;
-                if (!(delay.get() > timer)) {
-                    switch (button.get()) {
-                        case Attack -> Utils.pressAttackKey();
-                        case Use -> Utils.pressItemUseKey();
+    private void onTick(TickEvent.Post ignored) {
+        if (attack.get()) {
+            switch (aMode.get()) {
+                case Hold -> mc.options.attackKey.setPressed(true);
+                case Press -> {
+                    attackTimer++;
+                    if (attackTimer > aDelay.get()) {
+                        Utils.pressAttackKey();
+                        attackTimer = 0;
                     }
-                    timer = 0;
                 }
-                break;
+            }
         }
+
+        if (use.get()) {
+            switch (uMode.get()) {
+                case Hold -> mc.options.useKey.setPressed(true);
+                case Press -> {
+                    useTimer++;
+                    if (useTimer > uDelay.get()) {
+                        Utils.pressItemUseKey();
+                        useTimer = 0;
+                    }
+                }
+            }
+        }
+    }
+
+    public enum Mode {
+        Hold,
+        Press
     }
 }

@@ -60,13 +60,12 @@ public class AutoWeb extends Module {
     private void onTick(TickEvent.Pre event) {
         if (TargetUtils.isBadTarget(target, range.get())) {
             target = TargetUtils.getPlayerTarget(range.get(), priority.get());
+            if (TargetUtils.isBadTarget(target, range.get())) return;
         }
-        if (TargetUtils.isBadTarget(target, range.get())) return;
 
         BlockUtils.place(target.getBlockPos(), InvUtils.findInHotbar(Items.COBWEB), rotate.get(), 0, false);
 
-        if (doubles.get()) {
+        if (doubles.get())
             BlockUtils.place(target.getBlockPos().add(0, 1, 0), InvUtils.findInHotbar(Items.COBWEB), rotate.get(), 0, false);
-        }
     }
 }

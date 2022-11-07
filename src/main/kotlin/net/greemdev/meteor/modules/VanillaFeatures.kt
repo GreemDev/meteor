@@ -9,7 +9,7 @@ import net.greemdev.meteor.GModule
 import net.greemdev.meteor.util.meteor.bool
 
 object VanillaFeatures : GModule(
-    "vanilla-features", "Adds Meteor settings for easier access to Minecraft's toggle settings."
+    "vanilla-features", "Adds Meteor settings for easier access to some of Minecraft's toggle settings."
 ) {
     init {
         canBind = false
@@ -20,6 +20,7 @@ object VanillaFeatures : GModule(
         name("hide-HUD")
         description("Hide the player's HUD.")
         defaultValue(mc.options.hudHidden)
+        serialize(false)
         onChanged {
             mc.options.hudHidden = it
         }
@@ -28,6 +29,7 @@ object VanillaFeatures : GModule(
     val pauseOnLostFocus by sg bool {
         name("pause-on-lost-focus")
         description("Whether or not to pause the game when you're tabbed out.")
+        serialize(false)
         onChanged {
             mc.options.pauseOnLostFocus = it
         }
@@ -37,6 +39,7 @@ object VanillaFeatures : GModule(
         name("held-item-tooltips")
         description("Whether or not to display an item's name above your hotbar when you swap to it.")
         defaultValue(mc.options.heldItemTooltips)
+        serialize(false)
         onChanged {
             mc.options.heldItemTooltips = it
         }
@@ -46,6 +49,7 @@ object VanillaFeatures : GModule(
         name("skip-multiplayer-warning")
         description("Skip the Multiplayer warning.")
         defaultValue(mc.options.skipMultiplayerWarning)
+        serialize(false)
         onChanged {
             mc.options.skipMultiplayerWarning = it
         }
@@ -55,6 +59,7 @@ object VanillaFeatures : GModule(
         name("cinematic-camera")
         description("Smoothen your camera movements.")
         defaultValue(mc.options.smoothCameraEnabled)
+        serialize(false)
         onChanged {
             mc.options.smoothCameraEnabled = it
         }
@@ -64,6 +69,7 @@ object VanillaFeatures : GModule(
         name("advanced-tooltips")
         description("Advanced item tooltips in your inventory, showing durability, item ID, etc.")
         defaultValue(mc.options.advancedItemTooltips)
+        serialize(false)
         onChanged {
             mc.options.advancedItemTooltips = it
         }

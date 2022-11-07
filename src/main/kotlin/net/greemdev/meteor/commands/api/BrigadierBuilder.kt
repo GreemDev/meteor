@@ -53,17 +53,8 @@ data class BrigadierBuilder<T : BArgBuilder<CommandSource, T>>(val builder: T) {
         return this
     }
 
-    infix fun suggestsAsync(suggestionProvider: suspend SuggestionsBuilder.(ctx: MinecraftCommandContext) -> Suggestions): BrigadierBuilder<T> {
-        if (builder is RequiredArgumentBuilder<*, *>) {
-            builder.suggests { context, builder ->
-                @Suppress("UNCHECKED_CAST") //commands in minecraft should always be of this type, period
-                scope.async {
-                    builder.suggestionProvider(context as MinecraftCommandContext)
-                }.asCompletableFuture()
-            }
-        }
-        return this
-    }
+    infix fun suggestsAsync(suggestionProvider: suspend SuggestionsBuilder.(ctx: MinecraftCommandContext) -> Suggestions) =
+        suggests { scope.async { suggestionProvider(it) }.asCompletableFuture() }
 
     infix fun runs(command: (ctx: MinecraftCommandContext) -> Int): BrigadierBuilder<T> {
         builder.executes(command)

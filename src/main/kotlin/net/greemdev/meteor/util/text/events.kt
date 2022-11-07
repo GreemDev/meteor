@@ -15,7 +15,7 @@ typealias HoverAction<T> = HoverEvent.Action<T>
 typealias ClickAction = ClickEvent.Action
 
 
-@Suppress("ClassName") //intended for access like a variable, `actions.showText`
+@Suppress("ClassName") //intended for access similar to a variable, `actions.showText`
 object actions {
     @JvmField
     val showText: HoverAction<Text> = HoverAction.SHOW_TEXT

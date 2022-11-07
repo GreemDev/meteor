@@ -24,6 +24,10 @@ repositories {
         name = "vram"
         url = "https://maven.vram.io//"
     }
+    maven {
+        name = "enderzombi"
+        url = "https://repo.repsy.io/mvn/enderzombi102/mc/"
+    }
     mavenCentral()
 }
 
@@ -43,18 +47,21 @@ dependencies {
 	minecraft "com.mojang:minecraft:${project.minecraft_version}"
 	mappings "net.fabricmc:yarn:${project.yarn_mappings}:v2"
 	modImplementation "net.fabricmc:fabric-loader:${project.loader_version}"
-    modInclude fabricApi.module("fabric-resource-loader-v0", project.api_version)
+    modInclude fabricApi.module("fabric-resource-loader-v0", project.fapi_version)
 
     // Kotlin
     modImplementation "net.fabricmc:fabric-language-kotlin:${project.fabric_kotlin_version}"
 
 	// Compat fixes
-    modCompileOnly fabricApi.module("fabric-renderer-indigo", project.api_version)
+    modCompileOnly fabricApi.module("fabric-renderer-indigo", project.fapi_version)
     modCompileOnly("me.jellysquid.mods:sodium-fabric:${project.sodium_version}") { transitive = false }
     modCompileOnly("io.vram:canvas-fabric-mc119:1.0.+") { transitive = false }
 
 	// Baritone integration
     modInclude "baritone:fabric:${project.baritone_version}"
+
+    // JythonMC
+    modInclude "com.enderzombi102:JythonMC:${project.jythonmc_version}"
 
     // Libraries
     library "meteordevelopment:orbit:${project.orbit_version}"

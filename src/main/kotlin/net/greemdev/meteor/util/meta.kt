@@ -9,7 +9,6 @@ package net.greemdev.meteor.util
 import meteordevelopment.meteorclient.gui.utils.StarscriptTextBoxRenderer
 import meteordevelopment.meteorclient.gui.widgets.pressable.WPressable
 import meteordevelopment.meteorclient.settings.*
-import meteordevelopment.meteorclient.utils.Utils
 import net.fabricmc.loader.api.FabricLoader
 import net.minecraft.network.Packet
 import org.apache.logging.log4j.LogManager
@@ -21,6 +20,7 @@ import org.reflections.util.ConfigurationBuilder
 import kotlin.math.*
 import java.awt.Color
 import java.io.File
+import java.io.FileFilter
 import java.text.SimpleDateFormat
 import java.util.*
 import java.util.function.BiConsumer
@@ -121,8 +121,8 @@ fun <T> KMutableProperty<T>.coalesce(newValue: T): T {
 fun Class<out Packet<*>>.isC2S() = simpleName.contains("C2S")
 fun Class<out Packet<*>>.isS2C() = simpleName.contains("S2C")
 
-fun MeteorColor.awt() = AwtColor(packed)
-fun AwtColor.meteor() = MeteorColor(rgb)
+fun MeteorColor.awt() = AwtColor(r, g, b, a)
+fun AwtColor.meteor() = MeteorColor(red, green, blue, alpha)
 
 
 fun any(vararg conditions: Boolean) = conditions.any()
@@ -139,7 +139,7 @@ fun <T, R : Comparable<R>> List<T>.sorted(
     }
 }
 
-fun <T : Any> optionalOf(value: T? = null): Optional<T> = if (value == null) Optional.empty() else Optional.of(value)
+fun <T : Any> optionalOf(value: T? = null): Optional<T> = Optional.ofNullable(value)
 
 fun <T> invoking(func: () -> T): FunctionProperty<T> = FunctionProperty(func)
 fun <T> invokingOrNull(func: () -> T): FunctionProperty<T?> = FunctionProperty { getOrNull(func) }
@@ -151,11 +151,6 @@ class FunctionProperty<T>(private val producer: () -> T) : ReadOnlyProperty<Any?
 fun StringSetting.Builder.renderStarscript(): StringSetting.Builder = renderer(StarscriptTextBoxRenderer::class.java)
 fun StringListSetting.Builder.renderStarscript(): StringListSetting.Builder =
     renderer(StarscriptTextBoxRenderer::class.java)
-
-fun <P1, P2> Collection<Pair<P1, P2>>.associate() = associate { it }
-
-fun IntSetting.Builder.saneSlider(): IntSetting.Builder = sliderRange(min, max)
-fun DoubleSetting.Builder.saneSlider(): DoubleSetting.Builder = sliderRange(min, max)
 
 inline fun <reified T> javaSubtypesOf(pkg: String): Set<Class<out T>> =
     Reflections(
@@ -179,6 +174,14 @@ inline fun <reified T : Any> findInstancesOfSubtypesOf(pkg: String): List<T> =
 
 operator fun File.div(child: String) = File(this, child)
 
+fun File.listed(predicate: (File) -> Boolean): List<File>? = listFiles(FileFilter(predicate))?.toList()
+
+/**
+ * Identical to [File.createNewFile],
+ * with the addition of returning false if an I/O error occurs instead of throwing the IO error.
+ */
+fun File.createFile() = getOrNull { createNewFile() } ?: false
+
 fun <T : Any> KClass<T>.findInstance(vararg args: Any?) = objectInstance ?: primaryConstructor?.call(args)
 
 infix fun <T : WPressable> T.action(func: (T) -> Unit): T = action { func(this) }
@@ -196,3 +199,34 @@ fun parseHexColor(hex: String): Color = Color(
     ).orElseThrow { IllegalArgumentException("Illegal hexadecimal sequence.") }
         .toInt(16)
 )
+
+/**
+ * Kotlin try-with-resources
+ * @sample using
+ */
+fun<T : AutoCloseable, V> using(value: T, func: T.() -> V) = with(value) {
+    func().also { close() }
+}
+
+/**
+ * ### Functional error handling
+ *
+ * Intended for use via destructuring:
+ * ```val (value, error) = catchErrors { ... }```
+ *
+ * ### Note:
+ * If one value in the pair is present, the other is not.
+ * That is to say, if you check whether the error is present, and it isn't, you can assume that the value *is* present.
+ *
+ * Conversely, if you check whether the value is present, and it isn't, you can assume that an error occurred.
+ *
+ *
+ * Recommended practice is to always check if the exception is present before any further operations, returning if necessary.
+ *
+ * @sample catchErrors
+ */
+inline fun<V> catchErrors(func: () -> V) = try {
+    func() to null
+} catch (t: Throwable) {
+    null to t
+}

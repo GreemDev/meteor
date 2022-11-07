@@ -32,7 +32,7 @@ private val COLOR_CODES = arrayOf(
 )
 
 @JvmName("render")
-fun TextRenderer.legacyRender(text: String, startX: Double, startY: Double, color: AwtColor, shadow: Boolean = false) {
+fun TextRenderer.renderLegacy(text: String, startX: Double, startY: Double, color: AwtColor, shadow: Boolean = false) {
     var x = startX
     var y = startY
 
@@ -78,4 +78,6 @@ fun TextRenderer.legacyRender(text: String, startX: Double, startY: Double, colo
 }
 
 @JvmName("getWidth")
-fun TextRenderer.getLegacyWidth(text: String) = getWidth(text.replace(colorCodeRegex, ""))
+@JvmOverloads
+fun TextRenderer.getLegacyWidth(text: String, themeScaling: Boolean = true) = getWidth(text.replace(colorCodeRegex, "")) *
+    if (themeScaling) 1.0 else Meteor.currentTheme().scale(1.0)

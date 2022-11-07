@@ -14,16 +14,11 @@ public abstract class WLabel extends WPressable {
 
     protected String text;
     protected boolean title;
-    public boolean legacyColorCodes;
+    public boolean legacyColorCodes = false;
 
     public WLabel(String text, boolean title) {
-        this(text, title, false);
-    }
-
-    public WLabel(String text, boolean title, boolean colorCodes) {
         this.text = text;
         this.title = title;
-        this.legacyColorCodes = colorCodes;
     }
 
     @Override

@@ -42,11 +42,12 @@ public class FakePlayer extends Module {
 
     public FakePlayer() {
         super(Categories.Player, "fake-player", "Spawns a client-side fake player for testing usages.");
+        canActivate = false;
+        canBind = false;
     }
 
     @Override
     public WWidget getWidget(GuiTheme theme) {
-        if (!isActive()) return null;
         WHorizontalList w = theme.horizontalList();
 
         w.add(theme.button("Spawn", () -> FakePlayerManager.add(name.get(), health.get(), copyInv.get())));

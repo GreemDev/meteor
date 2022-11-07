@@ -73,9 +73,7 @@ object MinecraftPresence : GModule("minecraft-presence", "Displays Minecraft as 
         name("line-1-update-delay")
         description("How often to update the first line, in game ticks.")
         defaultValue(200)
-        min(10)
-        max(500)
-        saneSlider()
+        range(10, 500)
     }
 
     val l1SelMode by sgL1.enum<ItemSelectMode> {
@@ -96,9 +94,7 @@ object MinecraftPresence : GModule("minecraft-presence", "Displays Minecraft as 
         name("line-2-update-delay")
         description("How often to update the second line, in game ticks.")
         defaultValue(60)
-        min(10)
-        max(500)
-        saneSlider()
+        range(10, 500)
     }
 
     val l2SelMode by sgL2.enum<ItemSelectMode> {
@@ -194,7 +190,7 @@ object MinecraftPresence : GModule("minecraft-presence", "Displays Minecraft as 
     }
 
     @EventHandler
-    private fun screenOpened(event: OpenScreenEvent) {
+    private fun screenOpened(ignored: OpenScreenEvent) {
         if (!minecraft.isInGame())
             lastInMainMenu = false
     }
@@ -205,7 +201,7 @@ object MinecraftPresence : GModule("minecraft-presence", "Displays Minecraft as 
         }
 
     @EventHandler
-    private fun afterTick(unused: TickEvent.Post) {
+    private fun afterTick(ignored: TickEvent.Post) {
         var update = false
 
         if (mc.isInGame()) {

@@ -267,14 +267,16 @@ public class KillAura extends Module {
     }
 
     public Entity getTarget() {
-        if (!targets.isEmpty()) return targets.get(0);
-        return null;
+        return !targets.isEmpty()
+            ? targets.get(0)
+            : null;
     }
 
     @Override
     public String getInfoString() {
-        if (!targets.isEmpty()) EntityUtils.getName(getTarget());
-        return null;
+        return !targets.isEmpty()
+            ? EntityUtils.getName(getTarget())
+            : null;
     }
 
     @EventHandler

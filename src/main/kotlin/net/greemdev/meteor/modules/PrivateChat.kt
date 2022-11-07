@@ -8,7 +8,6 @@ package net.greemdev.meteor.modules
 import meteordevelopment.meteorclient.events.game.SendMessageEvent
 import meteordevelopment.orbit.EventHandler
 import net.greemdev.meteor.GModule
-import net.greemdev.meteor.util.*
 import net.greemdev.meteor.util.misc.*
 import net.greemdev.meteor.util.meteor.*
 
@@ -17,10 +16,10 @@ object PrivateChat : GModule("private-chat", "Turns your chat into a private con
 
     val players by sg stringList {
         name("players")
-        description("The players to privately message. Invalid users will be ignored.")
+        description("The players to privately message. Allows names & UUIDs. &4Invalid users will be ignored&r.")
     }
 
-    val dmFormat by sg string {
+    val commandFormat by sg string {
         name("command-format")
         description("The format of the message command on the server.")
         defaultValue("msg {player} {message}")
@@ -32,11 +31,13 @@ object PrivateChat : GModule("private-chat", "Turns your chat into a private con
         players().mapNotNull { p ->
             mc.networkHandler.findFirstPlayerListEntry {
                 it.profile.name.equals(p, true)
+            } ?: mc.networkHandler.findFirstPlayerListEntry {
+                it.profile.id.equals(p)
             }
         }.also {
             foundAny = it.isNotEmpty()
         }.forEach {
-            mc.sendCommand(dmFormat()
+            mc.sendCommand(commandFormat()
                 .replace("{player}", it.profile.name)
                 .replace("{message}", event.message)
             )

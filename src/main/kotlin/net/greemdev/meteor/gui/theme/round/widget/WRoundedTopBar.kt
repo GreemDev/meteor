@@ -16,7 +16,7 @@ import net.greemdev.meteor.gui.theme.round.RoundedWidget
 import net.greemdev.meteor.gui.theme.round.util.rounded
 import net.greemdev.meteor.util.invoking
 import net.greemdev.meteor.util.meteor.invoke
-import net.greemdev.meteor.util.meteor.renderable
+import net.greemdev.meteor.util.meteor.renderOrder
 import net.greemdev.meteor.util.minecraft
 import org.lwjgl.glfw.GLFW.glfwSetCursorPos
 
@@ -26,7 +26,7 @@ class WRoundedTopBar : WTopBar(), RoundedWidget {
 
     override fun init() {
         clear()
-        val (tabs, iconTabs) = Tabs.get().renderable()
+        val (tabs, iconTabs) = Tabs.get().renderOrder()
 
         tabs.forEach { add(WRoundedTopBarButton(it)) }
 
@@ -70,7 +70,7 @@ class WRoundedTopBar : WTopBar(), RoundedWidget {
         override fun onRender(renderer: GuiRenderer, mouseX: Double, mouseY: Double, delta: Double) {
             val pad = pad()
             val color = getButtonColor(
-                pressed || (minecraft.currentScreen is TabScreen && (minecraft.currentScreen as TabScreen).tab == tab),
+                pressed || ((minecraft.currentScreen as? TabScreen)?.tab == tab),
                 mouseOver
             )
 

@@ -45,9 +45,7 @@ class RoundedTheme : GuiTheme("Rounded") {
         name("scale")
         description("Scale of the GUI.")
         defaultValue(1.0)
-        min(0.75)
-        max(4.0)
-        saneSlider()
+        range(0.75, 2.0)
         onSliderRelease()
         onChanged {
             (minecraft.currentScreen as? WidgetScreen)?.invalidate()
@@ -80,14 +78,12 @@ class RoundedTheme : GuiTheme("Rounded") {
         name("roundness")
         description("How much the GUI and HUD should be rounded.")
         defaultValue(4.0)
-        min(0.0)
-        max(25.0)
-        saneSlider()
+        range(0.0, 25.0)
     }
 
     // Colors
 
-    val colorSettingScreenMode by sgC.enum<ColorSettingScreenMode> {
+    val colorScreenMode by sgC.enum<ColorSettingScreenMode> {
         name("color-editing-mode")
         description("Which fields to display in the color editing screen.")
         defaultValue(ColorSettingScreenMode.All)
@@ -175,6 +171,11 @@ class RoundedTheme : GuiTheme("Rounded") {
 
     init {
         settingsFactory = DefaultSettingsWidgetFactory(this)
+        colorScreenMode = sgC.enum<ColorSettingScreenMode> {
+            name("color-editing-mode")
+            description("Which fields to display in the color editing screen.")
+            defaultValue(ColorSettingScreenMode.All)
+        }.get()
     }
 
 
@@ -199,9 +200,9 @@ class RoundedTheme : GuiTheme("Rounded") {
     override fun textBox(
         text: String,
         placeholder: String?,
-        filter: CharFilter,
+        filter: CharFilter?,
         renderer: Class<out WTextBox.Renderer>?
-    ) = w(WRoundedTextBox(text, placeholder, filter, renderer))
+    ) = w(WRoundedTextBox(text, placeholder, CharFilter.orNone(filter), renderer))
 
     override fun <T : Any> dropdown(values: Array<out T>, value: T) = w(WRoundedDropdown(values, value))
 
@@ -233,8 +234,6 @@ class RoundedTheme : GuiTheme("Rounded") {
     override fun scale(value: Double) = value * scale()
     override fun categoryIcons() = showCategoryIcons()
     override fun hideHUD() = hideHud()
-
-    override fun colorScreenMode() = colorSettingScreenMode.get()
 
     private fun colorSetting(name: String, description: String, defaultValue: SettingColor) = colorSetting(sgC, name, description, defaultValue)
 

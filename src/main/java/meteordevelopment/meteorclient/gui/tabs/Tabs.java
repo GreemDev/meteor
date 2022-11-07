@@ -6,6 +6,7 @@
 package meteordevelopment.meteorclient.gui.tabs;
 
 import meteordevelopment.meteorclient.gui.tabs.builtin.*;
+import meteordevelopment.meteorclient.systems.config.Config;
 import meteordevelopment.meteorclient.utils.PostInit;
 import meteordevelopment.meteorclient.utils.Utils;
 import net.greemdev.meteor.gui.tab.WaypointsTab;
@@ -17,6 +18,23 @@ import java.util.List;
 import java.util.Objects;
 
 public class Tabs {
+    private static Tab _lastTab;
+
+    public static void setLastTab(Tab tab) {
+        if (Config.get().lastTabMemory.get()) {
+            if (_lastTab != tab)
+                _lastTab = tab;
+        } else if (_lastTab != null) {
+            _lastTab = null;
+        }
+    }
+
+    public static Tab getTabToOpen() {
+        return Config.get().lastTabMemory.get() && _lastTab != null
+            ? _lastTab
+            : modules();
+    }
+
     private static final List<Tab> tabs = new ArrayList<>();
 
     @Nullable

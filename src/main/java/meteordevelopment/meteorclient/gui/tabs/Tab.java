@@ -46,8 +46,7 @@ public abstract class Tab {
         TabScreen screen = this.createScreen(theme);
         screen.addDirect(theme.topBar()).top().centerX();
         mc.setScreen(screen);
-        if (Config.get().lastTabMemory.get())
-            MeteorClient.lastOpenTab = this;
+        Tabs.setLastTab(this);
     }
 
     public abstract TabScreen createScreen(GuiTheme theme);

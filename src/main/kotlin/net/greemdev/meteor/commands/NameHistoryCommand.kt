@@ -17,14 +17,9 @@ import net.greemdev.meteor.util.format
 import net.greemdev.meteor.util.meteor.sendJson
 import net.greemdev.meteor.util.misc.currentWorld
 import net.greemdev.meteor.util.text.*
-import java.text.SimpleDateFormat
 import java.util.Date
 
-object NameHistoryCommand : GCommand(
-    "name-history", "Provides a list of a player's previous names from the laby.net API.",
-    "history", "names"
-) {
-    override fun CommandBuilder.inject() {
+object NameHistoryCommand : GCommand("name-history", "Provides a list of a player's previous names from the laby.net API.", {
         then("player", arg.playerListEntry()) {
             alwaysRuns {
                 MeteorExecutor.execute {
@@ -32,18 +27,23 @@ object NameHistoryCommand : GCommand(
 
                     val history = Http.get("https://laby.net/api/v2/user/${target.profile.id}/get-profile").sendJson<NameHistory>()
                     if (history == null || history.username_history.isNullOrEmpty()) {
-                        error("There was an error fetching that player's name history.")
+                        NameHistoryCommand.error("There was an error fetching that player's name history.")
                         return@execute
                     }
 
-                    info(buildText {
+                    NameHistoryCommand.info(buildText {
                         addString(target.profile.name)
                         if (target.profile.name.endsWith('s'))
                             addString("'")
                         else
                             addString("'s")
 
-                        colored(PlayerUtils.getPlayerColor(mc.currentWorld().getPlayerByUuid(target.profile.id), Color.WHITE))
+                        colored(
+                            PlayerUtils.getPlayerColor(
+                                mc.currentWorld().getPlayerByUuid(target.profile.id),
+                                Color.WHITE
+                            )
+                        )
 
                         clicked(actions.openURL, "https://laby.net/@${target.profile.name}")
 
@@ -68,7 +68,7 @@ object NameHistoryCommand : GCommand(
 
                             if (!it.accurate) {
                                 addString("*") {
-                                    colored(white)
+                                    colored(yellow)
                                     hovered(actions.showText, textOf("This name history entry is not accurate according to laby.net"))
                                 }
                             }
@@ -79,8 +79,9 @@ object NameHistoryCommand : GCommand(
                 }
             }
         }
-    }
-}
+    },
+    "history", "names"
+)
 
 private class NameHistory(
     @JvmField

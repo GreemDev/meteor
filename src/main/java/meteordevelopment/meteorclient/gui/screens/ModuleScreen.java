@@ -8,12 +8,10 @@ package meteordevelopment.meteorclient.gui.screens;
 import meteordevelopment.meteorclient.events.meteor.ModuleBindChangedEvent;
 import meteordevelopment.meteorclient.gui.GuiTheme;
 import meteordevelopment.meteorclient.gui.WindowScreen;
-import meteordevelopment.meteorclient.gui.renderer.GuiRenderer;
 import meteordevelopment.meteorclient.gui.utils.Cell;
 import meteordevelopment.meteorclient.gui.widgets.WKeybind;
 import meteordevelopment.meteorclient.gui.widgets.WWidget;
 import meteordevelopment.meteorclient.gui.widgets.containers.WContainer;
-import meteordevelopment.meteorclient.gui.widgets.pressable.WFavorite;
 import meteordevelopment.meteorclient.systems.modules.Module;
 import meteordevelopment.meteorclient.systems.modules.Modules;
 import meteordevelopment.meteorclient.utils.misc.NbtUtils;
@@ -56,7 +54,8 @@ public class ModuleScreen extends WindowScreen {
             if (widget instanceof WContainer) cell.expandX();
         }
 
-        if (module.canBind) {
+        // no point adding the bind stuff if we can't activate anyways
+        if (module.canBind && module.canActivate) {
             // Bind
             within(add(theme.section("Bind", true)).expandX(), sec -> {
                 keybind = sec.add(theme.moduleKeybind(module.keybind, () ->

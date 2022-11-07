@@ -14,6 +14,7 @@ import meteordevelopment.meteorclient.utils.player.ChatUtils;
 import meteordevelopment.meteorclient.utils.player.FindItemResult;
 import meteordevelopment.meteorclient.utils.player.InvUtils;
 import meteordevelopment.orbit.EventHandler;
+import net.greemdev.meteor.util.text.FormattedText;
 import net.minecraft.block.Block;
 import net.minecraft.block.Blocks;
 import net.minecraft.command.CommandSource;
@@ -145,26 +146,25 @@ public class LocateCommand extends Command {
             })
         ).then(literal("stronghold")
             .executes(s -> {
-                FindItemResult eye = InvUtils.findInHotbar(Items.ENDER_EYE);
-
-                if (eye.found()) {
+                if (InvUtils.testInHotbar(Items.ENDER_EYE)) {
                     BaritoneAPI.getProvider().getPrimaryBaritone().getCommandManager().execute("follow entity minecraft:eye_of_ender");
                     firstStart = null;
                     firstEnd = null;
                     secondStart = null;
                     secondEnd = null;
                     MeteorClient.EVENT_BUS.subscribe(this);
-                    info("Please throw the first Eye of Ender");
+                    info("Please throw the first Eye of Ender.");
                 } else {
                     Vec3d coords = findByBlockList(strongholdBlocks);
                     if (coords == null) {
                         error("No stronghold found nearby. You can use (highlight)Ender Eyes(default) for more success.");
                         return SINGLE_SUCCESS;
                     }
-                    MutableText text = Text.literal("Stronghold located at ");
-                    text.append(ChatUtils.formatCoords(coords));
-                    text.append(".");
-                    info(text);
+                    info(FormattedText.build(txt -> {
+                        txt.addString("Stronghold located at ");
+                        txt.addText(ChatUtils.formatCoords(coords));
+                        txt.addString(".");
+                    }));
                 }
                 return SINGLE_SUCCESS;
             })

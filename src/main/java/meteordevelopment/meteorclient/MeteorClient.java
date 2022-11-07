@@ -31,7 +31,7 @@ import net.greemdev.meteor.Greteor;
 import net.greemdev.meteor.util.Util;
 import net.greemdev.meteor.util.meteor.Meteor;
 import net.greemdev.meteor.util.misc.GVersioning;
-import net.greemdev.meteor.util.misc.TitleScreenInfo;
+import net.minecraft.SharedConstants;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.screen.ChatScreen;
 import org.slf4j.Logger;
@@ -116,12 +116,16 @@ public class MeteorClient implements ClientModInitializer {
             GuiThemes.save();
         }));
 
-        if (GVersioning.isOutdated())
+        SharedConstants.isDevelopment = Boolean.parseBoolean(System.getProperty("meteor.minecraft.dev", "false"));
+        if (SharedConstants.isDevelopment)
+            LOG.warn("Property 'meteor.minecraft.dev' is 'true'; Now running in development mode.");
+
+        if (GVersioning.isOutdated() && !SharedConstants.isDevelopment)
             LOG.warn("Not currently on the latest revision! Running %d revisions behind. Latest is %s.".formatted(GVersioning.revisionsBehind(), GVersioning.getLatestRevision()));
     }
 
     @EventHandler
-    private void onTick(TickEvent.Post event) {
+    private void onTick(TickEvent.Post ignored) {
         if (mc.currentScreen == null && mc.getOverlay() == null && KeyBinds.OPEN_COMMANDS.wasPressed())
             mc.setScreen(new ChatScreen(Config.get().prefix.get()));
     }
@@ -138,22 +142,11 @@ public class MeteorClient implements ClientModInitializer {
             toggleGui();
     }
 
-    public static Tab lastOpenTab;
-
     private void toggleGui() {
-        if (mc.currentScreen instanceof TabScreen ts) {
-            if (Config.get().lastTabMemory.get())
-                lastOpenTab = ts.tab;
-
+        if (mc.currentScreen instanceof TabScreen ts)
             ts.close();
-        }
-        else if (Utils.canOpenGui()) {
-            var tab = Config.get().lastTabMemory.get() && lastOpenTab != null
-                ? lastOpenTab
-                : Tabs.modules();
-
-            tab.openScreen(Meteor.currentTheme());
-        }
+        else if (Utils.canOpenGui())
+            Tabs.getTabToOpen().openScreen(Meteor.currentTheme());
     }
 
     // Hide HUD

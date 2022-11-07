@@ -215,7 +215,7 @@ public class Hud extends System<Hud> implements Iterable<HudElement> {
     }
 
     @EventHandler
-    private void onTick(TickEvent.Post event) {
+    private void onTick(TickEvent.Post ignored) {
         if (Utils.isLoading()) return;
         if (!(active || HudEditorScreen.isOpen())) return;
 

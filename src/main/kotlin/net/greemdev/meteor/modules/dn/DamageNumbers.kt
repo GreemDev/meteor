@@ -15,7 +15,6 @@ import net.greemdev.meteor.type.DamageOperatorType
 import net.greemdev.meteor.util.meteor.*
 import net.greemdev.meteor.util.minecraft
 import net.greemdev.meteor.util.misc.isZero
-import net.greemdev.meteor.util.saneSlider
 import net.greemdev.meteor.util.text.ChatColor
 import net.minecraft.client.render.Camera
 import net.minecraft.client.util.math.MatrixStack
@@ -25,10 +24,11 @@ import kotlin.math.round
 
 private val particles = hashSetOf<DamageNumber>()
 
+//Implementation based on ToroHealth
 object DamageNumbers : GModule(
     "damage-numbers", "Floating, disappearing text when you damage enemies showing how much damage was done."
 ) {
-    private val sgC = settings.group("Colors")
+    private val sgC = settings group "Colors"
 
     val ignoreSelf by sg bool {
         name("ignore-self")
@@ -48,7 +48,7 @@ object DamageNumbers : GModule(
 
     val rainbowIndicators by sg bool {
         name("rainbow-numbers")
-        description("With operators enabled, you have the option to make both types of damage indicator the same color.")
+        description("With operators enabled, you have the option to make both types of damage indicator &zrainbow&r.")
         defaultValue(false)
         visible { operatorPrefix().supportsRainbow }
     }
@@ -57,6 +57,13 @@ object DamageNumbers : GModule(
         name("display-decimal")
         description("Display the decimal point of the damage number.")
         defaultValue(false)
+    }
+
+    val precision by sg int {
+        name("decimal-precision")
+        description("How many digits after the decimal point to display.")
+        range(1, 10)
+        defaultValue(2)
     }
 
     val cumulative by sg bool {
@@ -76,12 +83,11 @@ object DamageNumbers : GModule(
         description("The max distance from the camera before a particle stops rendering.")
         defaultValue(60)
         range(1, 240)
-        saneSlider()
     }
 
     val damageColor: ColorSetting by sgC color {
         name("damage-color")
-        description("The color of the numbers when an entity is damaged.")
+        description("The color of the numbers when an entity is &4damaged&r.")
         defaultValue(ChatColor.darkRed.asMeteor().brighter())
         onChanged {
             if (it.rainbow) resetDmg()
@@ -91,7 +97,7 @@ object DamageNumbers : GModule(
 
     val healColor by sgC color {
         name("heal-color")
-        description("The color of the numbers when an entity is healed.")
+        description("The color of the numbers when an entity is &ahealed&r.")
         defaultValue(ChatColor.green.asMeteor())
         onChanged {
             if (it.rainbow) resetHeal()
@@ -107,7 +113,6 @@ object DamageNumbers : GModule(
         description("The factor of scaling of the damage number.")
         defaultValue(-0.025)
         range(-0.050, -0.010)
-        saneSlider()
     }
 
     val maxAge by sg int {
@@ -115,7 +120,6 @@ object DamageNumbers : GModule(
         description("The amount of ticks that a damage number remains rendered.")
         defaultValue(50)
         range(30, 120)
-        saneSlider()
     }
 
     fun getColor(isDamage: Boolean): Color =
@@ -123,9 +127,14 @@ object DamageNumbers : GModule(
         else if (isDamage) damageColor()
         else healColor()
 
-    fun drawNumber(matrices: MatrixStack, dmg: Int, x: Float, y: Float, width: Float) {
-        val number = abs(round(dmg.toDouble())).takeUnless(Number::isZero) ?: return
-        val numStr = if (showDecimal()) number.toString() else number.toString().substringBeforeLast('.')
+    fun drawNumber(matrices: MatrixStack, dmg: Float, x: Float, y: Float, width: Float) {
+        val number = abs(dmg).takeUnless(Number::isZero) ?: return
+        val numStr = if (showDecimal()) {
+            val parts = number.toString().split('.')
+            val decimal = parts.lastOrNull()?.take(precision())
+            "${parts.first()}.${decimal ?: 0}"
+        } else
+            round(number).toInt().toString()
 
         val operator = if (dmg > 0) '-' else '+'
         val formattedNumber = operatorPrefix().formatNumber(operator, numStr)
@@ -144,7 +153,8 @@ object DamageNumbers : GModule(
         tick()
     }
 
-    fun add(particle: DamageNumber) = particles.add(particle)
+    fun add(particle: DamageNumber) = if (isActive) particles.add(particle) else false
+
     fun tick() {
         particles.forEach(DamageNumber::tick)
         particles.removeIf { it.age > Meteor.module<DamageNumbers>().maxAge() }

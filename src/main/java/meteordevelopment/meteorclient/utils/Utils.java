@@ -152,12 +152,12 @@ public class Utils {
     }
 
     public static void unscaledProjection() {
-        RenderSystem.setProjectionMatrix(Matrix4f.projectionMatrix(0, mc.getWindow().getFramebufferWidth(), 0, mc.getWindow().getFramebufferHeight(), 1000, 3000));
+        RenderSystem.setProjectionMatrix(Matrix4f.projectionMatrix(0, getWindowWidth(), 0, getWindowHeight(), 1000, 3000));
         rendering3D = false;
     }
 
     public static void scaledProjection() {
-        RenderSystem.setProjectionMatrix(Matrix4f.projectionMatrix(0, (float) (mc.getWindow().getFramebufferWidth() / mc.getWindow().getScaleFactor()), 0, (float) (mc.getWindow().getFramebufferHeight() / mc.getWindow().getScaleFactor()), 1000, 3000));
+        RenderSystem.setProjectionMatrix(Matrix4f.projectionMatrix(0, (float) (getWindowWidth() / mc.getWindow().getScaleFactor()), 0, (float) (getWindowHeight() / mc.getWindow().getScaleFactor()), 1000, 3000));
         rendering3D = true;
     }
 

@@ -17,6 +17,7 @@ public class MainMixin {
     @Inject(method = "main", at = @At("HEAD"), remap = false)
     private static void beforeStart(CallbackInfo ci) {
         MinecraftPresenceKt.setGameStart(System.currentTimeMillis());
+        System.setProperty("python.import.site", "false");
         System.setProperty("java.awt.headless", "false");
     }
 }

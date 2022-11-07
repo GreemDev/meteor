@@ -9,6 +9,7 @@ import meteordevelopment.meteorclient.utils.misc.MeteorStarscript
 import meteordevelopment.starscript.Starscript
 import net.greemdev.meteor.util.*
 import net.greemdev.meteor.util.meteor.starscript.api.*
+import net.greemdev.meteor.util.misc.clamp
 import net.minecraft.util.math.MathHelper
 import kotlin.math.*
 
@@ -69,7 +70,7 @@ private fun Starscript.functions() {
         min(nextNumber(), nextNumber())
     }
     numberFunc("clamp", Constraint.exactCount(3)) {
-        MathHelper.clamp(nextNumber(), nextNumber(), nextNumber())
+        nextNumber().clamp(nextNumber(), nextNumber())
     }
     numberFunc("avg", Constraint.atLeast(2)) {
         var result = 0.0

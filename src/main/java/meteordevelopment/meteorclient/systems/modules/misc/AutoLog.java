@@ -94,32 +94,33 @@ public class AutoLog extends Module {
 
     @EventHandler
     private void onTick(TickEvent.Post event) {
-        if (mc.player.getHealth() <= 0) {
+        float playerHealth = mc.player.getHealth();
+        if (playerHealth <= 0) {
             this.toggle();
             return;
         }
-        if (mc.player.getHealth() <= health.get()) {
+        if (playerHealth <= health.get()) {
             mc.player.networkHandler.onDisconnect(new DisconnectS2CPacket(Text.literal("[AutoLog] Health was lower than " + health.get() + ".")));
-            if(smartToggle.get()) {
+            if (smartToggle.get()) {
                 this.toggle();
                 enableHealthListener();
             }
         }
 
-        if(smart.get() && mc.player.getHealth() + mc.player.getAbsorptionAmount() - PlayerUtils.possibleHealthReductions() < health.get()){
+        if (smart.get() && playerHealth + mc.player.getAbsorptionAmount() - PlayerUtils.possibleHealthReductions() < health.get()){
             mc.player.networkHandler.onDisconnect(new DisconnectS2CPacket(Text.literal("[AutoLog] Health was going to be lower than " + health.get() + ".")));
             if (toggleOff.get()) this.toggle();
         }
 
         for (Entity entity : mc.world.getEntities()) {
-            if (entity instanceof PlayerEntity && entity.getUuid() != mc.player.getUuid()) {
-                if (onlyTrusted.get() && entity != mc.player && !Friends.get().isFriend((PlayerEntity) entity)) {
+            if (entity instanceof PlayerEntity pe && pe.getUuid() != mc.player.getUuid()) {
+                if (onlyTrusted.get() && pe != mc.player && !Friends.get().isFriend(pe)) {
                         mc.player.networkHandler.onDisconnect(new DisconnectS2CPacket(Text.literal("[AutoLog] A non-trusted player appeared in your render distance.")));
                         if (toggleOff.get()) this.toggle();
                         break;
                 }
-                if (mc.player.distanceTo(entity) < 8 && instantDeath.get() && DamageUtils.getSwordDamage((PlayerEntity) entity, true)
-                        > mc.player.getHealth() + mc.player.getAbsorptionAmount()) {
+                if (mc.player.distanceTo(pe) < 8 && instantDeath.get() && DamageUtils.getSwordDamage(pe, true)
+                        > playerHealth + mc.player.getAbsorptionAmount()) {
                     mc.player.networkHandler.onDisconnect(new DisconnectS2CPacket(Text.literal("[AutoLog] Anti-32k measures.")));
                     if (toggleOff.get()) this.toggle();
                     break;

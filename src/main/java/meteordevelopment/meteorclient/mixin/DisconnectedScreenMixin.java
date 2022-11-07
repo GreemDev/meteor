@@ -53,6 +53,7 @@ public abstract class DisconnectedScreenMixin extends Screen {
             addDrawableChild(new ButtonWidget(x, y + 22, 200, 20, Text.literal("Toggle AutoReconnect"),
                 button -> {
                     Modules.get().get(AutoReconnect.class).toggle();
+                    ((AbstractButtonWidgetAccessor)reconnectBtn).setText(Text.literal(getText()));
                     time = Modules.get().get(AutoReconnect.class).time.get() * 20;
                 })
             );

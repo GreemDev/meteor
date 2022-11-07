@@ -18,9 +18,7 @@ object Dash : GModule("dash", "Boosts you forward in the direction you're lookin
         name("power")
         description("The strength of your dash.")
         defaultValue(2.75)
-        min(0.5)
-        max(10.0)
-        saneSlider()
+        range(0.5, 10.0)
     }
 
     init {

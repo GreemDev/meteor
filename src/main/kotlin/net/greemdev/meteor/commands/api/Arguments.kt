@@ -10,6 +10,7 @@ package net.greemdev.meteor.commands.api
 import com.mojang.brigadier.arguments.*
 import meteordevelopment.meteorclient.systems.commands.Commands
 import meteordevelopment.meteorclient.systems.commands.arguments.*
+import net.greemdev.meteor.commands.api.args.*
 import net.minecraft.command.argument.*
 import net.minecraft.predicate.NumberRange
 
@@ -22,6 +23,7 @@ inline fun<reified T> MinecraftCommandContext.argument(name: String, noinline pa
     = parser(this, name)
 
 object Arguments {
+    @JvmOverloads fun path(baseStringType: ArgumentType<String> = greedyString(), allowDirectories: Boolean = true) = PathArgumentType.create(baseStringType, allowDirectories)
     fun module(): ModuleArgumentType = ModuleArgumentType.create()
     fun friend(): FriendArgumentType = FriendArgumentType.create()
     fun player(): PlayerArgumentType = PlayerArgumentType.create()
@@ -89,3 +91,5 @@ fun formatArgType(argType: ArgumentType<*>) = buildString {
 }
 
 inline fun<reified T> ArgumentType<T>.get(ctx: MinecraftCommandContext, name: String = formatArgType(this)): T = ctx.getArgument(name, T::class.java)
+
+

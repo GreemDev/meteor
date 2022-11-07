@@ -6,6 +6,8 @@
 package meteordevelopment.meteorclient.mixin;
 
 import meteordevelopment.meteorclient.MeteorClient;
+import meteordevelopment.meteorclient.systems.hud.Hud;
+import meteordevelopment.meteorclient.systems.hud.HudElement;
 import meteordevelopment.meteorclient.systems.modules.Category;
 import meteordevelopment.meteorclient.systems.modules.Module;
 import meteordevelopment.meteorclient.systems.modules.Modules;
@@ -21,35 +23,48 @@ import java.util.List;
 public class CrashReportMixin {
     @Inject(method = "addStackTrace", at = @At("TAIL"))
     private void onAddStackTrace(StringBuilder sb, CallbackInfo info) {
+        sb.append("-- Meteor Client --\n\n");
+        sb.append("Do NOT report this to the original Meteor Client developers. Report only to GreemDev.\n");
+        sb.append("Version: ").append(MeteorClient.VERSION).append('\n');
+        sb.append("Revision: ").append(MeteorClient.REVISION).append('\n');
+
         if (Modules.get() != null) {
-            sb.append("\n\n");
-            sb.append("-- Meteor Client --\n");
-            sb.append("Do NOT report this to the original Meteor Client developers. Report only to GreemDev.\n");
-            sb.append("Version: ").append(MeteorClient.VERSION).append('\n');
-            sb.append("Revision: ").append(MeteorClient.REVISION).append('\n');
-
-
+            boolean modulesActive = false;
             for (Category category : Modules.getCategories()) {
                 List<Module> modules = Modules.get().getGroup(category);
-                boolean active = false;
+                boolean categoryActive = false;
 
                 for (Module module : modules) {
-                    if (module != null && module.isActive()) {
-                        active = true;
-                        break;
+                    if (module == null || !module.isActive()) continue;
+
+                    if (!modulesActive) {
+                        modulesActive = true;
+                        sb.append("\n-- Active Modules --\n");
                     }
+
+                    if (!categoryActive) {
+                        categoryActive = true;
+                        sb.append("\n[").append(category).append("]:\n");
+                    }
+
+                    sb.append(module.name).append("\n");
                 }
 
-                if (active) {
-                    sb.append("\n");
-                    sb.append("[").append(category).append("]:").append("\n");
+            }
 
-                    for (Module module : modules) {
-                        if (module != null && module.isActive()) {
-                            sb.append(module.name).append("\n");
-                        }
-                    }
+        }
+
+        if (Hud.get() != null && Hud.get().active) {
+            boolean hudActive = false;
+            for (HudElement element : Hud.get()) {
+                if (element == null || !element.isActive()) continue;
+
+                if (!hudActive) {
+                    hudActive = true;
+                    sb.append("\n-- Active Hud Elements --\n");
                 }
+
+                sb.append(element.info.name).append("\n");
             }
         }
     }

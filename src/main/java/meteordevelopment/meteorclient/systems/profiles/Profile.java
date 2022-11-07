@@ -5,6 +5,7 @@
 
 package meteordevelopment.meteorclient.systems.profiles;
 
+import meteordevelopment.meteorclient.MeteorClient;
 import meteordevelopment.meteorclient.gui.utils.CharFilter;
 import meteordevelopment.meteorclient.settings.*;
 import meteordevelopment.meteorclient.systems.config.Config;
@@ -12,12 +13,12 @@ import meteordevelopment.meteorclient.systems.hud.Hud;
 import meteordevelopment.meteorclient.systems.macros.Macros;
 import meteordevelopment.meteorclient.systems.modules.Modules;
 import meteordevelopment.meteorclient.systems.waypoints.Waypoints;
-import meteordevelopment.meteorclient.utils.Utils;
 import meteordevelopment.meteorclient.utils.misc.ISerializable;
+import net.greemdev.meteor.util.Util;
 import net.greemdev.meteor.util.meteor.HiddenModules;
 import net.greemdev.meteor.util.misc.Nbt;
 import net.greemdev.meteor.util.misc.NbtDataType;
-import net.greemdev.meteor.util.misc.NbtKt;
+import net.greemdev.meteor.util.misc.NbtUtil;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.nbt.NbtElement;
 import net.minecraft.nbt.NbtIo;
@@ -100,38 +101,34 @@ public class Profile implements ISerializable<Profile> {
         if (macros.get()) Macros.get().load(folder);
         if (modules.get()) Modules.get().load(folder);
         if (waypoints.get()) Waypoints.get().load(folder);
-        if (hiddenModules.get())
-            try {
-                var file = new File(folder, "hidden-modules.nbt");
-                if (file.exists()) {
-                    var tag = NbtIo.read(new File(folder, "hidden-modules.nbt"));
-                    HiddenModules.set(NbtKt.collectList(tag, "value", NbtDataType.String).stream().map(Modules.get()::get).toList());
-                }
-
-            } catch (Exception ignored) {
+        if (hiddenModules.get()) {
+            var file = getFileInFolder("hidden-modules.nbt");
+            if (file.exists()) {
+                var tag = NbtUtil.readNbt(new File(folder, "hidden-modules.nbt"));
+                HiddenModules.set(NbtUtil.collectList(tag, "value", NbtDataType.String).stream().map(Modules.get()::get).toList());
             }
+        }
     }
 
     public void save() {
         File folder = getFile();
-        if (!folder.mkdirs()) return; //couldn't create folder, can't save
+        if (!folder.exists()) folder.mkdirs();
 
         if (hud.get()) Hud.get().save(folder);
         if (macros.get()) Macros.get().save(folder);
         if (modules.get()) Modules.get().save(folder);
         if (waypoints.get()) Waypoints.get().save(folder);
-        if (hiddenModules.get())
-            try {
-                var file = new File(folder, "hidden-modules.nbt");
-                if (file.createNewFile()) {
-                    var tag = Nbt.newCompound(c ->
-                        c.put("value", Nbt.list(Config.hiddenModuleNames.stream().map(NbtString::of).toList()))
-                    );
-                    NbtIo.write(tag, file);
-                }
-            } catch (IOException e) {
-                e.printStackTrace();
+        if (hiddenModules.get()) {
+            var file = getFileInFolder("hidden-modules.nbt");
+            if (Util.createFile(file) || file.exists()) {
+                var tag = Nbt.newCompound(c ->
+                    c.put("value", Nbt.list(Config.hiddenModuleNames.stream().map(NbtString::of).toList()))
+                );
+                var result = NbtUtil.write(file, tag);
+                if (result.getSecond() != null)
+                    MeteorClient.LOG.error("NBT failed writing to disk for profile " + name.get() + ".", result.getSecond());
             }
+        }
 
     }
 
@@ -146,6 +143,10 @@ public class Profile implements ISerializable<Profile> {
     private File getFile() {
         return new File(Profiles.FOLDER, name.get());
     }
+    @SuppressWarnings("SameParameterValue")
+    private File getFileInFolder(String child) {
+        return new File(getFile(), child);
+    }
 
     @Override
     public NbtCompound toTag() {
@@ -158,9 +159,8 @@ public class Profile implements ISerializable<Profile> {
 
     @Override
     public Profile fromTag(NbtCompound tag) {
-        if (tag.contains("settings")) {
+        if (tag.contains("settings"))
             settings.fromTag(tag.getCompound("settings"));
-        }
 
         return this;
     }

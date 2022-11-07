@@ -13,14 +13,18 @@ import meteordevelopment.meteorclient.systems.modules.Categories;
 import meteordevelopment.meteorclient.systems.modules.Module;
 import meteordevelopment.meteorclient.utils.Utils;
 import meteordevelopment.meteorclient.utils.misc.Pool;
+import meteordevelopment.meteorclient.utils.render.RenderUtils;
 import meteordevelopment.meteorclient.utils.render.color.Color;
 import meteordevelopment.meteorclient.utils.render.color.SettingColor;
 import meteordevelopment.meteorclient.utils.world.BlockIterator;
 import meteordevelopment.meteorclient.utils.world.BlockUtils;
 import meteordevelopment.orbit.EventHandler;
 import net.minecraft.block.Block;
+import net.minecraft.network.packet.c2s.play.PlayerActionC2SPacket;
+import net.minecraft.util.Hand;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Box;
+import net.minecraft.util.math.Direction;
 import net.minecraft.util.math.Vec3d;
 
 import java.util.ArrayList;
@@ -58,7 +62,7 @@ public class Nuker extends Module {
     );
 
 
-    private final Setting<Integer> range_up = sgGeneral.add(new IntSetting.Builder()
+    private final Setting<Integer> rangeUp = sgGeneral.add(new IntSetting.Builder()
         .name("up")
         .description("The break range.")
         .defaultValue(1)
@@ -67,7 +71,7 @@ public class Nuker extends Module {
         .build()
     );
 
-    private final Setting<Integer> range_down = sgGeneral.add(new IntSetting.Builder()
+    private final Setting<Integer> rangeDown = sgGeneral.add(new IntSetting.Builder()
         .name("down")
         .description("The break range.")
         .defaultValue(1)
@@ -76,7 +80,7 @@ public class Nuker extends Module {
         .build()
     );
 
-    private final Setting<Integer> range_left = sgGeneral.add(new IntSetting.Builder()
+    private final Setting<Integer> rangeLeft = sgGeneral.add(new IntSetting.Builder()
         .name("left")
         .description("The break range.")
         .defaultValue(1)
@@ -85,7 +89,7 @@ public class Nuker extends Module {
         .build()
     );
 
-    private final Setting<Integer> range_right = sgGeneral.add(new IntSetting.Builder()
+    private final Setting<Integer> rangeRight = sgGeneral.add(new IntSetting.Builder()
         .name("right")
         .description("The break range.")
         .defaultValue(1)
@@ -94,7 +98,7 @@ public class Nuker extends Module {
         .build()
     );
 
-    private final Setting<Integer> range_forward = sgGeneral.add(new IntSetting.Builder()
+    private final Setting<Integer> rangeForward = sgGeneral.add(new IntSetting.Builder()
         .name("forward")
         .description("The break range.")
         .defaultValue(1)
@@ -103,7 +107,7 @@ public class Nuker extends Module {
         .build()
     );
 
-    private final Setting<Integer> range_back = sgGeneral.add(new IntSetting.Builder()
+    private final Setting<Integer> rangeBehind = sgGeneral.add(new IntSetting.Builder()
         .name("back")
         .description("The break range.")
         .defaultValue(1)
@@ -139,6 +143,13 @@ public class Nuker extends Module {
         .name("swing-hand")
         .description("Swing hand client side.")
         .defaultValue(true)
+        .build()
+    );
+
+    private final Setting<Boolean> packetMine = sgGeneral.add(new BoolSetting.Builder()
+        .name("packet-mine")
+        .description("Attempt to instamine everything at once. This may trigger anti-packet spam functionality.")
+        .defaultValue(false)
         .build()
     );
 
@@ -216,6 +227,7 @@ public class Nuker extends Module {
         .name("nuke-block-mode")
         .description("How the shapes for broken blocks are rendered.")
         .defaultValue(ShapeMode.Both)
+        .visible(enableRenderBreaking::get)
         .build()
     );
 
@@ -223,6 +235,7 @@ public class Nuker extends Module {
         .name("side-color")
         .description("The side color of the target block rendering.")
         .defaultValue(new SettingColor(255, 0, 0, 80))
+        .visible(enableRenderBreaking::get)
         .build()
     );
 
@@ -230,15 +243,13 @@ public class Nuker extends Module {
         .name("line-color")
         .description("The line color of the target block rendering.")
         .defaultValue(new SettingColor(255, 0, 0, 255))
+        .visible(enableRenderBreaking::get)
         .build()
     );
 
 
     private final Pool<BlockPos.Mutable> blockPosPool = new Pool<>(BlockPos.Mutable::new);
     private final List<BlockPos.Mutable> blocks = new ArrayList<>();
-
-    private final Pool<RenderBlock> renderBlockPool = new Pool<>(RenderBlock::new);
-    private final List<RenderBlock> renderBlocks = new ArrayList<>();
 
     private boolean firstBlock;
     private final BlockPos.Mutable lastBlockPos = new BlockPos.Mutable();
@@ -261,41 +272,22 @@ public class Nuker extends Module {
     @Override
     public void onActivate() {
         firstBlock = true;
-        for (RenderBlock renderBlock : renderBlocks) renderBlockPool.free(renderBlock);
-        renderBlocks.clear();
         timer = 0;
         noBlockTimer = 0;
     }
 
-    @Override
-    public void onDeactivate() {
-        for (RenderBlock renderBlock : renderBlocks) renderBlockPool.free(renderBlock);
-        renderBlocks.clear();
-    }
-
     @EventHandler
     private void onRender(Render3DEvent event) {
-        if (enableRenderBreaking.get()){
-            // Broken block
-            renderBlocks.sort(Comparator.comparingInt(o -> -o.ticks));
-            renderBlocks.forEach(renderBlock -> renderBlock.render(event, sideColor.get(), lineColor.get(), shapeModeBreak.get()));
-        }
-
-        if (enableRenderBounding.get()){
+        if (enableRenderBounding.get())
             // Render bounding box if cube and should break stuff
             if (shape.get() != Shape.Sphere && mode.get() != Mode.Smash) {
                 box = new Box(pos1, pos2);
                 event.renderer.box(box, sideColorBox.get(), lineColorBox.get(), shapeModeBox.get(), 0);
             }
-        }
-
     }
 
     @EventHandler
     private void onTickPre(TickEvent.Pre event) {
-        renderBlocks.forEach(RenderBlock::tick);
-        renderBlocks.removeIf(renderBlock -> renderBlock.ticks <= 0);
-
         // Update timer
         if (timer > 0) {
             timer--;
@@ -326,29 +318,29 @@ public class Nuker extends Module {
             direction = Math.floorMod(direction, 4);
 
             // direction == 1
-            pos1.set(pX_ - (range_forward.get()), Math.ceil(pY) - range_down.get(), pZ_ - range_right.get()); // down
-            pos2.set(pX_ + range_back.get()+1, Math.ceil(pY + range_up.get() + 1), pZ_ + range_left.get()+1); // up
+            pos1.set(pX_ - (rangeForward.get()), Math.ceil(pY) - rangeDown.get(), pZ_ - rangeRight.get()); // down
+            pos2.set(pX_ + rangeBehind.get()+1, Math.ceil(pY + rangeUp.get() + 1), pZ_ + rangeLeft.get()+1); // up
 
             // Only change me if you want to mess with 3D rotations:
             if (direction == 2) {
                 pX_ += 1;
                 pZ_ += 1;
-                pos1.set(pX_ - (range_left.get()+1), Math.ceil(pY) - range_down.get(), pZ_ - (range_forward.get()+1)); // down
-                pos2.set(pX_ + range_right.get(), Math.ceil(pY + range_up.get() + 1), pZ_ + range_back.get()); // up
+                pos1.set(pX_ - (rangeLeft.get()+1), Math.ceil(pY) - rangeDown.get(), pZ_ - (rangeForward.get()+1)); // down
+                pos2.set(pX_ + rangeRight.get(), Math.ceil(pY + rangeUp.get() + 1), pZ_ + rangeBehind.get()); // up
             } else if (direction == 3) {
                 pX_ += 1;
-                pos1.set(pX_ - (range_back.get()+1), Math.ceil(pY) - range_down.get(), pZ_ - range_left.get()); // down
-                pos2.set(pX_ + range_forward.get(), Math.ceil(pY + range_up.get() + 1), pZ_ + range_right.get()+1); // up
+                pos1.set(pX_ - (rangeBehind.get()+1), Math.ceil(pY) - rangeDown.get(), pZ_ - rangeLeft.get()); // down
+                pos2.set(pX_ + rangeForward.get(), Math.ceil(pY + rangeUp.get() + 1), pZ_ + rangeRight.get()+1); // up
             } else if (direction == 0) {
                 pZ_ += 1;
                 pX_ += 1;
-                pos1.set(pX_ - (range_right.get()+1), Math.ceil(pY) - range_down.get(), pZ_ - (range_back.get()+1)); // down
-                pos2.set(pX_ + range_left.get(), Math.ceil(pY + range_up.get() + 1), pZ_ + range_forward.get()); // up
+                pos1.set(pX_ - (rangeRight.get()+1), Math.ceil(pY) - rangeDown.get(), pZ_ - (rangeBehind.get()+1)); // down
+                pos2.set(pX_ + rangeLeft.get(), Math.ceil(pY + rangeUp.get() + 1), pZ_ + rangeForward.get()); // up
             }
 
             // get largest horizontal
-            maxh = 1 + Math.max(Math.max(Math.max(range_back.get(),range_right.get()),range_forward.get()),range_left.get());
-            maxv = 1 + Math.max(range_up.get(), range_down.get());
+            maxh = 1 + Math.max(Math.max(Math.max(rangeBehind.get(), rangeRight.get()), rangeForward.get()), rangeLeft.get());
+            maxv = 1 + Math.max(rangeUp.get(), rangeDown.get());
         }
 
         if (mode.get() == Mode.Flatten){
@@ -422,13 +414,20 @@ public class Nuker extends Module {
 
                 boolean canInstaMine = BlockUtils.canInstaBreak(block);
 
-                BlockUtils.breakBlock(block, swingHand.get());
-                renderBlocks.add(renderBlockPool.get().set(block));
+                if (packetMine.get()) {
+                    mc.getNetworkHandler().sendPacket(new PlayerActionC2SPacket(PlayerActionC2SPacket.Action.START_DESTROY_BLOCK, block, Direction.UP));
+                    mc.player.swingHand(Hand.MAIN_HAND);
+                    mc.getNetworkHandler().sendPacket(new PlayerActionC2SPacket(PlayerActionC2SPacket.Action.STOP_DESTROY_BLOCK, block, Direction.UP));
+                } else
+                    BlockUtils.breakBlock(block, swingHand.get());
+
+                if (enableRenderBreaking.get())
+                    RenderUtils.renderTickingBlock(block.toImmutable(), sideColor.get(), lineColor.get(), shapeModeBreak.get(), 0, 8, true, false);
 
                 lastBlockPos.set(block);
 
                 count++;
-                if (!canInstaMine) break;
+                if (!canInstaMine && !packetMine.get() /* With packet mine attempt to break everything possible at once */) break;
             }
 
             firstBlock = false;

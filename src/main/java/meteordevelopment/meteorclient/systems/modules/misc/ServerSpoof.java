@@ -16,6 +16,7 @@ import meteordevelopment.orbit.EventHandler;
 import net.greemdev.meteor.util.text.ChatColor;
 import net.greemdev.meteor.util.text.ChatEvents;
 import net.greemdev.meteor.util.text.FormattedText;
+import net.greemdev.meteor.util.text.actions;
 import net.minecraft.network.PacketByteBuf;
 import net.minecraft.network.packet.c2s.play.CustomPayloadC2SPacket;
 import net.minecraft.network.packet.s2c.play.ResourcePackSendS2CPacket;
@@ -91,8 +92,8 @@ public class ServerSpoof extends Module {
                     msg.addString(packet.isRequired() ? "a required " : "an optional ");
                     msg.add("resource pack", link -> {
                         link.colored(ChatColor.blue).underlined();
-                        link.onClick(ChatEvents.click(ClickEvent.Action.OPEN_URL, packet.getURL()));
-                        link.onHovered(ChatEvents.hover(HoverEvent.Action.SHOW_TEXT, Text.literal("Click to download")));
+                        link.clicked(actions.openURL, packet.getURL());
+                        link.hovered(actions.showText, Text.literal("Click to download"));
                     });
                     msg.addString(".");
                 }));

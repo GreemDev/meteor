@@ -16,7 +16,6 @@ import net.minecraft.util.math.Vec3d
  * Reimplemented because there's no real need to have 2 functionally similar commands be separate.
  */
 object ClipCommand : GCommand("clip", "Lets you clip through blocks vertically or horizontally.", {
-
     then("v") {
         then("distance", arg.double()) {
             alwaysRuns {

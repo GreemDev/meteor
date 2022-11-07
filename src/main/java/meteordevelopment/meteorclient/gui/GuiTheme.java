@@ -5,7 +5,6 @@
 
 package meteordevelopment.meteorclient.gui;
 
-import kotlin.StandardKt;
 import meteordevelopment.meteorclient.gui.renderer.packer.GuiTexture;
 import meteordevelopment.meteorclient.gui.screens.AccountsScreen;
 import meteordevelopment.meteorclient.gui.screens.ModuleScreen;
@@ -21,6 +20,7 @@ import meteordevelopment.meteorclient.gui.widgets.input.*;
 import meteordevelopment.meteorclient.gui.widgets.pressable.*;
 import meteordevelopment.meteorclient.renderer.Texture;
 import meteordevelopment.meteorclient.renderer.text.TextRenderer;
+import meteordevelopment.meteorclient.settings.Setting;
 import meteordevelopment.meteorclient.settings.Settings;
 import meteordevelopment.meteorclient.systems.accounts.Account;
 import meteordevelopment.meteorclient.systems.modules.Module;
@@ -32,6 +32,7 @@ import meteordevelopment.meteorclient.utils.render.color.Color;
 import net.greemdev.meteor.gui.widget.WGuiTexture;
 import net.greemdev.meteor.gui.widget.WWaypointIcon;
 import net.greemdev.meteor.type.ColorSettingScreenMode;
+import net.greemdev.meteor.util.meteor.LegacyText;
 import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NbtCompound;
@@ -50,6 +51,8 @@ public abstract class GuiTheme implements ISerializable<GuiTheme> {
 
     public boolean disableHoverColor;
 
+    public Setting<ColorSettingScreenMode> colorScreenMode;
+
     protected SettingsWidgetFactory settingsFactory;
 
     protected final Map<String, WindowConfig> windowConfigs = new HashMap<>();
@@ -61,8 +64,6 @@ public abstract class GuiTheme implements ISerializable<GuiTheme> {
     public void beforeRender() {
         disableHoverColor = false;
     }
-
-    public abstract ColorSettingScreenMode colorScreenMode();
 
     // Widgets
 
@@ -84,6 +85,9 @@ public abstract class GuiTheme implements ISerializable<GuiTheme> {
 
     public WLabel legacyLabel(String text, boolean title, double maxWidth) {
         WLabel label = label(text, title, maxWidth);
+        if (!LegacyText.getColorCodeRegex().containsMatchIn(text))
+            return label;
+
         label.legacyColorCodes = true;
         return label;
     }
@@ -146,7 +150,7 @@ public abstract class GuiTheme implements ISerializable<GuiTheme> {
         return textBox(text, null, filter, renderer);
     }
     public WTextBox textBox(String text, Class<? extends WTextBox.Renderer> renderer) {
-        return textBox(text, null, CharFilter.none(), renderer);
+        return textBox(text, null, renderer);
     }
     public WTextBox textBox(String text, String placeholder, CharFilter filter) {
         return textBox(text, placeholder, filter, null);
@@ -155,14 +159,14 @@ public abstract class GuiTheme implements ISerializable<GuiTheme> {
         return textBox(text, filter, null);
     }
     public WTextBox textBox(String text, String placeholder) {
-        return textBox(text, placeholder, CharFilter.none(), null);
+        return textBox(text, placeholder, (CharFilter)null);
     }
     public WTextBox textBox(String text) {
-        return textBox(text, CharFilter.none(), null);
+        return textBox(text, (CharFilter)null);
     }
 
     public WTextBox textBox(String text, Runnable action) {
-        return textBox(text, CharFilter.none(), null).action(action);
+        return textBox(text, (CharFilter)null).action(action);
     }
 
     public WTextBox textBox(String text, String placeholder, Runnable action) {

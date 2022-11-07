@@ -18,7 +18,7 @@ public class TextUtils {
         Stack<ColoredText> stack = new Stack<>();
         List<ColoredText> coloredTexts = new ArrayList<>();
         preOrderTraverse(text, stack, coloredTexts);
-        coloredTexts.removeIf(e -> e.getText().equals(""));
+        coloredTexts.removeIf(e -> e.text().isEmpty());
         return coloredTexts;
     }
 
@@ -66,12 +66,12 @@ public class TextUtils {
         Map<Color, Integer> colorCount = new HashMap<>();
 
         for (ColoredText coloredText : coloredTexts) {
-            if (colorCount.containsKey(coloredText.getColor())) {
+            if (colorCount.containsKey(coloredText.color())) {
                 // Since color was already catalogued, simply update the record by adding the length of the new text segment to the old one
-                colorCount.put(coloredText.getColor(), colorCount.get(coloredText.getColor()) + coloredText.getText().length());
+                colorCount.put(coloredText.color(), colorCount.get(coloredText.color()) + coloredText.text().length());
             } else {
                 // Add new entry to the hashmap
-                colorCount.put(coloredText.getColor(), coloredText.getText().length());
+                colorCount.put(coloredText.color(), coloredText.text().length());
             }
         }
 
@@ -106,7 +106,7 @@ public class TextUtils {
                 textColor = new Color(255, 255, 255);
             else
                 // Use parent color
-                textColor = stack.peek().getColor();
+                textColor = stack.peek().color();
         } else {
             // Has a color defined, so use that
             textColor = new Color((text.getStyle().getColor().getRgb()) | 0xFF000000); // Sets alpha to max. Some damn reason Color's packed ctor is in ARGB format, not RGBA

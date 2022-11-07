@@ -31,6 +31,7 @@ import meteordevelopment.meteorclient.systems.modules.Module;
 import meteordevelopment.meteorclient.utils.render.color.Color;
 import meteordevelopment.meteorclient.utils.render.color.SettingColor;
 import net.greemdev.meteor.type.ColorSettingScreenMode;
+import net.greemdev.meteor.type.setting.TriStateColorSetting;
 
 import static meteordevelopment.meteorclient.MeteorClient.mc;
 
@@ -52,7 +53,7 @@ public class MeteorGuiTheme extends GuiTheme {
             .description("Scale of the GUI.")
             .defaultValue(1)
             .min(0.75)
-            .sliderRange(0.75, 4)
+            .sliderRange(0.75, 2)
             .onSliderRelease()
             .onChanged(aDouble -> {
                 if (mc.currentScreen instanceof WidgetScreen) ((WidgetScreen) mc.currentScreen).invalidate();
@@ -86,13 +87,6 @@ public class MeteorGuiTheme extends GuiTheme {
 
     // Colors
 
-    public final Setting<ColorSettingScreenMode> colorScreenMode = sgColors.add(new EnumSetting.Builder<ColorSettingScreenMode>()
-        .name("color-editing-mode")
-        .description("Which fields to display in the color editing screen.")
-        .defaultValue(ColorSettingScreenMode.All)
-        .build()
-    );
-
     public final Setting<SettingColor> accentColor = color("accent", "Main color of the GUI.", new SettingColor(145, 61, 226));
     public final Setting<SettingColor> checkboxColor = color("checkbox", "Color of checkbox.", new SettingColor(145, 61, 226));
     public final Setting<SettingColor> plusColor = color("plus", "Color of plus button.", new SettingColor(50, 255, 50));
@@ -110,7 +104,7 @@ public class MeteorGuiTheme extends GuiTheme {
 
     // Background
 
-    public final ThreeStateColorSetting backgroundColor = new ThreeStateColorSetting(
+    public final TriStateColorSetting backgroundColor = new TriStateColorSetting(
             sgBackgroundColors,
             "background",
             new SettingColor(20, 20, 20, 200),
@@ -122,7 +116,7 @@ public class MeteorGuiTheme extends GuiTheme {
 
     // Outline
 
-    public final ThreeStateColorSetting outlineColor = new ThreeStateColorSetting(
+    public final TriStateColorSetting outlineColor = new TriStateColorSetting(
             sgOutline,
             "outline",
             new SettingColor(0, 0, 0),
@@ -138,7 +132,7 @@ public class MeteorGuiTheme extends GuiTheme {
 
     // Scrollbar
 
-    public final ThreeStateColorSetting scrollbarColor = new ThreeStateColorSetting(
+    public final TriStateColorSetting scrollbarColor = new TriStateColorSetting(
             sgScrollbar,
             "Scrollbar",
             new SettingColor(30, 30, 30, 200),
@@ -148,7 +142,7 @@ public class MeteorGuiTheme extends GuiTheme {
 
     // Slider
 
-    public final ThreeStateColorSetting sliderHandle = new ThreeStateColorSetting(
+    public final TriStateColorSetting sliderHandle = new TriStateColorSetting(
             sgSlider,
             "slider-handle",
             new SettingColor(130, 0, 255),
@@ -174,7 +168,12 @@ public class MeteorGuiTheme extends GuiTheme {
 
     public MeteorGuiTheme() {
         super("Meteor");
-
+        this.colorScreenMode = sgColors.add(new EnumSetting.Builder<ColorSettingScreenMode>()
+            .name("color-editing-mode")
+            .description("Which fields to display in the color editing screen.")
+            .defaultValue(ColorSettingScreenMode.All)
+            .build()
+        );
         settingsFactory = new DefaultSettingsWidgetFactory(this);
     }
 
@@ -239,7 +238,7 @@ public class MeteorGuiTheme extends GuiTheme {
 
     @Override
     public WTextBox textBox(String text, String placeholder, CharFilter filter, Class<? extends WTextBox.Renderer> renderer) {
-        return w(new WMeteorTextBox(text, placeholder, filter, renderer));
+        return w(new WMeteorTextBox(text, placeholder, CharFilter.orNone(filter), renderer));
     }
 
     @Override
@@ -376,33 +375,5 @@ public class MeteorGuiTheme extends GuiTheme {
     @Override
     public boolean hideHUD() {
         return hideHUD.get();
-    }
-
-    @Override
-    public ColorSettingScreenMode colorScreenMode() {
-        return colorScreenMode.get();
-    }
-
-    public class ThreeStateColorSetting {
-        private final Setting<SettingColor> normal, hovered, pressed;
-
-        public ThreeStateColorSetting(SettingGroup group, String name, SettingColor c1, SettingColor c2, SettingColor c3) {
-            normal = color(group, name, "Color of " + name + ".", c1);
-            hovered = color(group, "hovered-" + name, "Color of " + name + " when hovered.", c2);
-            pressed = color(group, "pressed-" + name, "Color of " + name + " when pressed.", c3);
-        }
-
-        public SettingColor get() {
-            return normal.get();
-        }
-
-        public SettingColor get(boolean pressed, boolean hovered, boolean bypassDisableHoverColor) {
-            if (pressed) return this.pressed.get();
-            return (hovered && (bypassDisableHoverColor || !disableHoverColor)) ? this.hovered.get() : this.normal.get();
-        }
-
-        public SettingColor get(boolean pressed, boolean hovered) {
-            return get(pressed, hovered, false);
-        }
     }
 }
