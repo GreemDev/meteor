@@ -15,7 +15,7 @@ class WRoundedButton(text: String?, texture: GuiTexture?) : WButton(text, textur
         val theme = theme()
         val pad = pad()
 
-        renderBackground(renderer, this, pressed, mouseOver)
+        renderer.roundedBackground(this, pressed, mouseOver)
 
         if (text != null) {
             renderer.text(text, x + width / 2 - textWidth / 2, y + pad, theme.textColor(), false)

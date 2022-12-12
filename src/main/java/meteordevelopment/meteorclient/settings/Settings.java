@@ -94,11 +94,11 @@ public class Settings implements ISerializable<Settings>, Iterable<SettingGroup>
     public void unregisterColorSettings() {
         for (SettingGroup group : this) {
             for (Setting<?> setting : group) {
-                if (setting instanceof ColorSetting) {
-                    RainbowColors.removeSetting((Setting<SettingColor>) setting);
+                if (setting instanceof ColorSetting cs) {
+                    RainbowColors.removeSetting(cs);
                 }
-                else if (setting instanceof ColorListSetting) {
-                    RainbowColors.removeSettingList((Setting<List<SettingColor>>) setting);
+                else if (setting instanceof ColorListSetting cls) {
+                    RainbowColors.removeSettingList(cls);
                 }
             }
         }

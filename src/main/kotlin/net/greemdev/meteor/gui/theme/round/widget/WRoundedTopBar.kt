@@ -13,15 +13,14 @@ import meteordevelopment.meteorclient.gui.widgets.WTopBar
 import meteordevelopment.meteorclient.gui.widgets.pressable.WPressable
 import meteordevelopment.meteorclient.utils.render.color.Color
 import net.greemdev.meteor.gui.theme.round.RoundedWidget
-import net.greemdev.meteor.gui.theme.round.util.rounded
-import net.greemdev.meteor.util.invoking
+import net.greemdev.meteor.*
 import net.greemdev.meteor.util.meteor.invoke
 import net.greemdev.meteor.util.meteor.renderOrder
 import net.greemdev.meteor.util.minecraft
 import org.lwjgl.glfw.GLFW.glfwSetCursorPos
 
 class WRoundedTopBar : WTopBar(), RoundedWidget {
-    override fun getButtonColor(pressed: Boolean, hovered: Boolean) = theme().backgroundColor.get(pressed, hovered)
+    override fun getButtonColor(pressed: Boolean, hovered: Boolean) = theme().backgroundColor(pressed, hovered)
     override fun getNameColor(): Color = theme().textColor()
 
     override fun init() {
@@ -74,12 +73,10 @@ class WRoundedTopBar : WTopBar(), RoundedWidget {
                 mouseOver
             )
 
-            val roundRenderer = renderer.r2D().rounded()
-
             when (state) {
-                1 -> roundRenderer.widgetQuadSide(this, color, theme().round(), false)
-                2 -> roundRenderer.widgetQuadSide(this, color, theme().round(), true)
-                3 -> roundRenderer.widgetQuad(this, color, theme().round())
+                1 -> renderer.roundRenderer2D.widgetQuadSide(this, color, theme().round(), false)
+                2 -> renderer.roundRenderer2D.widgetQuadSide(this, color, theme().round(), true)
+                3 -> renderer.roundRenderer2D.widgetQuad(this, color, theme().round())
                 else -> renderer.quad(this, color)
             }
 

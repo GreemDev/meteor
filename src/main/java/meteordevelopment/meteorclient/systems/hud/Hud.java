@@ -20,7 +20,6 @@ import meteordevelopment.orbit.EventHandler;
 import net.greemdev.meteor.Greteor;
 import net.greemdev.meteor.hud.HudElementMetadata;
 import net.greemdev.meteor.type.ErrorPrompt;
-import net.greemdev.meteor.util.meteor.Prompts;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.nbt.NbtElement;
 import org.jetbrains.annotations.NotNull;

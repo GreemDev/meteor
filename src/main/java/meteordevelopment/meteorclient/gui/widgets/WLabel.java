@@ -5,8 +5,10 @@
 
 package meteordevelopment.meteorclient.gui.widgets;
 
+import meteordevelopment.meteorclient.gui.GuiTheme;
 import meteordevelopment.meteorclient.gui.widgets.pressable.WPressable;
 import meteordevelopment.meteorclient.utils.render.color.Color;
+import net.greemdev.meteor.util.Strings;
 import net.greemdev.meteor.util.meteor.LegacyText;
 
 public abstract class WLabel extends WPressable {
@@ -14,42 +16,46 @@ public abstract class WLabel extends WPressable {
 
     protected String text;
     protected boolean title;
-    public boolean legacyColorCodes = false;
 
     public WLabel(String text, boolean title) {
         this.text = text;
         this.title = title;
     }
 
+    public Color getEffectiveColor(GuiTheme theme) {
+        return color != null
+            ? color
+            : title
+                ? theme.titleTextColor()
+                : theme.textColor();
+    }
+
     @Override
     protected void onCalculateSize() {
-        width = legacyColorCodes
-            ? LegacyText.getWidth(theme.textRenderer(), text)
-            : theme.textWidth(text, text.length(), title);
+        width = LegacyText.getColorCodeRegex().containsMatchIn(text)
+            ? LegacyText.getLegacyWidth(theme.textRenderer(), text, false)
+            : theme.textWidth(text);
 
-        height = theme.textHeight(title);
+        height = theme.textHeight();
     }
 
     @Override
     public boolean onMouseClicked(double mouseX, double mouseY, int button, boolean used) {
-        if (action != null) return super.onMouseClicked(mouseX, mouseY, button, used);
-        return false;
+        return action != null && super.onMouseClicked(mouseX, mouseY, button, used);
     }
 
     @Override
     public boolean onMouseReleased(double mouseX, double mouseY, int button) {
-        if (action != null) return super.onMouseReleased(mouseX, mouseY, button);
-        return false;
+        return action != null && super.onMouseReleased(mouseX, mouseY, button);
     }
 
     public void set(String text) {
-        if (useColorCodes())
-            if (Math.round(LegacyText.getWidth(theme.textRenderer(), text)) != width)
+        if (LegacyText.isApplicableTo(text)) {
+            if (Math.round(LegacyText.getLegacyWidth(theme.textRenderer(), text, false)) != width)
                 invalidate();
-        else
+        } else
             if (Math.round(theme.textWidth(text, text.length(), title)) != width)
                 invalidate();
-
 
         this.text = text;
     }
@@ -61,9 +67,5 @@ public abstract class WLabel extends WPressable {
     public WLabel color(Color color) {
         this.color = color;
         return this;
-    }
-
-    public boolean useColorCodes() {
-        return legacyColorCodes && LegacyText.getColorCodeRegex().containsMatchIn(text);
     }
 }

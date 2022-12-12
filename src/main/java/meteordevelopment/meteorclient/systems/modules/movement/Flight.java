@@ -7,11 +7,14 @@ package meteordevelopment.meteorclient.systems.modules.movement;
 
 import meteordevelopment.meteorclient.events.packets.PacketEvent;
 import meteordevelopment.meteorclient.events.world.TickEvent;
+import meteordevelopment.meteorclient.gui.GuiTheme;
+import meteordevelopment.meteorclient.gui.widgets.WWidget;
 import meteordevelopment.meteorclient.mixin.PlayerMoveC2SPacketAccessor;
 import meteordevelopment.meteorclient.settings.*;
 import meteordevelopment.meteorclient.systems.modules.Categories;
 import meteordevelopment.meteorclient.systems.modules.Module;
 import meteordevelopment.orbit.EventHandler;
+import net.greemdev.meteor.util.misc.KMC;
 import net.minecraft.network.packet.c2s.play.PlayerMoveC2SPacket;
 import net.minecraft.server.network.ServerPlayNetworkHandler;
 import net.minecraft.util.math.Vec3d;
@@ -37,7 +40,7 @@ public class Flight extends Module {
         .defaultValue(Mode.Abilities)
         .onChanged(m -> {
             if (isActive())
-                abilitiesOff();
+                resetAbilities();
         })
         .build()
     );
@@ -92,18 +95,28 @@ public class Flight extends Module {
     private int offLeft = offTime.get();
 
     @Override
+    public WWidget getWidget(GuiTheme theme) {
+        var b = theme.button("Toggle Flight ability", () -> {
+            if (KMC.isInGame(mc))
+                mc.player.getAbilities().allowFlying = !mc.player.getAbilities().allowFlying;
+        });
+        b.tooltip = "Manually toggle your Flight ability. Useful on servers where you have survival flight from the server and want to toggle this module &aon/&coff.";
+        return b;
+    }
+
+    @Override
     public void onActivate() {
         if (mode.get() == Mode.Abilities && !mc.player.isSpectator()) {
             mc.player.getAbilities().flying = true;
-            if (mc.player.getAbilities().creativeMode) return;
-            mc.player.getAbilities().allowFlying = true;
+            if (!mc.player.getAbilities().creativeMode)
+                mc.player.getAbilities().allowFlying = true;
         }
     }
 
     @Override
     public void onDeactivate() {
         if (mode.get() == Mode.Abilities && !mc.player.isSpectator())
-            abilitiesOff();
+            resetAbilities();
     }
 
     private boolean flip;
@@ -127,7 +140,7 @@ public class Flight extends Module {
             offLeft --;
 
             if (mode.get() == Mode.Abilities)
-                abilitiesOff();
+                resetAbilities();
 
 
             return;
@@ -159,8 +172,11 @@ public class Flight extends Module {
             case Abilities -> {
                 if (mc.player.isSpectator()) return;
                 mc.player.getAbilities().setFlySpeed(speed.get().floatValue());
-                mc.player.getAbilities().flying = true;
-                if (mc.player.getAbilities().creativeMode) return;
+                if (!mc.player.isCreative()) {
+                    mc.player.getAbilities().flying = true;
+                } else return;
+
+
                 mc.player.getAbilities().allowFlying = true;
             }
         }
@@ -193,10 +209,12 @@ public class Flight extends Module {
         }
     }
 
-    private void abilitiesOff() {
-        mc.player.getAbilities().flying = false;
-        mc.player.getAbilities().setFlySpeed(0.05f);
-        if (!mc.player.getAbilities().creativeMode)
-            mc.player.getAbilities().allowFlying = false;
+    private void resetAbilities() {
+        var abilities = mc.player.getAbilities();
+        abilities.setFlySpeed(0.05f);
+        if (!mc.player.isCreative()) {
+            abilities.flying = false;
+            abilities.allowFlying = false;
+        }
     }
 }

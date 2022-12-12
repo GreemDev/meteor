@@ -10,7 +10,7 @@ import meteordevelopment.meteorclient.events.meteor.KeyEvent
 import meteordevelopment.meteorclient.events.meteor.MouseButtonEvent
 import meteordevelopment.meteorclient.utils.misc.Keybind
 import meteordevelopment.meteorclient.utils.misc.input.KeyAction
-import net.greemdev.meteor.util.invoking
+import net.greemdev.meteor.invoking
 
 class GameInputEvent private constructor(private var backingEvent: Cancellable) : Cancellable() {
 

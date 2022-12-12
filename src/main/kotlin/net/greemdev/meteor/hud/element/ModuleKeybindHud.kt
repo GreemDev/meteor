@@ -12,6 +12,7 @@ import meteordevelopment.meteorclient.systems.modules.Modules
 import meteordevelopment.meteorclient.utils.render.color.SettingColor
 import net.greemdev.meteor.Greteor
 import net.greemdev.meteor.hud.HudElementMetadata
+import net.greemdev.meteor.sorted
 import net.greemdev.meteor.util.*
 import net.greemdev.meteor.util.meteor.*
 import kotlin.math.max
@@ -28,6 +29,7 @@ class ModuleKeybindHud : HudElement(info) {
     val modules by sg moduleList {
         name("modules")
         description("The modules to display the keybinds of.")
+        defaultValue(emptyList())
     }
 
     val sorted by sg bool {

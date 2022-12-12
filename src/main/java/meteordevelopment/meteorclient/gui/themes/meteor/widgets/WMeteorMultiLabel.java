@@ -9,7 +9,7 @@ import meteordevelopment.meteorclient.gui.renderer.GuiRenderer;
 import meteordevelopment.meteorclient.gui.themes.meteor.MeteorWidget;
 import meteordevelopment.meteorclient.gui.widgets.WMultiLabel;
 import meteordevelopment.meteorclient.utils.render.color.Color;
-import net.greemdev.meteor.util.Util;
+import net.greemdev.meteor.utils;
 import net.greemdev.meteor.util.meteor.LegacyText;
 
 public class WMeteorMultiLabel extends WMultiLabel implements MeteorWidget {
@@ -20,19 +20,13 @@ public class WMeteorMultiLabel extends WMultiLabel implements MeteorWidget {
     @Override
     protected void onRender(GuiRenderer renderer, double mouseX, double mouseY, double delta) {
         double h = theme.textHeight(title);
-        Color c = color != null
-            ? color
-            : title
-                ? theme().titleTextColor.get()
-                : theme().textColor.get();
+        Color c = getEffectiveColor(theme);
 
-        for (int i = 0; i < lines.size(); i++) {
-            if (legacyColorCodes && LegacyText.getColorCodeRegex().containsMatchIn(lines.get(i))) {
-                theme.textRenderer().begin(theme.scale(1));
-                LegacyText.render(theme.textRenderer(), lines.get(i), x, y + h * i, Util.awt(c), false);
-                theme.textRenderer().end();
-            } else
-                renderer.text(lines.get(i), x, y + h * i, c, false);
-        }
+        utils.indexedForEach(lines, (index, line) -> {
+            if (LegacyText.isApplicableTo(line))
+                renderer.legacyText(line, x, y + h * index, c, title, false);
+            else
+                renderer.text(line, x, y + h * index, c, title);
+        });
     }
 }

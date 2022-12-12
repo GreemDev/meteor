@@ -15,6 +15,7 @@ import net.greemdev.meteor.type.DamageOperatorType
 import net.greemdev.meteor.util.meteor.*
 import net.greemdev.meteor.util.minecraft
 import net.greemdev.meteor.util.misc.isZero
+import net.greemdev.meteor.util.misc.precision
 import net.greemdev.meteor.util.text.ChatColor
 import net.minecraft.client.render.Camera
 import net.minecraft.client.util.math.MatrixStack
@@ -129,11 +130,9 @@ object DamageNumbers : GModule(
 
     fun drawNumber(matrices: MatrixStack, dmg: Float, x: Float, y: Float, width: Float) {
         val number = abs(dmg).takeUnless(Number::isZero) ?: return
-        val numStr = if (showDecimal()) {
-            val parts = number.toString().split('.')
-            val decimal = parts.lastOrNull()?.take(precision())
-            "${parts.first()}.${decimal ?: 0}"
-        } else
+        val numStr = if (showDecimal())
+            number.precision(precision()).toString()
+        else
             round(number).toInt().toString()
 
         val operator = if (dmg > 0) '-' else '+'
@@ -157,7 +156,7 @@ object DamageNumbers : GModule(
 
     fun tick() {
         particles.forEach(DamageNumber::tick)
-        particles.removeIf { it.age > Meteor.module<DamageNumbers>().maxAge() }
+        particles.removeIf { it.age > DamageNumbers.maxAge() }
     }
     @JvmStatic
     fun render(matrices: MatrixStack, camera: Camera) =

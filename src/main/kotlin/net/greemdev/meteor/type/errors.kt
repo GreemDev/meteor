@@ -6,8 +6,7 @@
 package net.greemdev.meteor.type
 
 import meteordevelopment.meteorclient.utils.render.prompts.OkPrompt
-import net.greemdev.meteor.util.getOrNull
-import net.greemdev.meteor.util.tryOrIgnore
+import net.greemdev.meteor.getOrNull
 import java.lang.Exception
 
 class ErrorPrompt(cause: Throwable? = null, p: () -> OkPrompt) : Exception(null, cause) {

@@ -254,7 +254,7 @@ public class KillAura extends Module {
 
     private final List<Entity> targets = new ArrayList<>();
     private int hitDelayTimer, switchTimer;
-    private boolean wasPathing;
+    private boolean wasPathing = false;
 
     public KillAura() {
         super(Categories.Combat, "kill-aura", "Attacks specified entities around you.");
@@ -293,11 +293,6 @@ public class KillAura extends Module {
             return;
         }
 
-        if (pauseOnCombat.get() && BaritoneAPI.getProvider().getPrimaryBaritone().getPathingBehavior().isPathing() && !wasPathing) {
-            BaritoneAPI.getProvider().getPrimaryBaritone().getCommandManager().execute("pause");
-            wasPathing = true;
-        }
-
         Entity primary = targets.get(0);
 
         if (rotation.get() == RotationMode.Always) rotate(primary, null);
@@ -330,6 +325,11 @@ public class KillAura extends Module {
         }
 
         if (!itemInHand()) return;
+
+        if (pauseOnCombat.get() && BaritoneAPI.getProvider().getPrimaryBaritone().getPathingBehavior().isPathing() && !wasPathing) {
+            BaritoneAPI.getProvider().getPrimaryBaritone().getCommandManager().execute("pause");
+            wasPathing = true;
+        }
 
         if (delayCheck()) targets.forEach(this::attack);
 

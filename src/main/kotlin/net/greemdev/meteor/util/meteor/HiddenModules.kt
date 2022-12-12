@@ -8,20 +8,12 @@ package net.greemdev.meteor.util.meteor
 import meteordevelopment.meteorclient.systems.config.Config
 import meteordevelopment.meteorclient.systems.modules.Category
 import meteordevelopment.meteorclient.systems.modules.Module
-import net.greemdev.meteor.util.getOrNull
-import net.greemdev.meteor.util.tryOrIgnore
+import net.greemdev.meteor.getOrNull
 
 object HiddenModules {
 
-    operator fun contains(module: Module) = Config.hiddenModuleNames.contains(module.name)
     @JvmStatic
-    fun hideInCategory(category: Category, mapped: MutableMap<Category, MutableList<Module>>): List<Module> {
-        val modules = mapped.computeIfAbsent(category) { mutableListOf() }
-        return if (Config.hiddenModuleNames.isNotEmpty())
-            modules.filter { it !in this }
-        else
-            modules
-    }
+    operator fun contains(module: Module) = Config.hiddenModuleNames.contains(module.name)
 
     @JvmStatic
     fun getModules() =

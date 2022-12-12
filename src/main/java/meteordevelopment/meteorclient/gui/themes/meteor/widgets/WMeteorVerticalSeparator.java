@@ -27,7 +27,7 @@ public class WMeteorVerticalSeparator extends WVerticalSeparator implements Mete
         Color colorEdges = unicolor ? theme.separatorCenter.get() : theme.separatorEdges.get();
         Color colorCenter = theme.separatorCenter.get();
 
-        double s = theme.scale(1);
+        double s = theme.scalar();
         double offsetX = Math.round(width / 2.0);
 
         renderer.quad(x + offsetX, y, s, height / 2, colorEdges, colorEdges, colorCenter, colorCenter);

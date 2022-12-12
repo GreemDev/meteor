@@ -9,7 +9,7 @@ import com.google.gson.JsonDeserializationContext;
 import com.google.gson.JsonDeserializer;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonParseException;
-import net.greemdev.meteor.util.Util;
+import net.greemdev.meteor.utils;
 
 import java.lang.reflect.Type;
 import java.time.Instant;
@@ -18,6 +18,6 @@ import java.util.Date;
 public class DateDeserializer implements JsonDeserializer<Date> {
     @Override
     public Date deserialize(JsonElement jsonElement, Type type, JsonDeserializationContext jsonDeserializationContext) throws JsonParseException {
-        return Util.getOrNull(() -> Date.from(Instant.parse(jsonElement.getAsString())));
+        return utils.getOrNull(() -> Date.from(Instant.parse(jsonElement.getAsString())));
     }
 }

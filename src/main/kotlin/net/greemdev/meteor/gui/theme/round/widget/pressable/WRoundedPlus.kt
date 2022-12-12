@@ -16,7 +16,7 @@ class WRoundedPlus : WPlus(), RoundedWidget {
         val pad = pad()
         val s = theme.scale(3.0)
 
-        renderBackground(renderer, this, pressed, mouseOver)
+        renderer.roundedBackground(this, pressed, mouseOver)
         renderer.quad(x + pad, y + height / 2 - s / 2, width - pad * 2, s, theme.plusColor())
         renderer.quad(x + width / 2 - s / 2, y + pad, s, height - pad * 2, theme.plusColor())
     }

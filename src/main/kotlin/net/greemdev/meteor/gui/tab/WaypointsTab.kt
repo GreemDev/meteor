@@ -12,12 +12,11 @@ import meteordevelopment.meteorclient.gui.renderer.GuiRenderer
 import meteordevelopment.meteorclient.gui.tabs.Tab
 import meteordevelopment.meteorclient.gui.tabs.TabScreen
 import meteordevelopment.meteorclient.gui.tabs.WindowTabScreen
-import meteordevelopment.meteorclient.gui.widgets.WWidget
 import meteordevelopment.meteorclient.gui.widgets.containers.WTable
-import meteordevelopment.meteorclient.systems.waypoints.Waypoint
 import meteordevelopment.meteorclient.systems.waypoints.Waypoints
 import net.greemdev.meteor.util.meteor.*
-import net.greemdev.meteor.util.*
+import net.greemdev.meteor.*
+import net.greemdev.meteor.util.minecraft
 import net.minecraft.client.gui.screen.Screen
 import net.minecraft.nbt.NbtIo
 import java.io.File
@@ -32,9 +31,9 @@ private class WorldListScreen(theme: GuiTheme, tab: Tab) : WindowTabScreen(theme
     override fun initWidgets() {
         within(add(theme.table()).expandX().minWidth(300.0)) { table ->
             val folder = MeteorClient.FOLDER / "waypoints"
-            val files = folder.listFiles(FileFilter {
+            val files = folder.filter {
                 it.isFile && it.name.endsWith(".nbt")
-            })
+            }
 
             if (folder.exists() && folder.isDirectory && !files.isNullOrEmpty()) {
                 files.forEach {
@@ -50,7 +49,7 @@ private class WorldListScreen(theme: GuiTheme, tab: Tab) : WindowTabScreen(theme
                     table.add(theme.minus {
                         it.delete()
                         reload()
-                    })
+                    }.apply { tooltip = "Delete the waypoints file for this world." })
                     table.row()
                 }
             } else
@@ -64,7 +63,7 @@ private class ListScreen(
     theme: GuiTheme,
     private val file: File,
     private val wp: Waypoints = Waypoints().fromTag(NbtIo.read(file))
-) : WindowScreen(theme, file.name.withoutSuffix(".nbt")) {
+) : WindowScreen(theme, file.name.removeSuffix(".nbt")) {
 
     init {
         this.parent = parent
@@ -83,7 +82,6 @@ private class ListScreen(
                     NbtIo.write(wp.toTag(), file)
                 }).expandX()
                 it.add(theme.button("Delete All") {
-
                     val prompt = confirm("delete-all-waypoints") {
                         title("Are you sure?")
                         message("This is a destructive and irreversible action. Are you sure you want to proceed?")
@@ -97,7 +95,6 @@ private class ListScreen(
                         file.delete()
                         close()
                     }
-
                 }).expandX()
             }
         } else

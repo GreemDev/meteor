@@ -6,8 +6,7 @@
 
 package net.greemdev.meteor.util.misc
 
-import net.greemdev.meteor.util.catchErrors
-import net.greemdev.meteor.util.getOrNull
+import net.greemdev.meteor.*
 import net.minecraft.nbt.*
 import java.io.File
 import java.util.function.Consumer
@@ -21,8 +20,8 @@ fun File.readNbtOrNull() =
     getOrNull(this::readNbt)
 
 object Nbt {
-    infix fun compound(builder: NbtCompound.() -> Unit) = NbtCompound().apply(builder)
-    infix fun list(builder: NbtList.() -> Unit) = NbtList().apply(builder)
+    infix fun compound(builder: Initializer<NbtCompound>) = NbtCompound().apply(builder)
+    infix fun list(builder: Initializer<NbtList>) = NbtList().apply(builder)
 
     @JvmStatic
     infix fun list(elements: Collection<NbtElement>) = list { elements.forEach { add(it) } }

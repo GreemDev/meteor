@@ -5,29 +5,22 @@
 
 package net.greemdev.meteor.gui.theme.round.widget
 
+import meteordevelopment.meteorclient.gui.GuiTheme
 import meteordevelopment.meteorclient.gui.renderer.GuiRenderer
 import meteordevelopment.meteorclient.gui.widgets.WLabel
 import net.greemdev.meteor.gui.theme.round.RoundedWidget
-import net.greemdev.meteor.util.awt
-import net.greemdev.meteor.util.meteor.invoke
+import net.greemdev.meteor.util.lineCount
+import net.greemdev.meteor.util.meteor.colorCodeRegex
 import net.greemdev.meteor.util.meteor.renderLegacy
 
 open class WRoundedLabel(text: String?, title: Boolean) : WLabel(text, title), RoundedWidget {
     override fun onRender(renderer: GuiRenderer, mouseX: Double, mouseY: Double, delta: Double) {
         if (!text.isNullOrEmpty()) {
-            val c = when {
-                color != null -> color
-                title -> theme().titleTextColor()
-                else -> theme.textColor()
-            }
+            val c = getEffectiveColor(theme)
 
-            if (useColorCodes())
-                renderer.post {
-                    theme.textRenderer().begin(theme.scale(1.0))
-                    theme.textRenderer().renderLegacy(text, x, y, c.awt())
-                    theme.textRenderer().end()
-                }
-            else
+            if (colorCodeRegex in text || text.lineCount() > 1) {
+                renderer.legacyText(text, x, y, c, title, false)
+            } else
                 renderer.text(text, x, y, c, title)
         }
     }

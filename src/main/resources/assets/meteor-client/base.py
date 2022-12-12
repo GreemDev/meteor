@@ -1,4 +1,5 @@
-from net.greemdev.meteor.util import Util, Strings
+from net.greemdev.meteor import utils
+from net.greemdev.meteor.util import Strings
 from net.greemdev.meteor.util.text import FormattedText, ChatColor, actions, ChatEvents
 from net.greemdev.meteor.util.misc import Nbt, NbtUtil, KMC
 from net.greemdev.meteor.util.meteor import HiddenModules, Meteor, Prompts
@@ -11,7 +12,8 @@ from meteordevelopment.meteorclient.utils.misc.input import Input, KeyAction, Ke
 from meteordevelopment.meteorclient.utils.misc.text import TextUtils
 from meteordevelopment.meteorclient.utils.network import PacketUtils, Http, Capes
 from meteordevelopment.meteorclient.utils.notebot import NotebotUtils
-from meteordevelopment.meteorclient.utils.notebot.nbs import Layer, Note, Song
+from meteordevelopment.meteorclient.utils.notebot.song import Note, Song
+from meteordevelopment.meteorclient.utils.notebot.decoder import NBSSongDecoder, SongDecoder, SongDecoders, TextSongDecoder
 from meteordevelopment.meteorclient.utils.player import ChatUtils, DamageUtils, EChestMemory, InvUtils, PlayerUtils, Rotations, SlotUtils
 from meteordevelopment.meteorclient.utils.render import FontUtils, NametagUtils, PlayerHeadUtils, RenderUtils
 from meteordevelopment.meteorclient.utils.render.color import Color, RainbowColor, RainbowColors, SettingColor

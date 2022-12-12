@@ -179,6 +179,13 @@ public class Config extends System<Config> {
 
     public static List<String> hiddenModuleNames = new ArrayList<>();
 
+    public final Setting<Boolean> hiddenModulesAffectsSearch = sgMisc.add(new BoolSetting.Builder()
+        .name("hide-modules-in-search")
+        .description("Also hide your hidden modules from the Meteor search.")
+        .defaultValue(true)
+        .build()
+    );
+
     public final Setting<Boolean> lastTabMemory = sgMisc.add(new BoolSetting.Builder()
         .name("remember-last-tab")
         .description("Reopen the last tab you were using in Meteor's GUI.")

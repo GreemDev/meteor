@@ -299,6 +299,11 @@ public class MeteorGuiTheme extends GuiTheme {
     }
 
     @Override
+    public Color titleTextColor() {
+        return titleTextColor.get();
+    }
+
+    @Override
     public Color textSecondaryColor() {
         return textSecondaryColor.get();
     }
@@ -358,13 +363,8 @@ public class MeteorGuiTheme extends GuiTheme {
     // Other
 
     @Override
-    public TextRenderer textRenderer() {
-        return TextRenderer.get();
-    }
-
-    @Override
-    public double scale(double value) {
-        return value * scale.get();
+    public double scalar() {
+        return scale.get();
     }
 
     @Override

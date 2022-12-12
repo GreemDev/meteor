@@ -5,12 +5,7 @@
 
 package meteordevelopment.meteorclient.gui.widgets.pressable;
 
-import kotlin.Unit;
-import kotlin.reflect.KCallable;
-import kotlin.reflect.KFunction;
 import meteordevelopment.meteorclient.gui.widgets.WWidget;
-
-import java.util.function.Consumer;
 
 import static org.lwjgl.glfw.GLFW.GLFW_MOUSE_BUTTON_LEFT;
 import static org.lwjgl.glfw.GLFW.GLFW_MOUSE_BUTTON_RIGHT;

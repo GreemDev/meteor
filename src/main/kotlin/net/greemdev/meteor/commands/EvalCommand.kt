@@ -7,6 +7,7 @@ package net.greemdev.meteor.commands
 
 import kotlinx.coroutines.launch
 import net.greemdev.meteor.GCommand
+import net.greemdev.meteor.catchErrors
 import net.greemdev.meteor.commands.api.*
 import net.greemdev.meteor.util.*
 
@@ -15,14 +16,14 @@ object EvalCommand :
         then("code", arg.greedyString()) {
             alwaysRuns {
                 val code by it(arg.greedyString(), "code")
-                _evalInternal(pythonScripts(code))
+                _evalInternal(py.scripts(code))
             }
         }
         then("file") {
             then("path", arg.path()) {
                 alwaysRuns {
                     val path by it(arg.path(), "path")
-                    _evalInternal(pythonPaths(path))
+                    _evalInternal(py.paths(path))
                 }
             }
         }

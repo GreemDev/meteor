@@ -13,6 +13,7 @@ import meteordevelopment.meteorclient.events.world.TickEvent
 import meteordevelopment.meteorclient.gui.GuiTheme
 import meteordevelopment.meteorclient.gui.WidgetScreen
 import meteordevelopment.meteorclient.gui.widgets.WWidget
+import meteordevelopment.meteorclient.systems.modules.Module
 import meteordevelopment.meteorclient.systems.modules.misc.DiscordPresence
 import meteordevelopment.meteorclient.utils.Utils
 import meteordevelopment.meteorclient.utils.misc.MeteorStarscript
@@ -32,6 +33,7 @@ import net.minecraft.client.gui.screen.option.*
 import net.minecraft.client.gui.screen.pack.PackScreen
 import net.minecraft.client.gui.screen.world.*
 import net.minecraft.client.realms.gui.screen.RealmsScreen
+import net.minecraft.nbt.NbtCompound
 import net.minecraft.util.Util
 
 const val safeAppId = 1013634358927691846L
@@ -67,6 +69,7 @@ object MinecraftPresence : GModule("minecraft-presence", "Displays Minecraft as 
         defaultValue("{player}", "{server}")
         onChanged { recompileLines(1, it) }
         renderStarscript()
+        wide()
     }
 
     val l1Delay by sgL1 int {
@@ -88,6 +91,7 @@ object MinecraftPresence : GModule("minecraft-presence", "Displays Minecraft as 
         defaultValue("Minecraft is good", "{round(server.tps, 1)} TPS", "Playing on {server.difficulty}", "Playing with {server.playerCount} others!")
         onChanged { recompileLines(2, it) }
         renderStarscript()
+        wide()
     }
 
     val l2Delay by sgL2 int {
@@ -106,14 +110,16 @@ object MinecraftPresence : GModule("minecraft-presence", "Displays Minecraft as 
     val smallMeteor by sgO bool {
         name("small-meteor-logo")
         description("Display a small Meteor logo to the lower right of the main Presence image.")
-        defaultValue(isUsingDefaultApp())
+        defaultValue(::isUsingDefaultApp)
     }
 
     val dimensionAware by sgO bool {
         name("dimension-aware")
         description("Whether or not to change the main Presence image to a dimension-specific image when in that dimension.")
-        defaultValue(isUsingDefaultApp())
+        defaultValue(::isUsingDefaultApp)
     }
+
+
 
     val customStates by sgO stringList {
         name("custom-states")
@@ -132,6 +138,8 @@ object MinecraftPresence : GModule("minecraft-presence", "Displays Minecraft as 
                 states.register(prefix, state)
             }
         }
+        serialize(false)
+        wide()
     }
 
     private var forceUpdate = false
@@ -302,5 +310,23 @@ object MinecraftPresence : GModule("minecraft-presence", "Displays Minecraft as 
         if (update) DiscordIPC.setActivity(rpc)
         forceUpdate = false
         lastInMainMenu = !mc.isInGame()
+    }
+
+    override fun toTag(): NbtCompound = super.toTag().apply {
+        put("customStates", states.map { "${it.key}=${it.value}" }.toNBT())
+    }
+
+    override fun fromTag(tag: NbtCompound): Module {
+        states.clear()
+        if (tag.contains("customStates"))
+            states.putAll(tag.collectList("customStates", NbtDataType.String)
+                .map {
+                    with(it.split('=')) {
+                        first() to last()
+                    }
+                }
+            )
+
+        return super.fromTag(tag)
     }
 }

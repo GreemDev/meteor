@@ -8,14 +8,12 @@ package net.greemdev.meteor.util
 
 
 fun String.toCamelCase(separator: String = "-") =
-    split(separator)
-        .mapIndexed { i, part ->
-            if (i == 0)
-                part.lowercase()
-            else
-                part.replaceFirstChar { it.uppercase() }
-        }.joinToString("")
+    toPascalCase(separator).replaceFirstChar { it.lowercase() }
 
+fun String.toPascalCase(separator: String = "-") =
+    split(separator).joinToString("") {
+        it.replaceFirstChar { ch -> ch.uppercase() }
+    }
 
 @JvmOverloads
 fun String.ensurePrefix(prefix: String, ignoreCase: Boolean = false) =
@@ -23,23 +21,23 @@ fun String.ensurePrefix(prefix: String, ignoreCase: Boolean = false) =
         this
     else "$prefix$this"
 
-@JvmOverloads
-fun String.withoutPrefix(prefix: String, ignoreCase: Boolean = false) =
-    if (startsWith(prefix, ignoreCase))
-        drop(prefix.length)
-    else this
+fun String.lines() = split("\n").toList()
+
+fun String.widestLine(getWidth: (String) -> Double) = lines().maxOf { getWidth(it) }
+
+
+fun String.lineCount(): Int {
+    return if (endsWith('\n'))
+        1
+    else
+        count { it == '\n' } + 1 //0 newline literals makes one line, 1 newline makes 2 lines, etc
+}
 
 @JvmOverloads
 fun String.ensureSuffix(suffix: String, ignoreCase: Boolean = false) =
     if (endsWith(suffix, ignoreCase))
         this
     else "$this$suffix"
-
-@JvmOverloads
-fun String.withoutSuffix(suffix: String, ignoreCase: Boolean = false) =
-    if (endsWith(suffix, ignoreCase))
-        dropLast(suffix.length)
-    else this
 
 @JvmOverloads
 fun String.pluralize(quantity: Number, useES: Boolean = false, prefixQuantity: Boolean = true) =

@@ -20,6 +20,7 @@ import meteordevelopment.meteorclient.systems.modules.Category;
 import meteordevelopment.meteorclient.systems.modules.Module;
 import meteordevelopment.meteorclient.systems.modules.Modules;
 import meteordevelopment.meteorclient.utils.misc.NbtUtils;
+import net.greemdev.meteor.util.meteor.HiddenModules;
 import net.minecraft.item.Items;
 
 import java.util.ArrayList;
@@ -42,8 +43,8 @@ public class ModulesScreen extends TabScreen {
 
         // Help
         WVerticalList help = add(theme.verticalList()).pad(4).bottom().widget();
-        help.add(theme.label("Left click - Toggle module"));
-        help.add(theme.label("Right click - Open module settings"));
+        help.add(theme.label("&zLeft click &r- &2Toggle module"));
+        help.add(theme.label("&zRight click &r- &2Open module settings"));
     }
 
     @Override
@@ -70,7 +71,8 @@ public class ModulesScreen extends TabScreen {
         w.view.spacing = 0;
 
         for (Module module : Modules.get().getGroup(category)) {
-            w.add(theme.module(module)).expandX();
+            if (!HiddenModules.contains(module))
+                w.add(theme.module(module)).expandX();
         }
 
         return w;
@@ -88,7 +90,8 @@ public class ModulesScreen extends TabScreen {
                 section.spacing = 0;
 
                 for (Module module : CollectionsKt.take(modules, Config.get().moduleSearchCount.get())) {
-                    section.add(theme.module(module)).expandX();
+                    if (!HiddenModules.contains(module))
+                        section.add(theme.module(module)).expandX();
                 }
             }
 
@@ -100,7 +103,8 @@ public class ModulesScreen extends TabScreen {
                 section.spacing = 0;
 
                 for (Module module : CollectionsKt.take(modules, Config.get().moduleSearchCount.get())) {
-                    section.add(theme.module(module)).expandX();
+                    if (!HiddenModules.contains(module))
+                        section.add(theme.module(module)).expandX();
                 }
             }
         }

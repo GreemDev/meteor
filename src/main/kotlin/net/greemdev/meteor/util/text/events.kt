@@ -26,8 +26,9 @@ object actions {
 
     @JvmField
     val openURL: ClickAction = ClickAction.OPEN_URL
-    @JvmField
-    val openFile: ClickAction = ClickAction.OPEN_FILE
+
+    // OPEN_FILE is missing as it's externally deprecated (since it's potentially unsafe) and only used inside minecraft's screenshot code when it sends a message to your chat.
+
     @JvmField
     val runCommand: ClickAction = ClickAction.RUN_COMMAND
     @JvmField

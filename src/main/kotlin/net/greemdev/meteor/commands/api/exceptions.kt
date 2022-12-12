@@ -8,7 +8,7 @@ package net.greemdev.meteor.commands.api
 import com.mojang.brigadier.ImmutableStringReader
 import com.mojang.brigadier.Message
 import com.mojang.brigadier.exceptions.*
-import net.greemdev.meteor.util.invoking
+import net.greemdev.meteor.invoking
 import kotlin.reflect.KClass
 
 fun simpleCommandException(message: Message) = lazy { SimpleCommandExceptionType(message) }

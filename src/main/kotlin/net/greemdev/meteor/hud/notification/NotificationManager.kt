@@ -6,6 +6,7 @@
 
 package net.greemdev.meteor.hud.notification
 
+import net.greemdev.meteor.*
 import net.greemdev.meteor.hud.element.NotificationHud
 import net.greemdev.meteor.util.*
 import net.greemdev.meteor.util.meteor.*
@@ -26,7 +27,7 @@ fun overrideChatFeedback() = NotificationHud.getOrNull()?.overrideChatFeedback()
 val notifications = object : NotificationManager() {}
 
 abstract class NotificationManager {
-    fun sendOrRun(n: Notification, altMessage: String? = null, func: ((String) -> Unit)? = null) {
+    fun sendOrRun(n: Notification, altMessage: String? = null, func: ValueAction<String>? = null) {
         if (NotificationHud.getOrNull()?.allowsSource(n.source) == true &&
             (n.event !is NotificationEvent.ModuleToggled || NotificationHud.get().allowsModule(n.event.module))
         ) {
@@ -39,10 +40,12 @@ abstract class NotificationManager {
     }
 
     private object NotificationQueue : LinkedBlockingQueue<Notification>() {
-        override fun add(element: Notification) =
+        override infix fun add(element: Notification) =
             if (active() && NotificationHud.get().allowsSource(element.source)) {
                 super.add(element)
             } else false
+
+        fun requeue(notif: Notification) = remove(notif) || add(notif.apply { startTime = -1 })
 
         fun find(id: Int) = findOrNull(id)!!
         fun findOrNull(id: Int) = firstOrNull { it.id == id }
@@ -59,7 +62,7 @@ abstract class NotificationManager {
         Notification("meteor good", Color(0x9A03FF)),
         Notification(
             "excessively long title because this is a stress test",
-            "and this part too because, as i said before, this is a stress test!!!!!!!!!!!!",
+            "and this part too because, as i\nsaid before, this is a stress test!!!!!!!!!!!!",
         ),
         Notification("notifications are cool", colorOf("#7000FB"))
     ).onEach { it.startTime = 0 }.shuffled()
@@ -67,20 +70,11 @@ abstract class NotificationManager {
     fun send(notif: Notification) =
         NotificationQueue.findOrNull(notif)
             ?.let {
-                NotificationQueue.remove(it)
-                NotificationQueue.add(it)
+                NotificationQueue.requeue(it)
             } ?: NotificationQueue.add(notif)
 
 
     fun active() = NotificationHud.getOrNull() != null
-
-    fun persist(id: Int) {
-        NotificationQueue.findOrNull(id)
-            ?.let {
-                NotificationQueue.remove(it)
-                NotificationQueue.add(it.persist())
-            }
-    }
 
     fun clearQueue() = NotificationQueue.size.also { NotificationQueue.clear() }
 
@@ -94,14 +88,13 @@ abstract class NotificationManager {
                 NotificationQueue.forEach {
                     if (size >= hud.amount()) return this
 
-                    if (it.startTime == -1L && !it.persistent)
+                    if (it.startTime == -1L)
                         it.startTime = System.currentTimeMillis()
 
-                    if ((it.startTime + hud.displayTime() >= System.currentTimeMillis()) || it.persistent)
-                        if (it.event.canDisplay(hud)) {
-                            add(it)
-                            return@forEach
-                        }
+                    if ((it.startTime + hud.displayTime() >= System.currentTimeMillis() && it.event.canDisplay(hud))) {
+                        add(it)
+                        return@forEach
+                    }
 
                     NotificationQueue.remove(it)
                 }

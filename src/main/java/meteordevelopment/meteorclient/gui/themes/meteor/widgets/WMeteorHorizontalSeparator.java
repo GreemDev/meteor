@@ -23,7 +23,7 @@ public class WMeteorHorizontalSeparator extends WHorizontalSeparator implements 
 
     private void renderWithoutText(GuiRenderer renderer) {
         MeteorGuiTheme theme = theme();
-        double s = theme.scale(1);
+        double s = theme.scalar();
         double w = width / 2;
 
         renderer.quad(x, y + s, w, s, theme.separatorEdges.get(), theme.separatorCenter.get());
@@ -33,7 +33,7 @@ public class WMeteorHorizontalSeparator extends WHorizontalSeparator implements 
     private void renderWithText(GuiRenderer renderer) {
         MeteorGuiTheme theme = theme();
         double s = theme.scale(2);
-        double h = theme.scale(1);
+        double h = theme.scalar();
 
         double textStart = Math.round(width / 2.0 - textWidth / 2.0 - s);
         double textEnd = s + textStart + textWidth + s;

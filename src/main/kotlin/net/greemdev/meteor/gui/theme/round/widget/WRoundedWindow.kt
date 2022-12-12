@@ -18,7 +18,7 @@ class WRoundedWindow(icon: WWidget?, title: String?) : WWindow(icon, title), Rou
 
     override fun onRender(renderer: GuiRenderer, mouseX: Double, mouseY: Double, delta: Double) {
         if (expanded || animProgress > 0)
-            renderer.r2D().rounded().quad(x, y + header.height / 2,
+            renderer.roundRenderer2D.quad(x, y + header.height / 2,
                 width, height - header.height / 2,
                 theme().backgroundColor(), theme().round(),
                 false)
@@ -26,6 +26,6 @@ class WRoundedWindow(icon: WWidget?, title: String?) : WWindow(icon, title), Rou
 
     private inner class WRoundedHeader(icon: WWidget?) : WHeader(icon) {
         override fun onRender(renderer: GuiRenderer, mouseX: Double, mouseY: Double, delta: Double) =
-            renderer.r2D().rounded().widgetQuad(this, theme().accentColor(), theme().round())
+            renderer.roundRenderer2D.widgetQuad(this, theme().accentColor(), theme().round())
     }
 }

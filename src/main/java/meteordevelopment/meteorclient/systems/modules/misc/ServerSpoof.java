@@ -14,8 +14,6 @@ import meteordevelopment.meteorclient.systems.modules.Categories;
 import meteordevelopment.meteorclient.systems.modules.Module;
 import meteordevelopment.orbit.EventHandler;
 import net.greemdev.meteor.util.text.ChatColor;
-import net.greemdev.meteor.util.text.ChatEvents;
-import net.greemdev.meteor.util.text.FormattedText;
 import net.greemdev.meteor.util.text.actions;
 import net.minecraft.network.PacketByteBuf;
 import net.minecraft.network.packet.c2s.play.CustomPayloadC2SPacket;
@@ -24,6 +22,8 @@ import net.minecraft.text.*;
 import org.apache.commons.lang3.StringUtils;
 
 import java.nio.charset.StandardCharsets;
+
+import static net.greemdev.meteor.util.accessors.text;
 
 public class ServerSpoof extends Module {
     private final SettingGroup sgGeneral = settings.getDefaultGroup();
@@ -88,7 +88,8 @@ public class ServerSpoof extends Module {
             if (!isActive()) return;
             if (resourcePack.get() && event.packet instanceof ResourcePackSendS2CPacket packet) {
                 event.cancel();
-                info(FormattedText.build("This server has", msg -> {
+                info(text(msg -> {
+                    msg.addString("This server has ");
                     msg.addString(packet.isRequired() ? "a required " : "an optional ");
                     msg.add("resource pack", link -> {
                         link.colored(ChatColor.blue).underlined();

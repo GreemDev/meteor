@@ -8,15 +8,19 @@ package net.greemdev.meteor.util
 import com.enderzombi102.jythonmc.Jython
 import kotlinx.coroutines.launch
 import meteordevelopment.meteorclient.utils.PostInit
+import net.greemdev.meteor.*
 import net.greemdev.meteor.util.misc.getMeteorResource
 import org.python.util.PythonInterpreter
 import java.io.File
 import java.io.StringReader
 import java.nio.file.Path
 
-fun pythonFiles(vararg files: File) = PythonOp(files.toList())
-fun pythonPaths(vararg paths: Path) = PythonOp(paths.toList())
-fun pythonScripts(vararg scripts: String) = PythonOp(scripts.toList())
+@Suppress("ClassName")
+object py {
+    fun files(vararg files: File) = PythonOp(files.toList())
+    fun paths(vararg paths: Path) = PythonOp(paths.toList())
+    fun scripts(vararg scripts: String) = PythonOp(scripts.toList())
+}
 
 class PythonOp<T>(codeData: T) {
     private val scripts: List<String>
@@ -48,7 +52,7 @@ class PythonOp<T>(codeData: T) {
             return emptyList()
 
         return if (file.isDirectory)
-            getCodeFromFiles(file.listed {
+            getCodeFromFiles(file.filter {
                 it.name.endsWith(".py")
             }).orEmpty()
         else
@@ -86,7 +90,7 @@ class PythonOp<T>(codeData: T) {
 }
 
 val pythonBaseFile = with(minecraft.getMeteorResource("base.py").get().reader) {
-    readText().also { close() }
+    use { readText() }
 }
 
 
@@ -98,8 +102,8 @@ private val pyinterp by invoking {
     }
 }
 
-fun python(func: PythonInterpreter.() -> Unit) = using(pyinterp) {
-    func()
+fun python(func: PythonInterpreter.() -> Unit) = pyinterp.use {
+    func(it)
 }
 
 @PostInit

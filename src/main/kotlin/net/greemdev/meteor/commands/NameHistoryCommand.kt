@@ -11,9 +11,8 @@ import meteordevelopment.meteorclient.utils.player.ChatUtils
 import meteordevelopment.meteorclient.utils.player.PlayerUtils
 import meteordevelopment.meteorclient.utils.render.color.Color
 import net.greemdev.meteor.GCommand
-import net.greemdev.meteor.commands.api.CommandBuilder
 import net.greemdev.meteor.commands.api.invoke
-import net.greemdev.meteor.util.format
+import net.greemdev.meteor.format
 import net.greemdev.meteor.util.meteor.sendJson
 import net.greemdev.meteor.util.misc.currentWorld
 import net.greemdev.meteor.util.text.*
@@ -72,7 +71,6 @@ object NameHistoryCommand : GCommand("name-history", "Provides a list of a playe
                                     hovered(actions.showText, textOf("This name history entry is not accurate according to laby.net"))
                                 }
                             }
-
                         })
                     }
 

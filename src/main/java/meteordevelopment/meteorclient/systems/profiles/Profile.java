@@ -14,14 +14,13 @@ import meteordevelopment.meteorclient.systems.macros.Macros;
 import meteordevelopment.meteorclient.systems.modules.Modules;
 import meteordevelopment.meteorclient.systems.waypoints.Waypoints;
 import meteordevelopment.meteorclient.utils.misc.ISerializable;
-import net.greemdev.meteor.util.Util;
+import net.greemdev.meteor.utils;
 import net.greemdev.meteor.util.meteor.HiddenModules;
 import net.greemdev.meteor.util.misc.Nbt;
 import net.greemdev.meteor.util.misc.NbtDataType;
 import net.greemdev.meteor.util.misc.NbtUtil;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.nbt.NbtElement;
-import net.minecraft.nbt.NbtIo;
 import net.minecraft.nbt.NbtString;
 import org.apache.commons.io.FileUtils;
 
@@ -120,7 +119,7 @@ public class Profile implements ISerializable<Profile> {
         if (waypoints.get()) Waypoints.get().save(folder);
         if (hiddenModules.get()) {
             var file = getFileInFolder("hidden-modules.nbt");
-            if (Util.createFile(file) || file.exists()) {
+            if (utils.createFile(file) || file.exists()) {
                 var tag = Nbt.newCompound(c ->
                     c.put("value", Nbt.list(Config.hiddenModuleNames.stream().map(NbtString::of).toList()))
                 );

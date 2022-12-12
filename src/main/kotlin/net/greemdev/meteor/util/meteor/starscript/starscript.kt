@@ -13,6 +13,8 @@ import net.greemdev.meteor.util.misc.clamp
 import net.minecraft.util.math.MathHelper
 import kotlin.math.*
 
+
+
 internal fun initGStarscript() {
     with(MeteorStarscript.ss) {
         mods()

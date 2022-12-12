@@ -34,6 +34,8 @@ public class AccountsScreen extends WindowScreen {
             wAccount.refreshScreenAction = this::reload;
         }
 
+        add(theme.horizontalSeparator());
+
         // Add account
         WHorizontalList l = add(theme.horizontalList()).expandX().widget();
 

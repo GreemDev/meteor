@@ -57,6 +57,7 @@ public class DiscordPresence extends Module {
         .defaultValue("{player}", "{server}")
         .onChanged(strings -> recompileLine1())
         .renderer(StarscriptTextBoxRenderer.class)
+        .wide()
         .build()
     );
 
@@ -84,6 +85,7 @@ public class DiscordPresence extends Module {
         .defaultValue("Meteor on Crack!", "{round(server.tps, 1)} TPS", "Playing on {server.difficulty} difficulty.", "{server.playerCount} Players online")
         .onChanged(strings -> recompileLine2())
         .renderer(StarscriptTextBoxRenderer.class)
+        .wide()
         .build()
     );
 
@@ -104,7 +106,6 @@ public class DiscordPresence extends Module {
     );
 
     private static final RichPresence rpc = new RichPresence();
-    private int ticks;
     private boolean forceUpdate, lastWasInMainMenu;
 
     private final List<Script> line1Scripts = new ArrayList<>();
@@ -145,10 +146,9 @@ public class DiscordPresence extends Module {
 
     @Override
     public void onActivate() {
-        var gp = Modules.get().get(MinecraftPresence.class);
-        if (gp.isActive()) {
+        if (MinecraftPresence.INSTANCE.isActive()) {
             info("Disabling Minecraft Presence.");
-            gp.toggle();
+            MinecraftPresence.INSTANCE.toggle();
         }
         DiscordIPC.start(835240968533049424L, null);
 
@@ -159,7 +159,6 @@ public class DiscordPresence extends Module {
         recompileLine1();
         recompileLine2();
 
-        ticks = 0;
         line1Ticks = 0;
         line2Ticks = 0;
         lastWasInMainMenu = false;

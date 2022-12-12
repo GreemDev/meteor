@@ -107,6 +107,7 @@ public class HudElementScreen extends WindowScreen {
             element.remove();
             close();
         };
+        remove.tooltip = "Remove this element from your HUD.";
     }
 
     @Override

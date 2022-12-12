@@ -41,8 +41,6 @@ import meteordevelopment.meteorclient.utils.misc.input.Input;
 import meteordevelopment.meteorclient.utils.misc.input.KeyAction;
 import meteordevelopment.orbit.EventHandler;
 import meteordevelopment.orbit.EventPriority;
-import net.greemdev.meteor.modules.IgnoreWorldBorder;
-import net.greemdev.meteor.util.Util;
 import net.greemdev.meteor.util.meteor.HiddenModules;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.nbt.NbtElement;
@@ -151,7 +149,7 @@ public class Modules extends System<Modules> {
     }
 
     public List<Module> getGroup(Category category) {
-        return HiddenModules.hideInCategory(category, groups);
+        return groups.computeIfAbsent(category, (c) -> new ArrayList<>());
     }
 
     public Collection<Module> getAll() {

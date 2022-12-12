@@ -7,6 +7,7 @@
 package net.greemdev.meteor.util.text
 
 import meteordevelopment.meteorclient.systems.config.Config
+import net.greemdev.meteor.invoking
 import net.greemdev.meteor.util.*
 import net.greemdev.meteor.util.meteor.*
 

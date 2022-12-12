@@ -15,14 +15,14 @@ class WRoundedHorizontalSeparator(text: String?) : WHorizontalSeparator(text), R
     override fun onRender(renderer: GuiRenderer, mouseX: Double, mouseY: Double, delta: Double) {
         val theme = theme()
         if (text == null) { //render without text
-            val s = theme.scale(1.0)
+            val s = theme.scalar()
             val w = width / 2
 
             renderer.quad(x, y + s, w, s, theme.separatorEdges(), theme.separatorCenter())
             renderer.quad(x + w, y + s, w, s, theme.separatorCenter(), theme.separatorEdges())
         } else { //render with text
             val s = theme.scale(2.0)
-            val h = theme.scale(1.0)
+            val h = theme.scalar()
 
             val textStart = round(width / 2 - textWidth / 2 - s)
             val textEnd = s + textStart + textWidth + s

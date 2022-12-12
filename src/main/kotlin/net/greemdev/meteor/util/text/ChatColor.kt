@@ -5,8 +5,7 @@
 
 package net.greemdev.meteor.util.text
 
-import meteordevelopment.meteorclient.utils.render.color.Color
-import net.greemdev.meteor.util.*
+import net.greemdev.meteor.*
 import net.minecraft.util.Formatting
 
 data class ChatColor private constructor(val mc: Formatting) {

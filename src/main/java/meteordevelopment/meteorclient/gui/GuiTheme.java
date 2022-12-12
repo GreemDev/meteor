@@ -6,10 +6,7 @@
 package meteordevelopment.meteorclient.gui;
 
 import meteordevelopment.meteorclient.gui.renderer.packer.GuiTexture;
-import meteordevelopment.meteorclient.gui.screens.AccountsScreen;
-import meteordevelopment.meteorclient.gui.screens.ModuleScreen;
-import meteordevelopment.meteorclient.gui.screens.ModulesScreen;
-import meteordevelopment.meteorclient.gui.screens.ProxiesScreen;
+import meteordevelopment.meteorclient.gui.screens.*;
 import meteordevelopment.meteorclient.gui.tabs.TabScreen;
 import meteordevelopment.meteorclient.gui.utils.CharFilter;
 import meteordevelopment.meteorclient.gui.utils.SettingsWidgetFactory;
@@ -81,25 +78,6 @@ public abstract class GuiTheme implements ISerializable<GuiTheme> {
     }
     public WLabel label(String text) {
         return label(text, false);
-    }
-
-    public WLabel legacyLabel(String text, boolean title, double maxWidth) {
-        WLabel label = label(text, title, maxWidth);
-        if (!LegacyText.getColorCodeRegex().containsMatchIn(text))
-            return label;
-
-        label.legacyColorCodes = true;
-        return label;
-    }
-
-    public WLabel legacyLabel(String text, boolean title) {
-        return legacyLabel(text, title, 0);
-    }
-    public WLabel legacyLabel(String text, double maxWidth) {
-        return legacyLabel(text, false, maxWidth);
-    }
-    public WLabel legacyLabel(String text) {
-        return legacyLabel(text, false);
     }
 
     public abstract WHorizontalSeparator horizontalSeparator(String text);
@@ -320,9 +298,15 @@ public abstract class GuiTheme implements ISerializable<GuiTheme> {
         return new ProxiesScreen(this);
     }
 
+    public WidgetScreen notebotSongsScreen() {
+        return new NotebotSongsScreen(this);
+    }
+
     // Colors
 
     public abstract Color textColor();
+
+    public abstract Color titleTextColor();
 
     public abstract Color textSecondaryColor();
 
@@ -350,9 +334,21 @@ public abstract class GuiTheme implements ISerializable<GuiTheme> {
 
     // Other
 
-    public abstract TextRenderer textRenderer();
+    public TextRenderer textRenderer() {
+        return TextRenderer.get();
+    }
 
-    public abstract double scale(double value);
+    public abstract double scalar();
+
+    public double scalar(boolean title) {
+        return title
+            ? TITLE_TEXT_SCALE
+            : scalar();
+    }
+
+    public double scale(double value) {
+        return value * scalar();
+    }
 
     public abstract boolean categoryIcons();
 

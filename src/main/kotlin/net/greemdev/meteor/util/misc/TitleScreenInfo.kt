@@ -6,8 +6,10 @@
 package net.greemdev.meteor.util.misc
 
 import meteordevelopment.meteorclient.utils.render.RenderUtils
+import net.greemdev.meteor.*
 import net.greemdev.meteor.util.*
 import net.greemdev.meteor.util.text.ChatColor
+import net.minecraft.SharedConstants
 import net.minecraft.client.util.math.MatrixStack
 
 object TitleScreenInfo {
@@ -26,6 +28,9 @@ object TitleScreenInfo {
                     }
                 } else
                     newSection("dev build", lightPurple)
+
+                if (SharedConstants.isDevelopment)
+                    newSection(" - *dev mode*", darkRed)
             }
         }
     }
@@ -42,7 +47,7 @@ object TitleScreenInfo {
     }
 }
 
-fun infoLine(autoCalc: Boolean = true, builder: context(ChatColor.Companion) InfoLine.() -> Unit) = InfoLine(mutableListOf()).apply {
+fun infoLine(autoCalc: Boolean = true, builder: ColoredInitializer<InfoLine>) = InfoLine(mutableListOf()).apply {
     builder(ChatColor, this)
     if (autoCalc) updateWidth()
 }
@@ -73,14 +78,14 @@ class InfoLine(private val sections: MutableList<Section>) {
         return this
     }
 
-    fun newSection(color: ChatColor, textBuilder: StringBuilder.() -> Unit) =
+    fun newSection(color: ChatColor, textBuilder: Initializer<StringBuilder>) =
         newSection(color.rgb ?: error("Cannot color text with a formatting option."), textBuilder)
-    fun newSection(color: AwtColor, textBuilder: StringBuilder.() -> Unit) =
+    fun newSection(color: AwtColor, textBuilder: Initializer<StringBuilder>) =
         newSection(color.rgb, textBuilder)
-    fun newSection(color: MeteorColor, textBuilder: StringBuilder.() -> Unit) =
+    fun newSection(color: MeteorColor, textBuilder: Initializer<StringBuilder>) =
         newSection(color.packed, textBuilder)
 
-    fun newSection(color: Int, textBuilder: StringBuilder.() -> Unit): InfoLine {
+    fun newSection(color: Int, textBuilder: Initializer<StringBuilder>): InfoLine {
         sections.add(Section(buildString(textBuilder), color))
         return this
     }

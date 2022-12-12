@@ -81,7 +81,7 @@ public class AutoEat extends Module {
     private int slot, prevSlot;
 
     private final List<Class<? extends Module>> wasAura = new ArrayList<>();
-    private boolean wasBaritone;
+    private boolean wasBaritone = false;
 
     public AutoEat() {
         super(Categories.Player, "auto-eat", "Automatically eats food.");
@@ -159,8 +159,7 @@ public class AutoEat extends Module {
         }
 
         // Pause baritone
-        wasBaritone = false;
-        if (pauseBaritone.get()) {
+        if (pauseBaritone.get() && BaritoneAPI.getProvider().getPrimaryBaritone().getPathingBehavior().isPathing() && !wasBaritone) {
             wasBaritone = true;
             BaritoneAPI.getProvider().getPrimaryBaritone().getCommandManager().execute("pause");
         }
@@ -168,16 +167,14 @@ public class AutoEat extends Module {
 
     private void eat() {
         changeSlot(slot);
-        setPressed(true);
+        mc.options.useKey.setPressed(true);
         if (!mc.player.isUsingItem()) Utils.pressItemUseKey();
-
         eating = true;
     }
 
     private void stopEating() {
         changeSlot(prevSlot);
-        setPressed(false);
-
+        mc.options.useKey.setPressed(false);
         eating = false;
 
         // Resume auras
@@ -193,12 +190,9 @@ public class AutoEat extends Module {
 
         // Resume baritone
         if (pauseBaritone.get() && wasBaritone) {
+            wasBaritone = false;
             BaritoneAPI.getProvider().getPrimaryBaritone().getCommandManager().execute("resume");
         }
-    }
-
-    private void setPressed(boolean pressed) {
-        mc.options.useKey.setPressed(pressed);
     }
 
     private void changeSlot(int slot) {

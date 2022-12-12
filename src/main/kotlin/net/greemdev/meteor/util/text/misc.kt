@@ -5,18 +5,20 @@
 
 package net.greemdev.meteor.util.text
 
+import net.greemdev.meteor.ColoredInitializer
+import net.greemdev.meteor.Initializer
 import net.minecraft.text.MutableText
 import net.minecraft.text.Text
 import java.util.function.Consumer
 
 fun textOf(content: String?) = textOf(content, null)
-fun textOf() = textOf(null, null)
-fun textOf(content: String? = null, block: (MutableText.() -> Unit)?): MutableText = if (content == null)
+fun emptyText() = textOf(null, null)
+fun textOf(content: String? = null, block: Initializer<MutableText>?): MutableText = if (content == null)
     Text.empty()
 else
     Text.literal(content).apply { block?.invoke(this) }
 
-fun buildText(initial: MutableText = textOf(), block: context(ChatColor.Companion) FormattedTextBuilder.() -> Unit): Text = FormattedTextBuilder(initial).apply {
+fun buildText(initial: MutableText = emptyText(), block: ColoredInitializer<FormattedTextBuilder>): Text = FormattedTextBuilder(initial).apply {
     block(ChatColor, this@apply)
 }.text()
 
@@ -32,5 +34,5 @@ object FormattedText {
     @JvmStatic
     fun builder(initial: Any): FormattedTextBuilder = builder(textOf(initial.toString())) {}
     @JvmStatic
-    fun builder(initial: MutableText?, builder: Consumer<FormattedTextBuilder>): FormattedTextBuilder = FormattedTextBuilder(initial ?: textOf()).apply(builder::accept)
+    fun builder(initial: MutableText?, builder: Consumer<FormattedTextBuilder>): FormattedTextBuilder = FormattedTextBuilder(initial ?: emptyText()).apply(builder::accept)
 }

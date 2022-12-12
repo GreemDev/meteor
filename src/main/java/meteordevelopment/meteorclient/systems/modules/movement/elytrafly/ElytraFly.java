@@ -84,6 +84,30 @@ public class ElytraFly extends Module {
         .build()
     );
 
+    public final Setting<Boolean> acceleration = sgGeneral.add(new BoolSetting.Builder()
+        .name("acceleration")
+        .defaultValue(false)
+        .visible(() -> flightMode.get() != ElytraFlightModes.Pitch40)
+        .build()
+    );
+
+    public final Setting<Double> accelerationStep = sgGeneral.add(new DoubleSetting.Builder()
+        .name("acceleration-step")
+        .min(0.1)
+        .max(5)
+        .defaultValue(1)
+        .visible(() -> flightMode.get() != ElytraFlightModes.Pitch40 && acceleration.get())
+        .build()
+    );
+
+    public final Setting<Double> accelerationMin = sgGeneral.add(new DoubleSetting.Builder()
+        .name("acceleration-start")
+        .min(0.1)
+        .defaultValue(0)
+        .visible(() -> flightMode.get() != ElytraFlightModes.Pitch40 && acceleration.get())
+        .build()
+    );
+
     public final Setting<Boolean> stopInWater = sgGeneral.add(new BoolSetting.Builder()
         .name("stop-in-water")
         .description("Stops flying in water.")
@@ -294,6 +318,7 @@ public class ElytraFly extends Module {
             currentMode.handleFallMultiplier();
             currentMode.handleAutopilot();
 
+            currentMode.handleAcceleration();
             currentMode.handleHorizontalSpeed(event);
             currentMode.handleVerticalSpeed(event);
 
@@ -353,6 +378,13 @@ public class ElytraFly extends Module {
             }
         }
 
+    }
+
+    public boolean canPacketEfly() {
+        return isActive()
+            && flightMode.get() == ElytraFlightModes.Packet
+            && mc.player.getEquippedStack(EquipmentSlot.CHEST).getItem() instanceof ElytraItem
+            && !mc.player.isOnGround();
     }
 
     @EventHandler

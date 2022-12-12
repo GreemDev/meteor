@@ -43,7 +43,7 @@ abstract class GModule(name: String, description: String, category: Category = G
 abstract class GCommand(
     name: String,
     description: String,
-    private val b: (CommandBuilder.() -> Unit)? = null,
+    private val b: (Initializer<CommandBuilder>)? = null,
     vararg val aliases: String
     ) : Command(name, description) {
 
@@ -52,7 +52,7 @@ abstract class GCommand(
     override fun getAliases() = aliases.toMutableList()
 
     protected open fun CommandBuilder.inject() {
-        error("The base implementation of GCommand#injectBrigadier should never be called! " +
+        error("The base implementation of GCommand#inject should never be called! " +
             "You forgot to override the method or provide the builder in the abstract class constructor.")
     }
 

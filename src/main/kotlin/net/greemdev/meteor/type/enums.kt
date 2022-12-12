@@ -7,7 +7,7 @@
 package net.greemdev.meteor.type
 
 import meteordevelopment.meteorclient.utils.misc.MeteorIdentifier
-import net.greemdev.meteor.util.optionalOf
+import net.greemdev.meteor.optionalOf
 import java.util.Optional
 
 enum class StringComparisonType {

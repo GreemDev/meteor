@@ -14,5 +14,5 @@ import net.greemdev.meteor.util.meteor.*
 
 class WRoundedAccount(screen: WidgetScreen, account: Account<*>) : WAccount(screen, account), RoundedWidget {
     override fun loggedInColor(): Color = theme().loggedInColor()
-    override fun accountTypeColor(): Color = theme().textSecondaryColor()
+    override fun accountTypeColor(): Color = theme.textSecondaryColor()
 }

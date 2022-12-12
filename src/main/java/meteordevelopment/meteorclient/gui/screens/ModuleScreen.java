@@ -5,6 +5,7 @@
 
 package meteordevelopment.meteorclient.gui.screens;
 
+import kotlin.text.StringsKt;
 import meteordevelopment.meteorclient.events.meteor.ModuleBindChangedEvent;
 import meteordevelopment.meteorclient.gui.GuiTheme;
 import meteordevelopment.meteorclient.gui.WindowScreen;
@@ -37,7 +38,10 @@ public class ModuleScreen extends WindowScreen {
     @Override
     public void initWidgets() {
         // Description
-        add(theme.label(module.description, getWindowWidth() / 2.0));
+        StringsKt.split(module.description, new char[]{'\n'}, false, 0)
+            .forEach(line ->
+                add(theme.label(line, getWindowWidth() / 2.0))
+            );
 
         // Settings
         if (module.settings.groups.size() > 0) {
@@ -54,25 +58,24 @@ public class ModuleScreen extends WindowScreen {
             if (widget instanceof WContainer) cell.expandX();
         }
 
-        // no point adding the bind stuff if we can't activate anyways
-        if (module.canBind && module.canActivate) {
-            // Bind
-            within(add(theme.section("Bind", true)).expandX(), sec -> {
+        // Bind
+        within(add(theme.section("Bind", true)).expandX(), sec -> {
+            if (module.canBind && module.canActivate)
                 keybind = sec.add(theme.moduleKeybind(module.keybind, () ->
                     Modules.get().setModuleToBind(module))
                 ).expandX().widget();
 
-                if (module.allowChatFeedback) {
-                    within(sec.add(theme.horizontalList()), list -> {
-                        list.add(theme.label("Chat Feedback: "));
-                        list.add(theme.checkbox(module.chatFeedback, (c) ->
-                            module.chatFeedback = c)
-                        );
-                    });
-                }
-            });
-            add(theme.horizontalSeparator()).expandX();
-        }
+            if (module.allowChatFeedback || module.forceDisplayChatFeedbackCheckbox) {
+                within(sec.add(theme.horizontalList()), list -> {
+                    list.add(theme.label("Chat Feedback: "));
+                    list.add(theme.checkbox(module.chatFeedback, (c) ->
+                        module.chatFeedback = c)
+                    );
+                });
+            }
+        });
+        add(theme.horizontalSeparator()).expandX();
+
 
         if (module.canActivate) {
             // Bottom

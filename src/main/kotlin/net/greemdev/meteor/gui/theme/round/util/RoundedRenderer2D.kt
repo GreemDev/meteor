@@ -18,17 +18,24 @@ const val circleQuarter = PI / 2
 const val circleHalf = circleQuarter * 2
 const val circle3Quarter = circleQuarter * 3
 
-fun Renderer2D.rounded() = RoundedRenderer2D.of(this)
-
 // Credit to meteor-rejects.
 @Suppress("FunctionName") //internal names
-class RoundedRenderer2D(val r2d: Renderer2D) {
+class RoundedRenderer2D(@get:JvmName("renderer") val r2d: Renderer2D) {
     companion object {
-        private val textured by lazy { RoundedRenderer2D(TEXTURE) }
-        private val normal by lazy { RoundedRenderer2D(COLOR) }
-        fun textured() = textured
-        fun normal() = normal
-        fun of(r2d: Renderer2D) = RoundedRenderer2D(r2d)
+        @get:JvmName("textured")
+        @JvmStatic
+        val textured by lazy { RoundedRenderer2D(TEXTURE) }
+        @get:JvmName("normal")
+        @JvmStatic
+        val normal by lazy { RoundedRenderer2D(COLOR) }
+    }
+
+    fun begin() {
+        r2d.begin()
+    }
+
+    fun end() {
+        r2d.end()
     }
 
     fun quad(x: Number, y: Number, width: Number, height: Number, color: Color, r: Number, roundTop: Boolean = true) =

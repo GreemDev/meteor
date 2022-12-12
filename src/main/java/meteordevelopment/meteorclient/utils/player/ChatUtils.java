@@ -24,6 +24,7 @@ import java.util.function.Consumer;
 import java.util.function.Supplier;
 
 import static meteordevelopment.meteorclient.MeteorClient.mc;
+import static net.greemdev.meteor.util.accessors.*;
 
 public class ChatUtils {
     private static final List<Pair<String, Supplier<Text>>> customPrefixes = new ArrayList<>();
@@ -97,7 +98,7 @@ public class ChatUtils {
     }
 
     public static void sendMsg(Consumer<FormattedTextBuilder> message) {
-        sendMsg(null, FormattedText.build(message));
+        sendMsg(null, text(message));
     }
 
     public static void sendMsg(FormattedTextBuilder textBuilder) {
@@ -138,7 +139,7 @@ public class ChatUtils {
     }
 
     private static MutableText getCustomPrefix(String prefixTitle, Formatting prefixColor) {
-        return FormattedText.builder()
+        return textBuilder()
             .colored(ChatColor.grey)
             .addString("[")
             .addString(prefixTitle, b -> {

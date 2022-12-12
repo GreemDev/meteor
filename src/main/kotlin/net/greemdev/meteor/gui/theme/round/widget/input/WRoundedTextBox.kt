@@ -36,7 +36,7 @@ class WRoundedTextBox(text: String, placeholder: String?, filter: CharFilter, re
             cursorTimer += delta * 1.1
         }
 
-        renderBackground(renderer, this, pressed = false, mouseOver = false)
+        renderer.roundedBackground(this, pressed = false, mouseOver = false)
 
         val theme = theme()
         val pad = pad()
@@ -64,7 +64,7 @@ class WRoundedTextBox(text: String, placeholder: String?, filter: CharFilter, re
 
         if ((focused and cursorVisible) || animProgress > 0.0) {
             renderer.setAlpha(animProgress)
-            renderer.quad(x + pad + getTextWidth(cursor) - overflowW, y + pad, theme.scale(1.0), theme.textHeight(), theme.textColor())
+            renderer.quad(x + pad + getTextWidth(cursor) - overflowW, y + pad, theme.scalar(), theme.textHeight(), theme.textColor())
             renderer.setAlpha(1.0)
         }
 
@@ -77,7 +77,7 @@ class WRoundedTextBox(text: String, placeholder: String?, filter: CharFilter, re
             val s = theme.scale(2.0)
             val c = theme.outlineColor()
 
-            this.renderBackground(renderer, this, pressed = false, mouseOver = false)
+            renderer.roundedBackground(this, pressed = false, mouseOver = false)
 
             val col = theme.backgroundColor()
             val preA = col.a

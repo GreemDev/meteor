@@ -5,10 +5,18 @@
 
 package net.greemdev.meteor.util.meteor
 
+import meteordevelopment.meteorclient.gui.utils.StarscriptTextBoxRenderer
 import meteordevelopment.meteorclient.settings.*
 import meteordevelopment.meteorclient.utils.misc.MyPotion
+import net.greemdev.meteor.Initializer
 import kotlin.properties.ReadOnlyProperty
 import kotlin.reflect.KProperty
+
+
+fun StringSetting.Builder.renderStarscript(): StringSetting.Builder = renderer(StarscriptTextBoxRenderer::class.java)
+fun StringListSetting.Builder.renderStarscript(): StringListSetting.Builder =
+    renderer(StarscriptTextBoxRenderer::class.java)
+
 
 operator fun<T : Any> Setting<T>.invoke(): T = get()
 infix fun Settings.group(name: String) = group(name, true)
@@ -17,7 +25,7 @@ fun Settings.group(name: String? = null, expanded: Boolean = true): SettingGroup
     name?.let { getGroup(it) ?: createGroup(it, expanded) } ?: group("General", expanded)
 
 inline fun <ST : Setting<S>, S : Any, B : Setting.SettingBuilder<B, S, ST>>
-    SettingGroup.new(builder: B, crossinline func: B.() -> Unit) =
+    SettingGroup.new(builder: B, crossinline func: Initializer<B>) =
     SettingDelegate(this, builder.apply(func))
 
 class SettingDelegate<ST : Setting<S>, S : Any, B : Setting.SettingBuilder<B, S, ST>>

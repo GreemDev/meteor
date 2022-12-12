@@ -11,7 +11,6 @@ import meteordevelopment.meteorclient.events.meteor.MouseButtonEvent;
 import meteordevelopment.meteorclient.events.world.TickEvent;
 import meteordevelopment.meteorclient.gui.GuiThemes;
 import meteordevelopment.meteorclient.gui.WidgetScreen;
-import meteordevelopment.meteorclient.gui.tabs.Tab;
 import meteordevelopment.meteorclient.gui.tabs.TabScreen;
 import meteordevelopment.meteorclient.gui.tabs.Tabs;
 import meteordevelopment.meteorclient.systems.Systems;
@@ -28,7 +27,7 @@ import net.fabricmc.api.ClientModInitializer;
 import net.fabricmc.loader.api.FabricLoader;
 import net.fabricmc.loader.api.metadata.ModMetadata;
 import net.greemdev.meteor.Greteor;
-import net.greemdev.meteor.util.Util;
+import net.greemdev.meteor.utils;
 import net.greemdev.meteor.util.meteor.Meteor;
 import net.greemdev.meteor.util.misc.GVersioning;
 import net.minecraft.SharedConstants;
@@ -64,7 +63,7 @@ public class MeteorClient implements ClientModInitializer {
 
         VERSION = new Version(versionString);
         REVISION = Integer.parseInt(MOD_META.getCustomValue(MOD_ID + ":revision").getAsString());
-        COLOR = Util.colorOf(MOD_META.getCustomValue(MOD_ID + ":color").getAsString());
+        COLOR = utils.colorOf(MOD_META.getCustomValue(MOD_ID + ":color").getAsString());
         FABRIC_KOTLIN = MOD_META.getCustomValue(MOD_ID + ":kotlin").getAsString();
         KOTLIN = FABRIC_KOTLIN.split("kotlin")[1].substring(1);
     }

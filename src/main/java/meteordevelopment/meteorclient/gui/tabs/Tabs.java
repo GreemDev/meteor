@@ -38,43 +38,43 @@ public class Tabs {
     private static final List<Tab> tabs = new ArrayList<>();
 
     @Nullable
-    public static Tab ofName(String name) {
+    public static Tab get(String name) {
         return tabs.stream().filter(t -> t.name.equals(name)).findFirst().orElse(null);
     }
 
     @NotNull
     public static ModulesTab modules() {
-        return Utils.cast(Objects.requireNonNull(ofName(ModulesTab.NAME)));
+        return Utils.cast(Objects.requireNonNull(get(ModulesTab.NAME)));
     }
 
     @NotNull
     public static GuiTab gui() {
-        return Utils.cast(Objects.requireNonNull(ofName(GuiTab.NAME)));
+        return Utils.cast(Objects.requireNonNull(get(GuiTab.NAME)));
     }
 
     @NotNull
     public static HudTab hud() {
-        return Utils.cast(Objects.requireNonNull(ofName(HudTab.NAME)));
+        return Utils.cast(Objects.requireNonNull(get(HudTab.NAME)));
     }
 
     @NotNull
     public static FriendsTab friends() {
-        return Utils.cast(Objects.requireNonNull(ofName(FriendsTab.NAME)));
+        return Utils.cast(Objects.requireNonNull(get(FriendsTab.NAME)));
     }
 
     @NotNull
     public static MacrosTab macros() {
-        return Utils.cast(Objects.requireNonNull(ofName(MacrosTab.NAME)));
+        return Utils.cast(Objects.requireNonNull(get(MacrosTab.NAME)));
     }
 
     @NotNull
     public static ProfilesTab profiles() {
-        return Utils.cast(Objects.requireNonNull(ofName(ProfilesTab.NAME)));
+        return Utils.cast(Objects.requireNonNull(get(ProfilesTab.NAME)));
     }
 
     @NotNull
     public static BaritoneTab baritone() {
-        return Utils.cast(Objects.requireNonNull(ofName(BaritoneTab.NAME)));
+        return Utils.cast(Objects.requireNonNull(get(BaritoneTab.NAME)));
     }
 
     @NotNull
@@ -84,7 +84,7 @@ public class Tabs {
 
     @NotNull
     public static ConfigTab config() {
-        return Utils.cast(Objects.requireNonNull(ofName(ConfigTab.NAME)));
+        return Utils.cast(Objects.requireNonNull(get(ConfigTab.NAME)));
     }
 
 

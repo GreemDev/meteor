@@ -54,13 +54,13 @@ class RoundedTheme : GuiTheme("Rounded") {
 
     val moduleAlignment by sg.enum<AlignmentX> {
         name("module-alignment")
-        description("How module titles are aligned")
+        description("How module titles are aligned.")
         defaultValue(AlignmentX.Center)
     }
 
     val showCategoryIcons by sg bool {
         name("category-icons")
-        description("Adds item icons to module categories.")
+        description("Show item icons on module categories.")
         defaultValue(true)
     }
 
@@ -78,16 +78,10 @@ class RoundedTheme : GuiTheme("Rounded") {
         name("roundness")
         description("How much the GUI and HUD should be rounded.")
         defaultValue(4.0)
-        range(0.0, 25.0)
+        range(0.0, 33.0)
     }
 
     // Colors
-
-    val colorScreenMode by sgC.enum<ColorSettingScreenMode> {
-        name("color-editing-mode")
-        description("Which fields to display in the color editing screen.")
-        defaultValue(ColorSettingScreenMode.All)
-    }
 
     val accentColor by colorSetting("accent", "Main color of the GUI.", SettingColor.rainbow())
     val checkboxColor by colorSetting("checkbox", "Color of checkbox.", SettingColor.rainbow())
@@ -217,6 +211,7 @@ class RoundedTheme : GuiTheme("Rounded") {
     override fun favorite(checked: Boolean) = w(WRoundedFavorite(checked))
 
     override fun textColor() = textColor.get()
+    override fun titleTextColor() = titleTextColor.get()
     override fun textSecondaryColor() = textSecondaryColor.get()
 
     override fun starscriptTextColor() = starscriptText()
@@ -229,9 +224,7 @@ class RoundedTheme : GuiTheme("Rounded") {
     override fun starscriptNumberColor() = starscriptNumbers()
     override fun starscriptKeywordColor() = starscriptKeywords()
     override fun starscriptAccessedObjectColor() = starscriptAccessedObjects()
-
-    override fun textRenderer() = TextRenderer.get()
-    override fun scale(value: Double) = value * scale()
+    override fun scalar(): Double = scale()
     override fun categoryIcons() = showCategoryIcons()
     override fun hideHUD() = hideHud()
 

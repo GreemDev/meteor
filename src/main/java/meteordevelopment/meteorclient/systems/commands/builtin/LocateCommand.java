@@ -11,10 +11,8 @@ import meteordevelopment.meteorclient.MeteorClient;
 import meteordevelopment.meteorclient.events.packets.PacketEvent;
 import meteordevelopment.meteorclient.systems.commands.Command;
 import meteordevelopment.meteorclient.utils.player.ChatUtils;
-import meteordevelopment.meteorclient.utils.player.FindItemResult;
 import meteordevelopment.meteorclient.utils.player.InvUtils;
 import meteordevelopment.orbit.EventHandler;
-import net.greemdev.meteor.util.text.FormattedText;
 import net.minecraft.block.Block;
 import net.minecraft.block.Blocks;
 import net.minecraft.command.CommandSource;
@@ -35,6 +33,7 @@ import java.util.Arrays;
 import java.util.List;
 
 import static com.mojang.brigadier.Command.SINGLE_SUCCESS;
+import static net.greemdev.meteor.util.accessors.text;
 
 public class LocateCommand extends Command {
 
@@ -160,7 +159,7 @@ public class LocateCommand extends Command {
                         error("No stronghold found nearby. You can use (highlight)Ender Eyes(default) for more success.");
                         return SINGLE_SUCCESS;
                     }
-                    info(FormattedText.build(txt -> {
+                    info(text(txt -> {
                         txt.addString("Stronghold located at ");
                         txt.addText(ChatUtils.formatCoords(coords));
                         txt.addString(".");

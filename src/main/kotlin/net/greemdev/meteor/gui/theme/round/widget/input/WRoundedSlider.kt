@@ -35,7 +35,7 @@ class WRoundedSlider(value: Double, min: Double, max: Double) : WSlider(value, m
         val theme = theme()
         val s = handleSize()
 
-        quad(x + valueWidth, y, s, s, GuiRenderer.CIRCLE, theme.sliderHandle.get(dragging, handleMouseOver))
+        quad(x + valueWidth, y, s, s, GuiRenderer.CIRCLE, theme.sliderHandle(dragging, handleMouseOver))
     }
 
 }

@@ -13,6 +13,7 @@ import meteordevelopment.meteorclient.systems.hud.HudRenderer
 import meteordevelopment.meteorclient.systems.hud.screens.HudElementScreen
 import meteordevelopment.meteorclient.systems.modules.Module
 import meteordevelopment.meteorclient.utils.render.color.SettingColor
+import net.greemdev.meteor.AwtColor
 import net.greemdev.meteor.gui.theme.round.RoundedTheme
 import net.greemdev.meteor.gui.theme.round.util.RoundedRenderer2D
 import net.greemdev.meteor.hud.HudElementMetadata
@@ -265,7 +266,7 @@ class NotificationHud : HudElement(info) {
             val currentTime = System.currentTimeMillis()
             val baseX = x.toDouble()
             val baseY = y.toDouble()
-            val roundRenderer = RoundedRenderer2D.normal()
+            val roundRenderer = RoundedRenderer2D.normal
             val textRenderer = TextRenderer.get()
 
             notifications.forEachIndexed { i, n ->
@@ -289,20 +290,10 @@ class NotificationHud : HudElement(info) {
                         amount() - i - 1
                     )
 
-                roundRenderer.r2d.begin()
+                roundRenderer.begin()
 
                 // background
-                if (radius > 0)
-                    roundRenderer.quad(x, y, box.width, notificationHeight + barHeight, backgroundColor(), radius)
-                else
-                    roundRenderer.r2d.quad(
-                        x,
-                        y,
-                        box.width.toDouble(),
-                        notificationHeight + barHeight.toDouble(),
-                        backgroundColor()
-                    )
-
+                roundRenderer.quad(x, y, box.width, notificationHeight + barHeight, backgroundColor(), radius)
 
                 // progress bar
                 val progress = if (n.persistent)
@@ -310,27 +301,18 @@ class NotificationHud : HudElement(info) {
                 else
                     (startTime + timeToDisplay - currentTime) * box.width / timeToDisplay
 
-                if (radius > 0)
-                    roundRenderer.quad(x, y + notificationHeight, progress, barHeight, n.color, radius, false)
-                else
-                    roundRenderer.r2d.quad(
-                        x,
-                        y + notificationHeight,
-                        progress.toDouble(),
-                        barHeight.toDouble(),
-                        n.color
-                    )
+                roundRenderer.quad(x, y + notificationHeight, progress, barHeight, n.color, radius, false)
 
                 roundRenderer.r2d.render(null)
 
                 val desc = n.description
-                val titleHeight = if (desc != null && desc.isNotEmpty())
+                val titleHeight = if (!desc.isNullOrEmpty())
                     notificationHeight * 0.7
                 else notificationHeight.toDouble()
 
                 // title scale
                 var scale = min(
-                    box.width * (1f - titlePaddingX / 100F) / textRenderer.getLegacyWidth(n.title),
+                    box.width * (1f - titlePaddingX / 100F) / textRenderer.getLegacyWidth(n.title, false),
                     titleHeight / textRenderer.height
                 )
                 if (titleScaling())
@@ -339,9 +321,9 @@ class NotificationHud : HudElement(info) {
 
                 // title
                 val titleX = when (titleAlignment) {
-                    AlignmentX.Center -> x + box.width / 2 - textRenderer.getLegacyWidth(n.title) / 2
+                    AlignmentX.Center -> x + box.width / 2 - textRenderer.getLegacyWidth(n.title, false) / 2
                     AlignmentX.Left -> x + titlePaddingX
-                    else -> x + box.width - titlePaddingX - textRenderer.getLegacyWidth(n.title)
+                    else -> x + box.width - titlePaddingX - textRenderer.getLegacyWidth(n.title, false)
                 }
                 textRenderer.renderLegacy(
                     n.title,
@@ -355,7 +337,7 @@ class NotificationHud : HudElement(info) {
                 if (!desc.isNullOrEmpty()) {
                     // description scale
                     scale = min(
-                        box.width * (1f - descPaddingX / 100f) / textRenderer.getLegacyWidth(desc),
+                        box.width * (1f - descPaddingX / 100f) / textRenderer.getLegacyWidth(desc, false),
                         notificationHeight * 0.25 / textRenderer.height
                     )
                     if (descScaling())
@@ -363,9 +345,9 @@ class NotificationHud : HudElement(info) {
                     textRenderer.begin(scale, false, true)
 
                     val descX = when (descAlignment) {
-                        AlignmentX.Center -> x + box.width / 2 - textRenderer.getLegacyWidth(desc) / 2
+                        AlignmentX.Center -> x + box.width / 2 - textRenderer.getLegacyWidth(desc, false) / 2
                         AlignmentX.Left -> x + descPaddingX
-                        else -> x + box.width - descPaddingX - textRenderer.getLegacyWidth(desc)
+                        else -> x + box.width - descPaddingX - textRenderer.getLegacyWidth(desc, false)
                     }
                     textRenderer.renderLegacy(desc, descX, y + titleHeight + (barHeight - textRenderer.height) / 2,
                         AwtColor.WHITE, false)

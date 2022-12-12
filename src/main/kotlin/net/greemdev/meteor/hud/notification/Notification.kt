@@ -8,8 +8,9 @@ package net.greemdev.meteor.hud.notification
 import com.google.common.base.MoreObjects
 import meteordevelopment.meteorclient.systems.macros.Macro
 import meteordevelopment.meteorclient.systems.modules.Module
+import net.greemdev.meteor.*
 import net.greemdev.meteor.hud.element.NotificationSource
-import net.greemdev.meteor.util.*
+import net.greemdev.meteor.meteor
 import net.greemdev.meteor.util.meteor.*
 import net.greemdev.meteor.util.text.ChatColor
 import java.util.Objects
@@ -46,8 +47,6 @@ open class Notification(val title: String, val description: String?, color: AwtC
     val id = nextId()
     val color: MeteorColor
 
-    var persistent = false
-
     var startTime: Long = -1
 
     init {
@@ -64,27 +63,21 @@ open class Notification(val title: String, val description: String?, color: AwtC
     constructor(title: String, color: AwtColor, event: NotificationEvent, source: NotificationSource? = null) : this(title, null, color, event, source)
     constructor(title: String, color: MeteorColor, event: NotificationEvent, source: NotificationSource? = null) : this(title, null, color.awt(), event, source)
 
-    override fun toString() = MoreObjects.toStringHelper(this)
+    override fun toString() = stringHelper()
         .omitNullValues()
         .add("title", title)
         .add("description", description)
         .add("color", color.packed)
-        .add("persistent", persistent)
         .toString()
 
     override fun equals(other: Any?): Boolean {
         if (this === other) return true
         if (other == null || javaClass != other.javaClass) return false
         other as Notification
-        return title == other.title && Objects.equals(description, other.description) && color == other.color && source == other.source && persistent == other.persistent
+        return title == other.title && description eq other.description && color == other.color && source == other.source
     }
 
-    fun persist(): Notification {
-        persistent = !persistent
-        return this
-    }
-
-    override fun hashCode() = Objects.hash(title, description, color, source, persistent)
+    override fun hashCode() = hashOf(title, description, color, source)
 
     fun send() = notifications.send(this)
     fun sendOrRun(altMessage: String, func: Notification.(String) -> Unit) = notifications.sendOrRun(this, altMessage) { this.func(it) }

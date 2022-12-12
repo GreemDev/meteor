@@ -80,7 +80,6 @@ class WRoundedModule(private val module: Module) : WPressable(), RoundedWidget {
             x += w - titleWidth
 
         renderer.text(module.title, x, y + pad, theme.textColor(), false)
-
     }
 
 }

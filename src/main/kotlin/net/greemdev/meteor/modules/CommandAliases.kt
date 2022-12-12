@@ -12,52 +12,56 @@ import meteordevelopment.starscript.Script
 import meteordevelopment.starscript.utils.StarscriptError
 import net.greemdev.meteor.GModule
 import net.greemdev.meteor.util.*
-import net.greemdev.meteor.util.meteor.stringList
+import net.greemdev.meteor.util.meteor.*
+import net.greemdev.meteor.util.meteor.starscript.CompiledStarscripts
 
 object CommandAliases : GModule(
-    "command-aliases", "Use commands dynamically formatted with Starscript via Meteor command 'ca'."
+    "command-aliases",
+    "Use commands dynamically formatted with Starscript.\nAliases are accessible via Meteor command 'ca'."
 ) {
     init {
         runInMainMenu = true
         canBind = false
         canActivate = false
+        forceDisplayChatFeedbackCheckbox = true
     }
 
     fun find(name: String) = mapped.entries.firstOrNull {
         it.key.equals(name, true)
     }
 
-    private var commandScripts = listOf<Script>()
+    private val commandScripts = CompiledStarscripts()
     var mapped = mapOf<String, String>()
         private set
 
     val commands by sg stringList {
         name("commands")
-        description("The command aliases. Format is 'name :: command'")
+        description("The command aliases.\nFormat is &zname :: command")
         defaultValue("sp :: gamemode {player.name} spectator", "cr :: gamemode {player.name} creative")
         onChanged { recompile(it) }
         renderStarscript()
     }
 
+
     private fun recompile(scripts: List<String>) {
-        commandScripts = scripts.map { MeteorStarscript.compile(it) }
+        commandScripts.setScripts(scripts)
 
         if (commandScripts.isNotEmpty()) {
-            mapped = commandScripts.mapNotNull {
-                try {
-                    MeteorStarscript.run(it)
-                } catch (e: StarscriptError) {
-                    error("Command script failed: ${e.message}")
-                    null
-                }
-            }.mapNotNull {
+
+            val (results, errors) = commandScripts.runAll()
+
+            errors.forEach { error("Command script failed: ${it.message}") }
+
+
+            mapped = results.mapNotNull {
                 val name = it.substringBefore("::", "%null%")
                 val cstr = it.substringAfter("::", "%null%")
                 if ("%null%" in arrayOf(name, cstr)) {
-                    error("Command string didn't contain required separator ::")
+                    error("Command string '$it' didn't contain required separator ::")
                     null
                 } else name.trim() to cstr.trim()
             }.toMap()
+
         }
     }
 }

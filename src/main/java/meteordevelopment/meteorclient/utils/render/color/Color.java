@@ -7,7 +7,7 @@ package meteordevelopment.meteorclient.utils.render.color;
 
 import meteordevelopment.meteorclient.utils.misc.ICopyable;
 import meteordevelopment.meteorclient.utils.misc.ISerializable;
-import net.greemdev.meteor.util.Util;
+import net.greemdev.meteor.utils;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.text.TextColor;
 import net.minecraft.util.math.Vec3d;
@@ -214,6 +214,10 @@ public class Color implements ICopyable<Color>, ISerializable<Color> {
         return this;
     }
 
+    public java.awt.Color awt() {
+        return new java.awt.Color(r, g, b, a);
+    }
+
     public boolean parse(String text) {
         String[] split = text.split(",");
         if (split.length != 3 && split.length != 4) return false;
@@ -256,11 +260,11 @@ public class Color implements ICopyable<Color>, ISerializable<Color> {
     }
 
     public Color darker() {
-        return set(Util.meteor(Util.awt(this).darker()));
+        return set(utils.meteor(awt().darker()));
     }
 
     public Color brighter() {
-        return set(Util.meteor(Util.awt(this).brighter()));
+        return set(utils.meteor(awt().brighter()));
     }
 
     public void validate() {

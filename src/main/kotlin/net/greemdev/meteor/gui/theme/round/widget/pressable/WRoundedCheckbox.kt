@@ -26,11 +26,11 @@ class WRoundedCheckbox(checked: Boolean) : WCheckbox(checked), RoundedWidget {
         animProgress += (if (checked) 1 else -1) * delta * 14
         animProgress = animProgress.clamp(0, 1)
 
-        renderBackground(renderer, this, pressed, mouseOver)
+        renderer.roundedBackground(this, pressed, mouseOver)
 
         if (animProgress > 0.0) {
             val cs = (width - theme.scale(2.0)) / 1.75 * animProgress
-            renderer.r2D().rounded().quad(x + (width - cs) / 2, y + (height - cs) / 2, cs, cs, theme.checkboxColor(), theme.round())
+            renderer.roundRenderer2D.quad(x + (width - cs) / 2, y + (height - cs) / 2, cs, cs, theme.checkboxColor(), theme.round())
         }
     }
 }

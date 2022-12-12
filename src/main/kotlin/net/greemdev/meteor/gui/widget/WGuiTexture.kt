@@ -8,7 +8,7 @@ package net.greemdev.meteor.gui.widget
 import meteordevelopment.meteorclient.gui.renderer.GuiRenderer
 import meteordevelopment.meteorclient.gui.renderer.packer.GuiTexture
 import meteordevelopment.meteorclient.gui.widgets.WWidget
-import net.greemdev.meteor.util.MeteorColor
+import net.greemdev.meteor.MeteorColor
 
 class WGuiTexture @JvmOverloads constructor(val tex: GuiTexture, val color: MeteorColor, w: Double? = null, h: Double? = null) : WWidget() {
     val w by lazy { w ?: theme.textHeight() }

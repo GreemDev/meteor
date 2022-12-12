@@ -13,13 +13,14 @@ import meteordevelopment.meteorclient.gui.widgets.WWidget;
 import meteordevelopment.meteorclient.renderer.GL;
 import meteordevelopment.meteorclient.renderer.Renderer2D;
 import meteordevelopment.meteorclient.renderer.Texture;
-import meteordevelopment.meteorclient.utils.PostInit;
 import meteordevelopment.meteorclient.utils.PreInit;
 import meteordevelopment.meteorclient.utils.Utils;
 import meteordevelopment.meteorclient.utils.misc.MeteorIdentifier;
 import meteordevelopment.meteorclient.utils.misc.Pool;
 import meteordevelopment.meteorclient.utils.render.ByteTexture;
 import meteordevelopment.meteorclient.utils.render.color.Color;
+import net.greemdev.meteor.gui.renderer.LegacyTextOperation;
+import net.greemdev.meteor.gui.theme.round.util.RoundedRenderer2D;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.util.Identifier;
 
@@ -31,8 +32,6 @@ import static meteordevelopment.meteorclient.utils.Utils.getWindowHeight;
 import static meteordevelopment.meteorclient.utils.Utils.getWindowWidth;
 
 public class GuiRenderer {
-    private static final Color WHITE = new Color(255, 255, 255);
-
     private static final TexturePacker TEXTURE_PACKER = new TexturePacker();
     private static ByteTexture TEXTURE;
 
@@ -40,18 +39,17 @@ public class GuiRenderer {
 
     public GuiTheme theme;
 
-    private final Renderer2D r = new Renderer2D(false);
-    private final Renderer2D rTex = new Renderer2D(true);
-
-    public Renderer2D r2D() {
-        return r;
-    }
+    public final RoundedRenderer2D roundRenderer2D = RoundedRenderer2D.normal();
+    public final RoundedRenderer2D roundRenderer2DTex = RoundedRenderer2D.textured();
+    public final Renderer2D renderer2D = roundRenderer2D.renderer();
+    public final Renderer2D renderer2DTex = roundRenderer2DTex.renderer();
 
     private final Pool<Scissor> scissorPool = new Pool<>(Scissor::new);
     private final Stack<Scissor> scissorStack = new Stack<>();
 
     private final Pool<TextOperation> textPool = new Pool<>(TextOperation::new);
-    private final List<TextOperation> texts = new ArrayList<>();
+    private final Pool<LegacyTextOperation> lTextPool = new Pool<>(LegacyTextOperation::new);
+    private final List<Object> texts = new ArrayList<>();
 
     private final List<Runnable> postTasks = new ArrayList<>();
 
@@ -104,31 +102,41 @@ public class GuiRenderer {
     }
 
     public void beginRender() {
-        r.begin();
-        rTex.begin();
+        renderer2D.begin();
+        renderer2DTex.begin();
     }
 
     public void endRender() {
-        r.end();
-        rTex.end();
+        renderer2D.end();
+        renderer2DTex.end();
 
-        r.render(matrices);
+        renderer2D.render(matrices);
 
         GL.bindTexture(TEXTURE.getGlId());
-        rTex.render(matrices);
+        renderer2DTex.render(matrices);
 
         // Normal text
-        theme.textRenderer().begin(theme.scale(1));
-        for (TextOperation text : texts) {
-            if (!text.title) text.run(textPool);
-        }
+        theme.textRenderer().begin(theme.scalar());
+        texts.stream()
+            .filter(t -> (t instanceof TextOperation to && !to.title) || (t instanceof LegacyTextOperation lto && !lto.getTitle()))
+            .forEach(t -> {
+                if (t instanceof TextOperation to)
+                    to.run(textPool);
+                else
+                    ((LegacyTextOperation)t).run(lTextPool);
+            });
         theme.textRenderer().end(matrices);
 
         // Title text
-        theme.textRenderer().begin(theme.scale(1.25));
-        for (TextOperation text : texts) {
-            if (text.title) text.run(textPool);
-        }
+        theme.textRenderer().begin(theme.scale(GuiTheme.TITLE_TEXT_SCALE));
+        texts.stream()
+            .filter(t -> (t instanceof TextOperation to && to.title) || (t instanceof LegacyTextOperation lto && lto.getTitle()))
+            .forEach(t -> {
+                if (t instanceof TextOperation to)
+                    to.run(textPool);
+                else
+                    ((LegacyTextOperation)t).run(lTextPool);
+            });
         theme.textRenderer().end(matrices);
 
         texts.clear();
@@ -194,8 +202,8 @@ public class GuiRenderer {
     }
 
     public void setAlpha(double a) {
-        r.setAlpha(a);
-        rTex.setAlpha(a);
+        renderer2D.setAlpha(a);
+        renderer2DTex.setAlpha(a);
 
         theme.textRenderer().setAlpha(a);
     }
@@ -205,7 +213,7 @@ public class GuiRenderer {
     }
 
     public void quad(double x, double y, double width, double height, Color cTopLeft, Color cTopRight, Color cBottomRight, Color cBottomLeft) {
-        r.quad(x, y, width, height, cTopLeft, cTopRight, cBottomRight, cBottomLeft);
+        renderer2D.quad(x, y, width, height, cTopLeft, cTopRight, cBottomRight, cBottomLeft);
     }
     public void quad(double x, double y, double width, double height, Color colorLeft, Color colorRight) {
         quad(x, y, width, height, colorLeft, colorRight, colorRight, colorLeft);
@@ -217,25 +225,29 @@ public class GuiRenderer {
         quad(widget.x, widget.y, widget.width, widget.height, color);
     }
     public void quad(double x, double y, double width, double height, GuiTexture texture, Color color) {
-        rTex.texQuad(x, y, width, height, texture.get(width, height), color);
+        renderer2DTex.texQuad(x, y, width, height, texture.get(width, height), color);
     }
 
     public void rotatedQuad(double x, double y, double width, double height, double rotation, GuiTexture texture, Color color) {
-        rTex.texQuad(x, y, width, height, rotation, texture.get(width, height), color);
+        renderer2DTex.texQuad(x, y, width, height, rotation, texture.get(width, height), color);
     }
 
     public void text(String text, double x, double y, Color color, boolean title) {
         texts.add(getOp(textPool, x, y, color).set(text, theme.textRenderer(), title));
     }
 
+    public void legacyText(String text, double x, double y, Color color, boolean title, boolean shadow) {
+        texts.add(getOp(lTextPool, x, y, color).set(text, theme.textRenderer(), title, shadow));
+    }
+
     public void texture(double x, double y, double width, double height, double rotation, Texture texture) {
         post(() -> {
-            rTex.begin();
-            rTex.texQuad(x, y, width, height, rotation, 0, 0, 1, 1, WHITE);
-            rTex.end();
+            renderer2DTex.begin();
+            renderer2DTex.texQuad(x, y, width, height, rotation, 0, 0, 1, 1, Color.WHITE);
+            renderer2DTex.end();
 
             texture.bind();
-            rTex.render(matrices);
+            renderer2DTex.render(matrices);
         });
     }
 

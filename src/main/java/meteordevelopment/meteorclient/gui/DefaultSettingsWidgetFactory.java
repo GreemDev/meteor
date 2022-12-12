@@ -141,7 +141,7 @@ public class DefaultSettingsWidgetFactory implements SettingsWidgetFactory {
         }
 
         public void markRowForRemoval() {
-            rowIds.add(table.rowI());
+            rowIds.add(table.rowIndex());
         }
 
         public void remove(WVerticalList list) {
@@ -198,8 +198,10 @@ public class DefaultSettingsWidgetFactory implements SettingsWidgetFactory {
     }
 
     private void stringListW(WTable table, StringListSetting setting) {
-        WTable wtable = table.add(theme.table()).expandX().widget();
-        StringListSetting.fillTable(theme, wtable, setting);
+        Cell<WTable> cell = table.add(theme.table()).expandX();
+        if (setting.wide)
+            cell.minWidth(Utils.getWindowWidth() / 2.5);
+        StringListSetting.fillTable(theme, cell.widget(), setting);
     }
 
     private <T extends Enum<?>> void enumW(WTable table, EnumSetting<T> setting) {

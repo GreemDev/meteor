@@ -35,6 +35,7 @@ import java.util.UUID;
 import java.util.concurrent.atomic.AtomicInteger;
 
 import static meteordevelopment.meteorclient.utils.player.ChatUtils.formatCoords;
+import static net.greemdev.meteor.util.accessors.text;
 
 public class Notifier extends Module {
     private final SettingGroup sgTotemPops = settings.createGroup("Totem Pops");
@@ -142,7 +143,7 @@ public class Notifier extends Module {
                 "&f%s&7 has spawned at (%s, %s, %s).".formatted(event.entity.getType().getName().getString(), (int) pos.x, (int) pos.y, (int) pos.z),
                 color
             ).sendOrElse((n) ->
-                info(FormattedText.build(txt -> {
+                info(text(txt -> {
                     txt.addString(event.entity.getType().getName().getString());
                     txt.colored(ChatColor.white);
                     txt.addString(" has spawned at ", ChatColor.grey);
@@ -175,7 +176,7 @@ public class Notifier extends Module {
                     "&f%s&7 has despawned at (%s, %s, %s).".formatted(event.entity.getType().getName().getString(), (int) pos.x, (int) pos.y, (int) pos.z),
                     color
                 ).sendOrElse(n ->
-                    info(FormattedText.build(txt -> {
+                    info(text(txt -> {
                         txt.addString(event.entity.getType().getName().getString());
                         txt.colored(ChatColor.white);
                         txt.addString(" has despawned at ", ChatColor.grey);

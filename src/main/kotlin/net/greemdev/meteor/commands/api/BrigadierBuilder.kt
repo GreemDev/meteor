@@ -12,6 +12,7 @@ import com.mojang.brigadier.suggestion.Suggestions
 import com.mojang.brigadier.suggestion.SuggestionsBuilder
 import kotlinx.coroutines.*
 import kotlinx.coroutines.future.asCompletableFuture
+import net.greemdev.meteor.Initializer
 import net.greemdev.meteor.util.scope
 import net.minecraft.command.CommandSource
 import java.util.concurrent.CompletableFuture
@@ -37,11 +38,11 @@ data class BrigadierBuilder<T : BArgBuilder<CommandSource, T>>(val builder: T) {
         this.builder.then(builder)
         return this
     }
-    fun then(name: String, builder: CommandBuilder.() -> Unit = {}) = then(command(name, builder))
-    infix fun then(command: Pair<String, CommandBuilder.() -> Unit>) = then(command(command.first, command.second))
-    fun<A> then(name: String, argType: ArgumentType<A>, builder: ArgumentBuilder<A>.() -> Unit = {}) =
+    fun then(name: String, builder: Initializer<CommandBuilder> = {}) = then(command(name, builder))
+    infix fun then(command: Pair<String, Initializer<CommandBuilder>>) = then(command(command.first, command.second))
+    fun<A> then(name: String, argType: ArgumentType<A>, builder: Initializer<ArgumentBuilder<A>> = {}) =
         then(BrigadierBuilder(argument(name, argType)).apply(builder).builder)
-    fun<A> then(argType: ArgumentType<A>, builder: ArgumentBuilder<A>.() -> Unit = {}) = then(formatArgType(argType), argType, builder)
+    fun<A> then(argType: ArgumentType<A>, builder: Initializer<ArgumentBuilder<A>> = {}) = then(formatArgType(argType), argType, builder)
 
     infix fun suggests(suggestionProvider: SuggestionsBuilder.(ctx: MinecraftCommandContext) -> CompletableFuture<Suggestions>): BrigadierBuilder<T> {
         if (builder is RequiredArgumentBuilder<*, *>) {
@@ -60,12 +61,9 @@ data class BrigadierBuilder<T : BArgBuilder<CommandSource, T>>(val builder: T) {
         builder.executes(command)
         return this
     }
-    infix fun canRun(command: (ctx: MinecraftCommandContext) -> Boolean): BrigadierBuilder<T> {
-        builder.executes { ctx -> if (command(ctx)) Command.SINGLE_SUCCESS else 0 }
-        return this
-    }
-    infix fun alwaysRuns(command: (ctx: MinecraftCommandContext) -> Unit): BrigadierBuilder<T> {
-        builder.executes { ctx -> 1.also { command(ctx) }}
-        return this
-    }
+    infix fun canRun(command: (ctx: MinecraftCommandContext) -> Boolean) =
+        runs { ctx -> if (command(ctx)) Command.SINGLE_SUCCESS else 0 }
+
+    infix fun alwaysRuns(command: (ctx: MinecraftCommandContext) -> Unit) =
+        runs { ctx -> Command.SINGLE_SUCCESS.also { command(ctx) }}
 }

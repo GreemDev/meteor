@@ -39,14 +39,12 @@ public abstract class WorldRendererMixin {
 
 
     @Inject(method = "checkEmpty", at = @At("HEAD"), cancellable = true)
-    private void onCheckEmpty(MatrixStack matrixStack, CallbackInfo info) {
+    private void onCheckEmpty(CallbackInfo info) {
         info.cancel();
     }
 
-
-
     @Inject(method = "drawBlockOutline", at = @At("HEAD"), cancellable = true)
-    private void onDrawHighlightedBlockOutline(MatrixStack matrixStack, VertexConsumer vertexConsumer, Entity entity, double d, double e, double f, BlockPos blockPos, BlockState blockState, CallbackInfo info) {
+    private void onDrawHighlightedBlockOutline(CallbackInfo info) {
         if (Modules.get().isActive(BlockSelection.class)) info.cancel();
     }
 
@@ -58,12 +56,12 @@ public abstract class WorldRendererMixin {
     // No Render
 
     @Inject(method = "renderWeather", at = @At("HEAD"), cancellable = true)
-    private void onRenderWeather(LightmapTextureManager manager, float f, double d, double e, double g, CallbackInfo info) {
+    private void onRenderWeather(CallbackInfo info) {
         if (Modules.get().get(NoRender.class).noWeather()) info.cancel();
     }
 
     @Inject(method = "method_43788(Lnet/minecraft/client/render/Camera;)Z", at = @At("HEAD"), cancellable = true)
-    private void method_43788(Camera camera, CallbackInfoReturnable<Boolean> info) {
+    private void method_43788(CallbackInfoReturnable<Boolean> info) {
         if (Modules.get().get(NoRender.class).noBlind())
             info.setReturnValue(null);
     }
@@ -88,7 +86,7 @@ public abstract class WorldRendererMixin {
     // Entity Shaders
 
     @Inject(method = "render", at = @At("HEAD"))
-    private void onRenderHead(MatrixStack matrices, float tickDelta, long limitTime, boolean renderBlockOutline, Camera camera, GameRenderer gameRenderer, LightmapTextureManager lightmapTextureManager, Matrix4f matrix4f, CallbackInfo info) {
+    private void onRenderHead(CallbackInfo info) {
         PostProcessShaders.beginRender();
     }
 

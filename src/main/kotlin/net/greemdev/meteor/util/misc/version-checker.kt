@@ -14,7 +14,7 @@ object GVersioning {
         val response = Http.get("https://raw.githubusercontent.com/GreemDev/meteor/main/gradle.properties").sendLines()
         latestRevision = response
             .filter { it.startsWith("revision") }
-            .map { it.split("=").last() }
+            .map { it.substringAfterLast('=') }
             .findFirst()
             .map(String::toInt)
             .orElseThrow()
@@ -25,9 +25,12 @@ object GVersioning {
         private set
 
     @JvmStatic
-    fun revisionsBehind(): Int {
-        return (latestRevision.takeUnless { it == -1 } ?: return 0) - MeteorClient.REVISION
-    }
+    fun revisionsBehind() =
+        if (latestRevision == -1)
+            0
+        else
+            latestRevision - MeteorClient.REVISION
+
 
     @JvmStatic
     fun isOutdated() = revisionsBehind() > 0

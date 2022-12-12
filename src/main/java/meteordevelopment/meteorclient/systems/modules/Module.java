@@ -41,7 +41,7 @@ public abstract class Module implements ISerializable<Module>, Comparable<Module
 
     public boolean canBind = true;
     public boolean allowChatFeedback = true;
-
+    public boolean forceDisplayChatFeedbackCheckbox = false;
     public boolean canActivate = true;
 
     public boolean serialize = true;

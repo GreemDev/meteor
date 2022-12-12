@@ -23,10 +23,11 @@ class TriStateColorSetting(
     private val hovered = createColorSetting("hovered-$name", "Color of $name when hovered.", hovered)
     private val pressed = createColorSetting("pressed-$name", "Color of $name when pressed.", pressed)
 
+    @JvmName("get")
     operator fun invoke(): SettingColor = normal.get()
-    fun get() = this()
     @JvmOverloads
-    fun get(pressed: Boolean, hovered: Boolean, bypassDisableHoverColor: Boolean = false): SettingColor =
+    @JvmName("get")
+    operator fun invoke(pressed: Boolean, hovered: Boolean, bypassDisableHoverColor: Boolean = false): SettingColor =
         if (pressed)
             this.pressed.get()
         else if (hovered and (bypassDisableHoverColor or !GuiThemes.get().disableHoverColor))

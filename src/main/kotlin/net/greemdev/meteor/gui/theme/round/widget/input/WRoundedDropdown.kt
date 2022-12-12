@@ -18,7 +18,7 @@ class WRoundedDropdown<T>(values: Array<out T>, value: T) : WDropdown<T>(values,
         val pad = pad()
         val s = theme.textHeight()
 
-        renderBackground(renderer, this, pressed, mouseOver)
+        renderer.roundedBackground(this, pressed, mouseOver)
 
         val text = get().toString()
         val w = theme.textWidth(text)
@@ -32,7 +32,7 @@ class WRoundedDropdown<T>(values: Array<out T>, value: T) : WDropdown<T>(values,
             val s = theme.scale(2.0)
             val c = theme.outlineColor()
 
-            renderBackground(renderer, this, pressed, mouseOver, false)
+            renderer.roundedBackground(this, pressed, mouseOver, false)
 
             renderer.quad(x, y + height - s, width, s, c)
             renderer.quad(x, y, s, height - s, c)
@@ -51,7 +51,7 @@ class WRoundedDropdown<T>(values: Array<out T>, value: T) : WDropdown<T>(values,
         override fun onRender(renderer: GuiRenderer, mouseX: Double, mouseY: Double, delta: Double) {
             val theme = theme()
 
-            val color = theme.backgroundColor.get(pressed, mouseOver, true)
+            val color = theme.backgroundColor(pressed, mouseOver, true)
             val preA = color.a
             color.a /= 2
             color.validate()

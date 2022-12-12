@@ -9,11 +9,13 @@ package net.greemdev.meteor.util.misc
 import meteordevelopment.meteorclient.mixin.ChatHudAccessor
 import meteordevelopment.meteorclient.utils.Utils
 import meteordevelopment.meteorclient.utils.world.Dimension
-import net.greemdev.meteor.util.getOrNull
+import net.greemdev.meteor.Initializer
+import net.greemdev.meteor.Mapper
+import net.greemdev.meteor.Predicate
+import net.greemdev.meteor.getOrNull
 import net.greemdev.meteor.util.meteor.resource
 import net.greemdev.meteor.util.minecraft
 import net.greemdev.meteor.util.text.textOf
-import net.greemdev.meteor.util.withoutPrefix
 import net.minecraft.client.MinecraftClient
 import net.minecraft.client.gui.hud.ChatHud
 import net.minecraft.client.network.ClientPlayNetworkHandler
@@ -48,7 +50,9 @@ fun MinecraftClient?.isInGame() = this != null && player != null && world != nul
 fun MinecraftClient.player() = player ?: error("The client's PlayerEntity is unavailable.")
 fun MinecraftClient.currentWorld() = world ?: error("There is no world loaded currently.")
 fun MinecraftClient.network() = networkHandler ?: error("There is no network handler available.")
-infix fun MinecraftClient.network(func: ClientPlayNetworkHandler.() -> Unit) = getOrNull { network() }?.func()
+infix fun MinecraftClient.network(func: Initializer<ClientPlayNetworkHandler>) {
+    networkHandler?.func()
+}
 
 fun ClientWorld?.currentDimension() =
     when (this?.registryKey?.value?.path) {
@@ -58,7 +62,7 @@ fun ClientWorld?.currentDimension() =
     }
 
 fun ChatHud.clearChat(includeHistory: Boolean = false) {
-    val access = Utils.cast<ChatHudAccessor>(this)
+    val access = Utils.cast<ChatHudAccessor>(this) //direct java cast usage, not sure how kotlin handles accessor mixin casts
     access.messageQueue.clear()
     access.visibleMessages.clear()
     access.messages.clear()
@@ -70,15 +74,15 @@ infix fun ItemStack.eq(other: ItemStack) = ItemStack.areEqual(this, other)
 infix fun ItemStack.neq(other: ItemStack) = !(this eq other)
 
 fun PlayerEntity.ping(): Int =
-    minecraft.networkHandler?.getPlayerListEntry(uuid)?.latency ?: 0
+    minecraft.networkHandler?.getPlayerListEntry(uuid)?.latency ?: -1
 
 fun PlayerEntity.currentGameMode() =
     minecraft.networkHandler?.getPlayerListEntry(uuid)?.gameMode ?: GameMode.SPECTATOR
 
-fun ClientPlayNetworkHandler?.findPlayerListEntries(predicate: (PlayerListEntry) -> Boolean) =
+fun ClientPlayNetworkHandler?.findPlayerListEntries(predicate: Predicate<PlayerListEntry>) =
     this?.playerList.orEmpty().filter(predicate).filterNotNull()
 
-fun ClientPlayNetworkHandler?.findFirstPlayerListEntry(predicate: (PlayerListEntry) -> Boolean) = this?.playerList.orEmpty().firstOrNull(predicate)
+fun ClientPlayNetworkHandler?.findFirstPlayerListEntry(predicate: Predicate<PlayerListEntry>) = this?.playerList.orEmpty().firstOrNull(predicate)
 
 fun PlayerEntity.usableItemStack(): ItemStack? =
     if (mainHandStack neq ItemStack.EMPTY)
@@ -119,7 +123,7 @@ operator fun Vec3d.div(value: Vec3d): Vec3d = crossProduct(value)
 fun MinecraftClient.rotation(): Vec2f = player().rotationClient
 fun MinecraftClient.rotationVec(): Vec3d = player().rotationVector
 
-fun MinecraftClient.sendCommand(command: String, preview: Text? = null) = player().sendCommand(command.withoutPrefix("/"), preview)
+fun MinecraftClient.sendCommand(command: String, preview: Text? = null) = player().sendCommand(command.removePrefix("/"), preview)
 fun MinecraftClient.showMessage(text: Text) = player().sendMessage(text)
 fun MinecraftClient.showActionBar(text: Text) = player().sendMessage(text, true)
 fun MinecraftClient.showActionBar(message: String) = showActionBar(textOf(message))

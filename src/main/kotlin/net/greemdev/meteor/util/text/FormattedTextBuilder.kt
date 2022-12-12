@@ -4,15 +4,17 @@
  */
 package net.greemdev.meteor.util.text
 
+import net.greemdev.meteor.Initializer
+import net.greemdev.meteor.Visitor
 import net.greemdev.meteor.util.*
 import net.minecraft.text.*
 import net.minecraft.util.Formatting
 import net.minecraft.util.Identifier
-import org.jetbrains.annotations.Range
+import net.greemdev.meteor.parseHexColor
 import java.util.function.Consumer
 
 class FormattedTextBuilder(private var internal: MutableText) {
-    fun styled(styler: Style.() -> Style): FormattedTextBuilder {
+    fun styled(styler: Visitor<Style>): FormattedTextBuilder {
         internal = internal.styled(styler)
         return this
     }
@@ -57,16 +59,16 @@ class FormattedTextBuilder(private var internal: MutableText) {
     fun addString(content: String, color: meteordevelopment.meteorclient.utils.render.color.Color) =
         addText(textOf(content)) { colored(color) }
 
-    fun addString(content: String, builder: FormattedTextBuilder.() -> Unit): FormattedTextBuilder =
+    fun addString(content: String, builder: Initializer<FormattedTextBuilder>): FormattedTextBuilder =
         addText(textOf(content), builder)
     @JvmOverloads
-    fun addText(initial: MutableText, builder: (FormattedTextBuilder.() -> Unit)? = null): FormattedTextBuilder {
+    fun addText(initial: MutableText, builder: Initializer<FormattedTextBuilder>? = null): FormattedTextBuilder {
         internal = internal.append(FormattedTextBuilder(initial).apply { builder?.invoke(this) }.text())
         return this
     }
 
-    fun addText(builder: FormattedTextBuilder.() -> Unit) =
-        addText(textOf(), builder)
+    fun addText(builder: Initializer<FormattedTextBuilder>) =
+        addText(emptyText(), builder)
     fun addText(builder: Consumer<FormattedTextBuilder>) =
         addText { builder.accept(this) }
     fun addBuilder(builder: FormattedTextBuilder): FormattedTextBuilder {
@@ -77,20 +79,20 @@ class FormattedTextBuilder(private var internal: MutableText) {
         addString(content.toString()) { builder.accept(this) }
     fun addString(content: String, builder: Consumer<FormattedTextBuilder>) =
         addString(content) { builder.accept(this) }
-    fun onHovered(event: HoverEvent) = styled { withHoverEvent(event) }
-    fun onClick(event: ClickEvent) = styled { withClickEvent(event) }
+    fun onHovered(event: HoverEvent) = styled { it.withHoverEvent(event) }
+    fun onClick(event: ClickEvent) = styled { it.withClickEvent(event) }
 
     fun clicked(action: ClickAction, value: String) = onClick(net.greemdev.meteor.util.text.clicked(action, value))
     fun<T> hovered(action: HoverAction<T>, value: T) = onHovered(net.greemdev.meteor.util.text.hovered(action, value))
-    fun font(fontId: Identifier) = styled { withFont(fontId) }
-    fun colored(rgb: Int) = styled { withColor(rgb) }
+    fun font(fontId: Identifier) = styled { it.withFont(fontId) }
+    fun colored(rgb: Int) = styled { it.withColor(rgb) }
     fun colored(colors: Collection<ChatColor>) = formatted(*colors.map(ChatColor::mc).toTypedArray())
     fun colored(color: java.awt.Color) = colored(color.rgb)
     fun colored(color: ChatColor) = formatted(color.mc)
     fun colored(color: meteordevelopment.meteorclient.utils.render.color.Color) = colored(color.packed)
-    fun bold() = styled { withBold(!isBold) }
-    fun italicized() = styled { withItalic(!isItalic) }
-    fun underlined() = styled { withUnderline(!isUnderlined) }
-    fun strikethrough() = styled { withStrikethrough(!isStrikethrough) }
-    fun obfuscated() = styled { withObfuscated(!isObfuscated) }
+    fun bold() = styled { it.withBold(!it.isBold) }
+    fun italicized() = styled { it.withItalic(!it.isItalic) }
+    fun underlined() = styled { it.withUnderline(!it.isUnderlined) }
+    fun strikethrough() = styled { it.withStrikethrough(!it.isStrikethrough) }
+    fun obfuscated() = styled { it.withObfuscated(!it.isObfuscated) }
 }

@@ -8,9 +8,12 @@ package net.greemdev.meteor.util.meteor
 
 import meteordevelopment.meteorclient.renderer.text.TextRenderer
 import meteordevelopment.meteorclient.utils.render.color.RainbowColor
+import net.greemdev.meteor.*
 import net.greemdev.meteor.util.*
 
 val colorCodeRegex = Regex("[§|&][0123456789abcdefklmnorz]")
+
+const val betweenLines = 5
 
 private val COLOR_CODES = arrayOf(
     0xFF000000,
@@ -42,20 +45,14 @@ fun TextRenderer.renderLegacy(text: String, startX: Double, startY: Double, colo
     val parts = colorCodeRegex.split(text)
     var index = 0
     parts.forEach { p ->
-        p.split("\n").forEach { l ->
-            l.split("\r").forEach { sec ->
-                render(sec, x, y, MeteorColor(currentColor))
-                x += getWidth(sec)
+        p.lines().forEach { l ->
+            render(l, x, y, MeteorColor(currentColor), shadow)
+            x += getWidth(l)
 
-                index += sec.length
-                if (index < characters.size && characters[index] == '\r') {
-                    x = startX
-                    index++
-                }
-            }
+            index += l.length
             if (index < characters.size && characters[index] == '\n') {
                 x = startX
-                y += getHeight(shadow) * 2
+                y += getHeight(shadow) + betweenLines
                 index++
             }
         }
@@ -77,7 +74,13 @@ fun TextRenderer.renderLegacy(text: String, startX: Double, startY: Double, colo
     }
 }
 
-@JvmName("getWidth")
+fun String.onlyVisibleContent() =
+    replace(colorCodeRegex, "")
+    .replace("\n", "")
+    .replace("\r", "")
+
+fun isApplicableTo(content: String) = colorCodeRegex in content || content.lineCount() > 1
+
 @JvmOverloads
-fun TextRenderer.getLegacyWidth(text: String, themeScaling: Boolean = true) = getWidth(text.replace(colorCodeRegex, "")) *
-    if (themeScaling) 1.0 else Meteor.currentTheme().scale(1.0)
+fun TextRenderer.getLegacyWidth(text: String, themeScaling: Boolean = true) =
+    getWidth(text.onlyVisibleContent()) * if (themeScaling) 1.0 else Meteor.currentTheme().scalar()

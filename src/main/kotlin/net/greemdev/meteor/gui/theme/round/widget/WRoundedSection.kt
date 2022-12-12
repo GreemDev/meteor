@@ -5,6 +5,7 @@
 
 package net.greemdev.meteor.gui.theme.round.widget
 
+import meteordevelopment.meteorclient.gui.GuiTheme
 import meteordevelopment.meteorclient.gui.renderer.GuiRenderer
 import meteordevelopment.meteorclient.gui.widgets.WWidget
 import meteordevelopment.meteorclient.gui.widgets.containers.WSection
@@ -22,9 +23,7 @@ class WRoundedSection(title: String, expanded: Boolean, headerWidget: WWidget?)
 
             if (headerWidget != null) add(headerWidget)
 
-            triangle = WHeaderTriangle()
-            triangle.theme = theme
-            triangle.action = Runnable(this::onClick)
+            triangle = WHeaderTriangle(theme).action(this::onClick)
 
             add(triangle)
         }
@@ -34,9 +33,14 @@ class WRoundedSection(title: String, expanded: Boolean, headerWidget: WWidget?)
         }
     }
 
-    private class WHeaderTriangle : WTriangle(), RoundedWidget {
+    private class WHeaderTriangle(theme: GuiTheme) : WTriangle(), RoundedWidget {
+
+        init {
+            this.theme = theme
+        }
+
         override fun onRender(renderer: GuiRenderer, mouseX: Double, mouseY: Double, delta: Double) {
-            renderer.rotatedQuad(x, y, width, height, rotation, GuiRenderer.TRIANGLE, theme().textColor())
+            renderer.rotatedQuad(x, y, width, height, rotation, GuiRenderer.TRIANGLE, theme.textColor())
         }
     }
 }

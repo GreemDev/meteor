@@ -7,7 +7,7 @@ package meteordevelopment.meteorclient.settings;
 
 import meteordevelopment.meteorclient.systems.modules.Module;
 import meteordevelopment.meteorclient.systems.modules.Modules;
-import net.greemdev.meteor.util.Util;
+import net.greemdev.meteor.utils;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.nbt.NbtElement;
 import net.minecraft.nbt.NbtList;
@@ -83,16 +83,8 @@ public class ModuleListSetting extends Setting<List<Module>> {
 
         NbtList valueTag = tag.getList("modules", 8);
         for (NbtElement tagI : valueTag) {
-            Util.runOrIgnore(() -> {
-                // this only errors when loading HiddenModules in Config,
-                // and HiddenModules are stored in their own System impl anyway and injected into the Config screen to
-                // bypass its load order (Config loads before Modules, so Config can't
-                // load a ModuleListSetting because it's being loaded before Modules is even initialized).
-                // In this one specific case, we return an unmodified list (which, because we called clear right before this, means it's empty).
-
-                Module module = Modules.get().get(tagI.asString());
-                if (module != null && (bypassFilterWhenSavingAndLoading || (filter == null || filter.test(module)))) get().add(module);
-            });
+            Module module = Modules.get().get(tagI.asString());
+            if (module != null && (bypassFilterWhenSavingAndLoading || (filter == null || filter.test(module)))) get().add(module);
         }
 
         return get();

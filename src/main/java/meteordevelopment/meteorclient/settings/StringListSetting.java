@@ -22,15 +22,18 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.function.Consumer;
 
-public class StringListSetting extends Setting<List<String>>{
+public class StringListSetting extends Setting<List<String>> {
     public final Class<? extends WTextBox.Renderer> renderer;
     public final CharFilter filter;
 
-    protected StringListSetting(String name, String description, Object defaultValue, Consumer<List<String>> onChanged, Consumer<Setting<List<String>>> onModuleActivated, CharFilter filter, IVisible visible, boolean serialize, Class<? extends WTextBox.Renderer> renderer) {
+    public final boolean wide;
+
+    protected StringListSetting(String name, String description, Object defaultValue, Consumer<List<String>> onChanged, Consumer<Setting<List<String>>> onModuleActivated, CharFilter filter, IVisible visible, boolean serialize, Class<? extends WTextBox.Renderer> renderer, boolean wide) {
         super(name, description, defaultValue, onChanged, onModuleActivated, visible, serialize);
 
         this.renderer = renderer;
         this.filter = filter;
+        this.wide = wide;
     }
 
     @Override
@@ -118,6 +121,7 @@ public class StringListSetting extends Setting<List<String>>{
 
     public static class Builder extends SettingBuilder<Builder, List<String>, StringListSetting> {
         private Class<? extends WTextBox.Renderer> renderer;
+        private boolean wide = false;
         private CharFilter filter;
 
         public Builder() {
@@ -138,9 +142,14 @@ public class StringListSetting extends Setting<List<String>>{
             return this;
         }
 
+        public Builder wide() {
+            this.wide = true;
+            return this;
+        }
+
         @Override
         public StringListSetting build() {
-            return new StringListSetting(name, description, defaultValue, onChanged, onModuleActivated, filter, visible, serialize, renderer);
+            return new StringListSetting(name, description, defaultValue, onChanged, onModuleActivated, filter, visible, serialize, renderer, wide);
         }
     }
 }

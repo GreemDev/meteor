@@ -17,7 +17,7 @@ class WRoundedVerticalSeparator(unicolor: Boolean = false) : WVerticalSeparator(
         val colorEdges = if (unicolor) theme.separatorCenter() else theme.separatorEdges()
         val colorCenter = theme.separatorCenter()
 
-        val s = theme.scale(1.0)
+        val s = theme.scalar()
         val offsetX = round(width / 2)
 
         renderer.quad(x + offsetX, y, s, height / 2, colorEdges, colorEdges, colorCenter, colorCenter)

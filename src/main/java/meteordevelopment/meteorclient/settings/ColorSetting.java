@@ -9,7 +9,7 @@ import com.google.common.collect.ImmutableList;
 import meteordevelopment.meteorclient.utils.render.color.Color;
 import meteordevelopment.meteorclient.utils.render.color.RainbowColors;
 import meteordevelopment.meteorclient.utils.render.color.SettingColor;
-import net.greemdev.meteor.util.Util;
+import net.greemdev.meteor.utils;
 import net.minecraft.nbt.NbtCompound;
 
 import java.util.List;
@@ -28,11 +28,8 @@ public class ColorSetting extends Setting<SettingColor> {
 
     @Override
     protected SettingColor parseImpl(String str) {
-        try {
-            return Util.colorOf(str).toSetting();
-        } catch (IllegalArgumentException ignored) {
-            return null;
-        }
+        return utils.supplyOrNull(() ->
+            utils.colorOf(str).toSetting());
     }
 
     @Override
@@ -75,8 +72,8 @@ public class ColorSetting extends Setting<SettingColor> {
         public Builder defaultValue(Color defaultValue) {
             return defaultValue(defaultValue.toSetting());
         }
-        public Builder defaultValue(String content) {
-            return defaultValue(Util.colorOf(content));
+        public Builder defaultValue(String defaultValue) {
+            return defaultValue(utils.colorOf(defaultValue));
         }
 
         @Override

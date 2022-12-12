@@ -38,6 +38,8 @@ sealed class ArgType<T>(
 class StarscriptFunctionContext(val name: String, val starscript: Starscript, val argCount: Int) {
     private var argPos = 1
 
+    val functionName = "$name()"
+
     fun constrain(constraint: Constraint, customError: String? = null): StarscriptFunctionContext {
         if (!constraint.predicate(argCount))
             throw StarscriptError(customError ?: constraint.formatError(name, argCount))
@@ -52,7 +54,7 @@ class StarscriptFunctionContext(val name: String, val starscript: Starscript, va
 
 class Constraint private constructor(private val data: Pair<Int, Any>, val predicate: (Int) -> Boolean) {
     init {
-        if (data.first !in 0..3) error("Invalid ArgConstraint type.")
+        if (data.first !in 0..3) error("Invalid Constraint type.")
     }
 
     companion object {
@@ -64,7 +66,7 @@ class Constraint private constructor(private val data: Pair<Int, Any>, val predi
 
     fun formatError(functionName: String, argCount: Int) = string {
         val (type, comparerTo) = data
-        +"$functionName() requires"
+        +"$functionName() requires "
         when (type) {
             0 -> +"argument".pluralize(comparerTo as Int)
             1 -> +"at least ${"argument".pluralize(comparerTo as Int)}"
@@ -74,8 +76,8 @@ class Constraint private constructor(private val data: Pair<Int, Any>, val predi
                 append(comparerTo.first)
                 +'-'
                 append(comparerTo.last)
-                +"argument".pluralize(
-                    comparerTo.sum().takeUnless { it == 1 && comparerTo.first == 0 } ?: 2,
+                +" argument".pluralize(
+                    comparerTo.sum().takeUnless { it == 1 && comparerTo.first == 0 } ?: 2, //account for the fact that 0-1 should still be considered plural
                     prefixQuantity = false
                 )
             }
@@ -84,28 +86,28 @@ class Constraint private constructor(private val data: Pair<Int, Any>, val predi
     }
 }
 
-fun Starscript.func(name: String, logic: context(Constraint.Companion) StarscriptFunctionContext.() -> Value): Starscript {
+fun Starscript.func(name: String, logic: ConstrainedStarscriptFunction<Value>): Starscript {
     defineFunction(name) { ss, argCount ->
         logic(Constraint, StarscriptFunctionContext(name, ss, argCount))
     }
     return this
 }
 
-fun ValueMap.func(name: String, logic: context(Constraint.Companion) StarscriptFunctionContext.() -> Value): ValueMap {
+fun ValueMap.func(name: String, logic: ConstrainedStarscriptFunction<Value>): ValueMap {
     defineFunction(name) { ss, argCount ->
         logic(Constraint, StarscriptFunctionContext(name, ss, argCount))
     }
     return this
 }
 
-fun Starscript.func(name: String, constraint: Constraint, logic: StarscriptFunctionContext.() -> Value): Starscript {
+fun Starscript.func(name: String, constraint: Constraint, logic: StarscriptFunction<Value>): Starscript {
     defineFunction(name) { ss, argCount ->
         StarscriptFunctionContext(name, ss, argCount).constrain(constraint).logic()
     }
     return this
 }
 
-fun ValueMap.func(name: String, constraint: Constraint, logic: StarscriptFunctionContext.() -> Value): ValueMap {
+fun ValueMap.func(name: String, constraint: Constraint, logic: StarscriptFunction<Value>): ValueMap {
     defineFunction(name) { ss, argCount ->
         StarscriptFunctionContext(name, ss, argCount).constrain(constraint).logic()
     }
@@ -113,66 +115,70 @@ fun ValueMap.func(name: String, constraint: Constraint, logic: StarscriptFunctio
 }
 
 
-fun Starscript.booleanFunc(name: String, logic: context(Constraint.Companion) StarscriptFunctionContext.() -> Boolean?) =
+fun Starscript.booleanFunc(name: String, logic: ConstrainedStarscriptFunction<Boolean?>) =
     func(name) { BooleanValue(logic(Constraint, this)) }
 
-fun ValueMap.booleanFunc(name: String, logic: context(Constraint.Companion) StarscriptFunctionContext.() -> Boolean?) =
+fun ValueMap.booleanFunc(name: String, logic: ConstrainedStarscriptFunction<Boolean?>) =
     func(name) { BooleanValue(logic(Constraint, this)) }
 
-fun Starscript.booleanFunc(name: String, constraint: Constraint, logic: StarscriptFunctionContext.() -> Boolean?) =
+fun Starscript.booleanFunc(name: String, constraint: Constraint, logic: StarscriptFunction<Boolean?>) =
     func(name, constraint) { BooleanValue(logic()) }
 
-fun ValueMap.booleanFunc(name: String, constraint: Constraint, logic: StarscriptFunctionContext.() -> Boolean?) =
+fun ValueMap.booleanFunc(name: String, constraint: Constraint, logic: StarscriptFunction<Boolean?>) =
     func(name, constraint) { BooleanValue(logic()) }
 
 
-fun Starscript.numberFunc(name: String, logic: context(Constraint.Companion) StarscriptFunctionContext.() -> Number?) =
+fun Starscript.numberFunc(name: String, logic: ConstrainedStarscriptFunction<Number?>) =
     func(name) { NumberValue(logic(Constraint, this)) }
 
-fun ValueMap.numberFunc(name: String, logic: context(Constraint.Companion) StarscriptFunctionContext.() -> Number?) =
+fun ValueMap.numberFunc(name: String, logic: ConstrainedStarscriptFunction<Number?>) =
     func(name) { NumberValue(logic(Constraint, this)) }
 
-fun Starscript.numberFunc(name: String, constraint: Constraint, logic: StarscriptFunctionContext.() -> Number?) =
+fun Starscript.numberFunc(name: String, constraint: Constraint, logic: StarscriptFunction<Number?>) =
     func(name, constraint) { NumberValue(logic()) }
 
-fun ValueMap.numberFunc(name: String, constraint: Constraint, logic: StarscriptFunctionContext.() -> Number?) =
+fun ValueMap.numberFunc(name: String, constraint: Constraint, logic: StarscriptFunction<Number?>) =
     func(name, constraint) { NumberValue(logic()) }
 
 
-fun Starscript.stringFunc(name: String, logic: context(Constraint.Companion) StarscriptFunctionContext.() -> String?) =
+fun Starscript.stringFunc(name: String, logic: ConstrainedStarscriptFunction<String?>) =
     func(name) { StringValue(logic(Constraint, this)) }
 
-fun ValueMap.stringFunc(name: String, logic: context(Constraint.Companion) StarscriptFunctionContext.() -> String?) =
+fun ValueMap.stringFunc(name: String, logic: ConstrainedStarscriptFunction<String?>) =
     func(name) { StringValue(logic(Constraint, this)) }
 
-fun Starscript.stringFunc(name: String, constraint: Constraint, logic: StarscriptFunctionContext.() -> String?) =
+fun Starscript.stringFunc(name: String, constraint: Constraint, logic: StarscriptFunction<String?>) =
     func(name, constraint) { StringValue(logic()) }
 
-fun ValueMap.stringFunc(name: String, constraint: Constraint, logic: StarscriptFunctionContext.() -> String?) =
+fun ValueMap.stringFunc(name: String, constraint: Constraint, logic: StarscriptFunction<String?>) =
     func(name, constraint) { StringValue(logic()) }
 
 
-fun Starscript.objectFunc(name: String, logic: context(Constraint.Companion) StarscriptFunctionContext.() -> ValueMap?) =
+fun Starscript.objectFunc(name: String, logic: ConstrainedStarscriptFunction<ValueMap?>) =
     func(name) { ObjectValue(logic(Constraint, this)) }
 
-fun ValueMap.objectFunc(name: String, logic: context(Constraint.Companion) StarscriptFunctionContext.() -> ValueMap?) =
+fun ValueMap.objectFunc(name: String, logic: ConstrainedStarscriptFunction<ValueMap?>) =
     func(name) { ObjectValue(logic(Constraint, this)) }
 
-fun Starscript.objectFunc(name: String, constraint: Constraint, logic: StarscriptFunctionContext.() -> ValueMap?) =
+fun Starscript.objectFunc(name: String, constraint: Constraint, logic: StarscriptFunction<ValueMap?>) =
     func(name, constraint) { ObjectValue(logic()) }
 
-fun ValueMap.objectFunc(name: String, constraint: Constraint, logic: StarscriptFunctionContext.() -> ValueMap?) =
+fun ValueMap.objectFunc(name: String, constraint: Constraint, logic: StarscriptFunction<ValueMap?>) =
     func(name, constraint) { ObjectValue(logic()) }
 
 
-fun Starscript.mapFunc(name: String, logic: context(Constraint.Companion) StarscriptFunctionContext.() -> Map<String, Value>?) =
+fun Starscript.mapFunc(name: String, logic: ConstrainedStarscriptFunction<Map<String, Value>?>) =
     func(name) { MapValue(logic(Constraint, this)) }
 
-fun ValueMap.mapFunc(name: String, logic: context(Constraint.Companion) StarscriptFunctionContext.() -> Map<String, Value>?) =
+fun ValueMap.mapFunc(name: String, logic: ConstrainedStarscriptFunction<Map<String, Value>?>) =
     func(name) { MapValue(logic(Constraint, this)) }
 
-fun Starscript.mapFunc(name: String, constraint: Constraint, logic: StarscriptFunctionContext.() -> Map<String, Value>?) =
+fun Starscript.mapFunc(name: String, constraint: Constraint, logic: StarscriptFunction<Map<String, Value>?>) =
     func(name, constraint) { MapValue(logic()) }
 
-fun ValueMap.mapFunc(name: String, constraint: Constraint, logic: StarscriptFunctionContext.() -> Map<String, Value>?) =
+fun ValueMap.mapFunc(name: String, constraint: Constraint, logic: StarscriptFunction<Map<String, Value>?>) =
     func(name, constraint) { MapValue(logic()) }
+
+
+typealias ConstrainedStarscriptFunction<T> = context(Constraint.Companion) StarscriptFunctionContext.() -> T
+typealias StarscriptFunction<T> = StarscriptFunctionContext.() -> T

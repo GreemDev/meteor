@@ -11,7 +11,7 @@ import meteordevelopment.meteorclient.systems.modules.Module;
 import meteordevelopment.meteorclient.systems.modules.Modules;
 import meteordevelopment.meteorclient.systems.modules.combat.*;
 import meteordevelopment.meteorclient.utils.render.color.SettingColor;
-import net.greemdev.meteor.util.Util;
+import net.greemdev.meteor.utils;
 
 import java.util.List;
 
@@ -103,7 +103,7 @@ public class ModuleInfosHud extends HudElement {
         double height = 0;
 
         int i = 0;
-        for (var module : Util.sorted(modules.get(), sorted.get(), sortOrder.get(), m -> m.title.length())) {
+        for (var module : utils.sorted(modules.get(), sorted.get(), sortOrder.get(), m -> m.title.length())) {
             double moduleWidth = renderer.textWidth(module.title) + renderer.textWidth(" ");
             String text = null;
 

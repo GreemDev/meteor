@@ -12,7 +12,6 @@ import meteordevelopment.meteorclient.systems.modules.Modules;
 import meteordevelopment.meteorclient.utils.player.ChatUtils;
 import net.greemdev.meteor.util.text.ChatColor;
 import net.greemdev.meteor.util.text.ChatEvents;
-import net.greemdev.meteor.util.text.FormattedText;
 import net.greemdev.meteor.util.text.actions;
 import net.minecraft.command.CommandSource;
 import net.minecraft.text.HoverEvent;
@@ -20,6 +19,7 @@ import net.minecraft.text.MutableText;
 
 import java.util.List;
 
+import static net.greemdev.meteor.util.accessors.textBuilder;
 import static com.mojang.brigadier.Command.SINGLE_SUCCESS;
 
 public class BindsCommand extends Command {
@@ -60,7 +60,7 @@ public class BindsCommand extends Command {
     }
 
     private MutableText getTooltip(Module module) {
-        return FormattedText.builder()
+        return textBuilder()
             .addString(module.title)
             .colored(ChatColor.blue).bold()
             .newline(2)

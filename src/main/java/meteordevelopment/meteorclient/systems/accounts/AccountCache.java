@@ -24,8 +24,9 @@ public class AccountCache implements ISerializable<AccountCache> {
     }
 
     public void loadHead() {
-        if (uuid == null || uuid.isBlank()) return;
-        headTexture = PlayerHeadUtils.fetchHead(UUIDTypeAdapter.fromString(uuid));
+        headTexture = uuid == null || uuid.isBlank()
+            ? Optional.empty()
+            : PlayerHeadUtils.fetchHead(UUIDTypeAdapter.fromString(uuid));
     }
 
     @Override

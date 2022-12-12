@@ -10,6 +10,7 @@ import meteordevelopment.meteorclient.events.entity.DamageEvent;
 import meteordevelopment.meteorclient.events.entity.player.CanWalkOnFluidEvent;
 import meteordevelopment.meteorclient.systems.modules.Modules;
 import meteordevelopment.meteorclient.systems.modules.movement.AntiLevitation;
+import meteordevelopment.meteorclient.systems.modules.movement.elytrafly.ElytraFly;
 import meteordevelopment.meteorclient.systems.modules.render.HandView;
 import meteordevelopment.meteorclient.systems.modules.render.NoRender;
 import meteordevelopment.meteorclient.utils.Utils;
@@ -83,5 +84,13 @@ public abstract class LivingEntityMixin extends Entity {
     private int getHandSwingDuration(int constant) {
         if ((Object) this != mc.player) return constant;
         return Modules.get().get(HandView.class).isActive() && mc.options.getPerspective().isFirstPerson() ? Modules.get().get(HandView.class).swingSpeed.get() : constant;
+    }
+
+    @Inject(method = "isFallFlying", at = @At("HEAD"), cancellable = true)
+    private void isFallFlyingHook(CallbackInfoReturnable<Boolean> info) {
+        //noinspection ConstantConditions
+        if ((Object) this == mc.player && Modules.get().get(ElytraFly.class).canPacketEfly()) {
+            info.setReturnValue(true);
+        }
     }
 }

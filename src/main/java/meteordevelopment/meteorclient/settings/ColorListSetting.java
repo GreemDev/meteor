@@ -5,13 +5,12 @@
 
 package meteordevelopment.meteorclient.settings;
 
-import kotlin.text.CharsKt;
 import kotlin.text.StringsKt;
 import meteordevelopment.meteorclient.utils.misc.NbtUtils;
 import meteordevelopment.meteorclient.utils.render.color.Color;
 import meteordevelopment.meteorclient.utils.render.color.SettingColor;
 import net.greemdev.meteor.util.Strings;
-import net.greemdev.meteor.util.Util;
+import net.greemdev.meteor.utils;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.nbt.NbtElement;
 
@@ -33,15 +32,15 @@ public class ColorListSetting extends Setting<List<SettingColor>> {
 
             for (Object part : split) {
                 if (part instanceof String sp && sp.startsWith("(") && sp.endsWith(")") && sp.contains(","))
-                    part = Strings.withoutSuffix(Strings.withoutPrefix(sp, "("), ")");
+                    part = StringsKt.removeSuffix(StringsKt.removePrefix(sp, "("), ")");
 
                 if (part instanceof String sp && StringsKt.all(sp, Character::isDigit)) {
                     part = Integer.parseInt(sp);
                 }
 
-                try {
-                    colors.add(Util.colorOf(part));
-                } catch (IllegalArgumentException ignored) {}
+                final Object fpart = part;
+
+                utils.runOrIgnore(() -> colors.add(utils.colorOf(fpart)));
             }
             return colors.stream().map(Color::toSetting).toList();
         }
