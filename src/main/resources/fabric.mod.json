@@ -3,17 +3,17 @@
   "name": "Meteor Client",
   "id": "meteor-client",
   "version": "${version}",
-  "description": "Based utility mod.",
+  "description": "Modular Minecraft utility mod.",
   "authors": [
     "MineGame159",
     "squidoodly",
-    "seasnail"
+    "seasnail",
+    "GreemDev"
   ],
   "contact": {
     "homepage": "https://meteorclient.com",
-    "issues": "https://github.com/MeteorDevelopment/meteor-client/issues",
-    "sources": "https://github.com/MeteorDevelopment/meteor-client",
-    "discord": "https://meteorclient.com/discord"
+    "issues": "https://github.com/GreemDev/meteor/issues",
+    "sources": "https://github.com/GreemDev/meteor"
   },
   "license": "GPL-3.0",
   "icon": "assets/meteor-client/icon.png",
@@ -37,9 +37,9 @@
   ],
   "accessWidener": "meteor-client.accesswidener",
   "custom": {
-    "meteor-client:devbuild": "${devbuild}",
+    "meteor-client:revision": "${rev}",
     "meteor-client:color": "145,61,226",
-    "meteor-client:commit": "${commit}",
+    "meteor-client:kotlin": "${kotlinVersion}",
     "modmenu": {
       "links": {
         "modmenu.discord": "https://meteorclient.com/discord"
@@ -49,7 +49,8 @@
   "depends": {
     "java": ">=17",
     "minecraft": [ "1.20", "1.20.1" ],
-    "fabricloader": ">=0.14.21"
+    "fabricloader": ">=0.14.23",
+    "fabric-language-kotlin": ">=${kotlinVersion}"
   },
   "breaks": {
     "optifabric": "*",

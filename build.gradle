@@ -1,5 +1,6 @@
 plugins {
-    id "fabric-loom" version "1.2-SNAPSHOT"
+    id "fabric-loom" version "1.3-SNAPSHOT"
+    id "org.jetbrains.kotlin.jvm" version "1.9.10"
     id "maven-publish"
     id "com.github.johnrengelman.shadow" version "7.1.2"
 }
@@ -7,7 +8,7 @@ plugins {
 sourceCompatibility = targetCompatibility = JavaVersion.VERSION_17
 
 archivesBaseName = project.archives_base_name
-version = project.mod_version + (project.hasProperty("devbuild") ? ("-" + project.findProperty("devbuild")) : "")
+version = project.mod_version + "-rev" + project.revision
 group = project.maven_group
 
 repositories {
@@ -26,6 +27,10 @@ repositories {
         content {
             includeGroup "maven.modrinth"
         }
+    }
+    maven {
+        name = "enderzombi"
+        url = "https://repo.repsy.io/mvn/enderzombi102/mc/"
     }
     maven {
         name = "vram"
@@ -51,12 +56,14 @@ dependencies {
     modImplementation "net.fabricmc:fabric-loader:${project.loader_version}"
     modInclude fabricApi.module("fabric-resource-loader-v0", project.fapi_version)
 
+    // Kotlin
+    modImplementation "net.fabricmc:fabric-language-kotlin:${project.fabric_kotlin_version}"
+
     // Compat fixes
     modCompileOnly fabricApi.module("fabric-renderer-indigo", project.fapi_version)
     modCompileOnly("maven.modrinth:sodium:${project.sodium_version}") { transitive = false }
     modCompileOnly("maven.modrinth:lithium:${project.lithium_version}") { transitive = false }
     modCompileOnly("maven.modrinth:iris:${project.iris_version}") { transitive = false }
-    //modCompileOnly("io.vram:canvas-fabric-mc119:1.0.+") { transitive = false } // TODO: 1.19.3
     modCompileOnly("maven.modrinth:indium:${project.indium_version}") { transitive = false }
 
     // Baritone (https://github.com/MeteorDevelopment/baritone)
@@ -71,9 +78,6 @@ dependencies {
     library("io.netty:netty-codec-socks:${project.netty_version}") { transitive = false }
     library "com.github.LlamaLad7.MixinExtras:mixinextras-fabric:${project.mixin_extras_version}"
     annotationProcessor "com.github.LlamaLad7.MixinExtras:mixinextras-fabric:${project.mixin_extras_version}"
-
-    // Launch sub project
-    shadow project(":launch")
 }
 
 loom {
@@ -99,8 +103,8 @@ shadowJar {
 processResources {
     filesMatching("fabric.mod.json") {
         expand "version": project.version,
-            "devbuild": project.findProperty("devbuild") ?: "",
-            "commit": project.findProperty("commit") ?: ""
+            "rev": project.revision,
+            "kotlinVersion": project.fabric_kotlin_version
     }
 }
 
