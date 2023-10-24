@@ -1,4 +1,6 @@
 
+# This branch is now deprecated and no longer compiles due to Meteor's maven missing older dependencies. Please use a newer branch.
+
 <p align="center">
 <img src="https://meteorclient.com/icon.png" alt="meteor-client-logo" width="50%"/>
 </p>
