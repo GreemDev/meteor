@@ -33,4 +33,4 @@ inline fun <reified T : Any> findInstancesOfSubtypesOf(pkg: String): List<T> =
         getOrNull { it.findInstance() }
     }
 
-inline fun buildReflections(cb: Initializer<ConfigurationBuilder>) = Reflections(ConfigurationBuilder().apply(cb))
+inline fun buildReflections(crossinline cb: Initializer<ConfigurationBuilder>) = Reflections(ConfigurationBuilder().apply(cb))

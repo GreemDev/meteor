@@ -56,7 +56,7 @@ public class InventorySorter {
         }
 
         Action action = actions.get(currentActionI);
-        InvUtils.move().fromId(action.from).toId(action.to);
+        InvUtils.move().fromId(action.from()).toId(action.to());
 
         currentActionI++;
         return false;

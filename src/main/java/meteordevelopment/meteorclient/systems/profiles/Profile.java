@@ -21,6 +21,7 @@ import net.greemdev.meteor.util.misc.NbtDataType;
 import net.greemdev.meteor.util.misc.NbtUtil;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.nbt.NbtElement;
+import net.minecraft.nbt.NbtIo;
 import net.minecraft.nbt.NbtString;
 import org.apache.commons.io.FileUtils;
 
@@ -104,7 +105,12 @@ public class Profile implements ISerializable<Profile> {
             var file = getFileInFolder("hidden-modules.nbt");
             if (file.exists()) {
                 var tag = NbtUtil.readNbt(new File(folder, "hidden-modules.nbt"));
-                HiddenModules.set(NbtUtil.collectList(tag, "value", NbtDataType.String).stream().map(Modules.get()::get).toList());
+                HiddenModules.set(
+                    NbtUtil.collectList(tag, "value", NbtDataType.String)
+                        .stream()
+                        .map(Modules.get()::get)
+                        .toList()
+                );
             }
         }
     }
@@ -121,11 +127,14 @@ public class Profile implements ISerializable<Profile> {
             var file = getFileInFolder("hidden-modules.nbt");
             if (utils.createFile(file) || file.exists()) {
                 var tag = Nbt.newCompound(c ->
-                    c.put("value", Nbt.list(Config.hiddenModuleNames.stream().map(NbtString::of).toList()))
+                    c.put("value", Nbt.listElements(Config.hiddenModuleNames.stream().map(NbtString::of).toList()))
                 );
-                var result = NbtUtil.write(file, tag);
-                if (result.getSecond() != null)
-                    MeteorClient.LOG.error("NBT failed writing to disk for profile " + name.get() + ".", result.getSecond());
+
+                try {
+                    NbtUtil.write(file, tag);
+                } catch (Exception e) {
+                    MeteorClient.LOG.error("NBT failed writing to disk for profile " + name.get() + ".", e);
+                }
             }
         }
 

@@ -16,6 +16,7 @@ import meteordevelopment.meteorclient.gui.widgets.input.WTextBox;
 import meteordevelopment.meteorclient.settings.*;
 import meteordevelopment.meteorclient.systems.config.Config;
 import meteordevelopment.meteorclient.utils.render.color.SettingColor;
+import net.greemdev.meteor.util.meteor.BaritoneSettingDescriptions;
 import net.minecraft.block.Block;
 import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.item.Item;
@@ -24,11 +25,15 @@ import java.awt.Color;
 import java.lang.reflect.Field;
 import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
+import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 public class BaritoneTab extends Tab {
     public static final String NAME = "Baritone";
     private static Settings settings;
+
 
     public BaritoneTab() {
         super(NAME, GuiRenderer.CLEF, Config.get().baritoneIcon::get);
@@ -57,10 +62,10 @@ public class BaritoneTab extends Tab {
 
                 Object value = setting.value;
 
-                if (value instanceof Boolean) {
+                if (value instanceof Boolean && !setting.getName().equalsIgnoreCase("chatControlAnyway")) {
                     sgBool.add(new BoolSetting.Builder()
                         .name(setting.getName())
-                        .description(setting.getName())
+                        .description(BaritoneSettingDescriptions.get(setting.getName()))
                         .defaultValue((boolean) setting.defaultValue)
                         .onChanged(aBoolean -> setting.value = aBoolean)
                         .onModuleActivated(booleanSetting -> booleanSetting.set((Boolean) setting.value))
@@ -69,8 +74,9 @@ public class BaritoneTab extends Tab {
                 } else if (value instanceof Double) {
                     sgDouble.add(new DoubleSetting.Builder()
                         .name(setting.getName())
-                        .description(setting.getName())
+                        .description(BaritoneSettingDescriptions.get(setting.getName()))
                         .defaultValue((double) setting.defaultValue)
+                        .range(1, ((double)setting.defaultValue) * 2)
                         .onChanged(aDouble -> setting.value = aDouble)
                         .onModuleActivated(doubleSetting -> doubleSetting.set((Double) setting.value))
                         .build()
@@ -78,8 +84,9 @@ public class BaritoneTab extends Tab {
                 } else if (value instanceof Float) {
                     sgDouble.add(new DoubleSetting.Builder()
                         .name(setting.getName())
-                        .description(setting.getName())
+                        .description(BaritoneSettingDescriptions.get(setting.getName()))
                         .defaultValue(((Float) setting.defaultValue).doubleValue())
+                        .range(1, ((float)setting.defaultValue) * 2)
                         .onChanged(aDouble -> setting.value = aDouble.floatValue())
                         .onModuleActivated(doubleSetting -> doubleSetting.set(((Float) setting.value).doubleValue()))
                         .build()
@@ -87,8 +94,9 @@ public class BaritoneTab extends Tab {
                 } else if (value instanceof Integer) {
                     sgInt.add(new IntSetting.Builder()
                         .name(setting.getName())
-                        .description(setting.getName())
+                        .description(BaritoneSettingDescriptions.get(setting.getName()))
                         .defaultValue((int) setting.defaultValue)
+                        .range(1, ((int)setting.defaultValue) * 2)
                         .onChanged(integer -> setting.value = integer)
                         .onModuleActivated(integerSetting -> integerSetting.set((Integer) setting.value))
                         .build()
@@ -96,8 +104,9 @@ public class BaritoneTab extends Tab {
                 } else if (value instanceof Long) {
                     sgInt.add(new IntSetting.Builder()
                         .name(setting.getName())
-                        .description(setting.getName())
+                        .description(BaritoneSettingDescriptions.get(setting.getName()))
                         .defaultValue(((Long) setting.defaultValue).intValue())
+                        .range(1, (((Long)setting.defaultValue).intValue() * 2))
                         .onChanged(integer -> setting.value = integer.longValue())
                         .onModuleActivated(integerSetting -> integerSetting.set(((Long) setting.value).intValue()))
                         .build()
@@ -105,7 +114,7 @@ public class BaritoneTab extends Tab {
                 } else if (value instanceof String) {
                     sgStr.add(new StringSetting.Builder()
                         .name(setting.getName())
-                        .description(setting.getName())
+                        .description(BaritoneSettingDescriptions.get(setting.getName()))
                         .defaultValue((String) setting.defaultValue)
                         .onChanged(string -> setting.value = string)
                         .onModuleActivated(stringSetting -> stringSetting.set((String) setting.value))
@@ -116,7 +125,7 @@ public class BaritoneTab extends Tab {
 
                     sgColor.add(new ColorSetting.Builder()
                         .name(setting.getName())
-                        .description(setting.getName())
+                        .description(BaritoneSettingDescriptions.get(setting.getName()))
                         .defaultValue(new SettingColor(c.getRed(), c.getGreen(), c.getBlue(), c.getAlpha()))
                         .onChanged(color -> setting.value = new Color(color.r, color.g, color.b, color.a))
                         .onModuleActivated(colorSetting -> colorSetting.set(new SettingColor(c.getRed(), c.getGreen(), c.getBlue(), c.getAlpha())))
@@ -129,7 +138,7 @@ public class BaritoneTab extends Tab {
                     if (type == Block.class) {
                         sgBlockList.add(new BlockListSetting.Builder()
                             .name(setting.getName())
-                            .description(setting.getName())
+                            .description(BaritoneSettingDescriptions.get(setting.getName()))
                             .defaultValue((List<Block>) setting.defaultValue)
                             .onChanged(blockList -> setting.value = blockList)
                             .onModuleActivated(blockListSetting -> blockListSetting.set((List<Block>) setting.value))
@@ -138,7 +147,7 @@ public class BaritoneTab extends Tab {
                     } else if (type == Item.class) {
                         sgItemList.add(new ItemListSetting.Builder()
                             .name(setting.getName())
-                            .description(setting.getName())
+                            .description(BaritoneSettingDescriptions.get(setting.getName()))
                             .defaultValue((List<Item>) setting.defaultValue)
                             .onChanged(itemList -> setting.value = itemList)
                             .onModuleActivated(itemListSetting -> itemListSetting.set((List<Item>) setting.value))

@@ -102,45 +102,40 @@ public class Marker extends Module {
             WHorizontalList hList = list.add(theme.horizontalList()).expandX().widget();
 
             // Name
-            WLabel label = hList.add(theme.label(marker.name.get())).widget();
-            label.tooltip = marker.description.get();
+            hList.add(theme.label(marker.name.get(), marker.description.get()));
 
             // Dimension
             hList.add(theme.label(" - " + marker.getDimension().toString())).expandX().widget().color = theme.textSecondaryColor();
 
             // Toggle
-            WCheckbox checkbox = hList.add(theme.checkbox(marker.isActive())).widget();
-            checkbox.action = () -> {
-                if (marker.isActive() != checkbox.checked) marker.toggle();
-            };
+            hList.add(theme.checkbox(marker.isActive(), (checked) -> {
+                if (marker.isActive() != checked) marker.toggle();
+            }));
 
             // Edit
-            WButton edit = hList.add(theme.button(GuiRenderer.EDIT)).widget();
-            edit.action = () -> mc.setScreen(marker.getScreen(theme));
+            hList.add(theme.editButton(() -> mc.setScreen(marker.getScreen(theme))));
 
             // Remove
-            WMinus remove = hList.add(theme.minus()).widget();
-            remove.action = () -> {
+            hList.add(theme.minus(() -> {
                 markers.remove(marker);
                 marker.settings.unregisterColorSettings();
 
                 list.clear();
                 fillList(theme, list);
-            };
+            }));
         }
 
         // Bottom
         WHorizontalList bottom = list.add(theme.horizontalList()).expandX().widget();
 
         WDropdown<String> newMarker = bottom.add(theme.dropdown(factory.getNames(), factory.getNames()[0])).widget();
-        WButton add = bottom.add(theme.button("Add")).expandX().widget();
-        add.action = () -> {
+        bottom.add(theme.button("Add", () -> {
             String name = newMarker.get();
             markers.add(factory.createMarker(name));
 
             list.clear();
             fillList(theme, list);
-        };
+        })).expandX();
 
     }
 }

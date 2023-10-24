@@ -29,7 +29,4 @@ public interface ChatHudAccessor {
 
     @Accessor("messageQueue")
     Deque<Text> getMessageQueue();
-
-    @Accessor("messageHistory")
-    List<String> getMessageHistory();
 }

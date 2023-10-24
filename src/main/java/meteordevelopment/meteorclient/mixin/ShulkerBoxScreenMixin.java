@@ -8,6 +8,7 @@ package meteordevelopment.meteorclient.mixin;
 import meteordevelopment.meteorclient.systems.modules.Modules;
 import meteordevelopment.meteorclient.systems.modules.misc.InventoryTweaks;
 import meteordevelopment.meteorclient.utils.render.ContainerButtonWidget;
+import net.greemdev.meteor.util.misc.ButtonWidgetBuilder;
 import net.minecraft.client.gui.screen.ingame.HandledScreen;
 import net.minecraft.client.gui.screen.ingame.ShulkerBoxScreen;
 import net.minecraft.entity.player.PlayerInventory;
@@ -28,22 +29,24 @@ public abstract class ShulkerBoxScreenMixin extends HandledScreen<ShulkerBoxScre
         InventoryTweaks invTweaks = Modules.get().get(InventoryTweaks.class);
 
         if (invTweaks.isActive() && invTweaks.showButtons()) {
-            addDrawableChild(new ContainerButtonWidget(
-                x + backgroundWidth - 88,
-                y + 3,
-                40,
-                12,
-                Text.literal("Steal"),
-                button -> invTweaks.steal(handler))
+            addDrawableChild(new ButtonWidgetBuilder()
+                .x(x + backgroundWidth - 88)
+                .y(y + 3)
+                .width(40)
+                .height(12)
+                .text("Steal")
+                .onPress(button -> invTweaks.steal(handler))
+                .buildContainer()
             );
 
-            addDrawableChild(new ContainerButtonWidget(
-                x + backgroundWidth - 46,
-                y + 3,
-                40,
-                12,
-                Text.literal("Dump"),
-                button -> invTweaks.dump(handler))
+            addDrawableChild(new ButtonWidgetBuilder()
+                .x(x + backgroundWidth - 46)
+                .y(y + 3)
+                .width(40)
+                .height(12)
+                .text("Dump")
+                .onPress(button -> invTweaks.dump(handler))
+                .buildContainer()
             );
         }
 

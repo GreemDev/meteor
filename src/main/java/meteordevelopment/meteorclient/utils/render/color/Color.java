@@ -7,10 +7,13 @@ package meteordevelopment.meteorclient.utils.render.color;
 
 import meteordevelopment.meteorclient.utils.misc.ICopyable;
 import meteordevelopment.meteorclient.utils.misc.ISerializable;
+import net.greemdev.meteor.util.misc.Nbt;
 import net.greemdev.meteor.utils;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.text.TextColor;
 import net.minecraft.util.math.Vec3d;
+
+import java.util.concurrent.ThreadLocalRandom;
 
 @SuppressWarnings("unused")
 public class Color implements ICopyable<Color>, ISerializable<Color> {
@@ -80,6 +83,18 @@ public class Color implements ICopyable<Color>, ISerializable<Color> {
         this.g = color.getGreen();
         this.b = color.getBlue();
         this.a = color.getAlpha();
+    }
+
+    public static Color randomColor(boolean randomizeAlpha) {
+        var r = ThreadLocalRandom.current();
+        return new Color(
+            r.nextInt(0, 256),
+            r.nextInt(0, 256),
+            r.nextInt(0, 256),
+            randomizeAlpha
+                ? r.nextInt(0, 256)
+                : 255
+        );
     }
 
     public static int fromRGBA(int r, int g, int b, int a) {
@@ -160,11 +175,23 @@ public class Color implements ICopyable<Color>, ISerializable<Color> {
     }
 
     public static Color fromString(String text) {
-        var color = new Color();
-        if (color.parse(text))
-            return color;
-        else
+        String[] split = text.split(",");
+        if (split.length != 3 && split.length != 4)
             throw new IllegalArgumentException("Invalid RGB(A) number sequence provided.");
+
+        var color = new Color();
+        try {
+            color.r = Integer.parseInt(split[0]);
+            color.g = Integer.parseInt(split[1]);
+            color.b = Integer.parseInt(split[2]);
+
+            if (split.length == 4)
+                color.a = Integer.parseInt(split[3]);
+
+            return color;
+        } catch (NumberFormatException e) {
+            throw new IllegalArgumentException("Invalid RGB(A) number sequence provided.", e);
+        }
     }
 
     public Color set(int r, int g, int b, int a) {
@@ -218,28 +245,6 @@ public class Color implements ICopyable<Color>, ISerializable<Color> {
         return new java.awt.Color(r, g, b, a);
     }
 
-    public boolean parse(String text) {
-        String[] split = text.split(",");
-        if (split.length != 3 && split.length != 4) return false;
-
-        try {
-            // Not assigned directly because of exception handling
-            int r = Integer.parseInt(split[0]);
-            int g = Integer.parseInt(split[1]);
-            int b = Integer.parseInt(split[2]);
-            int a = split.length == 4 ? Integer.parseInt(split[3]) : this.a;
-
-            this.r = r;
-            this.g = g;
-            this.b = b;
-            this.a = a;
-
-            return true;
-        } catch (NumberFormatException ignored) {
-            return false;
-        }
-    }
-
     @Override
     public Color copy() {
         return new Color(r, g, b, a);
@@ -248,8 +253,8 @@ public class Color implements ICopyable<Color>, ISerializable<Color> {
     public SettingColor toSetting() {
         return new SettingColor(r, g, b, a);
     }
-    public TextColor toTextColor() {
-        return new TextColor(getPacked());
+    public TextColor toText() {
+        return TextColor.fromRgb(getPacked());
     }
 
     public String hexString() {
@@ -291,14 +296,12 @@ public class Color implements ICopyable<Color>, ISerializable<Color> {
 
     @Override
     public NbtCompound toTag() {
-        NbtCompound tag = new NbtCompound();
-
-        tag.putInt("r", r);
-        tag.putInt("g", g);
-        tag.putInt("b", b);
-        tag.putInt("a", a);
-
-        return tag;
+        return Nbt.newCompound(tag -> {
+            tag.putInt("r", r);
+            tag.putInt("g", g);
+            tag.putInt("b", b);
+            tag.putInt("a", a);
+        });
     }
 
     @Override

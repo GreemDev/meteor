@@ -3,7 +3,7 @@
  * Copyright (c) Meteor Development.
  */
 
-package net.greemdev.meteor.commands.api.args
+package net.greemdev.meteor.commands.args
 
 import com.mojang.brigadier.StringReader
 import com.mojang.brigadier.arguments.ArgumentType
@@ -12,6 +12,7 @@ import com.mojang.brigadier.suggestion.Suggestions
 import com.mojang.brigadier.suggestion.SuggestionsBuilder
 import net.greemdev.meteor.Greteor
 import net.greemdev.meteor.commands.api.*
+import net.greemdev.meteor.util.asPath
 import net.greemdev.meteor.util.minecraft
 import net.greemdev.meteor.util.text.*
 import net.minecraft.SharedConstants
@@ -34,7 +35,7 @@ class PathArgumentType private constructor(
             if (builder.remaining.isEmpty())
                 minecraft.runDirectory.listFiles()?.forEach { add(it.toPath()) }
             else
-                net.greemdev.meteor.util.getOrNull { Path(builder.remaining) }?.also {
+                net.greemdev.meteor.getOrNull { Path(builder.remaining) }?.also {
                     if (it.isDirectory())
                         it.listDirectoryEntries().forEach(::add)
                 }
@@ -43,7 +44,7 @@ class PathArgumentType private constructor(
         if (SharedConstants.isDevelopment)
             Greteor.logger.info(suggestions.joinToString(", ", "[", "]") { it.toString() })
 
-        return CommandSource.suggestMatching(suggestions.map { it.fileName.toString() }, builder)
+        return builder.matching(suggestions.map { it.fileName.toString() })
     }*/
 
 
@@ -61,14 +62,14 @@ class PathArgumentType private constructor(
                 if (builder.remaining.isEmpty())
                     minecraft.runDirectory.listFiles()?.forEach { add(it.toPath()) }
                 else
-                    //complex kotlin logic chain
-                    net.greemdev.meteor.util.getOrNull {
+                    //complex kotlin logic spaghetti
+                    net.greemdev.meteor.getOrNull {
                         Path(builder.remaining) //get remaining content as a path
                     }?.also {
                         if (it.isDirectory()) //if getting a path object didn't error, and it leads to a directory,
                             it.listDirectoryEntries().forEach(::add) //add files in that directory to the suggestions.
 
-                    } ?: net.greemdev.meteor.util.getOrNull { // If the previous path object errored,
+                    } ?: net.greemdev.meteor.getOrNull { // If the previous path object errored,
                         Path(builder.remaining.substringBeforeLast('/')) // get a new path obj, whose path is that of the argument's value before the very last path separator /.
                     }?.also {
                         if (it.isDirectory()) //if getting a path object didn't error, and it leads to a directory,
@@ -79,14 +80,14 @@ class PathArgumentType private constructor(
             if (SharedConstants.isDevelopment)
                 Greteor.logger.info(suggestions.joinToString(", ", "[", "]") { it.toString() })
 
-            return CommandSource.suggestMatching(suggestions.map { it.fileName.toString() }, builder)
+            return builder.matching(suggestions.map { it.fileName.toString() })
         }*/
     }
 
 
     override fun parse(reader: StringReader): Path {
         val path = try {
-            Path(stringType.parse(reader))
+            stringType.parse(reader).asPath()
         } catch (e: InvalidPathException) {
             errorOccurred.throwNew(e)
         }
@@ -99,7 +100,7 @@ class PathArgumentType private constructor(
     }
 }
 
-private val errorOccurred by dynamicTypedCommandException<InvalidPathException> { ipe ->
+private val errorOccurred by CommandExceptions.dynamic<InvalidPathException> { ipe ->
     buildText {
         colored(red)
         addString("The input path '")
@@ -111,7 +112,7 @@ private val errorOccurred by dynamicTypedCommandException<InvalidPathException> 
     }
 }
 
-private val notFound by dynamicCommandException { path ->
+private val notFound by CommandExceptions dynamic { path ->
     buildText {
         colored(red)
         addString("The file/directory at '")
@@ -122,7 +123,7 @@ private val notFound by dynamicCommandException { path ->
     }
 }
 
-private val disallowedDirectory by dynamicCommandException { path ->
+private val disallowedDirectory by CommandExceptions dynamic { path ->
     buildText {
         colored(red)
         addString("Cannot use the path '")

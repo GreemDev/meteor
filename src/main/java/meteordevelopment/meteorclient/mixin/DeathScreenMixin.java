@@ -6,7 +6,7 @@
 package meteordevelopment.meteorclient.mixin;
 
 import meteordevelopment.meteorclient.systems.modules.Modules;
-import net.greemdev.meteor.modules.GameTweaks;
+import net.greemdev.meteor.modules.greteor.GameTweaks;
 import net.minecraft.client.gui.screen.DeathScreen;
 import net.minecraft.text.Text;
 import org.spongepowered.asm.mixin.Mixin;

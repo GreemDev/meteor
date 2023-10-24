@@ -19,7 +19,10 @@ import net.minecraft.screen.*;
 
 import static meteordevelopment.meteorclient.MeteorClient.mc;
 
-public class SlotUtils {
+public final class SlotUtils {
+
+    private SlotUtils() {}
+
     public static final int HOTBAR_START = 0;
     public static final int HOTBAR_END = 8;
 

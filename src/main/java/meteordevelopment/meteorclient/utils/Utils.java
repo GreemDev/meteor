@@ -59,7 +59,9 @@ import java.util.stream.Collectors;
 import static meteordevelopment.meteorclient.MeteorClient.mc;
 import static org.lwjgl.glfw.GLFW.*;
 
-public class Utils {
+public final class Utils {
+
+    private Utils() {}
     private static final Random random = new Random();
     public static boolean isReleasingTrident;
     public static final Color WHITE = new Color(255, 255, 255);
@@ -246,6 +248,13 @@ public class Utils {
         return wordsFound;
     }
 
+    /**
+     * Performs a standard Java cast operation, with the added benefit of implicity if you call it when you require a specific type (like a method argument).<br/><br/>
+     * An additional benefit is the ability to perform unchecked casts without needing the noinspection comment in the calling code.
+     * @param value The value to cast
+     * @return value as the type T
+     * @param <T> The type to cast to.
+     */
     public static <T> T cast(Object value) {
         //noinspection unchecked
         return (T)value;

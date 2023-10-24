@@ -7,6 +7,7 @@ package meteordevelopment.meteorclient.mixin;
 
 import meteordevelopment.meteorclient.systems.modules.Modules;
 import meteordevelopment.meteorclient.systems.modules.misc.AutoReconnect;
+import net.greemdev.meteor.util.misc.ButtonWidgetBuilder;
 import net.minecraft.client.gui.screen.ConnectScreen;
 import net.minecraft.client.gui.screen.DisconnectedScreen;
 import net.minecraft.client.gui.screen.Screen;
@@ -42,20 +43,33 @@ public abstract class DisconnectedScreenMixin extends Screen {
             int x = width / 2 - 100;
             int y = Math.min((height / 2 + reasonHeight / 2) + 32, height - 30);
 
-            reconnectBtn = addDrawableChild(new ButtonWidget(x, y, 200, 20, Text.literal(getText()),
-                button -> ConnectScreen.connect(
-                    new MultiplayerScreen(new TitleScreen()), client,
-                    ServerAddress.parse(Modules.get().get(AutoReconnect.class).lastServerInfo.address),
-                    Modules.get().get(AutoReconnect.class).lastServerInfo)
+            reconnectBtn = addDrawableChild(new ButtonWidgetBuilder()
+                .x(x)
+                .y(y)
+                .width(200)
+                .height(20)
+                .text(getText())
+                .onPress(button ->
+                    ConnectScreen.connect(
+                        new MultiplayerScreen(new TitleScreen()), client,
+                        ServerAddress.parse(Modules.get().get(AutoReconnect.class).lastServerInfo.address),
+                        Modules.get().get(AutoReconnect.class).lastServerInfo)
                 )
+                .build()
             );
 
-            addDrawableChild(new ButtonWidget(x, y + 22, 200, 20, Text.literal("Toggle AutoReconnect"),
-                button -> {
+            addDrawableChild(new ButtonWidgetBuilder()
+                .x(x)
+                .y(y + 22)
+                .width(200)
+                .height(20)
+                .text("Toggle AutoReconnect")
+                .onPress(button -> {
                     Modules.get().get(AutoReconnect.class).toggle();
                     ((AbstractButtonWidgetAccessor)reconnectBtn).setText(Text.literal(getText()));
                     time = Modules.get().get(AutoReconnect.class).time.get() * 20;
                 })
+                .build()
             );
         }
     }

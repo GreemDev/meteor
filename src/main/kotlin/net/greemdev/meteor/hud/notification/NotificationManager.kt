@@ -21,7 +21,6 @@ fun send(notification: Notification) = notifications.send(notification)
 fun sendOrRun(n: Notification, altMessage: String? = null, func: Consumer<String>? = null) =
     notifications.sendOrRun(n, altMessage, func?.let { c -> { c.accept(it) } })
 
-fun active() = notifications.active()
 fun overrideChatFeedback() = NotificationHud.getOrNull()?.overrideChatFeedback() ?: false
 
 val notifications = object : NotificationManager() {}
@@ -31,52 +30,65 @@ abstract class NotificationManager {
         if (NotificationHud.getOrNull()?.allowsSource(n.source) == true &&
             (n.event !is NotificationEvent.ModuleToggled || NotificationHud.get().allowsModule(n.event.module))
         ) {
-            n.send()
-            if (overrideChatFeedback())
+            if (n.send() and overrideChatFeedback())
                 return
         }
 
         func?.invoke(altMessage ?: return)
     }
 
-    private object NotificationQueue : LinkedBlockingQueue<Notification>() {
+    fun sendOrFallback(n: Notification) {
+        if (NotificationHud.getOrNull()?.allowsSource(n.source) == true &&
+            (n.event !is NotificationEvent.ModuleToggled || NotificationHud.get().allowsModule(n.event.module))
+        ) {
+            if (n.send() and overrideChatFeedback())
+                return
+        }
+
+        if (n.fallbackPredicate != null && n.fallback != null) {
+            if (n.fallbackPredicate.invoke()) {
+                n.fallback.invoke(n.asText())
+            }
+        }
+    }
+
+    private object Queue : LinkedBlockingQueue<Notification>() {
         override infix fun add(element: Notification) =
-            if (active() && NotificationHud.get().allowsSource(element.source)) {
+            if (notifications.isActive && NotificationHud.get().allowsSource(element.source)) {
                 super.add(element)
             } else false
 
-        fun requeue(notif: Notification) = remove(notif) || add(notif.apply { startTime = -1 })
+        fun requeue(notif: Notification) = remove(notif) && add(notif.apply { startTime = -1 })
 
-        fun find(id: Int) = findOrNull(id)!!
-        fun findOrNull(id: Int) = firstOrNull { it.id == id }
+        fun clearNotifications() = size.also { clear() }
+
         fun find(n: Notification) = findOrNull(n)!!
-        fun findOrNull(n: Notification) = firstOrNull { it == n }
+        fun findOrNull(n: Notification) = firstOrNull(n::equals)
     }
 
     private val dummies = listOf(
         Notification("hey there!", "this is just an example", Color.RED),
         Notification("§zRainbow §rReset &aGreen &fWhite", "another example!", ChatColor.white.asAwt()),
         Notification("3"),
-        Notification("hmmmmm", "random shit", MeteorColor.PINK),
+        Notification("hmmmmm", "random shit", MeteorColor.PINK.awt()),
         Notification("default color"),
-        Notification("meteor good", Color(0x9A03FF)),
+        Notification("meteor good", color = Color(0x9A03FF)),
         Notification(
             "excessively long title because this is a stress test",
             "and this part too because, as i\nsaid before, this is a stress test!!!!!!!!!!!!",
         ),
-        Notification("notifications are cool", colorOf("#7000FB"))
+        Notification("notifications are cool", color = colorOf("#7000FB").awt())
     ).onEach { it.startTime = 0 }.shuffled()
 
     fun send(notif: Notification) =
-        NotificationQueue.findOrNull(notif)
+        Queue.findOrNull(notif)
             ?.let {
-                NotificationQueue.requeue(it)
-            } ?: NotificationQueue.add(notif)
+                Queue.requeue(it)
+            } ?: Queue.add(notif)
 
 
-    fun active() = NotificationHud.getOrNull() != null
-
-    fun clearQueue() = NotificationQueue.size.also { NotificationQueue.clear() }
+    val isActive: Boolean
+        get() = NotificationHud.getOrNull() != null
 
     fun toListOrNull(inEditor: Boolean = false): List<Notification>? {
         val hud = NotificationHud.getOrNull() ?: return null
@@ -85,7 +97,7 @@ abstract class NotificationManager {
             dummies.take(hud.amount())
         else
             buildList {
-                NotificationQueue.forEach {
+                Queue.forEach {
                     if (size >= hud.amount()) return this
 
                     if (it.startTime == -1L)
@@ -96,7 +108,7 @@ abstract class NotificationManager {
                         return@forEach
                     }
 
-                    NotificationQueue.remove(it)
+                    Queue.remove(it)
                 }
             }
     }

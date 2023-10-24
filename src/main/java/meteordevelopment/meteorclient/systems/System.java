@@ -31,6 +31,7 @@ public abstract class System<T> implements ISerializable<T> {
 
     public void init() {}
 
+    @SuppressWarnings("ResultOfMethodCallIgnored")
     public void save(File folder) {
         File file = getFile();
         if (file == null) return;

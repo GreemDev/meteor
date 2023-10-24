@@ -14,17 +14,16 @@ import meteordevelopment.meteorclient.events.game.OpenScreenEvent;
 import meteordevelopment.meteorclient.events.world.TickEvent;
 import meteordevelopment.meteorclient.gui.GuiTheme;
 import meteordevelopment.meteorclient.gui.WidgetScreen;
-import meteordevelopment.meteorclient.gui.utils.StarscriptTextBoxRenderer;
 import meteordevelopment.meteorclient.gui.widgets.WWidget;
 import meteordevelopment.meteorclient.settings.*;
 import meteordevelopment.meteorclient.systems.modules.Categories;
 import meteordevelopment.meteorclient.systems.modules.Module;
-import meteordevelopment.meteorclient.systems.modules.Modules;
 import meteordevelopment.meteorclient.utils.Utils;
 import meteordevelopment.meteorclient.utils.misc.MeteorStarscript;
 import meteordevelopment.orbit.EventHandler;
 import meteordevelopment.starscript.Script;
-import net.greemdev.meteor.modules.presence.MinecraftPresence;
+import net.greemdev.meteor.modules.greteor.MinecraftPresence;
+import net.greemdev.meteor.utils;
 import net.minecraft.client.gui.screen.*;
 import net.minecraft.client.gui.screen.multiplayer.MultiplayerScreen;
 import net.minecraft.client.gui.screen.option.*;
@@ -56,7 +55,7 @@ public class DiscordPresence extends Module {
         .description("Messages used for the first line.")
         .defaultValue("{player}", "{server}")
         .onChanged(strings -> recompileLine1())
-        .renderer(StarscriptTextBoxRenderer.class)
+        .renderStarscript()
         .wide()
         .build()
     );
@@ -84,7 +83,7 @@ public class DiscordPresence extends Module {
         .description("Messages used for the second line.")
         .defaultValue("Meteor on Crack!", "{round(server.tps, 1)} TPS", "Playing on {server.difficulty} difficulty.", "{server.playerCount} Players online")
         .onChanged(strings -> recompileLine2())
-        .renderer(StarscriptTextBoxRenderer.class)
+        .renderStarscript()
         .wide()
         .build()
     );
@@ -144,17 +143,24 @@ public class DiscordPresence extends Module {
         customStates.removeIf(pair -> pair.getLeft().equals(packageName));
     }
 
+    public boolean toggleIfActive() {
+        return utils.let(isActive(), active -> {
+            if (active)
+                toggle();
+            return active;
+        });
+    }
+
     @Override
     public void onActivate() {
-        if (MinecraftPresence.INSTANCE.isActive()) {
+        if (MinecraftPresence.toggleIfActive())
             info("Disabling Minecraft Presence.");
-            MinecraftPresence.INSTANCE.toggle();
-        }
+
         DiscordIPC.start(835240968533049424L, null);
 
         rpc.setStart(System.currentTimeMillis() / 1000L);
 
-        rpc.setLargeImage("meteor_client", "Meteor Client " + MeteorClient.fullVersion());
+        rpc.setLargeImage("meteor_client", "%s %s".formatted(MeteorClient.NAME, MeteorClient.fullVersion()));
 
         recompileLine1();
         recompileLine2();

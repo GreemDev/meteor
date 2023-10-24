@@ -3,7 +3,7 @@
  * Copyright (c) Meteor Development.
  */
 
-package net.greemdev.meteor.modules.presence
+package net.greemdev.meteor.modules.greteor
 
 import meteordevelopment.discordipc.DiscordIPC
 import meteordevelopment.discordipc.RichPresence
@@ -13,11 +13,9 @@ import meteordevelopment.meteorclient.events.world.TickEvent
 import meteordevelopment.meteorclient.gui.GuiTheme
 import meteordevelopment.meteorclient.gui.WidgetScreen
 import meteordevelopment.meteorclient.gui.widgets.WWidget
-import meteordevelopment.meteorclient.systems.modules.Module
 import meteordevelopment.meteorclient.systems.modules.misc.DiscordPresence
 import meteordevelopment.meteorclient.utils.Utils
 import meteordevelopment.meteorclient.utils.misc.MeteorStarscript
-import meteordevelopment.meteorclient.utils.player.PlayerUtils
 import meteordevelopment.meteorclient.utils.world.Dimension
 import meteordevelopment.orbit.EventHandler
 import meteordevelopment.starscript.Script
@@ -33,20 +31,18 @@ import net.minecraft.client.gui.screen.option.*
 import net.minecraft.client.gui.screen.pack.PackScreen
 import net.minecraft.client.gui.screen.world.*
 import net.minecraft.client.realms.gui.screen.RealmsScreen
-import net.minecraft.nbt.NbtCompound
 import net.minecraft.util.Util
 
 const val safeAppId = 1013634358927691846L
 
 var gameStart: Long = 0
 private val rpc = RichPresence()
-val states: CustomStates = hashMapOf()
 
 object MinecraftPresence : GModule("minecraft-presence", "Displays Minecraft as your presence on Discord.") {
 
-    private val sgL1 = settings.group("Line 1")
-    private val sgL2 = settings.group("Line 2")
-    private val sgO = settings.group("Other", false)
+    private val sgL1 = settings group "Line 1"
+    private val sgL2 = settings group "Line 2"
+    private val sgO = (settings group "Other").collapsed()
 
     var lastInMainMenu = false
 
@@ -58,7 +54,9 @@ object MinecraftPresence : GModule("minecraft-presence", "Displays Minecraft as 
         name("RPC-app-ID")
         description("The used Rich Presence app. Default is recommended and the only one supported.")
         defaultValue(safeAppId.toString())
-        filter { _, c -> c.isDigit() }
+        filter { id, c ->
+            c.isDigit() && id.length <= 21
+        }
     }
 
     fun isUsingDefaultApp() = appId().toLong() == safeAppId
@@ -110,35 +108,22 @@ object MinecraftPresence : GModule("minecraft-presence", "Displays Minecraft as 
     val smallMeteor by sgO bool {
         name("small-meteor-logo")
         description("Display a small Meteor logo to the lower right of the main Presence image.")
-        defaultValue(::isUsingDefaultApp)
+        defaultValue(MinecraftPresence::isUsingDefaultApp)
     }
 
     val dimensionAware by sgO bool {
         name("dimension-aware")
         description("Whether or not to change the main Presence image to a dimension-specific image when in that dimension.")
-        defaultValue(::isUsingDefaultApp)
+        defaultValue(MinecraftPresence::isUsingDefaultApp)
     }
 
-
-
-    val customStates by sgO stringList {
+    val customStates by sgO stringMap {
         name("custom-states")
-        description("Custom states you can display based on the screen's Java package prefix. Separated by a space.")
+        description("Custom states you can display based on the screen's Java package. Can also be used to target specific screen classes.")
         defaultValue(
-            "com.terraformersmc.modmenu.gui Browsing mods",
-            "me.jellysquid.mods.sodium.client Changing options"
+            "com.terraformersmc.modmenu.gui" to "Browsing mods",
+            "me.jellysquid.mods.sodium.client" to "Changing options"
         )
-        onChanged {
-            states.clear()
-            it.mapNotNull { str ->
-                if (str.contains(" "))
-                    str.substringBefore(' ') to str.substringAfter(' ')
-                else null
-            }.forEach { (prefix, state) ->
-                states.register(prefix, state)
-            }
-        }
-        serialize(false)
         wide()
     }
 
@@ -148,44 +133,38 @@ object MinecraftPresence : GModule("minecraft-presence", "Displays Minecraft as 
     private var line2Index = 0
     private var line1Ticks = 0
     private var line2Ticks = 0
-    private var line1Scripts = mutableListOf<Script>()
-    private var line2Scripts = mutableListOf<Script>()
+    private val line1Scripts = mutableListOf<Script>()
+    private val line2Scripts = mutableListOf<Script>()
 
     private fun recompileLines(line: Int, strings: List<String>) {
-        if (line == 1) {
-            line1Scripts.clear()
-            line1Scripts.addAll(strings.map {
-                MeteorStarscript.compile(it)
-            })
-            forceUpdate = true
-        } else if (line == 2) {
-            line2Scripts.clear()
-            line2Scripts.addAll(strings.map {
-                MeteorStarscript.compile(it)
-            })
-            forceUpdate = true
-        }
+        val scripts = if (line == 1)
+            line1Scripts
+        else
+            line2Scripts
+
+        scripts.clear()
+        scripts.addAll(strings.map {
+            MeteorStarscript.compile(it)
+        })
+        forceUpdate = true
     }
 
     private var currentLargeImage: Pair<String, String> = "" to ""
-    private var hasSmallImage = false
-
-    private fun largeImage(key: String, text: String) {
-        currentLargeImage = key to text
-        rpc.setLargeImage(key, text)
-    }
-
-    override fun onActivate() {
-        with(Meteor.module<DiscordPresence>()) {
-            if (isActive) {
-                this@MinecraftPresence.info("Disabling Meteor Discord Presence.")
-                toggle()
+        set(value) {
+            if (field.first != value.first) {
+                rpc.setLargeImage(value.first, value.second)
+                field = value
             }
         }
+    private var hasSmallImage = false
+
+    override fun onActivate() {
+        if (Meteor.module<DiscordPresence>().toggleIfActive())
+            info("Disabling Meteor Discord Presence.")
 
         DiscordIPC.start(appId().toLong(), null)
 
-        largeImage("c418", "Minecraft ${SharedConstants.getGameVersion().name}")
+        currentLargeImage = "c418" to "Minecraft ${SharedConstants.getGameVersion().name}"
 
         rpc.setStart(gameStart / 1000)
 
@@ -205,12 +184,21 @@ object MinecraftPresence : GModule("minecraft-presence", "Displays Minecraft as 
 
     override fun getWidget(theme: GuiTheme): WWidget =
         theme.button("Starscript Info") {
-            Util.getOperatingSystem().open("https://github.com/GreemDev/meteor/wiki/Starscript")
+            Util.getOperatingSystem()
+                .open("https://github.com/GreemDev/meteor/wiki/Starscript")
         }
+
+    @JvmStatic
+    fun toggleIfActive() =
+        isActive.also {
+            if (it) toggle()
+        }
+
 
     @EventHandler
     private fun afterTick(ignored: TickEvent.Post) {
         var update = false
+
 
         if (mc.isInGame()) {
             // Line 1
@@ -260,16 +248,16 @@ object MinecraftPresence : GModule("minecraft-presence", "Displays Minecraft as 
                 }
                 if (currentLargeImage.first != keyPair.first) {
                     update = true
-                    largeImage(keyPair.first, keyPair.second)
+                    currentLargeImage = keyPair
                 }
             } else if (currentLargeImage.first != "c418") {
                 update = true
-                largeImage("c418", "Minecraft ${SharedConstants.getGameVersion().name}")
+                currentLargeImage = "c418" to "Minecraft ${SharedConstants.getGameVersion().name}"
             }
 
             if (smallMeteor() and !hasSmallImage) {
                 update = true
-                rpc.setSmallImage("meteor_logo", "Meteor Client ${MeteorClient.fullVersion()}")
+                rpc.setSmallImage("meteor_logo", "${MeteorClient.NAME} ${MeteorClient.fullVersion()}")
                 hasSmallImage = true
             } else if (!smallMeteor() and hasSmallImage) {
                 update = true
@@ -290,13 +278,14 @@ object MinecraftPresence : GModule("minecraft-presence", "Displays Minecraft as 
                     is AddServerScreen -> rpc.setState("Adding a server")
                     is ConnectScreen, is DirectConnectScreen -> rpc.setState("Connecting to server")
                     is WidgetScreen -> rpc.setState(if (smallMeteor()) "Browsing Meteor's GUI" else "Experimenting with mods")
-                    is OptionsScreen, is SkinOptionsScreen, is SoundOptionsScreen, is VideoOptionsScreen, is ControlsOptionsScreen,
-                    is LanguageOptionsScreen, is ChatOptionsScreen, is PackScreen, is AccessibilityOptionsScreen -> rpc.setState("Changing Minecraft options")
+                    is OptionsScreen, is SkinOptionsScreen, is SoundOptionsScreen,
+                    is VideoOptionsScreen, is ControlsOptionsScreen, is LanguageOptionsScreen,
+                    is ChatOptionsScreen, is PackScreen, is AccessibilityOptionsScreen -> rpc.setState("Changing Minecraft options")
                     is CreditsScreen -> rpc.setState("Reading credits")
                     is RealmsScreen -> rpc.setState("Finding a Realm")
                     else -> {
                         var stateChanged = false
-                        states.getStateOrNull(mc.currentScreen?.javaClass?.name ?: "")?.also {
+                        getStateOrNull(mc.currentScreen?.javaClass?.canonicalName ?: "")?.also {
                             rpc.setState(it)
                             stateChanged = true
                         }
@@ -312,21 +301,20 @@ object MinecraftPresence : GModule("minecraft-presence", "Displays Minecraft as 
         lastInMainMenu = !mc.isInGame()
     }
 
-    override fun toTag(): NbtCompound = super.toTag().apply {
-        put("customStates", states.map { "${it.key}=${it.value}" }.toNBT())
+
+
+    fun getStateOrNull(className: String?): String? {
+        val name = className ?: return null
+        return customStates().filter { name.startsWith(it.key) }
+            .firstNotNullOfOrNull(Map.Entry<String, String>::value)
     }
 
-    override fun fromTag(tag: NbtCompound): Module {
-        states.clear()
-        if (tag.contains("customStates"))
-            states.putAll(tag.collectList("customStates", NbtDataType.String)
-                .map {
-                    with(it.split('=')) {
-                        first() to last()
-                    }
-                }
-            )
-
-        return super.fromTag(tag)
+    fun registerCustomState(packageName: String, state: String) {
+        customStates()[packageName] = state
     }
+
+    fun unregisterCustomState(packageName: String) = customStates().remove(packageName) != null
+
 }
+
+private typealias CustomStates = MutableMap<String, String>

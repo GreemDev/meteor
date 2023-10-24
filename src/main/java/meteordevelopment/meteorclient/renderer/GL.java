@@ -321,7 +321,8 @@ public class GL {
             field.setAccessible(true);
             Object state = field.get(null);
 
-            String trackerName = FabricLoader.getInstance().getMappingResolver().mapClassName("intermediary", "com.mojang.blaze3d.platform.GlStateManager$class_1018");
+            String trackerName = FabricLoader.getInstance().getMappingResolver()
+                .mapClassName("intermediary", "com.mojang.blaze3d.platform.GlStateManager$class_1018");
 
             Field capStateField = null;
             for (Field f : state.getClass().getDeclaredFields()) {

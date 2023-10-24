@@ -34,30 +34,23 @@ public class AccountsScreen extends WindowScreen {
             wAccount.refreshScreenAction = this::reload;
         }
 
-        add(theme.horizontalSeparator());
+        add(theme.horizontalSeparator()).expandX();
 
         // Add account
-        WHorizontalList l = add(theme.horizontalList()).expandX().widget();
+        within(add(theme.horizontalList()).expandX(), l -> {
+            l.add(theme.button("Cracked", () -> mc.setScreen(new AddCrackedAccountScreen(theme, this))));
+            l.add(theme.button("Altening", () -> mc.setScreen(new AddAlteningAccountScreen(theme, this))));
+            l.add(theme.button("Microsoft", () -> {
+                locked = true;
 
-        addButton(l, "Cracked", () -> mc.setScreen(new AddCrackedAccountScreen(theme, this)));
-        addButton(l, "Altening", () -> mc.setScreen(new AddAlteningAccountScreen(theme, this)));
-        addButton(l, "Microsoft", () -> {
-            locked = true;
+                MicrosoftLogin.getRefreshToken(refreshToken -> {
+                    locked = false;
 
-            MicrosoftLogin.getRefreshToken(refreshToken -> {
-                locked = false;
-
-                if (refreshToken != null) {
-                    MicrosoftAccount account = new MicrosoftAccount(refreshToken);
-                    addAccount(null, this, account);
-                }
-            });
+                    if (refreshToken != null)
+                        addAccount(null, this, new MicrosoftAccount(refreshToken));
+                });
+            }));
         });
-    }
-
-    private void addButton(WContainer c, String text, Runnable action) {
-        WButton button = c.add(theme.button(text)).expandX().widget();
-        button.action = action;
     }
 
     public static void addAccount(@Nullable AddAccountScreen screen, AccountsScreen parent, Account<?> account) {

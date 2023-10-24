@@ -11,7 +11,7 @@ public class SettingColor extends Color {
     public boolean rainbow;
 
     public static SettingColor rainbow() {
-        return RainbowColor.GLOBAL.toSetting();
+        return RainbowColor.asSetting();
     }
 
     public SettingColor() {

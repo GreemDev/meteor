@@ -27,7 +27,7 @@ public class FriendsTab extends Tab {
     public static final String NAME = "Friends";
 
     public FriendsTab() {
-        super(NAME, GuiRenderer.FRIENDS, Config.get().friendsIcon::get);
+        super(NAME, GuiRenderer.FRIENDS, Config.get().friendsIcon);
     }
 
     @Override
@@ -55,10 +55,9 @@ public class FriendsTab extends Tab {
             // New
             WHorizontalList list = add(theme.horizontalList()).expandX().widget();
 
-            WTextBox nameW = list.add(theme.textBox("", (text, c) -> c != ' ')).expandX().widget();
-            nameW.setFocused(true);
+            WTextBox nameW = list.add(theme.textBox("", (text, c) -> c != ' ')).expandX().widget().toggleFocusing();
 
-            WPlus add = list.add(theme.plus(() -> {
+            enterAction = list.add(theme.plus(() -> {
                 String name = nameW.get().trim();
                 Friend friend = new Friend(name);
 
@@ -71,9 +70,7 @@ public class FriendsTab extends Tab {
                         reload();
                     });
                 }
-            })).widget();
-
-            enterAction = add.action;
+            })).widget().action;
         }
 
         private void initTable(WTable table) {

@@ -14,11 +14,12 @@ import net.minecraft.util.registry.Registry;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.function.Consumer;
+import java.util.function.Supplier;
 
 public class BlockDataSetting<T extends ICopyable<T> & ISerializable<T> & IChangeable & IBlockData<T>> extends Setting<Map<Block, T>> {
-    public final IGetter<T> defaultData;
+    public final Supplier<T> defaultData;
 
-    protected BlockDataSetting(String name, String description, Object defaultValue, Consumer<Map<Block, T>> onChanged, Consumer<Setting<Map<Block, T>>> onModuleActivated, IGetter<T> defaultData, IVisible visible, boolean serialize) {
+    protected BlockDataSetting(String name, String description, Object defaultValue, Consumer<Map<Block, T>> onChanged, Consumer<Setting<Map<Block, T>>> onModuleActivated, Supplier<T> defaultData, IVisible visible, boolean serialize) {
         super(name, description, defaultValue, onChanged, onModuleActivated, visible, serialize);
 
         this.defaultData = defaultData;
@@ -63,13 +64,13 @@ public class BlockDataSetting<T extends ICopyable<T> & ISerializable<T> & IChang
     }
 
     public static class Builder<T extends ICopyable<T> & ISerializable<T> & IChangeable & IBlockData<T>> extends SettingBuilder<Builder<T>, Map<Block, T>, BlockDataSetting<T>> {
-        private IGetter<T> defaultData;
+        private Supplier<T> defaultData;
 
         public Builder() {
             super(new HashMap<>(0));
         }
 
-        public Builder<T> defaultData(IGetter<T> defaultData) {
+        public Builder<T> defaultData(Supplier<T> defaultData) {
             this.defaultData = defaultData;
             return this;
         }

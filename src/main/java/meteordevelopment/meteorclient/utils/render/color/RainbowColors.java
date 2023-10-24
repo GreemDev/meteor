@@ -23,7 +23,7 @@ import java.util.List;
 
 import static meteordevelopment.meteorclient.MeteorClient.mc;
 
-public class RainbowColors {
+public final class RainbowColors {
     private static final List<Setting<SettingColor>> colorSettings = new UnorderedArrayList<>();
     private static final List<Setting<List<SettingColor>>> colorListSettings = new UnorderedArrayList<>();
 
@@ -69,8 +69,8 @@ public class RainbowColors {
 
     @EventHandler
     private static void onTick(TickEvent.Post event) {
-        RainbowColor.GLOBAL.setSpeed(Config.get().rainbowSpeed.get() / 100);
-        RainbowColor.GLOBAL.getNext();
+        RainbowColor.speed(Config.get().rainbowSpeed.get() / 100);
+        RainbowColor.next();
 
         for (Setting<SettingColor> setting : colorSettings)
             if (setting.module == null || setting.module.isActive())

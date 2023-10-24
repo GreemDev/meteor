@@ -10,7 +10,10 @@ import baritone.api.utils.Rotation;
 
 import java.lang.reflect.Field;
 
-public class BaritoneUtils {
+public final class BaritoneUtils {
+
+    private BaritoneUtils() {}
+
     private static Field targetField;
 
     public static Rotation getTarget() {

@@ -16,6 +16,7 @@ import meteordevelopment.meteorclient.systems.modules.player.Reach;
 import meteordevelopment.meteorclient.systems.modules.world.Nuker;
 import meteordevelopment.meteorclient.utils.player.Rotations;
 import meteordevelopment.meteorclient.utils.world.BlockUtils;
+import net.greemdev.meteor.utils;
 import net.minecraft.client.network.ClientPlayerEntity;
 import net.minecraft.client.network.ClientPlayerInteractionManager;
 import net.minecraft.entity.Entity;
@@ -40,6 +41,8 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 import org.spongepowered.asm.mixin.injection.invoke.arg.Args;
 
+import java.util.Optional;
+
 @Mixin(ClientPlayerInteractionManager.class)
 public abstract class ClientPlayerInteractionManagerMixin implements IClientPlayerInteractionManager {
     @Shadow private int blockBreakingCooldown;
@@ -51,6 +54,18 @@ public abstract class ClientPlayerInteractionManagerMixin implements IClientPlay
 
     @Inject(method = "clickSlot", at = @At("HEAD"), cancellable = true)
     private void onClickSlot(int syncId, int slotId, int button, SlotActionType actionType, PlayerEntity player, CallbackInfo info) {
+
+        utils.optionalOf(
+            actionType == SlotActionType.THROW && slotId >= 0 && slotId < player.currentScreenHandler.slots.size()
+                ? DropItemsEvent.get(player.currentScreenHandler.slots.get(slotId).getStack())
+                : slotId == -999 //clicking outside of inventory
+                    ? DropItemsEvent.get(player.currentScreenHandler.getCursorStack())
+                    : null
+        ).ifPresent(e -> {
+            if (MeteorClient.EVENT_BUS.post(e).isCancelled())
+                info.cancel();
+        });
+
         if (actionType == SlotActionType.THROW && slotId >= 0 && slotId < player.currentScreenHandler.slots.size()) {
             if (MeteorClient.EVENT_BUS.post(DropItemsEvent.get(player.currentScreenHandler.slots.get(slotId).getStack())).isCancelled()) info.cancel();
         }

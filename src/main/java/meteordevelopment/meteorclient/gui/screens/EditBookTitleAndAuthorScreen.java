@@ -32,27 +32,34 @@ public class EditBookTitleAndAuthorScreen extends WindowScreen {
 
     @Override
     public void initWidgets() {
-        WTable t = add(theme.table()).expandX().widget();
+        within(add(theme.table()).expandX(), t -> {
+            t.add(theme.label("Title"));
+            WTextBox title = t.add(theme.textBox(itemStack.getOrCreateNbt().getString("title")))
+                .minWidth(220)
+                .expandX()
+                .widget();
 
-        t.add(theme.label("Title"));
-        WTextBox title = t.add(theme.textBox(itemStack.getOrCreateNbt().getString("title"))).minWidth(220).expandX().widget();
-        t.row();
+            t.row();
 
-        t.add(theme.label("Author"));
-        WTextBox author = t.add(theme.textBox(itemStack.getNbt().getString("author"))).minWidth(220).expandX().widget();
-        t.row();
+            t.add(theme.label("Author"));
+            WTextBox author = t.add(theme.textBox(itemStack.getNbt().getString("author")))
+                .minWidth(220)
+                .expandX()
+                .widget();
+            t.row();
 
-        t.add(theme.button("Done")).expandX().widget().action = () -> {
-            itemStack.getNbt().putString("author", author.get());
-            itemStack.getNbt().putString("title", title.get());
+            t.add(theme.button("Done", () -> {
+                itemStack.getNbt().putString("author", author.get());
+                itemStack.getNbt().putString("title", title.get());
 
-            BookScreen.Contents contents = new BookScreen.WrittenBookContents(itemStack);
-            List<String> pages = new ArrayList<>(contents.getPageCount());
-            for (int i = 0; i < contents.getPageCount(); i++) pages.add(contents.getPage(i).getString());
+                BookScreen.Contents contents = new BookScreen.WrittenBookContents(itemStack);
+                List<String> pages = new ArrayList<>(contents.getPageCount());
+                for (int i = 0; i < contents.getPageCount(); i++) pages.add(contents.getPage(i).getString());
 
-            mc.getNetworkHandler().sendPacket(new BookUpdateC2SPacket(hand == Hand.MAIN_HAND ? mc.player.getInventory().selectedSlot : 40, pages, Optional.of(title.get())));
+                mc.getNetworkHandler().sendPacket(new BookUpdateC2SPacket(hand == Hand.MAIN_HAND ? mc.player.getInventory().selectedSlot : 40, pages, Optional.of(title.get())));
 
-            close();
-        };
+                close();
+            })).expandX();
+        });
     }
 }

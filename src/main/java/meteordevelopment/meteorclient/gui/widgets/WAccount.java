@@ -6,6 +6,7 @@
 package meteordevelopment.meteorclient.gui.widgets;
 
 import meteordevelopment.meteorclient.gui.WidgetScreen;
+import meteordevelopment.meteorclient.gui.renderer.GuiRenderer;
 import meteordevelopment.meteorclient.gui.widgets.containers.WHorizontalList;
 import meteordevelopment.meteorclient.gui.widgets.pressable.WButton;
 import meteordevelopment.meteorclient.gui.widgets.pressable.WMinus;
@@ -66,11 +67,27 @@ public abstract class WAccount extends WHorizontalList {
             });
         };
 
+        // Login on Start
+        WButton autoLogin = add(theme.button(
+            account.getLocalId().equals(Accounts.getAutoLogin())
+                ? GuiRenderer.FAVORITE_YES
+                : GuiRenderer.FAVORITE_NO)
+        ).widget();
+        autoLogin.tooltip = "Toggle this account to be automatically logged into when the game starts.\nThis will override the account you launch the game with.";
+        autoLogin.action = () -> {
+            Accounts.setAutoLogin(
+                account.getLocalId().equals(Accounts.getAutoLogin()) //toggle behavior
+                    ? null
+                    : account.getLocalId()
+            );
+
+            screen.reload();
+        };
+
         // Remove
-        WMinus remove = add(theme.minus()).widget();
-        remove.action = () -> {
+        add(theme.minus(() -> {
             Accounts.get().remove(account);
             if (refreshScreenAction != null) refreshScreenAction.run();
-        };
+        }));
     }
 }

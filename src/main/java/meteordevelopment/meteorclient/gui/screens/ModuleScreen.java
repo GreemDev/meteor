@@ -6,6 +6,7 @@
 package meteordevelopment.meteorclient.gui.screens;
 
 import kotlin.text.StringsKt;
+import meteordevelopment.meteorclient.events.meteor.ActiveModulesChangedEvent;
 import meteordevelopment.meteorclient.events.meteor.ModuleBindChangedEvent;
 import meteordevelopment.meteorclient.gui.GuiTheme;
 import meteordevelopment.meteorclient.gui.WindowScreen;
@@ -13,6 +14,7 @@ import meteordevelopment.meteorclient.gui.utils.Cell;
 import meteordevelopment.meteorclient.gui.widgets.WKeybind;
 import meteordevelopment.meteorclient.gui.widgets.WWidget;
 import meteordevelopment.meteorclient.gui.widgets.containers.WContainer;
+import meteordevelopment.meteorclient.gui.widgets.pressable.WCheckbox;
 import meteordevelopment.meteorclient.systems.modules.Module;
 import meteordevelopment.meteorclient.systems.modules.Modules;
 import meteordevelopment.meteorclient.utils.misc.NbtUtils;
@@ -26,6 +28,12 @@ public class ModuleScreen extends WindowScreen {
 
     private WContainer settingsContainer;
     private WKeybind keybind;
+
+    private WCheckbox active;
+
+    public boolean isToggleable() {
+        return active != null;
+    }
 
     public ModuleScreen(GuiTheme theme, Module module) {
         super(theme, theme.favorite(module.favorite, c ->
@@ -74,20 +82,22 @@ public class ModuleScreen extends WindowScreen {
                 });
             }
         });
-        add(theme.horizontalSeparator()).expandX();
+
 
 
         if (module.canActivate) {
+            add(theme.horizontalSeparator()).expandX();
             // Bottom
             within(add(theme.horizontalList()).expandX(), list -> {
                 // Active
                 list.add(theme.label("Active: "));
-                list.add(theme.checkbox(module.isActive(), checked -> {
+                active = list.add(theme.checkbox(module.isActive(), checked -> {
                     if (module.isActive() != checked) {
                         module.toggle();
                         reload();
                     }
-                })).expandCellX();
+                })).expandCellX()
+                    .widget();
             });
         }
     }
@@ -108,6 +118,13 @@ public class ModuleScreen extends WindowScreen {
     private void onModuleBindChanged(ModuleBindChangedEvent event) {
         if (module.canBind)
             keybind.reset();
+    }
+
+    @EventHandler
+    private void onActiveModulesChanged(ActiveModulesChangedEvent event) {
+        if (isToggleable() && event.getChanged().equals(module)) {
+            active.checked = event.wasEnabled();
+        }
     }
 
     @Override

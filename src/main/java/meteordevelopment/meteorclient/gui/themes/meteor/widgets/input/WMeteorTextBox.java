@@ -50,10 +50,9 @@ public class WMeteorTextBox extends WTextBox implements MeteorWidget {
         };
     }
 
-    @SuppressWarnings("unchecked")
     @Override
     protected <T extends WWidget & ICompletionItem> T createCompletionsValueWidth(String completion, boolean selected) {
-        return (T) new CompletionItem(completion, false, selected);
+        return Utils.cast(new CompletionItem(completion, false, selected));
     }
 
     private static class CompletionItem extends WMeteorLabel implements ICompletionItem {

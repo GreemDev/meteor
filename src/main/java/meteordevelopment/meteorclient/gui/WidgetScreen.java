@@ -26,6 +26,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicReference;
+import java.util.function.BiConsumer;
 import java.util.function.Consumer;
 
 import static meteordevelopment.meteorclient.MeteorClient.mc;
@@ -86,6 +87,13 @@ public abstract class WidgetScreen extends Screen {
 
     protected <W extends WContainer> void within(Cell<W> containerCell, Consumer<W> widgets) {
         widgets.accept(containerCell.widget());
+    }
+
+    protected <W extends WContainer> void add(W container, BiConsumer<Cell<W>, W> configContainer) {
+        Cell<W> cell = add(container);
+        within(cell.widget(), c ->
+            configContainer.accept(cell, c)
+        );
     }
 
     public void clear() {

@@ -63,7 +63,7 @@ public class NotebotSongsScreen extends WindowScreen {
                     String name = path.getFileName().toString();
                     int words = Utils.search(name, filterText);
 
-                    if (words > 0){
+                    if (words > 0) {
                         addPath(path);
                         noSongsFound.set(false);
                     }

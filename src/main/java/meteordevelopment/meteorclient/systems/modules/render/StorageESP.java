@@ -245,6 +245,10 @@ public class StorageESP extends Module {
         return Integer.toString(count);
     }
 
+    public boolean isShader() {
+        return isActive() && mode.get() == Mode.Shader;
+    }
+
     public enum Mode {
         Box,
         Shader

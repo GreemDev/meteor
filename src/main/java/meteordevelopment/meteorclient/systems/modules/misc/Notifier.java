@@ -222,7 +222,7 @@ public class Notifier extends Module {
             totemPopMap.put(entity.getUuid(), pops.incrementAndGet());
             Notification.notifier(
                 "&zNotifier",
-                "&f%s&7 popped&z%d&r%s.".formatted(entity.getEntityName(), pops.get(), Strings.pluralize("totem", pops.get())),
+                "&f%s&7 popped&z%d&r%s.".formatted(entity.getEntityName(), pops.get(), Strings.pluralize("totem", pops.get(), false)),
                 color
             ).sendOrElse(n ->
                 ChatUtils.sendMsg(getChatId(entity), Formatting.GRAY, "(highlight)%s (default)popped (highlight)%d (default)%s.", entity.getEntityName(), pops, Strings.pluralize("totem", pops))

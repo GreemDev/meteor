@@ -2,7 +2,7 @@
  * This file is part of the Meteor Client distribution (https://github.com/MeteorDevelopment/meteor-client).
  * Copyright (c) Meteor Development.
  */
-
+@file:JvmName("Coroutines")
 package net.greemdev.meteor.util
 
 
@@ -10,61 +10,67 @@ import kotlinx.coroutines.*
 import net.greemdev.meteor.*
 import java.util.concurrent.Executors
 import java.util.concurrent.ForkJoinPool
+import java.util.function.Supplier
 import kotlin.concurrent.thread
 
-fun Runtime.addSuspendShutdownHook(func: SuspendingInitializer<CoroutineScope>) =
-    addShutdownHook(thread(start = false) { runBlocking(block = func) })
+inline fun Runtime.addSuspendShutdownHook(crossinline func: SuspendingInitializer<CoroutineScope>) =
+    addShutdownHook(thread(start = false) { runBlocking { func() } })
 
-fun <T> Collection<T>.launchForEach(scope: CoroutineScope, func: suspend CoroutineScope.(T) -> Unit) {
+context(CoroutineScope)
+fun <T> Collection<T>.forEachLaunch(func: suspend CoroutineScope.(T) -> Unit) {
     forEach {
-        scope.launch { func(it) }
+        launch { func(it) }
     }
 }
 
-fun <T> Collection<T>.runForEach(func: suspend CoroutineScope.(T) -> Unit) {
+fun <T> Collection<T>.forEachBlocking(func: suspend CoroutineScope.(T) -> Unit) {
     forEach {
         runBlocking { func(it) }
     }
 }
 
-fun Job.invokeOnFailure(block: ValueAction<Throwable>) = invokeOnCompletion {
-    if (it != null && it !is CancellationException)
-        block(it)
+@JvmName("waitForCompletion")
+fun<T> `deferred-result-from-java`(deferred: Deferred<T>): T {
+    return runBlocking { deferred.await() }
 }
 
-fun Job.invokeOnSuccess(block: Action) = invokeOnCompletion {
-    if (it == null)
-        block()
-}
-
-suspend infix fun <T> Deferred<T>.thenTake(block: SuspendingValueAction<T>) = thenRun(block)
+suspend infix fun <T> Deferred<T>.thenTake(block: SuspendingValueAction<T>) = thenMap(block)
 suspend infix fun <T> Deferred<T>.then(block: SuspendingVisitor<T>): T = block(await())
-suspend infix fun <T, R> Deferred<T>.thenRun(block: SuspendingMapper<T, R>): R = block(await())
 
-inline fun CoroutineScope.jobBuilder(crossinline block: AsyncJobBuilder.() -> Unit) = object : AsyncJobBuilder(this) {}.apply(block)
+infix fun <T, R> Deferred<T>.thenAsync(block: suspend T.() -> R): Deferred<R> =
+    scope.async { block(await()) }
+suspend infix fun <T, R> Deferred<T>.thenMap(block: SuspendingMapper<T, R>): R = block(await())
 
-inline fun CoroutineScope.wrapJob(job: Job, crossinline block: Initializer<AsyncJobBuilder>) = jobBuilder(block) executing job
+inline fun CoroutineScope.jobBuilder(crossinline block: Initializer<AsyncJobBuilder>) = object : AsyncJobBuilder(this) {}.apply(block)
 
-abstract class AsyncJobBuilder(private val scope: CoroutineScope) {
+inline fun<J : Job> CoroutineScope.wrapJob(job: J, crossinline block: Initializer<AsyncJobBuilder>) = jobBuilder(block) executing job
+
+abstract class AsyncJobBuilder(
+    @get:JvmName("scope")
+    val scope: CoroutineScope
+) {
     private var onSuccess: Action = {}
     private var onFailure: ValueAction<Throwable> = {}
     private var onCancel: ValueAction<CancellationException> = {}
 
-    fun whenDone(block: Action) {
+    fun whenDone(block: Action): AsyncJobBuilder {
         onSuccess = block
+        return this
     }
 
-    fun whenError(block: ValueAction<Throwable>) {
+    fun whenError(block: ValueAction<Throwable>): AsyncJobBuilder {
         onFailure = block
+        return this
     }
 
-    fun whenCancelled(block: ValueAction<CancellationException>) {
+    fun whenCancelled(block: ValueAction<CancellationException>): AsyncJobBuilder {
         onCancel = block
+        return this
     }
 
     infix fun executing(block: SuspendingInitializer<CoroutineScope>) = executing(scope.launch(block = block))
 
-    infix fun executing(job: Job) = job.apply {
+    infix fun<J : Job> executing(job: J) = job.apply {
         invokeOnCompletion {
             when (it) {
                 null -> onSuccess()
@@ -79,36 +85,47 @@ private val coroutineLog by log4j { "Coroutines" }
 
 private var threadId = 0
 
-private fun nextId() = threadId++
-
 private val pool = Executors.newScheduledThreadPool(ForkJoinPool.getCommonPoolParallelism().coerceAtLeast(2)) {
     thread(
+        name = "Greteor-Work-Thread-${threadId++}",
         start = false,
-        name = "Greteor-Work-Thread-${nextId()}",
         isDaemon = true,
-        block = it::run
+        block = it.kotlin
     )
 }
 
-val dispatcher by invoking(pool::asCoroutineDispatcher)
+@get:JvmName("dispatcher")
+val dispatcher by lazy(pool::asCoroutineDispatcher)
+
+@get:JvmName("supervisor")
 val supervisor by lazy(::SupervisorJob)
 
-val scope by lazy {
-    CoroutineScope(dispatcher + supervisor + CoroutineExceptionHandler { ctx, t ->
+@get:JvmName("exceptionHandler")
+val coroutineExceptionHandler by lazy {
+    CoroutineExceptionHandler { ctx, t ->
         if (t is Error) {
             supervisor.cancel()
             throw t
         }
         if (t !is CancellationException)
             coroutineLog.error("Unhandled exception in coroutine ${ctx.job}", t)
-    })
+    }
 }
 
-fun<T> coroutines(block: CoroutineScope.() -> T): T = scope.block()
+@get:JvmName("scope")
+val scope by lazy {
+    CoroutineScope(dispatcher + supervisor + coroutineExceptionHandler)
+}
+
+inline fun<T> coroutines(block: CoroutineScope.() -> T): T = scope.block()
 
 /**
  * Intended usage is to call [AsyncJobBuilder.executing] as the last line of the lambda so that it's the result of the lambda.
  */
-fun launchJob(builder: AsyncJobBuilder.() -> Job): Job {
-    return scope.jobBuilder {}.builder()
-}
+fun<J : Job> launchJob(builder: AsyncJobBuilder.() -> J) = scope.jobBuilder {}.builder()
+
+fun Runnable.runInCoroutine(scope: CoroutineScope) =
+    scope.launch { run() }
+
+fun<T> Supplier<T>.getAsync(scope: CoroutineScope) =
+    scope.async { get() }

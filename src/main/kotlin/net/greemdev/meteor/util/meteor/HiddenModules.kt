@@ -18,7 +18,7 @@ object HiddenModules {
     @JvmStatic
     fun getModules() =
         Config.hiddenModuleNames.mapNotNull {
-            getOrNull { Meteor.modules().get(it) }
+            getOrNull { Meteor.module(it) }
         }
 
 

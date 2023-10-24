@@ -213,6 +213,13 @@ public class NoRender extends Module {
         .build()
     );
 
+    private final Setting<Boolean> noBeaconBeams = sgWorld.add(new BoolSetting.Builder()
+        .name("beacon-beams")
+        .description("Disables rendering of beacon beams.")
+        .defaultValue(false)
+        .build()
+    );
+
     private final Setting<Boolean> noFallingBlocks = sgWorld.add(new BoolSetting.Builder()
         .name("falling-blocks")
         .description("Disables rendering of falling blocks.")
@@ -416,6 +423,10 @@ public class NoRender extends Module {
 
     public boolean noSkylightUpdates() {
         return isActive() && noSkylightUpdates.get();
+    }
+
+    public boolean noBeaconBeams() {
+        return isActive() && noBeaconBeams.get();
     }
 
     public boolean noFallingBlocks() {

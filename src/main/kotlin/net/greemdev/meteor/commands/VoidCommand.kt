@@ -9,7 +9,10 @@ import it.unimi.dsi.fastutil.ints.Int2ObjectOpenHashMap
 import net.greemdev.meteor.GCommand
 import net.greemdev.meteor.hud.element.NotificationSource
 import net.greemdev.meteor.hud.notification.Notification
+import net.greemdev.meteor.hud.notification.notification
 import net.greemdev.meteor.hud.notification.notifications
+import net.greemdev.meteor.util.misc.neq
+import net.greemdev.meteor.util.misc.network
 import net.greemdev.meteor.util.misc.player
 import net.minecraft.item.ItemStack
 import net.minecraft.network.packet.c2s.play.ClickSlotC2SPacket
@@ -31,14 +34,27 @@ object VoidCommand : GCommand("void", "Delete the item stack in your hand.", {
             val s1 = items[i]
             val s2 = slots[i].stack
 
-            if (!ItemStack.areEqual(s1, s2))
+            if (s1 neq s2)
                 stacks.put(i, s2.copy())
         }
 
-        mc.networkHandler?.sendPacket(
-            ClickSlotC2SPacket(0, screenHandler.revision, slotId, button, SlotActionType.SWAP, screenHandler.cursorStack.copy(), stacks)
-        )
+        mc network {
+            sendPacket(
+                ClickSlotC2SPacket(
+                    0,
+                    screenHandler.revision,
+                    slotId,
+                    button,
+                    SlotActionType.SWAP,
+                    screenHandler.cursorStack.copy(),
+                    stacks
+                )
+            )
+        }
 
-        Notification("&zItem Stack Deleted",  NotificationSource.Default).send()
+        notification {
+            title = "&zItem Stack Deleted"
+            source = NotificationSource.Default
+        }.sendOrFallback()
     }
 })

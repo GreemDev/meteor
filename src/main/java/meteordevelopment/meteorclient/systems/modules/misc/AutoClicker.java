@@ -23,11 +23,11 @@ public class AutoClicker extends Module {
     );
 
     private final Setting<Mode> aMode = sgGeneral.add(new EnumSetting.Builder<Mode>()
-            .name("attack-mode")
-            .description("The method of clicking the Attack button.")
-            .defaultValue(Mode.Press)
-            .visible(attack::get)
-            .build()
+        .name("attack-mode")
+        .description("The method of clicking the Attack button.")
+        .defaultValue(Mode.Press)
+        .visible(attack::get)
+        .build()
     );
 
     private final Setting<Integer> aDelay = sgGeneral.add(new IntSetting.Builder()

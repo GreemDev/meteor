@@ -197,8 +197,11 @@ public class MeteorGuiTheme extends GuiTheme {
 
     @Override
     public WLabel label(String text, boolean title, double maxWidth) {
-        if (maxWidth == 0) return w(new WMeteorLabel(text, title));
-        return w(new WMeteorMultiLabel(text, title, maxWidth));
+        return w(
+            maxWidth == 0
+                ? new WMeteorLabel(text, title)
+                : new WMeteorMultiLabel(text, title, maxWidth)
+        );
     }
 
     @Override

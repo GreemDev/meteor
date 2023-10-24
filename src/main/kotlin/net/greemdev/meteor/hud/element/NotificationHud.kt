@@ -14,32 +14,31 @@ import meteordevelopment.meteorclient.systems.hud.screens.HudElementScreen
 import meteordevelopment.meteorclient.systems.modules.Module
 import meteordevelopment.meteorclient.utils.render.color.SettingColor
 import net.greemdev.meteor.AwtColor
+import net.greemdev.meteor.coalesce
 import net.greemdev.meteor.gui.theme.round.RoundedTheme
 import net.greemdev.meteor.gui.theme.round.util.RoundedRenderer2D
 import net.greemdev.meteor.hud.HudElementMetadata
 import net.greemdev.meteor.hud.notification.notifications
-import net.greemdev.meteor.type.ErrorPrompt
+import net.greemdev.meteor.type.MeteorPromptException
 import net.greemdev.meteor.util.meteor.*
 import net.greemdev.meteor.util.*
 import kotlin.math.min
 
 private var nInstance: NotificationHud? = null
 
-class NotificationHud : HudElement(info) {
+class NotificationHud private constructor() : HudElement(info) {
     companion object : HudElementMetadata<NotificationHud>(
         "notifications",
         "Displays various notifications in real-time on your HUD.", {
-            if (nInstance != null)
-                throw ErrorPrompt {
+            if (nInstance == null)
+                NotificationHud().also { nInstance = it }
+            else
+                throw MeteorPromptException {
                     notice("single-notification-hud") {
                         title("Multiple Notification HUDs")
                         message("You are limited to only one Notification HUD element.")
                     }
                 }
-            else {
-                nInstance = NotificationHud()
-                nInstance!!
-            }
         }
     ) {
 
@@ -55,8 +54,8 @@ class NotificationHud : HudElement(info) {
     }
 
     private val sg = settings.group()
-    private val sgS = settings.group("Sources", false)
-    private val sgP = settings.group("Proportions", false)
+    private val sgS = (settings group "Sources").collapsed()
+    private val sgP = (settings group "Proportions").collapsed()
 
     val displayTime: IntSetting by sg int {
         name("display-time")
@@ -296,10 +295,7 @@ class NotificationHud : HudElement(info) {
                 roundRenderer.quad(x, y, box.width, notificationHeight + barHeight, backgroundColor(), radius)
 
                 // progress bar
-                val progress = if (n.persistent)
-                    box.width
-                else
-                    (startTime + timeToDisplay - currentTime) * box.width / timeToDisplay
+                val progress = (startTime + timeToDisplay - currentTime) * box.width / timeToDisplay
 
                 roundRenderer.quad(x, y + notificationHeight, progress, barHeight, n.color, radius, false)
 
@@ -307,7 +303,7 @@ class NotificationHud : HudElement(info) {
 
                 val desc = n.description
                 val titleHeight = if (!desc.isNullOrEmpty())
-                    notificationHeight * 0.7
+                    notificationHeight * 0.65
                 else notificationHeight.toDouble()
 
                 // title scale

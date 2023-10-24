@@ -11,6 +11,7 @@ import meteordevelopment.meteorclient.systems.modules.misc.NameProtect;
 import meteordevelopment.meteorclient.systems.proxies.Proxies;
 import meteordevelopment.meteorclient.systems.proxies.Proxy;
 import meteordevelopment.meteorclient.utils.render.color.Color;
+import net.greemdev.meteor.util.misc.ButtonWidgetBuilder;
 import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.client.gui.screen.multiplayer.MultiplayerScreen;
 import net.minecraft.client.gui.widget.ButtonWidget;
@@ -41,11 +42,25 @@ public class MultiplayerScreenMixin extends Screen {
         loggedInAs = "Logged in as ";
         loggedInAsLength = textRenderer.getWidth(loggedInAs);
 
-        addDrawableChild(new ButtonWidget(this.width - 75 - 3, this.height - 20 - 7, 75, 20, Text.literal("Accounts"),
-            button -> client.setScreen(GuiThemes.get().accountsScreen())));
+        addDrawableChild(new ButtonWidgetBuilder()
+            .x(width - 75 - 3)
+            .y(height - 20 - 7)
+            .width(75)
+            .height(20)
+            .text("Accounts")
+            .onPress(button -> client.setScreen(GuiThemes.get().accountsScreen()))
+            .build()
+        );
 
-        addDrawableChild(new ButtonWidget(this.width - 75 - 3, this.height - 20 - 7 - 20 - 4,75, 20, Text.literal("Proxies"),
-            button -> client.setScreen(GuiThemes.get().proxiesScreen())));
+        addDrawableChild(new ButtonWidgetBuilder()
+            .x(width - 75 - 3)
+            .y(height - 20 - 7 - 20 - 4)
+            .width(75)
+            .height(20)
+            .text("Proxies")
+            .onPress(button -> client.setScreen(GuiThemes.get().proxiesScreen()))
+            .build()
+        );
     }
 
     @Inject(method = "render", at = @At("TAIL"))

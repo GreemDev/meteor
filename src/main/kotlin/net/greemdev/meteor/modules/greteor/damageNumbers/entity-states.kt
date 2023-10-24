@@ -3,7 +3,7 @@
  * Copyright (c) Meteor Development.
  */
 
-package net.greemdev.meteor.modules.dn
+package net.greemdev.meteor.modules.greteor.damageNumbers
 
 import net.greemdev.meteor.util.meteor.*
 import net.greemdev.meteor.util.minecraft
@@ -52,6 +52,9 @@ data class EntityState(val entity: LivingEntity) {
 
         lastDamageDelay = healthIndicatorDelay * 2
         lastHealth = health
+        if (DamageNumbers.ignoreSelf() && minecraft.player?.uuid == entity.uuid)
+            return
+
         DamageNumbers.add(DamageNumber(this, lastDamage))
     }
 
@@ -60,13 +63,13 @@ data class EntityState(val entity: LivingEntity) {
         const val healthIndicatorDelay = 10f
         private var ticked = 0
 
-        fun clean() = entries.removeIf {
-            val entity = minecraft.currentWorld().getEntityById(it.key)
+        fun clean() = entries.removeIf { (id, state) ->
+            val entity = minecraft.currentWorld().getEntityById(id)
             if (entity !is LivingEntity)
                 true
             else if (!minecraft.currentWorld().chunkManager.isChunkLoaded(entity.blockPos.x, entity.blockPos.z))
                 true
-            else if (DamageNumbers.ignoreSelf() && minecraft.player().uuid == it.value.entity.uuid)
+            else if (DamageNumbers.ignoreSelf() && minecraft.player().uuid == state.entity.uuid)
                 true
             else !entity.isAlive
         }

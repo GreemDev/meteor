@@ -7,6 +7,7 @@ package meteordevelopment.meteorclient.mixin;
 
 import com.mojang.datafixers.util.Either;
 import com.mojang.serialization.Codec;
+import meteordevelopment.meteorclient.utils.Utils;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.widget.ClickableWidget;
 import net.minecraft.client.option.GameOptions;
@@ -46,14 +47,13 @@ public class SimpleOptionMixin<T> {
         }
     }
 
-    @SuppressWarnings("unchecked")
     @Inject(method = "getCodec", at = @At("HEAD"), cancellable = true)
     public void onGetCodec(CallbackInfoReturnable<Codec<T>> info) {
         GameOptions options = MinecraftClient.getInstance().options;
         if (options == null) return;
 
         if ((Object) this == options.getGamma()) {
-            info.setReturnValue((Codec<T>) Codec.either(Codec.doubleRange(Double.MIN_VALUE, Double.MAX_VALUE), Codec.BOOL).xmap(either -> either.map(value -> value, value -> value ? 1.0 : 0.0), Either::left));
+            info.setReturnValue(Utils.cast(Codec.either(Codec.doubleRange(Double.MIN_VALUE, Double.MAX_VALUE), Codec.BOOL).xmap(either -> either.map(value -> value, value -> value ? 1.0 : 0.0), Either::left)));
         }
     }
 

@@ -3,7 +3,6 @@
  * Copyright (c) Meteor Development.
  */
 
-@file:Suppress("HasPlatformType")
 
 package net.greemdev.meteor.gui.theme.round
 
@@ -30,16 +29,16 @@ import net.greemdev.meteor.util.*
 import net.greemdev.meteor.util.meteor.*
 
 
-class RoundedTheme : GuiTheme("Rounded") {
+object RoundedTheme : GuiTheme("Rounded") {
     private val sg = settings.group()
-    private val sgC = settings.group("Colors")
-    private val sgTC = settings.group("Text")
-    private val sgBC = settings.group("Background")
-    private val sgO = settings.group("Outline")
-    private val sgSep = settings.group("Separator")
-    private val sgSB = settings.group("Scrollbar")
-    private val sgSl = settings.group("Slider")
-    private val sgSS = settings.group("Starscript")
+    private val sgC = settings group "Colors"
+    private val sgTC = settings group "Text"
+    private val sgBC = settings group "Background"
+    private val sgO = settings group "Outline"
+    private val sgSep = settings group "Separator"
+    private val sgSB = settings group "Scrollbar"
+    private val sgSl = settings group "Slider"
+    private val sgSS = settings group "Starscript"
 
     val scale by sg double {
         name("scale")
@@ -54,7 +53,7 @@ class RoundedTheme : GuiTheme("Rounded") {
 
     val moduleAlignment by sg.enum<AlignmentX> {
         name("module-alignment")
-        description("How module titles are aligned.")
+        description("How module titles are aligned in the Modules screen rectangles.")
         defaultValue(AlignmentX.Center)
     }
 
@@ -169,64 +168,84 @@ class RoundedTheme : GuiTheme("Rounded") {
             name("color-editing-mode")
             description("Which fields to display in the color editing screen.")
             defaultValue(ColorSettingScreenMode.All)
-        }.get()
+        }.setting
     }
 
 
-    override fun window(icon: WWidget?, title: String?) = w(WRoundedWindow(icon, title))
+    override fun window(icon: WWidget?, title: String?): WRoundedWindow = w(WRoundedWindow(icon, title))
     override fun label(text: String?, title: Boolean, maxWidth: Double): WLabel =
         if (maxWidth == 0.0)
             w(WRoundedLabel(text, title))
         else
             w(WRoundedMultiLabel(text, title, maxWidth))
 
-    override fun horizontalSeparator(text: String?) = w(WRoundedHorizontalSeparator(text))
-    override fun verticalSeparator(unicolor: Boolean) = w(WRoundedVerticalSeparator(unicolor))
-    override fun button(text: String?, texture: GuiTexture?) = w(WRoundedButton(text, texture))
-    override fun minus() = w(WRoundedMinus())
-
-    override fun plus() = w(WRoundedPlus())
-
-    override fun checkbox(checked: Boolean) = w(WRoundedCheckbox(checked))
-
-    override fun slider(value: Double, min: Double, max: Double) = w(WRoundedSlider(value, min, max))
+    override fun horizontalSeparator(text: String?): WRoundedHorizontalSeparator =
+        w(WRoundedHorizontalSeparator(text))
+    override fun verticalSeparator(unicolor: Boolean): WRoundedVerticalSeparator =
+        w(WRoundedVerticalSeparator(unicolor))
+    override fun button(text: String?, texture: GuiTexture?): WRoundedButton =
+        w(WRoundedButton(text, texture))
+    override fun minus(): WRoundedMinus =
+        w(WRoundedMinus())
+    override fun plus(): WRoundedPlus =
+        w(WRoundedPlus())
+    override fun checkbox(checked: Boolean): WRoundedCheckbox =
+        w(WRoundedCheckbox(checked))
+    override fun slider(value: Double, min: Double, max: Double): WRoundedSlider =
+        w(WRoundedSlider(value, min, max))
 
     override fun textBox(
         text: String,
         placeholder: String?,
         filter: CharFilter?,
         renderer: Class<out WTextBox.Renderer>?
-    ) = w(WRoundedTextBox(text, placeholder, CharFilter.orNone(filter), renderer))
+    ): WRoundedTextBox =
+        w(WRoundedTextBox(text, placeholder, CharFilter.orNone(filter), renderer))
 
-    override fun <T : Any> dropdown(values: Array<out T>, value: T) = w(WRoundedDropdown(values, value))
+    override fun <T : Any> dropdown(values: Array<out T>, value: T): WRoundedDropdown<T> =
+        w(WRoundedDropdown(values, value))
+    override fun triangle(): WRoundedTriangle =
+        w(WRoundedTriangle())
+    override fun tooltip(text: String): WRoundedTooltip =
+        w(WRoundedTooltip(text))
+    override fun view(): WRoundedView =
+        w(WRoundedView())
 
-    override fun triangle() = w(WRoundedTriangle())
-    override fun tooltip(text: String) = w(WRoundedTooltip(text))
-    override fun view() = w(WRoundedView())
-    override fun section(title: String, expanded: Boolean, headerWidget: WWidget?) = w(WRoundedSection(title, expanded, headerWidget))
-    override fun account(screen: WidgetScreen, account: Account<*>) = w(WRoundedAccount(screen, account))
-    override fun module(module: Module) = w(WRoundedModule(module))
-    override fun quad(color: Color) = w(WRoundedQuad(color))
-    override fun topBar() = w(WRoundedTopBar())
-    override fun favorite(checked: Boolean) = w(WRoundedFavorite(checked))
+    override fun section(
+        title: String,
+        expanded: Boolean,
+        headerWidget: WWidget?
+    ): WRoundedSection =
+        w(WRoundedSection(title, expanded, headerWidget))
 
-    override fun textColor() = textColor.get()
-    override fun titleTextColor() = titleTextColor.get()
-    override fun textSecondaryColor() = textSecondaryColor.get()
+    override fun account(screen: WidgetScreen, account: Account<*>): WRoundedAccount =
+        w(WRoundedAccount(screen, account))
+    override fun module(module: Module): WRoundedModule =
+        w(WRoundedModule(module))
+    override fun quad(color: Color): WRoundedQuad =
+        w(WRoundedQuad(color))
+    override fun topBar(): WRoundedTopBar =
+        w(WRoundedTopBar())
+    override fun favorite(checked: Boolean): WRoundedFavorite =
+        w(WRoundedFavorite(checked))
 
-    override fun starscriptTextColor() = starscriptText()
-    override fun starscriptBraceColor() = starscriptBraces()
-    override fun starscriptParenthesisColor() = starscriptParenthesis()
-    override fun starscriptDotColor() = starscriptDots()
-    override fun starscriptCommaColor() = starscriptCommas()
-    override fun starscriptOperatorColor() = starscriptOperators()
-    override fun starscriptStringColor() = starscriptStrings()
-    override fun starscriptNumberColor() = starscriptNumbers()
-    override fun starscriptKeywordColor() = starscriptKeywords()
-    override fun starscriptAccessedObjectColor() = starscriptAccessedObjects()
+    override fun textColor(): SettingColor = textColor.get()
+    override fun titleTextColor(): SettingColor = titleTextColor.get()
+    override fun textSecondaryColor(): SettingColor = textSecondaryColor.get()
+
+    override fun starscriptTextColor(): SettingColor = starscriptText()
+    override fun starscriptBraceColor(): SettingColor = starscriptBraces()
+    override fun starscriptParenthesisColor(): SettingColor = starscriptParenthesis()
+    override fun starscriptDotColor(): SettingColor = starscriptDots()
+    override fun starscriptCommaColor(): SettingColor = starscriptCommas()
+    override fun starscriptOperatorColor(): SettingColor = starscriptOperators()
+    override fun starscriptStringColor(): SettingColor = starscriptStrings()
+    override fun starscriptNumberColor(): SettingColor = starscriptNumbers()
+    override fun starscriptKeywordColor(): SettingColor = starscriptKeywords()
+    override fun starscriptAccessedObjectColor(): SettingColor = starscriptAccessedObjects()
     override fun scalar(): Double = scale()
-    override fun categoryIcons() = showCategoryIcons()
-    override fun hideHUD() = hideHud()
+    override fun categoryIcons(): Boolean = showCategoryIcons()
+    override fun hideHUD(): Boolean = hideHud()
 
     private fun colorSetting(name: String, description: String, defaultValue: SettingColor) = colorSetting(sgC, name, description, defaultValue)
 

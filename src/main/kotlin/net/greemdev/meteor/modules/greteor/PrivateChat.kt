@@ -3,11 +3,12 @@
  * Copyright (c) Meteor Development.
  */
 
-package net.greemdev.meteor.modules
+package net.greemdev.meteor.modules.greteor
 
 import meteordevelopment.meteorclient.events.game.SendMessageEvent
 import meteordevelopment.orbit.EventHandler
 import net.greemdev.meteor.GModule
+import net.greemdev.meteor.util.asUuidOrNull
 import net.greemdev.meteor.util.misc.*
 import net.greemdev.meteor.util.meteor.*
 
@@ -21,18 +22,19 @@ object PrivateChat : GModule("private-chat", "Turns your chat into a private con
 
     val commandFormat by sg string {
         name("command-format")
-        description("The format of the message command on the server.")
+        description("The format of the message command on the server.\n2 placeholders, player and message, NOT Starscript.")
         defaultValue("msg {player} {message}")
     }
 
     @EventHandler
     private fun interceptMessage(event: SendMessageEvent) {
         var foundAny: Boolean
+
         players().mapNotNull { p ->
             mc.networkHandler.findFirstPlayerListEntry {
                 it.profile.name.equals(p, true)
             } ?: mc.networkHandler.findFirstPlayerListEntry {
-                it.profile.id.equals(p)
+                it.profile.id.equals(p.asUuidOrNull())
             }
         }.also {
             foundAny = it.isNotEmpty()

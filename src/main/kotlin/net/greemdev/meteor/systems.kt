@@ -12,14 +12,16 @@ import meteordevelopment.meteorclient.systems.commands.Command
 import meteordevelopment.meteorclient.systems.modules.Categories
 import meteordevelopment.meteorclient.systems.modules.Category
 import meteordevelopment.meteorclient.systems.modules.Module
+import meteordevelopment.meteorclient.utils.player.ChatUtils
 import meteordevelopment.orbit.EventHandler
 import net.greemdev.meteor.commands.api.CommandBuilder
 import net.greemdev.meteor.event.GameInputEvent
+import net.greemdev.meteor.util.findInstancesOfSubtypesOf
 import net.greemdev.meteor.util.meteor.group
 import net.minecraft.command.CommandSource
 
 abstract class GModule(name: String, description: String, category: Category = Greteor.category()) : Module(category, name, description) {
-    protected val sg by lazy { settings.group() }
+    protected val sg by lazy(settings::group)
     open fun onGameInput(event: GameInputEvent) {}
 
     @EventHandler
@@ -38,27 +40,45 @@ abstract class GModule(name: String, description: String, category: Category = G
     abstract class Render(name: String, description: String) : GModule(name, description, Categories.Render)
     abstract class World(name: String, description: String) : GModule(name, description, Categories.World)
     abstract class Misc(name: String, description: String) : GModule(name, description, Categories.Misc)
+
+    companion object {
+        fun findAll() = findInstancesOfSubtypesOf<GModule>("net.greemdev.meteor.modules")
+    }
+
 }
 
 abstract class GCommand(
     name: String,
     description: String,
-    private val b: (Initializer<CommandBuilder>)? = null,
-    vararg val aliases: String
-    ) : Command(name, description) {
+    private val b: (context(GCommand) CommandBuilder.() -> Unit)? = null,
+    private vararg val aliases: String
+) : Command(name, description) {
 
     constructor(name: String, description: String, vararg aliases: String) : this(name, description, null, *aliases)
 
-    override fun getAliases() = aliases.toMutableList()
+    override fun getAliases() = aliases.toList()
 
     protected open fun CommandBuilder.inject() {
-        error("The base implementation of GCommand#inject should never be called! " +
-            "You forgot to override the method or provide the builder in the abstract class constructor.")
+        kotlin.error("The base implementation of GCommand#inject should never be called! " +
+            "You forgot to override the method or provide the builder in the abstract class constructor for command $name.")
     }
 
     override fun build(builder: LiteralArgumentBuilder<CommandSource>) {
-        CommandBuilder(builder).apply {
-            b?.also { it() } ?: inject()
+        with(CommandBuilder(builder)) {
+            b?.invoke(this@GCommand, this) ?: inject()
         }
+    }
+
+    /**
+     * Show the exception to the user and log it.
+     * Useful for [CommandBuilder]'s `triesRunning` for simple command error display.
+     */
+    fun catching(t: Throwable) {
+        error(t.message ?: "Uncaught exception without message.")
+        Greteor.logger.catching(t)
+    }
+
+    companion object {
+        fun findAll() = findInstancesOfSubtypesOf<GCommand>("net.greemdev.meteor.commands")
     }
 }

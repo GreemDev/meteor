@@ -15,7 +15,7 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.util.Set;
 
-public class PacketUtilsUtil {
+public final class PacketUtilsUtil {
     private static final String packetRegistryClass = """
     private static class PacketRegistry extends Registry<Class<? extends Packet<?>>> {
         public PacketRegistry() {
@@ -208,7 +208,9 @@ public class PacketUtilsUtil {
         writer.write("import java.util.stream.Stream;\n");
 
         //   Write class
-        writer.write("\npublic class PacketUtils {\n");
+        writer.write("\npublic final class PacketUtils {\n\n");
+
+        writer.write("    private PacketUtils() {}\n\n");
 
         //     Write fields
         writer.write("    public static final Registry<Class<? extends Packet<?>>> REGISTRY = new PacketRegistry();\n\n");

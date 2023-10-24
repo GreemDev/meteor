@@ -6,6 +6,7 @@
 package meteordevelopment.meteorclient.gui.widgets.pressable;
 
 import meteordevelopment.meteorclient.gui.widgets.WWidget;
+import meteordevelopment.meteorclient.utils.Utils;
 
 import static org.lwjgl.glfw.GLFW.GLFW_MOUSE_BUTTON_LEFT;
 import static org.lwjgl.glfw.GLFW.GLFW_MOUSE_BUTTON_RIGHT;
@@ -33,10 +34,9 @@ public abstract class WPressable extends WWidget {
         return false;
     }
 
-    @SuppressWarnings("unchecked")
     public <T extends WWidget> T action(Runnable action) {
         this.action = action;
-        return (T)this;
+        return Utils.cast(this);
     }
 
     protected void onPressed(int button) {}

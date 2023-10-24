@@ -8,6 +8,7 @@ package meteordevelopment.meteorclient.mixin;
 import it.unimi.dsi.fastutil.io.FastByteArrayOutputStream;
 import meteordevelopment.meteorclient.gui.GuiThemes;
 import meteordevelopment.meteorclient.gui.screens.EditBookTitleAndAuthorScreen;
+import net.greemdev.meteor.util.misc.ButtonWidgetBuilder;
 import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.client.gui.screen.ingame.BookScreen;
 import net.minecraft.client.gui.widget.ButtonWidget;
@@ -46,24 +47,34 @@ public class BookScreenMixin extends Screen {
 
     @Inject(method = "init", at = @At("TAIL"))
     private void onInit(CallbackInfo info) {
-        addDrawableChild(new ButtonWidget(4, 4, 120, 20, Text.literal("Copy"), button -> {
-            NbtList listTag = new NbtList();
-            for (int i = 0; i < contents.getPageCount(); i++) listTag.add(NbtString.of(contents.getPage(i).getString()));
 
-            NbtCompound tag = new NbtCompound();
-            tag.put("pages", listTag);
-            tag.putInt("currentPage", pageIndex);
+        addDrawableChild(new ButtonWidgetBuilder()
+            .x(4)
+            .y(4)
+            .width(120)
+            .height(20)
+            .text(Text.literal("Copy"))
+            .onPress(button -> {
+                NbtList listTag = new NbtList();
+                for (int i = 0; i < contents.getPageCount(); i++)
+                    listTag.add(NbtString.of(contents.getPage(i).getString()));
 
-            FastByteArrayOutputStream bytes = new FastByteArrayOutputStream();
-            DataOutputStream out = new DataOutputStream(bytes);
-            try {
-                NbtIo.write(tag, out);
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
+                NbtCompound tag = new NbtCompound();
+                tag.put("pages", listTag);
+                tag.putInt("currentPage", pageIndex);
 
-            GLFW.glfwSetClipboardString(mc.getWindow().getHandle(), Base64.getEncoder().encodeToString(bytes.array));
-        }));
+                FastByteArrayOutputStream bytes = new FastByteArrayOutputStream();
+                DataOutputStream out = new DataOutputStream(bytes);
+                try {
+                    NbtIo.write(tag, out);
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+
+                GLFW.glfwSetClipboardString(mc.getWindow().getHandle(), Base64.getEncoder().encodeToString(bytes.array));
+            })
+            .build()
+        );
 
         // Edit title & author
         ItemStack itemStack = mc.player.getMainHandStack();
@@ -78,8 +89,15 @@ public class BookScreenMixin extends Screen {
         ItemStack book = itemStack; // Fuck you Java
         Hand hand2 = hand; // Honestly
 
-        addDrawableChild(new ButtonWidget(4, 4 + 20 + 2, 120, 20, Text.literal("Edit title & author"), button -> {
-            mc.setScreen(new EditBookTitleAndAuthorScreen(GuiThemes.get(), book, hand2));
-        }));
+        addDrawableChild(
+            new ButtonWidgetBuilder()
+                .x(4)
+                .y(4 + 20 + 2)
+                .width(120)
+                .height(20)
+                .text("Edit title & author")
+                .onPress(button -> mc.setScreen(new EditBookTitleAndAuthorScreen(GuiThemes.get(), book, hand2)))
+                .build()
+        );
     }
 }

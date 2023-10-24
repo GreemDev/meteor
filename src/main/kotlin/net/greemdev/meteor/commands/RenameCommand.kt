@@ -5,7 +5,6 @@
 
 package net.greemdev.meteor.commands
 
-import meteordevelopment.meteorclient.utils.player.ChatUtils
 import net.greemdev.meteor.GCommand
 import net.greemdev.meteor.commands.api.*
 import net.greemdev.meteor.util.misc.*
@@ -16,14 +15,14 @@ object RenameCommand : GCommand("rename", "Renames the item in your hand.", {
     then("name", arg.greedyString()) {
         alwaysRuns {
             val stack = mc.player().usableItemStack() ?: noItem.throwNew()
-            val name by it(arg.greedyString(), "name")
+            val name by it.argument(arg.greedyString(), "name")
             val newName = name.replace('&', '§')
 
             stack.setCustomName(textOf(newName))
-            ChatUtils.info("Changed the item's name.")
+            info("Changed the item's name.")
             mc network { sendPacket(RenameItemC2SPacket(newName)) }
         }
     }
 })
 
-private val noItem by simpleCommandException(textOf("You aren't holding anything."))
+private val noItem by CommandExceptions simple textOf("You aren't holding anything.")

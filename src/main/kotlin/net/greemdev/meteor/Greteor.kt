@@ -13,32 +13,31 @@ import net.greemdev.meteor.util.*
 import net.greemdev.meteor.util.meteor.*
 import net.greemdev.meteor.util.meteor.starscript.initGStarscript
 import net.greemdev.meteor.util.misc.GVersioning
+import net.greemdev.meteor.util.python.runPythonBaseGenerator
 import net.minecraft.item.Items
 import java.lang.invoke.MethodHandles
 
-private val category = Category("Greteor", Items.LIME_CONCRETE_POWDER.defaultStack)
-private val hudGroup = HudGroup("Greteor")
+private val category = Category(Greteor::class.simpleName, Items.LIME_CONCRETE_POWDER.defaultStack)
+private val hudGroup = HudGroup(Greteor::class.simpleName)
 
 object Greteor {
 
     @JvmStatic
-    fun logger() = logger
-
-    internal val logger by log4j("Greteor")
+    @get:JvmName("logger")
+    val logger by log4j("Greteor")
 
     fun category() = category
     fun hudGroup() = hudGroup
 
     @JvmStatic
     fun init() {
-        findInstancesOfSubtypesOf<GModule>("net.greemdev.meteor.modules")
-            .forEach(Meteor.modules()::add)
-
-        findInstancesOfSubtypesOf<GCommand>("net.greemdev.meteor.commands")
-            .forEach(Meteor.commands()::add)
+        Meteor.modules().addAll(GModule.findAll())
+        Meteor.commands().addAll(GCommand.findAll())
 
         GVersioning.loadLatestRevision()
         initGStarscript()
+
+        runPythonBaseGenerator()
     }
 
     @JvmStatic

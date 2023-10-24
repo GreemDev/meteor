@@ -38,7 +38,7 @@ public class Macro implements ISerializable<Macro> {
         .name("messages")
         .description("The messages for the macro to send.")
         .onChanged(v -> dirty = true)
-        .renderer(StarscriptTextBoxRenderer.class)
+        .renderStarscript()
         .build()
     );
 

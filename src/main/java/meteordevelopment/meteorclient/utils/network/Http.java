@@ -8,6 +8,7 @@ package meteordevelopment.meteorclient.utils.network;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.JsonObject;
+import meteordevelopment.meteorclient.MeteorClient;
 import meteordevelopment.meteorclient.utils.json.DateDeserializer;
 
 import java.io.IOException;
@@ -20,8 +21,10 @@ import java.net.http.HttpClient;
 import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
 import java.util.Date;
+import java.util.function.Consumer;
 import java.util.stream.Stream;
 
+@Deprecated(since = "rev54", forRemoval = true)
 public class Http {
     private static final HttpClient CLIENT = HttpClient.newHttpClient();
     private static final Gson GSON = new GsonBuilder()
@@ -29,6 +32,8 @@ public class Http {
         .create();
 
     private enum Method {
+        // I have no idea why IntelliJ is screaming that this can't be accessed when it's private & yet that's literally how it's been this entire time & worked
+        // changed to public just to shut IJ up
         GET,
         POST
     }
@@ -39,7 +44,7 @@ public class Http {
 
         public Request(Method method, String url) {
             try {
-                this.builder = HttpRequest.newBuilder().uri(new URI(url)).header("User-Agent", "Meteor Client");
+                this.builder = HttpRequest.newBuilder().uri(new URI(url)).header("User-Agent", MeteorClient.NAME);
                 this.method = method;
             } catch (URISyntaxException e) {
                 e.printStackTrace();
@@ -77,11 +82,7 @@ public class Http {
         }
 
         public Request bodyJson(Object object) {
-            builder.header("Content-Type", "application/json");
-            builder.method(method.name(), HttpRequest.BodyPublishers.ofString(GSON.toJson(object)));
-            method = null;
-
-            return this;
+            return bodyJson(GSON.toJson(object));
         }
 
         private <T> T _send(String accept, HttpResponse.BodyHandler<T> responseBodyHandler) {
@@ -95,6 +96,26 @@ public class Http {
                 e.printStackTrace();
                 return null;
             }
+        }
+
+        public void receiveInputStream(Consumer<InputStream> callback) {
+            MeteorExecutor.execute(() -> callback.accept(sendInputStream()));
+        }
+
+        public void receiveString(Consumer<String> callback) {
+            MeteorExecutor.execute(() -> callback.accept(sendString()));
+        }
+
+        public void receiveLines(Consumer<Stream<String>> callback) {
+            MeteorExecutor.execute(() -> callback.accept(sendLines()));
+        }
+
+        public void receiveJson(Consumer<JsonObject> callback) {
+            MeteorExecutor.execute(() -> callback.accept(sendJson()));
+        }
+
+        public <T> void receiveJson(Type type, Consumer<T> callback) {
+            MeteorExecutor.execute(() -> callback.accept(sendJson(type)));
         }
 
         public void send() {

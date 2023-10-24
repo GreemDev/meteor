@@ -40,7 +40,7 @@ class TriStateColorSetting(
         name("$name-color")
         description(description)
         defaultValue(color)
-    }.get()
+    }.getValue(null, ::group)
 
 
 }

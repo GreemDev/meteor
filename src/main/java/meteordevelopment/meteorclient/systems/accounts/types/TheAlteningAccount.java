@@ -14,7 +14,6 @@ import com.mojang.authlib.yggdrasil.YggdrasilUserAuthentication;
 import meteordevelopment.meteorclient.MeteorClient;
 import meteordevelopment.meteorclient.mixin.MinecraftClientAccessor;
 import meteordevelopment.meteorclient.systems.accounts.Account;
-import meteordevelopment.meteorclient.systems.accounts.AccountType;
 import meteordevelopment.meteorclient.systems.accounts.AccountUtils;
 import net.minecraft.client.util.Session;
 
@@ -29,7 +28,7 @@ public class TheAlteningAccount extends Account<TheAlteningAccount> {
     private static final String SERVICES = "https://api.minecraftservices.com";
 
     public TheAlteningAccount(String token) {
-        super(AccountType.TheAltening, token);
+        super(Type.TheAltening, token);
     }
 
     @Override

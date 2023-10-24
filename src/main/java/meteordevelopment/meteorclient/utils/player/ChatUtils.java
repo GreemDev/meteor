@@ -8,10 +8,7 @@ package meteordevelopment.meteorclient.utils.player;
 import baritone.api.BaritoneAPI;
 import meteordevelopment.meteorclient.mixin.ChatHudAccessor;
 import meteordevelopment.meteorclient.systems.config.Config;
-import net.greemdev.meteor.util.text.ChatColor;
-import net.greemdev.meteor.util.text.ChatFeedback;
-import net.greemdev.meteor.util.text.FormattedText;
-import net.greemdev.meteor.util.text.FormattedTextBuilder;
+import net.greemdev.meteor.util.text.*;
 import net.minecraft.text.*;
 import net.minecraft.util.Formatting;
 import net.minecraft.util.Pair;
@@ -26,7 +23,10 @@ import java.util.function.Supplier;
 import static meteordevelopment.meteorclient.MeteorClient.mc;
 import static net.greemdev.meteor.util.accessors.*;
 
-public class ChatUtils {
+public final class ChatUtils {
+
+    private ChatUtils() {}
+
     private static final List<Pair<String, Supplier<Text>>> customPrefixes = new ArrayList<>();
     private static String forcedPrefixClassName;
 
@@ -138,7 +138,7 @@ public class ChatUtils {
         ((ChatHudAccessor) mc.inGameHud.getChatHud()).add(message, id);
     }
 
-    private static MutableText getCustomPrefix(String prefixTitle, Formatting prefixColor) {
+    private static Text getCustomPrefix(String prefixTitle, Formatting prefixColor) {
         return textBuilder()
             .colored(ChatColor.grey)
             .addString("[")
@@ -152,7 +152,7 @@ public class ChatUtils {
     private static Text getPrefix() {
         if (customPrefixes.isEmpty()) {
             forcedPrefixClassName = null;
-            return ChatFeedback.getFeedbackPrefix();
+            return ChatFeedback.prefix();
         }
 
         boolean foundChatUtils = false;
@@ -175,16 +175,16 @@ public class ChatUtils {
             }
         }
 
-        if (className == null) return ChatFeedback.getFeedbackPrefix();
+        if (className == null) return ChatFeedback.prefix();
 
         for (Pair<String, Supplier<Text>> pair : customPrefixes) {
             if (className.startsWith(pair.getLeft())) {
                 Text prefix = pair.getRight().get();
-                return prefix != null ? prefix : ChatFeedback.getFeedbackPrefix();
+                return prefix != null ? prefix : ChatFeedback.prefix();
             }
         }
 
-        return ChatFeedback.getFeedbackPrefix();
+        return ChatFeedback.prefix();
     }
 
     private static String formatMsg(String format, Formatting defaultColor, Object... args) {
@@ -196,21 +196,17 @@ public class ChatUtils {
         return msg;
     }
 
-    public static MutableText formatCoords(Vec3d pos) {
-        String coordsString = String.format("(highlight)(underline)%.0f, %.0f, %.0f(default)", pos.x, pos.y, pos.z);
-        coordsString = formatMsg(coordsString, Formatting.GRAY);
-        MutableText coordsText = Text.literal(coordsString);
-        coordsText.setStyle(coordsText.getStyle()
-                .withFormatting(Formatting.BOLD)
-                .withClickEvent(new ClickEvent(
-                        ClickEvent.Action.RUN_COMMAND,
-                        String.format("%sgoto %d %d %d", BaritoneAPI.getSettings().prefix.value, (int) pos.x, (int) pos.y, (int) pos.z)
-                ))
-                .withHoverEvent(new HoverEvent(
-                        HoverEvent.Action.SHOW_TEXT,
-                        Text.literal("Set as Baritone goal")
-                ))
-        );
-        return coordsText;
+    public static Text formatCoords(Vec3d pos) {
+        return FormattedText.build(text -> {
+            String coordsString = String.format("(highlight)(underline)%.0f, %.0f, %.0f(default)", pos.x, pos.y, pos.z);
+            coordsString = formatMsg(coordsString, Formatting.GRAY);
+
+            text.bold();
+            text.addString(coordsString);
+            text.clicked(actions.runCommand,
+                String.format("%sgoto %d %d %d", BaritoneAPI.getSettings().prefix.value, (int) pos.x, (int) pos.y, (int) pos.z)
+            );
+            text.hoveredText(Text.literal("Set as Baritone goal"));
+        });
     }
 }

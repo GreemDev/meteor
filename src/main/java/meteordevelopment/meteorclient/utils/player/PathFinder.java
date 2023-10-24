@@ -17,6 +17,7 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Vec3d;
 
 import java.util.ArrayList;
+import java.util.Optional;
 
 import static meteordevelopment.meteorclient.MeteorClient.mc;
 
@@ -97,21 +98,21 @@ public class PathFinder {
     }
 
     public BlockState getBlockStateAtPos(BlockPos pos) {
-        if (mc.world != null)
-            return mc.world.getBlockState(pos);
-        return null;
+        return mc.world != null
+            ? mc.world.getBlockState(pos)
+            : null;
     }
 
     public BlockState getBlockStateAtPos(int x, int y, int z) {
-        if (mc.world != null)
-            return mc.world.getBlockState(new BlockPos(x, y, z));
-        return null;
+        return mc.world != null
+            ? mc.world.getBlockState(new BlockPos(x, y, z))
+            : null;
     }
 
     public Block getBlockAtPos(BlockPos pos) {
-        if (mc.world != null)
-            return mc.world.getBlockState(pos).getBlock();
-        return null;
+        return mc.world != null
+            ? mc.world.getBlockState(pos).getBlock()
+            : null;
     }
 
     public boolean isSolidFloor(BlockPos blockPos) {
@@ -133,7 +134,7 @@ public class PathFinder {
     }
 
     @EventHandler
-    private void moveEventListener(PlayerMoveEvent event) {
+    private void playerMoved(PlayerMoveEvent event) {
         if (target != null && mc.player != null) {
             if (mc.player.distanceTo(target) > 3) {
                 if (currentPathBlock == null) currentPathBlock = getNextPathBlock();

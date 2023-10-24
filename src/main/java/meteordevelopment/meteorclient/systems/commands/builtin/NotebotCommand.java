@@ -11,7 +11,6 @@ import com.mojang.brigadier.exceptions.SimpleCommandExceptionType;
 import meteordevelopment.meteorclient.MeteorClient;
 import meteordevelopment.meteorclient.events.packets.PacketEvent;
 import meteordevelopment.meteorclient.events.world.TickEvent;
-import meteordevelopment.meteorclient.gui.GuiThemes;
 import meteordevelopment.meteorclient.systems.commands.Command;
 import meteordevelopment.meteorclient.systems.commands.arguments.NotebotSongArgumentType;
 import meteordevelopment.meteorclient.systems.modules.Modules;
@@ -104,7 +103,7 @@ public class NotebotCommand extends Command {
                     return SINGLE_SUCCESS;
                 })
             )
-        ).then(utils.on(literal("record"), record ->
+        ).then(utils.apply(literal("record"), record ->
             record.then(literal("start")
                 .executes(ctx -> {
                     ticks = -1;

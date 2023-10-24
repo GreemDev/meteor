@@ -26,6 +26,7 @@ import meteordevelopment.orbit.*;
 import net.fabricmc.api.ClientModInitializer;
 import net.fabricmc.loader.api.FabricLoader;
 import net.fabricmc.loader.api.metadata.ModMetadata;
+import net.fabricmc.loader.api.metadata.Person;
 import net.greemdev.meteor.Greteor;
 import net.greemdev.meteor.utils;
 import net.greemdev.meteor.util.meteor.Meteor;
@@ -37,10 +38,12 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.File;
+import java.util.List;
 
 public class MeteorClient implements ClientModInitializer {
     public static final String MOD_ID = "meteor-client";
-    public static final ModMetadata MOD_META = FabricLoader.getInstance().getModContainer(MOD_ID).get().getMetadata();
+    public static final String NAME;
+    public static final ModMetadata MOD_META;
     public final static Version VERSION;
 
     public final static Color COLOR;
@@ -50,14 +53,27 @@ public class MeteorClient implements ClientModInitializer {
     public static MinecraftClient mc;
     public static MeteorClient INSTANCE;
     public static final IEventBus EVENT_BUS = new EventBus();
-    public static final File FOLDER = new File(FabricLoader.getInstance().getGameDir().toString(), MOD_ID);
-    public static final Logger LOG = LoggerFactory.getLogger("Meteor");
+    public static final File FOLDER = FabricLoader.getInstance().getGameDir().resolve(MOD_ID).toFile();
+    public static final Logger LOG;
+
+    public static Person randomAuthor() {
+        return utils.getRandomElement(MeteorClient.MOD_META.getAuthors());
+    }
+
+    public static List<String> authors() {
+        return MeteorClient.MOD_META.getAuthors().stream().map(Person::getName).toList();
+    }
 
     public static String fullVersion() {
         return "%s-rev%d".formatted(VERSION, REVISION);
     }
 
     static {
+        MOD_META = FabricLoader.getInstance().getModContainer(MOD_ID).get().getMetadata();
+
+        NAME = MOD_META.getName();
+        LOG = LoggerFactory.getLogger(NAME);
+
         String versionString = MOD_META.getVersion().getFriendlyString();
         if (versionString.contains("-")) versionString = versionString.split("-")[0];
 

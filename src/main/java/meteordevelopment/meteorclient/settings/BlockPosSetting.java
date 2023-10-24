@@ -5,6 +5,7 @@
 
 package meteordevelopment.meteorclient.settings;
 
+import net.greemdev.meteor.utils;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.util.math.BlockPos;
 
@@ -21,12 +22,9 @@ public class BlockPosSetting extends Setting<BlockPos> {
         List<String> values = List.of(str.split(","));
         if (values.size() != 3) return null;
 
-        BlockPos bp = null;
-        try {
-            bp = new BlockPos(Integer.parseInt(values.get(0)), Integer.parseInt(values.get(1)), Integer.parseInt(values.get(2)));
-        }
-        catch (NumberFormatException ignored) {}
-        return bp;
+        return utils.supplyOrNull(() ->
+            new BlockPos(Integer.parseInt(values.get(0)), Integer.parseInt(values.get(1)), Integer.parseInt(values.get(2)))
+        );
     }
 
     @Override
@@ -43,8 +41,11 @@ public class BlockPosSetting extends Setting<BlockPos> {
 
     @Override
     protected BlockPos load(NbtCompound tag) {
-        int[] value = tag.getIntArray("value");
-        set(new BlockPos(value[0], value[1], value[2]));
+        utils.apply(tag.getIntArray("value"), xyz ->
+            set(new BlockPos(
+                xyz[0], xyz[1], xyz[2]
+            ))
+        );
 
         return get();
     }

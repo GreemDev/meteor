@@ -6,13 +6,17 @@
 package net.greemdev.meteor.util.misc
 
 import meteordevelopment.meteorclient.MeteorClient
-import meteordevelopment.meteorclient.utils.network.Http
+import net.greemdev.meteor.findFirst
+import net.greemdev.meteor.invoking
+import net.greemdev.meteor.util.Http
 
 object GVersioning {
+
+    const val upstreamGradleProperties = "https://raw.githubusercontent.com/GreemDev/meteor/main/gradle.properties"
+
     @JvmStatic
     fun loadLatestRevision() {
-        val response = Http.get("https://raw.githubusercontent.com/GreemDev/meteor/main/gradle.properties").sendLines()
-        latestRevision = response
+        latestRevision = Http.get(upstreamGradleProperties).requestLines().orEmpty()
             .filter { it.startsWith("revision") }
             .map { it.substringAfterLast('=') }
             .findFirst()
@@ -25,16 +29,21 @@ object GVersioning {
         private set
 
     @JvmStatic
-    fun revisionsBehind() =
+    @get:JvmName("revisionsBehind")
+    val revisionsBehind by invoking {
         if (latestRevision == -1)
             0
         else
             latestRevision - MeteorClient.REVISION
+    }
+
 
 
     @JvmStatic
-    fun isOutdated() = revisionsBehind() > 0
+    @get:JvmName("isOutdated")
+    val isOutdated by invoking { revisionsBehind > 0 }
 
     @JvmStatic
-    fun isUpToDate() = revisionsBehind() == 0
+    @get:JvmName("isUpToDate")
+    val isUpToDate by invoking { revisionsBehind == 0 }
 }

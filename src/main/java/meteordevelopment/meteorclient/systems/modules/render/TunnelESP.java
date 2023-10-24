@@ -314,10 +314,9 @@ public class TunnelESP extends Module {
             int cx = x >> 4;
             int cz = z >> 4;
 
-            Chunk chunk;
-
-            if (lastChunk != null && lastChunk.getPos().x == cx && lastChunk.getPos().z == cz) chunk = lastChunk;
-            else chunk = world.getChunk(cx, cz, ChunkStatus.FULL, false);
+            Chunk chunk = lastChunk != null && lastChunk.getPos().x == cx && lastChunk.getPos().z == cz
+                ? lastChunk
+                : world.getChunk(cx, cz, ChunkStatus.FULL, false);
 
             if (chunk == null) return Blocks.VOID_AIR.getDefaultState();
 

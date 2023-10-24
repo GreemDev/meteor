@@ -21,7 +21,10 @@ import java.util.function.Predicate;
 
 import static meteordevelopment.meteorclient.MeteorClient.mc;
 
-public class TargetUtils {
+public final class TargetUtils {
+
+    private TargetUtils() {}
+
     private static final List<Entity> ENTITIES = new ArrayList<>();
 
     public static Entity get(Predicate<Entity> isGood, SortPriority sortPriority) {

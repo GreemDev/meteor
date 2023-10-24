@@ -77,7 +77,9 @@ class Constraint private constructor(private val data: Pair<Int, Any>, val predi
                 +'-'
                 append(comparerTo.last)
                 +" argument".pluralize(
-                    comparerTo.sum().takeUnless { it == 1 && comparerTo.first == 0 } ?: 2, //account for the fact that 0-1 should still be considered plural
+                    comparerTo.sum()
+                        .takeUnless { it == 1 && comparerTo.first == 0 }
+                        ?: 2, //account for the fact that 0-1 should still be considered plural
                     prefixQuantity = false
                 )
             }

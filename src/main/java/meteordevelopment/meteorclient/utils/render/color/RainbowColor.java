@@ -9,6 +9,29 @@ public class RainbowColor extends Color {
 
     public static final RainbowColor GLOBAL = new RainbowColor();
 
+    public static SettingColor asSetting() {
+        return GLOBAL.toSetting();
+    }
+
+    public static RainbowColor next() {
+        return next(1);
+    }
+
+    public static RainbowColor next(double delta) {
+        return GLOBAL.getNext(delta);
+    }
+
+    public static double speed() {
+        return GLOBAL.getSpeed();
+    }
+
+    public static RainbowColor speed(double speed) {
+        if (speed != GLOBAL.speed)
+            GLOBAL.setSpeed(speed);
+
+        return GLOBAL;
+    }
+
     private double speed;
     private static final float[] hsb = new float[3];
 

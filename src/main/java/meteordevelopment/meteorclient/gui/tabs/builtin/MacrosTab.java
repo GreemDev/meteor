@@ -27,7 +27,7 @@ public class MacrosTab extends Tab {
 
     public static final String NAME = "Macros";
     public MacrosTab() {
-        super(NAME, GuiRenderer.MACROS, Config.get().macrosIcon::get);
+        super(NAME, GuiRenderer.MACROS, Config.get().macrosIcon);
     }
 
     @Override
@@ -63,14 +63,12 @@ public class MacrosTab extends Tab {
             for (Macro macro : Macros.get()) {
                 table.add(theme.label(macro.name.get() + " (" + macro.keybind.get() + ")"));
 
-                WButton edit = table.add(theme.button(GuiRenderer.EDIT)).expandCellX().right().widget();
-                edit.action = () -> mc.setScreen(new EditMacroScreen(theme, macro, this::reload));
+                table.add(theme.editButton(() -> mc.setScreen(new EditMacroScreen(theme, macro, this::reload)))).expandCellX().right();
 
-                WMinus remove = table.add(theme.minus()).widget();
-                remove.action = () -> {
+                table.add(theme.minus(() -> {
                     Macros.get().remove(macro);
                     reload();
-                };
+                }));
 
                 table.row();
             }

@@ -12,6 +12,7 @@ import meteordevelopment.meteorclient.gui.widgets.containers.WTable;
 import meteordevelopment.meteorclient.gui.widgets.input.WTextBox;
 import meteordevelopment.meteorclient.gui.widgets.pressable.WButton;
 import meteordevelopment.meteorclient.settings.BlockDataSetting;
+import meteordevelopment.meteorclient.utils.Utils;
 import meteordevelopment.meteorclient.utils.misc.IBlockData;
 import meteordevelopment.meteorclient.utils.misc.IChangeable;
 import meteordevelopment.meteorclient.utils.misc.ICopyable;
@@ -58,7 +59,7 @@ public class BlockDataSettingScreen extends WindowScreen {
 
     public <T extends ICopyable<T> & ISerializable<T> & IChangeable & IBlockData<T>> void initTable() {
         for (Block block : Registry.BLOCK) {
-            T blockData = (T) setting.get().get(block);
+            T blockData = Utils.cast(setting.get().get(block));
 
             if (blockData != null && blockData.isChanged()) BLOCKS.add(0, block);
             else BLOCKS.add(block);
@@ -68,21 +69,20 @@ public class BlockDataSettingScreen extends WindowScreen {
             String name = Names.get(block);
             if (!StringUtils.containsIgnoreCase(name, filterText)) continue;
 
-            T blockData = (T) setting.get().get(block);
+            T blockData = Utils.cast(setting.get().get(block));
 
             table.add(theme.itemWithLabel(block.asItem().getDefaultStack(), Names.get(block))).expandCellX();
             table.add(theme.label((blockData != null && blockData.isChanged()) ? "*" : " "));
 
-            WButton edit = table.add(theme.button(GuiRenderer.EDIT)).widget();
-            edit.action = () -> {
+            table.add(theme.editButton(() -> {
                 T data = blockData;
-                if (data == null) data = (T) setting.defaultData.get().copy();
+                if (data == null)
+                    data = Utils.cast(setting.defaultData.get().copy());
 
-                mc.setScreen(data.createScreen(theme, block, (BlockDataSetting<T>) setting));
-            };
+                mc.setScreen(data.createScreen(theme, block, Utils.cast(setting)));
+            }));
 
-            WButton reset = table.add(theme.button(GuiRenderer.RESET)).widget();
-            reset.action = () -> {
+            table.add(theme.resetButton(() -> {
                 setting.get().remove(block);
                 setting.onChanged();
 
@@ -90,7 +90,7 @@ public class BlockDataSettingScreen extends WindowScreen {
                     table.clear();
                     initTable();
                 }
-            };
+            }));
 
             table.row();
         }

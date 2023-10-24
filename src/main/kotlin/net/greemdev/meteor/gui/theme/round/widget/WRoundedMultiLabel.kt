@@ -10,7 +10,7 @@ import meteordevelopment.meteorclient.gui.widgets.WMultiLabel
 import net.greemdev.meteor.gui.theme.round.RoundedWidget
 import net.greemdev.meteor.util.lineCount
 import net.greemdev.meteor.util.meteor.colorCodeRegex
-import net.greemdev.meteor.util.meteor.isApplicableTo
+import net.greemdev.meteor.util.meteor.needsSpecialRenderer
 import net.greemdev.meteor.util.meteor.renderLegacy
 
 class WRoundedMultiLabel(text: String?, title: Boolean, maxWidth: Double)
@@ -21,7 +21,7 @@ class WRoundedMultiLabel(text: String?, title: Boolean, maxWidth: Double)
         val c = getEffectiveColor(theme)
 
         lines.forEachIndexed { i, line ->
-            if (isApplicableTo(line))
+            if (needsSpecialRenderer(line))
                 renderer.legacyText(line, x, y + h * i, c, title, false)
             else
                 renderer.text(line, x, y + h * i, c, title)

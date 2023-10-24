@@ -9,6 +9,11 @@ import net.greemdev.meteor.GCommand
 import net.greemdev.meteor.util.misc.clearChat
 
 object ClearChatCommand : GCommand("clearchat", "Clears your chat.", {
+    then("andMessageHistory") {
+        alwaysRuns {
+            mc.inGameHud.chatHud.clearChat(true)
+        }
+    }
     alwaysRuns {
         mc.inGameHud.chatHud.clearChat()
     }

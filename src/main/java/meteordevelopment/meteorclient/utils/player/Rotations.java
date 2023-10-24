@@ -24,7 +24,10 @@ import java.util.List;
 
 import static meteordevelopment.meteorclient.MeteorClient.mc;
 
-public class Rotations {
+public final class Rotations {
+
+    private Rotations() {}
+
     private static final Pool<Rotation> rotationPool = new Pool<>(Rotation::new);
     private static final List<Rotation> rotations = new ArrayList<>();
     public static float serverYaw;

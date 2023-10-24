@@ -8,10 +8,11 @@ package meteordevelopment.meteorclient.gui.widgets;
 import meteordevelopment.meteorclient.gui.GuiTheme;
 import meteordevelopment.meteorclient.gui.widgets.pressable.WPressable;
 import meteordevelopment.meteorclient.utils.render.color.Color;
-import net.greemdev.meteor.util.Strings;
 import net.greemdev.meteor.util.meteor.LegacyText;
 
-public abstract class WLabel extends WPressable {
+import java.util.function.Supplier;
+
+public abstract class WLabel extends WPressable implements Supplier<String> {
     public Color color;
 
     protected String text;
@@ -50,7 +51,7 @@ public abstract class WLabel extends WPressable {
     }
 
     public void set(String text) {
-        if (LegacyText.isApplicableTo(text)) {
+        if (LegacyText.needsSpecialRenderer(text)) {
             if (Math.round(LegacyText.getLegacyWidth(theme.textRenderer(), text, false)) != width)
                 invalidate();
         } else
@@ -60,6 +61,15 @@ public abstract class WLabel extends WPressable {
         this.text = text;
     }
 
+    public void append(String text) {
+        set(this.text + text);
+    }
+
+    public void prepend(String text) {
+        set(text + this.text);
+    }
+
+    @Override
     public String get() {
         return text;
     }

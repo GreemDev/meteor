@@ -3,13 +3,13 @@
  * Copyright (c) Meteor Development.
  */
 
-package net.greemdev.meteor.util
+package net.greemdev.meteor.util.python
 
 import com.enderzombi102.jythonmc.Jython
 import kotlinx.coroutines.launch
 import meteordevelopment.meteorclient.utils.PostInit
 import net.greemdev.meteor.*
-import net.greemdev.meteor.util.misc.getMeteorResource
+import net.greemdev.meteor.util.scope
 import org.python.util.PythonInterpreter
 import java.io.File
 import java.io.StringReader
@@ -22,42 +22,49 @@ object py {
     fun scripts(vararg scripts: String) = PythonOp(scripts.toList())
 }
 
-class PythonOp<T>(codeData: T) {
+class PythonOp(codeData: Any) {
     private val scripts: List<String>
     init {
         scripts = when (codeData) {
             is String -> listOf(codeData)
-            is File -> getCodeFrom(codeData)
-            is Path -> getCodeFrom(codeData.toFile())
+            is File -> load(codeData)
+            is Path -> load(codeData.toFile())
             is StringReader -> listOf(codeData.readText())
             is Iterable<*> -> {
                 buildList {
                     codeData.forEach {
                         when (it) {
-                            is File -> addAll(getCodeFrom(it))
+                            is File -> addAll(load(it))
                             is String -> add(it)
-                            is Path -> addAll(getCodeFrom(it.toFile()))
+                            is Path -> addAll(load(it.toFile()))
                         }
                     }
                 }
             }
-            else -> error("PythonOp input data is of invalid type.")
+            else -> error(
+                """
+                PythonOp input data is of invalid type.
+                Valid types: StringReader, String, File, Path, Iterable<String>, Iterable<File>, Iterable<Path>
+                """.trimIndent()
+            )
         }
     }
 
-    private fun getCodeFromFiles(files: List<File>?) = files?.map { it.readText() }
+    private fun getCodeFromFiles(files: List<File>?) = files?.map(File::readText).orEmpty()
 
-    private fun getCodeFrom(file: File): List<String> {
+    private fun getCodeFromDirectory(directory: File) =
+        getCodeFromFiles(directory.filter {
+            it.name.endsWith(".py") && !it.isDirectory
+        })
+
+    private fun load(file: File): List<String> =
         if (!file.exists())
-            return emptyList()
-
-        return if (file.isDirectory)
-            getCodeFromFiles(file.filter {
-                it.name.endsWith(".py")
-            }).orEmpty()
+            emptyList()
+        else if (file.isDirectory)
+            getCodeFromDirectory(file)
         else
             listOf(file.readText())
-    }
+
 
     fun exec(insertIntoBase: Boolean = true, async: Boolean = false, post: (PythonInterpreter.() -> Unit)? = null) {
         if (async)
@@ -66,7 +73,7 @@ class PythonOp<T>(codeData: T) {
             _exec(insertIntoBase, post)
     }
 
-    private fun _exec(insertIntoBase: Boolean, post: (PythonInterpreter.() -> Unit)?) {
+    private fun _exec(insertIntoBase: Boolean, post: Initializer<PythonInterpreter>?) =
         python {
             if (scripts.size == 1)
                 _execInternal(scripts.first(), insertIntoBase)
@@ -77,24 +84,19 @@ class PythonOp<T>(codeData: T) {
 
             post?.invoke(this)
         }
-    }
+
 
     private fun PythonInterpreter._execInternal(code: String, insertIntoBase: Boolean) {
         compile(
             if (insertIntoBase)
-                pythonBaseFile.replace("{{{SCRIPT}}}", code)
+                pythonScriptBase.replace("{{{SCRIPT}}}", code)
             else
                 code
         )?.also(::exec)
     }
 }
 
-val pythonBaseFile = with(minecraft.getMeteorResource("base.py").get().reader) {
-    use { readText() }
-}
-
-
-private val pyinterp by invoking {
+private val pythonInterpreter by invoking {
     PythonInterpreter().apply {
         setErr(System.err)
         setOut(System.out)
@@ -102,11 +104,9 @@ private val pyinterp by invoking {
     }
 }
 
-fun python(func: PythonInterpreter.() -> Unit) = pyinterp.use {
-    func(it)
-}
+fun python(func: Initializer<PythonInterpreter>) = pythonInterpreter.use(func)
 
 @PostInit
-fun postInit() {
+private fun postInit() {
     Jython.initSystem()
 }

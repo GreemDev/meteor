@@ -18,13 +18,13 @@ object TitleScreenInfo {
             null
         else {
             infoLine {
-                if (GVersioning.isUpToDate())
+                if (GVersioning.isUpToDate)
                     newSection("Up to date!", green)
-                else if (GVersioning.isOutdated()) {
-                    newSection(GVersioning.revisionsBehind(), red)
+                else if (GVersioning.isOutdated) {
+                    newSection(GVersioning.revisionsBehind, red)
                     newSection(grey) {
-                        append(" revision".pluralize(GVersioning.revisionsBehind(), prefixQuantity = false))
-                        append(" behind!")
+                        +" revision".pluralize(GVersioning.revisionsBehind, prefixQuantity = false)
+                        +" behind!"
                     }
                 } else
                     newSection("dev build", lightPurple)
@@ -39,7 +39,7 @@ object TitleScreenInfo {
     fun render(matrices: MatrixStack) {
         updateChecker?.run {
             var x = minecraft.currentScreen!!.width - 3 - width
-            sections().forEach {
+            sections.forEach {
                 RenderUtils.drawShadowed(matrices, it.text, x, 3, it.color)
                 x += it.width
             }
@@ -47,48 +47,47 @@ object TitleScreenInfo {
     }
 }
 
-fun infoLine(autoCalc: Boolean = true, builder: ColoredInitializer<InfoLine>) = InfoLine(mutableListOf()).apply {
-    builder(ChatColor, this)
-    if (autoCalc) updateWidth()
-}
+fun infoLine(autoCalc: Boolean = true, builder: context(ChatColor.Companion) InfoLine.() -> Unit) =
+    InfoLine(mutableListOf(), autoCalc)
+        .apply { builder(ChatColor, this) }
 
-data class Section(val text: String, val color: Int) {
-    val width: Int = minecraft.textRenderer.getWidth(text)
-}
+class InfoLine(private val _sections: MutableList<Section>, private val autoCalc: Boolean = false) {
+    val sections by invoking(_sections::toList)
 
-class InfoLine(private val sections: MutableList<Section>) {
+    data class Section(val text: String, val color: Int) {
+        val width: Int = minecraft.textRenderer.getWidth(text)
+    }
+
     var width = 0
         private set
 
     fun updateWidth(): InfoLine {
-        width = sections.sumOf { it.width }
+        width = _sections.sumOf { it.width }
         return this
     }
 
     operator fun Section.unaryPlus() {
-        sections.add(this)
+        _sections.add(this)
+        if (autoCalc) updateWidth()
     }
 
-    fun newSection(text: Any?, color: ChatColor) = newSection(text.toString(), color.rgb ?: error("Cannot color text with a formatting option."))
-    fun newSection(text: Any?, color: AwtColor) = newSection(text.toString(), color.rgb)
-    fun newSection(text: Any?, color: MeteorColor) = newSection(text.toString(), color.packed)
-
-    fun newSection(text: Any?, color: Int): InfoLine {
-        sections.add(Section(text.toString(), color))
+    fun newSection(text: Any, color: Int): InfoLine {
+        _sections.add(Section(text.toString(), color))
+        if (autoCalc) updateWidth()
         return this
     }
 
-    fun newSection(color: ChatColor, textBuilder: Initializer<StringBuilder>) =
+    fun newSection(text: Any, color: ChatColor) = newSection(text, color.rgb ?: error("Cannot color text with a formatting option."))
+    fun newSection(text: Any, color: AwtColor) = newSection(text, color.rgb)
+    fun newSection(text: Any, color: MeteorColor) = newSection(text, color.packed)
+
+    fun newSection(color: ChatColor, textBuilder: Initializer<StringScope>) =
         newSection(color.rgb ?: error("Cannot color text with a formatting option."), textBuilder)
-    fun newSection(color: AwtColor, textBuilder: Initializer<StringBuilder>) =
+    fun newSection(color: AwtColor, textBuilder: Initializer<StringScope>) =
         newSection(color.rgb, textBuilder)
-    fun newSection(color: MeteorColor, textBuilder: Initializer<StringBuilder>) =
+    fun newSection(color: MeteorColor, textBuilder: Initializer<StringScope>) =
         newSection(color.packed, textBuilder)
 
-    fun newSection(color: Int, textBuilder: Initializer<StringBuilder>): InfoLine {
-        sections.add(Section(buildString(textBuilder), color))
-        return this
-    }
-
-    fun sections() = sections.toList()
+    fun newSection(color: Int, textBuilder: Initializer<StringScope>) =
+        newSection(string(builderScope = textBuilder), color)
 }

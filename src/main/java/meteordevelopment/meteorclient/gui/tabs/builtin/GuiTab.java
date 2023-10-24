@@ -23,7 +23,7 @@ import static meteordevelopment.meteorclient.MeteorClient.mc;
 public class GuiTab extends Tab {
     public static final String NAME = "GUI";
     public GuiTab() {
-        super(NAME, GuiRenderer.GUI, Config.get().guiIcon::get);
+        super(NAME, GuiRenderer.GUI, Config.get().guiIcon);
     }
 
     @Override

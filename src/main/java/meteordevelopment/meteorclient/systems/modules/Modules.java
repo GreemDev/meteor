@@ -41,7 +41,6 @@ import meteordevelopment.meteorclient.utils.misc.input.Input;
 import meteordevelopment.meteorclient.utils.misc.input.KeyAction;
 import meteordevelopment.orbit.EventHandler;
 import meteordevelopment.orbit.EventPriority;
-import net.greemdev.meteor.util.meteor.HiddenModules;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.nbt.NbtElement;
 import net.minecraft.nbt.NbtList;
@@ -130,9 +129,8 @@ public class Modules extends System<Modules> {
         return null;
     }
 
-    @SuppressWarnings("unchecked")
     public <T extends Module> T get(Class<T> klass) {
-        return (T) moduleInstances.get(klass);
+        return Utils.cast(moduleInstances.get(klass));
     }
 
     public Module get(String name) {
@@ -160,7 +158,7 @@ public class Modules extends System<Modules> {
         return modules;
     }
 
-    public int getCount() {
+    public int count() {
         return moduleInstances.values().size();
     }
 
@@ -200,7 +198,8 @@ public class Modules extends System<Modules> {
         synchronized (active) {
             if (!active.contains(module)) {
                 active.add(module);
-                MeteorClient.EVENT_BUS.post(ActiveModulesChangedEvent.get());
+                if (MeteorClient.EVENT_BUS.post(ActiveModulesChangedEvent.get(module, true)).isCancelled())
+                    active.remove(module);
             }
         }
     }
@@ -208,7 +207,8 @@ public class Modules extends System<Modules> {
     void removeActive(Module module) {
         synchronized (active) {
             if (active.remove(module)) {
-                MeteorClient.EVENT_BUS.post(ActiveModulesChangedEvent.get());
+                if (MeteorClient.EVENT_BUS.post(ActiveModulesChangedEvent.get(module, false)).isCancelled())
+                    active.add(module);
             }
         }
     }
@@ -350,6 +350,10 @@ public class Modules extends System<Modules> {
     }
 
     // INIT MODULES
+
+    public void addAll(Collection<Module> modules) {
+        modules.forEach(this::add);
+    }
 
     public void add(Module module) {
         // Check if the module's category is registered

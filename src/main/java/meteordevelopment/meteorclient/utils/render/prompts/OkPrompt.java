@@ -13,7 +13,7 @@ import meteordevelopment.meteorclient.gui.widgets.containers.WHorizontalList;
 import meteordevelopment.meteorclient.gui.widgets.pressable.WButton;
 import meteordevelopment.meteorclient.gui.widgets.pressable.WCheckbox;
 import meteordevelopment.meteorclient.systems.config.Config;
-import net.greemdev.meteor.type.ErrorPrompt;
+import net.greemdev.meteor.type.MeteorPromptException;
 import net.minecraft.client.gui.screen.Screen;
 import org.jetbrains.annotations.Nullable;
 
@@ -87,12 +87,12 @@ public class OkPrompt {
         return true;
     }
 
-    public void error() throws ErrorPrompt {
+    public void error() throws MeteorPromptException {
         error(null);
     }
 
-    public void error(@Nullable Throwable cause) throws ErrorPrompt {
-        throw new ErrorPrompt(cause, () -> this);
+    public void error(@Nullable Throwable cause) throws MeteorPromptException {
+        throw new MeteorPromptException(cause, () -> this);
     }
 
     private class PromptScreen extends WindowScreen {
@@ -102,22 +102,30 @@ public class OkPrompt {
             this.parent = OkPrompt.this.parent;
         }
 
+        WCheckbox dontShowAgainCheckbox;
+
         @Override
         public void initWidgets() {
-            for (String line : messages) add(theme.label(line)).expandX();
+            for (String line : messages)
+                add(theme.label(line)).expandX();
+
             add(theme.horizontalSeparator()).expandX();
+            add(theme.horizontalList(), (cell, list) -> {
+                cell.expandX();
 
-            WHorizontalList checkboxContainer = add(theme.horizontalList()).expandX().widget();
-            WCheckbox dontShowAgainCheckbox = checkboxContainer.add(theme.checkbox(false)).widget();
-            checkboxContainer.add(theme.label("Don't show this again.")).expandX();
+                dontShowAgainCheckbox = list.add(theme.checkbox(false)).widget();
+                list.add(theme.label("Don't show this again.")).expandX();
+            });
 
-            WHorizontalList list = add(theme.horizontalList()).expandX().widget();
-            WButton okButton = list.add(theme.button("Ok")).expandX().widget();
-            okButton.action = () -> {
-                if (dontShowAgainCheckbox.checked) Config.get().dontShowAgainPrompts.add(id);
-                onOk.run();
-                close();
-            };
+            add(theme.horizontalList(), (cell, list) -> {
+                cell.expandX();
+
+                list.add(theme.button("Ok", () -> {
+                    if (dontShowAgainCheckbox.checked) Config.get().dontShowAgainPrompts.add(id);
+                    onOk.run();
+                    close();
+                }));
+            });
         }
     }
 }

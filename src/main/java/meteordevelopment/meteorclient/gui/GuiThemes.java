@@ -32,7 +32,7 @@ public class GuiThemes {
     @PreInit
     public static void init() {
         add(new MeteorGuiTheme());
-        add(new RoundedTheme());
+        add(RoundedTheme.INSTANCE);
     }
 
     @PostInit

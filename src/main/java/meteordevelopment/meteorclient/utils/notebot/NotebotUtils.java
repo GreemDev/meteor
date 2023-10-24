@@ -14,7 +14,10 @@ import org.jetbrains.annotations.Nullable;
 import java.util.HashMap;
 import java.util.Map;
 
-public class NotebotUtils {
+public final class NotebotUtils {
+
+    private NotebotUtils() {}
+
 
     public static Note getNoteFromNoteBlock(BlockState noteBlock, NotebotMode mode) {
         Instrument instrument = null;

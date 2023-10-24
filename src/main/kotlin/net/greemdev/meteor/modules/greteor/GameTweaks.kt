@@ -3,11 +3,11 @@
  * Copyright (c) Meteor Development.
  */
 
-package net.greemdev.meteor.modules
+package net.greemdev.meteor.modules.greteor
 
 import net.greemdev.meteor.GModule
-import net.greemdev.meteor.util.*
 import net.greemdev.meteor.util.meteor.*
+import net.minecraft.SharedConstants
 
 // based on https://github.com/Declipsonator/Meteor-Tweaks/blob/main/src/main/java/me/declipsonator/meteortweaks/modules/GameTweaks.java
 object GameTweaks : GModule(
@@ -32,6 +32,15 @@ object GameTweaks : GModule(
         name("copy-screenshots")
         description("Copy screenshots to the clipboard instead of creating a file in the game directory.")
         defaultValue(false)
+    }
+
+    val developerMode by sg bool {
+        name("developer-mode")
+        description("Enable debugging features.")
+        defaultValue(SharedConstants.isDevelopment)
+        onChanged {
+            SharedConstants.isDevelopment = it
+        }
     }
 
     val showScore by sg bool {

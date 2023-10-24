@@ -6,11 +6,14 @@
 package meteordevelopment.meteorclient.mixin;
 
 import meteordevelopment.meteorclient.systems.modules.Modules;
+import meteordevelopment.meteorclient.systems.modules.movement.NoSlow;
 import meteordevelopment.meteorclient.systems.modules.movement.Slippy;
 import meteordevelopment.meteorclient.systems.modules.render.Xray;
+import net.greemdev.meteor.util.meteor.Meteor;
 import net.minecraft.block.AbstractBlock;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
+import net.minecraft.block.Blocks;
 import net.minecraft.item.ItemConvertible;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Direction;
@@ -40,11 +43,15 @@ public abstract class BlockMixin extends AbstractBlock implements ItemConvertibl
         // For some retarded reason Tweakeroo calls this method before meteor is initialized
         if (Modules.get() == null) return;
 
-        Slippy slippy = Modules.get().get(Slippy.class);
         Block block = (Block) (Object) this;
 
-        if (slippy.isActive() && !slippy.ignoredBlocks.get().contains(block)) {
-            info.setReturnValue(slippy.friction.get().floatValue());
-        }
+        Meteor.module(Slippy.class, s -> {
+            if (s.isActive() && !s.ignoredBlocks.get().contains(block)) {
+                info.setReturnValue(s.friction.get().floatValue());
+            }
+        });
+
+        if (block == Blocks.SLIME_BLOCK && Meteor.module(NoSlow.class).slimeBlock())
+            info.setReturnValue(0.6f);
     }
 }

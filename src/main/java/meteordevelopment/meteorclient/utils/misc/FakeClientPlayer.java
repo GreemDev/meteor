@@ -47,7 +47,14 @@ public class FakeClientPlayer {
 
         if (player == null || (!id.equals(lastId))) {
             if (world == null) {
-                world = new ClientWorld(new ClientPlayNetworkHandler(mc, null, new ClientConnection(NetworkSide.CLIENTBOUND), mc.getSession().getProfile(), null), new ClientWorld.Properties(Difficulty.NORMAL, false, false), World.OVERWORLD, BuiltinRegistries.DIMENSION_TYPE.entryOf(DimensionTypes.OVERWORLD), 1, 1, mc::getProfiler, null, false, 0);
+                world = new ClientWorld(
+                    new ClientPlayNetworkHandler(mc, null, new ClientConnection(NetworkSide.CLIENTBOUND), mc.getSession().getProfile(), null),
+                    new ClientWorld.Properties(Difficulty.NORMAL, false, false),
+                    World.OVERWORLD,
+                    BuiltinRegistries.DIMENSION_TYPE.entryOf(DimensionTypes.OVERWORLD),
+                    1, 1,
+                    mc::getProfiler, null, false, 0
+                );
             }
 
             player = new OtherClientPlayerEntity(world, mc.getSession().getProfile(), null);

@@ -17,11 +17,11 @@ import meteordevelopment.meteorclient.settings.SettingGroup;
 import meteordevelopment.meteorclient.systems.modules.Categories;
 import meteordevelopment.meteorclient.systems.modules.Module;
 import meteordevelopment.meteorclient.utils.misc.Vec3;
-import meteordevelopment.meteorclient.utils.network.Http;
 import meteordevelopment.meteorclient.utils.network.MeteorExecutor;
 import meteordevelopment.meteorclient.utils.render.NametagUtils;
 import meteordevelopment.meteorclient.utils.render.color.Color;
 import meteordevelopment.orbit.EventHandler;
+import net.greemdev.meteor.util.Http;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.passive.AbstractHorseEntity;
 import net.minecraft.entity.passive.TameableEntity;
@@ -119,17 +119,13 @@ public class EntityOwner extends Module {
         if (name != null) return name;
 
         // Makes an HTTP request to Mojang API
-        MeteorExecutor.execute(() -> {
-            if (isActive()) {
-                ProfileResponse res = Http.get("https://sessionserver.mojang.com/session/minecraft/profile/" + uuid.toString().replace("-", "")).sendJson(ProfileResponse.class);
-
-                if (isActive())
-                    if (res == null)
-                        uuidToName.put(uuid, "Failed to get name");
-                    else
-                        uuidToName.put(uuid, res.name);
-            }
-        });
+        if (isActive()) {
+            Http.get("https://sessionserver.mojang.com/session/minecraft/profile/" + uuid.toString().replace("-", ""))
+                .requestJsonAsync(ProfileResponse.class, res -> {
+                    if (isActive())
+                        uuidToName.put(uuid, res == null ? "Failed to get name" : res.name);
+                });
+        }
 
         name = "Retrieving";
         uuidToName.put(uuid, name);

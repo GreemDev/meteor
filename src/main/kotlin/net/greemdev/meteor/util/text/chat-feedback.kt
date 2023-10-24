@@ -6,21 +6,21 @@
 
 package net.greemdev.meteor.util.text
 
-import meteordevelopment.meteorclient.systems.config.Config
 import net.greemdev.meteor.invoking
 import net.greemdev.meteor.util.*
 import net.greemdev.meteor.util.meteor.*
 
+@get:JvmName("prefix")
 val feedbackPrefix by invoking {
-    val textColor = Config.get().meteorPrefixColor()
-    val bracketsColor = Config.get().meteorPrefixBracketsColor()
-    val prefix = Config.get().meteorPrefix()
-    val brackets = Config.get().meteorPrefixBrackets()
+    val textColor = Meteor.config().meteorPrefixColor()
+    val bracketsColor = Meteor.config().meteorPrefixBracketsColor()
+    val prefix = Meteor.config().meteorPrefix()
+    val brackets = Meteor.config().meteorPrefixBrackets()
 
-    buildText {
-        colored(bracketsColor)
-        addString(brackets.left)
-        addString(prefix, textColor)
-        addString("${brackets.right} ")
-    }
+    FormattedText.builder()
+        .colored(bracketsColor)
+        .addString(brackets.left)
+        .addString(prefix, textColor)
+        .addString("${brackets.right} ")
+        .text()
 }

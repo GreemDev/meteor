@@ -7,8 +7,6 @@ package net.greemdev.meteor.util.text
 
 import net.minecraft.text.ClickEvent
 import net.minecraft.text.HoverEvent
-import net.minecraft.text.HoverEvent.EntityContent
-import net.minecraft.text.HoverEvent.ItemStackContent
 import net.minecraft.text.Text
 
 typealias HoverAction<T> = HoverEvent.Action<T>
@@ -20,15 +18,13 @@ object actions {
     @JvmField
     val showText: HoverAction<Text> = HoverAction.SHOW_TEXT
     @JvmField
-    val showItem: HoverAction<ItemStackContent> = HoverAction.SHOW_ITEM
+    val showItem: HoverAction<HoverEvent.ItemStackContent> = HoverAction.SHOW_ITEM
     @JvmField
-    val showEntity: HoverAction<EntityContent> = HoverAction.SHOW_ENTITY
-
+    val showEntity: HoverAction<HoverEvent.EntityContent> = HoverAction.SHOW_ENTITY
     @JvmField
     val openURL: ClickAction = ClickAction.OPEN_URL
-
-    // OPEN_FILE is missing as it's externally deprecated (since it's potentially unsafe) and only used inside minecraft's screenshot code when it sends a message to your chat.
-
+    @JvmField
+    val openFile: ClickAction = ClickAction.OPEN_FILE
     @JvmField
     val runCommand: ClickAction = ClickAction.RUN_COMMAND
     @JvmField

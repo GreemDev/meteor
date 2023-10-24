@@ -18,6 +18,7 @@ import meteordevelopment.meteorclient.systems.modules.combat.CrystalAura;
 import meteordevelopment.meteorclient.systems.modules.combat.KillAura;
 import meteordevelopment.meteorclient.utils.Utils;
 import meteordevelopment.meteorclient.utils.player.InvUtils;
+import meteordevelopment.meteorclient.utils.player.SlotUtils;
 import meteordevelopment.orbit.EventHandler;
 import meteordevelopment.orbit.EventPriority;
 import net.minecraft.item.Item;
@@ -56,6 +57,13 @@ public class AutoEat extends Module {
         .name("pause-auras")
         .description("Pauses all auras when eating.")
         .defaultValue(true)
+        .build()
+    );
+
+    private final Setting<Boolean> preferOffhand = sgGeneral.add(new BoolSetting.Builder()
+        .name("prefer-offhand")
+        .description("Ignoring other food in your hotbar, eats whatever you have in your offhand if it's food that isn't in the blacklist.")
+        .defaultValue(false)
         .build()
     );
 
@@ -208,6 +216,12 @@ public class AutoEat extends Module {
         int slot = -1;
         int bestHunger = -1;
 
+        Item offhandItem = mc.player.getOffHandStack().getItem();
+
+        if (offhandItem.isFood() && !blacklist.get().contains(offhandItem) && preferOffhand.get())
+            return SlotUtils.OFFHAND; // if the offhand is food, isn't in the blacklist, and preferOffhand is enabled,
+                                     //  then we should always choose the offhand over anything else in the hotbar.
+
         for (int i = 0; i < 9; i++) {
             // Skip if item isn't food
             Item item = mc.player.getInventory().getStack(i).getItem();
@@ -224,6 +238,9 @@ public class AutoEat extends Module {
                 bestHunger = hunger;
             }
         }
+
+        if (offhandItem.isFood() && !blacklist.get().contains(offhandItem) && offhandItem.getFoodComponent().getHunger() > bestHunger)
+            slot = SlotUtils.OFFHAND;
 
         return slot;
     }

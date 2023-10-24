@@ -20,11 +20,12 @@ import org.apache.commons.lang3.SystemUtils;
 
 import java.lang.reflect.InvocationTargetException;
 import java.util.List;
+import java.util.function.Supplier;
 
 import static meteordevelopment.meteorclient.MeteorClient.mc;
 import static org.lwjgl.glfw.GLFW.*;
 
-public abstract class WTextBox extends WWidget {
+public abstract class WTextBox extends WWidget implements Supplier<String> {
     private static final Renderer DEFAULT_RENDERER = (renderer, x, y, text, color) -> renderer.text(text, x, y, color, false);
 
     public Runnable action;
@@ -654,6 +655,7 @@ public abstract class WTextBox extends WWidget {
         return textStart;
     }
 
+    @Override
     public String get() {
         return text;
     }
@@ -683,6 +685,11 @@ public abstract class WTextBox extends WWidget {
         resetSelection();
 
         if (wasJustFocused) onCursorChanged();
+    }
+
+    public WTextBox toggleFocusing() {
+        setFocused(!focused);
+        return this;
     }
 
     public WTextBox action(Runnable task) {

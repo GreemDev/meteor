@@ -23,7 +23,10 @@ import org.jetbrains.annotations.NotNull;
 import java.util.*;
 import java.util.stream.Stream;
 
-public class PacketUtils {
+public final class PacketUtils {
+
+    private PacketUtils() {}
+
     public static final Registry<Class<? extends Packet<?>>> REGISTRY = new PacketRegistry();
 
     private static final Map<Class<? extends Packet<?>>, String> S2C_PACKETS = new HashMap<>();

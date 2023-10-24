@@ -5,20 +5,49 @@
 
 package meteordevelopment.meteorclient.utils.network;
 
-import meteordevelopment.meteorclient.utils.PreInit;
+import kotlinx.coroutines.Job;
+import kotlinx.coroutines.future.FutureKt;
+import net.greemdev.meteor.util.Coroutines;
+import net.greemdev.meteor.utils;
 
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
+import java.util.concurrent.CancellationException;
+import java.util.concurrent.CompletableFuture;
+import java.util.function.Consumer;
+import java.util.function.Supplier;
 
-public class MeteorExecutor {
-    public static ExecutorService executor;
+public final class MeteorExecutor {
 
-    @PreInit
-    public static void init() {
-        executor = Executors.newSingleThreadExecutor();
+    private MeteorExecutor() {}
+
+    public static Job execute(Runnable task) {
+        return Coroutines.runInCoroutine(task, Coroutines.scope());
     }
 
-    public static void execute(Runnable task) {
-        executor.execute(task);
+    public static Job execute(Runnable task, Runnable success) {
+        return Coroutines.launchJob(builder ->
+            builder.whenDone(utils.getKotlin(success))
+                .executing(Coroutines.runInCoroutine(task, builder.scope()))
+        );
+    }
+
+    public static Job execute(Runnable task, Runnable success, Consumer<Throwable> errored) {
+        return Coroutines.launchJob(builder ->
+            builder.whenDone(utils.getKotlin(success))
+                .whenError(utils.getKotlin(errored))
+                .executing(Coroutines.runInCoroutine(task, builder.scope()))
+        );
+    }
+
+    public static Job execute(Runnable task, Runnable success, Consumer<Throwable> errored, Consumer<CancellationException> cancelled) {
+        return Coroutines.launchJob(builder ->
+            builder.whenDone(utils.getKotlin(success))
+                .whenError(utils.getKotlin(errored))
+                .whenCancelled(utils.getKotlin(cancelled))
+                .executing(Coroutines.runInCoroutine(task, builder.scope()))
+        );
+    }
+
+    public static <T> CompletableFuture<T> get(Supplier<T> supplier) {
+        return FutureKt.asCompletableFuture(Coroutines.getAsync(supplier, Coroutines.scope()));
     }
 }

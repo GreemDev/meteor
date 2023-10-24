@@ -83,9 +83,8 @@ class ModuleKeybindHud : HudElement(info) {
         modules().sorted(sorted(), sortOrder()) {
             it.title.length + it.keybind.toString().length
         }.forEachIndexed { i, module ->
-            var moduleWidth = renderer.textWidth(module.title) + renderer.textWidth(" ")
             val keybindName = module.keybind.toString()
-            moduleWidth += renderer.textWidth(keybindName)
+            val moduleWidth = renderer.textWidth("${module.title} $keybindName")
 
             var x = this.x + alignX(moduleWidth, alignment())
             x = renderer.text(module.title, x, y, moduleColor(), textShadow())

@@ -15,7 +15,7 @@ import net.greemdev.meteor.util.text.ChatEvents;
 import net.greemdev.meteor.util.text.actions;
 import net.minecraft.command.CommandSource;
 import net.minecraft.text.HoverEvent;
-import net.minecraft.text.MutableText;
+import net.minecraft.text.Text;
 
 import java.util.List;
 
@@ -59,7 +59,7 @@ public class BindsCommand extends Command {
         });
     }
 
-    private MutableText getTooltip(Module module) {
+    private Text getTooltip(Module module) {
         return textBuilder()
             .addString(module.title)
             .colored(ChatColor.blue).bold()

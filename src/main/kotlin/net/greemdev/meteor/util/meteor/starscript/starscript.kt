@@ -17,12 +17,12 @@ import kotlin.math.*
 
 internal fun initGStarscript() {
     with(MeteorStarscript.ss) {
-        mods()
-        functions()
+        clientMods()
+        utilities()
     }
 }
 
-private fun Starscript.mods() {
+private fun Starscript.clientMods() {
     newObject("mods") {
         raw { modLoader.allMods.size.toString() }
         defineString("list") { modLoader.allMods.joinToString(", ") { it.metadata.name } }
@@ -40,7 +40,7 @@ private fun Starscript.mods() {
     }
 }
 
-private fun Starscript.functions() {
+private fun Starscript.utilities() {
     stringFunc("camelCase", Constraint.within(1..2)) {
         when (argCount) {
             1 -> nextString().toCamelCase()
@@ -77,7 +77,7 @@ private fun Starscript.functions() {
     numberFunc("avg", Constraint.atLeast(2)) {
         var result = 0.0
         for (i in 1..argCount) {
-            result += nextNumber("All arguments to $name() need to be a number.")
+            result += nextNumber("All arguments to $functionName need to be a number.")
         }
         result / argCount
     }

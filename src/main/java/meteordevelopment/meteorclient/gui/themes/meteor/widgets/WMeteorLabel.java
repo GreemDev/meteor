@@ -9,7 +9,6 @@ import meteordevelopment.meteorclient.gui.renderer.GuiRenderer;
 import meteordevelopment.meteorclient.gui.themes.meteor.MeteorWidget;
 import meteordevelopment.meteorclient.gui.widgets.WLabel;
 import meteordevelopment.meteorclient.utils.render.color.Color;
-import net.greemdev.meteor.util.Strings;
 import net.greemdev.meteor.util.meteor.LegacyText;
 
 public class WMeteorLabel extends WLabel implements MeteorWidget {
@@ -22,7 +21,7 @@ public class WMeteorLabel extends WLabel implements MeteorWidget {
         if (text != null && !text.isEmpty()) {
             Color c = getEffectiveColor(theme);
 
-            if (LegacyText.isApplicableTo(text))
+            if (LegacyText.needsSpecialRenderer(text))
                 renderer.legacyText(text, x, y, c, title, false);
             else
                 renderer.text(text, x, y, c, title);

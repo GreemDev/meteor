@@ -17,7 +17,10 @@ import java.util.function.Predicate;
 
 import static meteordevelopment.meteorclient.MeteorClient.mc;
 
-public class InvUtils {
+public final class InvUtils {
+
+    private InvUtils() {}
+
     private static final Action ACTION = new Action();
     public static int previousSlot = -1;
     // Predicates
@@ -38,9 +41,16 @@ public class InvUtils {
         return testInOffHand(itemStack -> Arrays.stream(items).anyMatch(itemStack::isOf));
     }
 
+    public static boolean testInHands(Predicate<ItemStack> predicate) {
+        return testInMainHand(predicate) || testInOffHand(predicate);
+    }
+
+    public static boolean testInHands(Item... items) {
+        return testInMainHand(items) || testInOffHand(items);
+    }
+
     public static boolean testInHotbar(Predicate<ItemStack> predicate) {
-        if (testInMainHand(predicate)) return true;
-        if (testInOffHand(predicate)) return true;
+        if (testInHands(predicate)) return true;
 
         for (int i = SlotUtils.HOTBAR_START; i < SlotUtils.HOTBAR_END; i++) {
             ItemStack stack = mc.player.getInventory().getStack(i);
@@ -69,16 +79,12 @@ public class InvUtils {
         });
     }
 
-    public static FindItemResult findInHotbar(Predicate<ItemStack> isGood) {
-        if (isGood.test(mc.player.getOffHandStack())) {
-            return new FindItemResult(SlotUtils.OFFHAND, mc.player.getOffHandStack().getCount());
-        }
-
-        if (isGood.test(mc.player.getMainHandStack())) {
-            return new FindItemResult(mc.player.getInventory().selectedSlot, mc.player.getMainHandStack().getCount());
-        }
-
-        return find(isGood, 0, 8);
+    public static FindItemResult findInHotbar(Predicate<ItemStack> predicate) {
+        return testInOffHand(predicate)
+            ? new FindItemResult(SlotUtils.OFFHAND, mc.player.getOffHandStack().getCount())
+            : testInMainHand(predicate)
+                ? new FindItemResult(mc.player.getInventory().selectedSlot, mc.player.getMainHandStack().getCount())
+                : find(predicate, 0, 8);
     }
 
     public static FindItemResult find(Item... items) {
@@ -90,12 +96,12 @@ public class InvUtils {
         });
     }
 
-    public static FindItemResult find(Predicate<ItemStack> isGood) {
+    public static FindItemResult find(Predicate<ItemStack> predicate) {
         if (mc.player == null) return new FindItemResult(0, 0);
-        return find(isGood, 0, mc.player.getInventory().size());
+        return find(predicate, 0, mc.player.getInventory().size());
     }
 
-    public static FindItemResult find(Predicate<ItemStack> isGood, int start, int end) {
+    public static FindItemResult find(Predicate<ItemStack> predicate, int start, int end) {
         if (mc.player == null) return new FindItemResult(0, 0);
 
         int slot = -1, count = 0;
@@ -103,7 +109,7 @@ public class InvUtils {
         for (int i = start; i <= end; i++) {
             ItemStack stack = mc.player.getInventory().getStack(i);
 
-            if (isGood.test(stack)) {
+            if (predicate.test(stack)) {
                 if (slot == -1) slot = i;
                 count += stack.getCount();
             }

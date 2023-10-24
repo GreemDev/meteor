@@ -11,6 +11,8 @@ import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import meteordevelopment.meteorclient.systems.System;
 import meteordevelopment.meteorclient.systems.Systems;
 import meteordevelopment.meteorclient.systems.commands.builtin.*;
+import meteordevelopment.meteorclient.systems.modules.Module;
+import meteordevelopment.meteorclient.utils.Utils;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.network.ClientCommandSource;
 import net.minecraft.command.CommandRegistryAccess;
@@ -101,6 +103,10 @@ public class Commands extends System<Commands> {
         }
     }
 
+    public void addAll(Collection<Command> commands) {
+        commands.forEach(this::add);
+    }
+
     public void add(Command command) {
         commands.removeIf(command1 -> command1.getName().equals(command.getName()));
         commandInstances.values().removeIf(command1 -> command1.getName().equals(command.getName()));
@@ -118,8 +124,7 @@ public class Commands extends System<Commands> {
         return commands;
     }
 
-    @SuppressWarnings("unchecked")
     public <T extends Command> T get(Class<T> klass) {
-        return (T) commandInstances.get(klass);
+        return Utils.cast(commandInstances.get(klass));
     }
 }

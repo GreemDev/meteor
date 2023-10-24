@@ -180,7 +180,7 @@ public class ColorSettingScreen extends WindowScreen {
         within(add(theme.horizontalList()).expandX(), list -> {
             list.add(theme.button("Back", this::close)).expandX();
 
-            list.add(theme.button(GuiRenderer.RESET, () -> {
+            list.add(theme.resetButton(() -> {
                 setting.reset();
                 setFromSetting();
                 callAction();

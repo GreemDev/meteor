@@ -5,37 +5,40 @@
 
 package net.greemdev.meteor.commands
 
-import meteordevelopment.meteorclient.utils.network.Http
 import meteordevelopment.meteorclient.utils.network.MeteorExecutor
 import meteordevelopment.meteorclient.utils.player.ChatUtils
 import meteordevelopment.meteorclient.utils.player.PlayerUtils
 import meteordevelopment.meteorclient.utils.render.color.Color
 import net.greemdev.meteor.GCommand
-import net.greemdev.meteor.commands.api.invoke
+import net.greemdev.meteor.commands.api.argument
 import net.greemdev.meteor.format
-import net.greemdev.meteor.util.meteor.sendJson
+import net.greemdev.meteor.util.Http
 import net.greemdev.meteor.util.misc.currentWorld
 import net.greemdev.meteor.util.text.*
 import java.util.Date
 
-object NameHistoryCommand : GCommand("name-history", "Provides a list of a player's previous names from the laby.net API.", {
+object NameHistoryCommand : GCommand(
+    "name-history",
+    "Provides a list of a player's previous names from the laby.net API.", {
         then("player", arg.playerListEntry()) {
             alwaysRuns {
                 MeteorExecutor.execute {
-                    val target by it(arg.playerListEntry(), "player")
+                    val target by it.argument(arg.playerListEntry(), "player")
 
-                    val history = Http.get("https://laby.net/api/v2/user/${target.profile.id}/get-profile").sendJson<NameHistory>()
+                    val history = Http.get("https://laby.net/api/v2/user/${target.profile.id}/get-profile").requestJson<NameHistory>()
                     if (history == null || history.username_history.isNullOrEmpty()) {
-                        NameHistoryCommand.error("There was an error fetching that player's name history.")
+                        error("There was an error fetching that player's name history.")
                         return@execute
                     }
 
-                    NameHistoryCommand.info(buildText {
+                    info(buildText {
                         addString(target.profile.name)
-                        if (target.profile.name.endsWith('s'))
-                            addString("'")
-                        else
-                            addString("'s")
+                        addString(
+                            if (target.profile.name.endsWith('s'))
+                                "'"
+                            else
+                                "'s"
+                        )
 
                         colored(
                             PlayerUtils.getPlayerColor(
@@ -46,30 +49,30 @@ object NameHistoryCommand : GCommand("name-history", "Provides a list of a playe
 
                         clicked(actions.openURL, "https://laby.net/@${target.profile.name}")
 
-                        hovered(actions.showText, buildText {
+                        hoveredText {
                             addString("View on laby.net")
                             colored(yellow).italicized()
-                        })
+                        }
 
                         addString(" Username History:", grey)
                     })
 
-                    history.username_history.forEach {
+                    history.username_history.forEach { nameEntry ->
                         ChatUtils.sendMsg(buildText {
-                            addString(it.name, aqua)
+                            addString(nameEntry.name, aqua)
 
-                            if (it.changed_at != null && it.changed_at.time != 0L) {
-                                hovered(actions.showText, buildText {
+                            if (nameEntry.changed_at != null && nameEntry.changed_at.time != 0L) {
+                                hoveredText {
                                     addString("Changed at: ", grey)
-                                    addString(it.changed_at.format("hh:mm:ss, dd/MM/yyyy"), white)
-                                })
+                                    addString(nameEntry.changed_at.format("hh:mm:ss, dd/MM/yyyy"), white)
+                                }
                             }
 
-                            if (!it.accurate) {
-                                addString("*") {
-                                    colored(yellow)
-                                    hovered(actions.showText, textOf("This name history entry is not accurate according to laby.net"))
-                                }
+                            addString(
+                                "*".takeIf { nameEntry.accurate }
+                            ) {
+                                colored(yellow)
+                                hoveredText(textOf("This name history entry is not accurate according to laby.net"))
                             }
                         })
                     }

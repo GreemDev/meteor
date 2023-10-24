@@ -7,7 +7,10 @@ package meteordevelopment.meteorclient.utils.files;
 
 import java.io.*;
 
-public class StreamUtils {
+public final class StreamUtils {
+
+    private StreamUtils() {}
+
     public static void copy(File from, File to) {
         try {
             InputStream in = new FileInputStream(from);

@@ -8,23 +8,28 @@ package meteordevelopment.meteorclient.systems.accounts;
 import com.mojang.authlib.yggdrasil.YggdrasilEnvironment;
 import com.mojang.authlib.yggdrasil.YggdrasilMinecraftSessionService;
 import meteordevelopment.meteorclient.mixin.MinecraftClientAccessor;
+import meteordevelopment.meteorclient.utils.Utils;
 import meteordevelopment.meteorclient.utils.misc.ISerializable;
 import meteordevelopment.meteorclient.utils.misc.NbtException;
 import net.minecraft.client.util.Session;
 import net.minecraft.nbt.NbtCompound;
 
+import java.util.UUID;
+
 import static meteordevelopment.meteorclient.MeteorClient.mc;
 
 public abstract class Account<T extends Account<?>> implements ISerializable<T> {
-    protected AccountType type;
+    protected UUID id;
+    protected Type type;
     protected String name;
 
     protected final AccountCache cache;
 
-    public Account(AccountType type, String name) {
+    public Account(Type type, String name) {
         this.type = type;
         this.name = name;
         this.cache = new AccountCache();
+        this.id = UUID.randomUUID();
     }
 
     public abstract boolean fetchInfo();
@@ -43,7 +48,11 @@ public abstract class Account<T extends Account<?>> implements ISerializable<T> 
         return cache.username;
     }
 
-    public AccountType getType() {
+    public UUID getLocalId() {
+        return id;
+    }
+
+    public Type getType() {
         return type;
     }
 
@@ -60,6 +69,11 @@ public abstract class Account<T extends Account<?>> implements ISerializable<T> 
     public NbtCompound toTag() {
         NbtCompound tag = new NbtCompound();
 
+        tag.putUuid("localId",
+            id != null
+                ? id
+                : UUID.randomUUID()
+        );
         tag.putString("type", type.name());
         tag.putString("name", name);
         tag.put("cache", cache.toTag());
@@ -71,9 +85,20 @@ public abstract class Account<T extends Account<?>> implements ISerializable<T> 
     public T fromTag(NbtCompound tag) {
         if (!tag.contains("name") || !tag.contains("cache")) throw new NbtException();
 
+
+        id = tag.containsUuid("localId")
+            ? tag.getUuid("localId")
+            : UUID.randomUUID();
+
         name = tag.getString("name");
         cache.fromTag(tag.getCompound("cache"));
 
-        return (T) this;
+        return Utils.cast(this);
+    }
+
+    public enum Type {
+        Cracked,
+        Microsoft,
+        TheAltening
     }
 }

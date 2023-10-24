@@ -15,7 +15,7 @@ val colorCodeRegex = Regex("[§|&][0123456789abcdefklmnorz]")
 
 const val betweenLines = 5
 
-private val COLOR_CODES = arrayOf(
+private val colorCodes = arrayOf(
     0xFF000000,
     0xFF0000AA,
     0xFF00AA00,
@@ -42,10 +42,10 @@ fun TextRenderer.renderLegacy(text: String, startX: Double, startY: Double, colo
     var currentColor = color.rgb
     val characters = text.toCharArray()
 
-    val parts = colorCodeRegex.split(text)
+    val parts = text.split(colorCodeRegex)
     var index = 0
     parts.forEach { p ->
-        p.lines().forEach { l ->
+        p.forEachLine { l ->
             render(l, x, y, MeteorColor(currentColor), shadow)
             x += getWidth(l)
 
@@ -65,7 +65,7 @@ fun TextRenderer.renderLegacy(text: String, startX: Double, startY: Double, colo
                 currentColor = when (colorCode) {
                     'r' -> color.rgb
                     'z' -> RainbowColor.GLOBAL.packed
-                    else -> COLOR_CODES[colorIndex].toInt()
+                    else -> colorCodes[colorIndex].toInt()
                 }
 
                 index += 2
@@ -79,7 +79,7 @@ fun String.onlyVisibleContent() =
     .replace("\n", "")
     .replace("\r", "")
 
-fun isApplicableTo(content: String) = colorCodeRegex in content || content.lineCount() > 1
+fun needsSpecialRenderer(content: String) = colorCodeRegex in content || content.lineCount() > 1
 
 @JvmOverloads
 fun TextRenderer.getLegacyWidth(text: String, themeScaling: Boolean = true) =

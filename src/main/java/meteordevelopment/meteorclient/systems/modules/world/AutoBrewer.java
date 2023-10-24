@@ -10,7 +10,7 @@ import meteordevelopment.meteorclient.settings.Setting;
 import meteordevelopment.meteorclient.settings.SettingGroup;
 import meteordevelopment.meteorclient.systems.modules.Categories;
 import meteordevelopment.meteorclient.systems.modules.Module;
-import meteordevelopment.meteorclient.utils.misc.MyPotion;
+import meteordevelopment.meteorclient.utils.misc.PotionTypes;
 import meteordevelopment.meteorclient.utils.player.InvUtils;
 import net.minecraft.item.Item;
 import net.minecraft.item.Items;
@@ -22,10 +22,10 @@ import net.minecraft.screen.BrewingStandScreenHandler;
 public class AutoBrewer extends Module {
     private final SettingGroup sgGeneral = settings.getDefaultGroup();
 
-    private final Setting<MyPotion> potion = sgGeneral.add(new PotionSetting.Builder()
+    private final Setting<PotionTypes> potion = sgGeneral.add(new PotionSetting.Builder()
             .name("potion")
             .description("The type of potion to brew.")
-            .defaultValue(MyPotion.Strength)
+            .defaultValue(PotionTypes.Strength)
             .build()
     );
 
@@ -99,7 +99,7 @@ public class AutoBrewer extends Module {
             return true;
         }
 
-        moveOneItem(c, slot, 3);
+        moveOneItem(slot, 3);
 
         return false;
     }
@@ -121,13 +121,13 @@ public class AutoBrewer extends Module {
                 return true;
             }
 
-            moveOneItem(c, slot, 4);
+            moveOneItem(slot, 4);
         }
 
         return false;
     }
 
-    private void moveOneItem(BrewingStandScreenHandler c, int from, int to) {
+    private void moveOneItem(int from, int to) {
         InvUtils.move().fromId(from).toId(to);
     }
 
@@ -151,7 +151,7 @@ public class AutoBrewer extends Module {
                 return true;
             }
 
-            InvUtils.move().fromId(slot).toId(i);
+            moveOneItem(slot, i);
         }
 
         return false;

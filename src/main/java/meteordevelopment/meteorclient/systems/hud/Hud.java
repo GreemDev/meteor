@@ -19,7 +19,7 @@ import meteordevelopment.meteorclient.utils.render.color.SettingColor;
 import meteordevelopment.orbit.EventHandler;
 import net.greemdev.meteor.Greteor;
 import net.greemdev.meteor.hud.HudElementMetadata;
-import net.greemdev.meteor.type.ErrorPrompt;
+import net.greemdev.meteor.type.MeteorPromptException;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.nbt.NbtElement;
 import org.jetbrains.annotations.NotNull;
@@ -149,7 +149,7 @@ public class Hud extends System<Hud> implements Iterable<HudElement> {
         HudElement element;
         try {
             element = info.create();
-        } catch (ErrorPrompt err) {
+        } catch (MeteorPromptException err) {
             err.tryShow();
             return;
         }
@@ -167,7 +167,7 @@ public class Hud extends System<Hud> implements Iterable<HudElement> {
         HudElement element;
         try {
             element = preset.info.create();
-        } catch (ErrorPrompt err) {
+        } catch (MeteorPromptException err) {
             err.tryShow();
             return;
         }
@@ -302,7 +302,7 @@ public class Hud extends System<Hud> implements Iterable<HudElement> {
                 HudElement element;
                 try {
                     element = info.create();
-                } catch (ErrorPrompt err) {
+                } catch (MeteorPromptException err) {
                     err.tryShow();
                     continue;
                 }

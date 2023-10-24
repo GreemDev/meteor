@@ -22,47 +22,56 @@ import meteordevelopment.meteorclient.systems.profiles.Profiles
 import meteordevelopment.meteorclient.systems.proxies.Proxies
 import meteordevelopment.meteorclient.systems.waypoints.Waypoint
 import meteordevelopment.meteorclient.systems.waypoints.Waypoints
+import net.greemdev.meteor.kotlin
 import net.minecraft.entity.player.PlayerEntity
 import java.util.*
+import java.util.function.Consumer
 import kotlin.reflect.KClass
 
 object Meteor {
 
     @JvmStatic
-    fun currentTheme(): GuiTheme = GuiThemes.get()
+    fun currentTheme(): GuiTheme = GuiThemes.get() ?: error("Themes system not yet available.")
 
     @JvmStatic
-    fun config(): Config = Config.get()
+    fun config(): Config = Config.get() ?: error("Config system not yet available.")
 
     @JvmStatic
-    fun accounts(): Accounts = Accounts.get()
+    fun accounts(): Accounts = Accounts.get() ?: error("Accounts system not yet available.")
 
     @JvmStatic
-    fun macros(): Macros = Macros.get()
+    fun macros(): Macros = Macros.get() ?: error("Macros system not yet available.")
 
     @JvmStatic
-    fun proxies(): Proxies = Proxies.get()
+    fun proxies(): Proxies = Proxies.get() ?: error("Proxies system not yet available.")
 
     @JvmStatic
-    fun hud(): Hud = Hud.get()
+    fun hud(): Hud = Hud.get() ?: error("HUD system not yet available.")
 
     @JvmStatic
-    fun modules(): Modules = Modules.get()
+    fun modules(): Modules = Modules.get() ?: error("Modules system not yet available.")
 
     @JvmStatic
-    fun commands(): Commands = Commands.get()
+    fun commands(): Commands = Commands.get() ?: error("Commands system not yet available.")
 
     @JvmStatic
-    fun friends(): Friends = Friends.get()
+    fun friends(): Friends = Friends.get() ?: error("Friends system not yet available.")
 
     @JvmStatic
-    fun waypoints(): Waypoints = Waypoints.get()
+    fun waypoints(): Waypoints = Waypoints.get() ?: error("Waypoints system not yet available.")
 
     @JvmStatic
-    fun profiles(): Profiles = Profiles.get()
+    fun profiles(): Profiles = Profiles.get() ?: error("Profiles system not yet available.")
 
+    @JvmStatic
+    fun module(name: String): Module = modules().get(name)
     inline fun <reified T : Module> module(): T = modules().get(T::class.java)
-    inline fun <T : Module, R> module(clazz: KClass<T>, func: T.() -> R) = modules().get(clazz.java).func()
+    inline fun <reified T : Module> module(func: T.() -> Unit) = modules().get(T::class.java).func()
+
+    @JvmStatic
+    fun <T : Module> module(moduleClass: Class<T>, func: Consumer<T>) = func.kotlin(module(moduleClass))
+    @JvmStatic
+    fun <T : Module> module(moduleClass: Class<T>): T = modules().get(moduleClass)
 
     inline fun <reified T : Command> command(): T = commands().get(T::class.java)
 

@@ -87,7 +87,7 @@ public class Config extends System<Config> {
         .visible(useCustomWindowTitle::get)
         .defaultValue("Minecraft {gameVersion} - Meteor Client {meteor.version}")
         .onChanged(value -> mc.updateWindowTitle())
-        .renderer(StarscriptTextBoxRenderer.class)
+        .renderStarscript()
         .build()
     );
 
@@ -202,8 +202,9 @@ public class Config extends System<Config> {
 
     public final Setting<List<String>> customSplashes = sgMisc.add(new StringListSetting.Builder()
         .name("custom-splashes")
-        .description("Custom splash texts to use on the title screen")
+        .description("Custom splash texts to use on the title screen.\nAmpersands are automatically replaced with section symbols so you can use styling.")
         .defaultValue("Meteor on Crack!",
+            "github.com/GreemDev/meteor",
             "Star Meteor Client on GitHub!",
             "Based utility mod.",
             "&6MineGame159 &fbased god",

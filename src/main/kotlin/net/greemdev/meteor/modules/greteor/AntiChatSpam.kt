@@ -3,9 +3,7 @@
  * Copyright (c) Meteor Development.
  */
 
-@file:Suppress("HasPlatformType")
-
-package net.greemdev.meteor.modules
+package net.greemdev.meteor.modules.greteor
 
 import meteordevelopment.meteorclient.events.game.ReceiveMessageEvent
 import meteordevelopment.orbit.EventHandler

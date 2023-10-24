@@ -3,24 +3,17 @@
  * Copyright (c) Meteor Development.
  */
 
-package net.greemdev.meteor.modules.dn
+package net.greemdev.meteor.modules.greteor.damageNumbers
 
 import com.mojang.blaze3d.systems.RenderSystem
-import net.greemdev.meteor.util.meteor.Meteor
 import net.greemdev.meteor.util.meteor.invoke
 import net.greemdev.meteor.util.minecraft
 import net.greemdev.meteor.util.misc.*
 import net.minecraft.client.render.Camera
 import net.minecraft.client.render.GameRenderer
 import net.minecraft.client.util.math.MatrixStack
-import net.minecraft.util.math.MathHelper
 import net.minecraft.util.math.Vec3f
-import net.minecraft.util.math.random.Random
 import org.lwjgl.opengl.GL11
-import java.util.concurrent.ThreadLocalRandom
-import kotlin.math.min
-import kotlin.random.asJavaRandom
-import kotlin.random.asKotlinRandom
 
 class DamageNumber(val entityState: EntityState, val damage: Float) {
     var x = 0.0

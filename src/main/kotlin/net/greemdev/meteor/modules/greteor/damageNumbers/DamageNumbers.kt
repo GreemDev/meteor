@@ -3,7 +3,7 @@
  * Copyright (c) Meteor Development.
  */
 
-package net.greemdev.meteor.modules.dn
+package net.greemdev.meteor.modules.greteor.damageNumbers
 
 import meteordevelopment.meteorclient.events.world.TickEvent
 import meteordevelopment.meteorclient.settings.ColorSetting
@@ -111,7 +111,7 @@ object DamageNumbers : GModule(
 
     val scaleFactor by sg double {
         name("scaling")
-        description("The factor of scaling of the damage number.")
+        description("The scaling factor of the damage number.")
         defaultValue(-0.025)
         range(-0.050, -0.010)
     }
@@ -130,10 +130,12 @@ object DamageNumbers : GModule(
 
     fun drawNumber(matrices: MatrixStack, dmg: Float, x: Float, y: Float, width: Float) {
         val number = abs(dmg).takeUnless(Number::isZero) ?: return
-        val numStr = if (showDecimal())
-            number.precision(precision()).toString()
-        else
-            round(number).toInt().toString()
+        val numStr = (
+            if (showDecimal())
+                number.precision(precision())
+            else
+                round(number).toInt()
+            ).toString()
 
         val operator = if (dmg > 0) '-' else '+'
         val formattedNumber = operatorPrefix().formatNumber(operator, numStr)

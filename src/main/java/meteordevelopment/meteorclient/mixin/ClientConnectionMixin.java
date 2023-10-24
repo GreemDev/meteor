@@ -12,8 +12,10 @@ import meteordevelopment.meteorclient.events.world.ConnectToServerEvent;
 import meteordevelopment.meteorclient.systems.modules.Modules;
 import meteordevelopment.meteorclient.systems.modules.misc.AntiPacketKick;
 import meteordevelopment.meteorclient.systems.modules.world.HighwayBuilder;
+import net.greemdev.meteor.util.meteor.Meteor;
 import net.minecraft.network.ClientConnection;
 import net.minecraft.network.Packet;
+import net.minecraft.network.PacketEncoderException;
 import net.minecraft.network.listener.PacketListener;
 import net.minecraft.text.MutableText;
 import net.minecraft.text.Text;
@@ -26,6 +28,7 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
 import java.io.IOException;
 import java.net.InetSocketAddress;
+import java.util.concurrent.TimeoutException;
 
 @Mixin(ClientConnection.class)
 public class ClientConnectionMixin {
@@ -51,7 +54,12 @@ public class ClientConnectionMixin {
 
     @Inject(method = "exceptionCaught", at = @At("HEAD"), cancellable = true)
     private void exceptionCaught(ChannelHandlerContext context, Throwable throwable, CallbackInfo ci) {
-        if (throwable instanceof IOException && Modules.get().isActive(AntiPacketKick.class)) ci.cancel();
+        AntiPacketKick apk = Meteor.module(AntiPacketKick.class);
+        if (!(throwable instanceof TimeoutException) && !(throwable instanceof PacketEncoderException) && apk.catchExceptions()) {
+            if (apk.logCaughtExceptions())
+                apk.warning("Caught exception: %s", throwable);
+            ci.cancel();
+        }
     }
 
     @Inject(at = @At("HEAD"), method = "send(Lnet/minecraft/network/Packet;)V", cancellable = true)

@@ -41,7 +41,10 @@ import net.minecraft.world.RaycastContext;
 import static meteordevelopment.meteorclient.MeteorClient.mc;
 import static meteordevelopment.meteorclient.utils.Utils.WHITE;
 
-public class PlayerUtils {
+public final class PlayerUtils {
+
+    private PlayerUtils() {}
+
     private static final double diagonal = 1 / Math.sqrt(2);
     private static final Vec3d horizontalVelocity = new Vec3d(0, 0, 0);
 

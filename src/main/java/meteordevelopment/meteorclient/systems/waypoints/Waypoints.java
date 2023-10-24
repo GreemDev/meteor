@@ -91,6 +91,19 @@ public class Waypoints extends System<Waypoints> implements Iterable<Waypoint> {
         return added != null;
     }
 
+    public boolean addAll(Waypoint... waypoints) {
+        boolean needsSave = Arrays.stream(waypoints)
+            .map(wp ->
+                this.waypoints.put(wp.name.get().toLowerCase(Locale.ROOT), wp)
+            ).anyMatch(Objects::nonNull);
+
+        if (needsSave) {
+            save();
+        }
+
+        return needsSave;
+    }
+
     public boolean remove(Waypoint waypoint) {
         Waypoint removed = waypoints.remove(waypoint.name.get().toLowerCase(Locale.ROOT));
         if (removed != null) {

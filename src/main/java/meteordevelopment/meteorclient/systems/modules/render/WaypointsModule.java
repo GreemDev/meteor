@@ -5,19 +5,17 @@
 
 package meteordevelopment.meteorclient.systems.modules.render;
 
-import baritone.api.BaritoneAPI;
-import baritone.api.IBaritone;
 import baritone.api.pathing.goals.GoalGetToBlock;
 import meteordevelopment.meteorclient.events.game.OpenScreenEvent;
 import meteordevelopment.meteorclient.gui.GuiTheme;
-import meteordevelopment.meteorclient.gui.renderer.GuiRenderer;
+import meteordevelopment.meteorclient.gui.WidgetScreen;
+import meteordevelopment.meteorclient.gui.WindowScreen;
 import meteordevelopment.meteorclient.gui.screens.EditSystemScreen;
 import meteordevelopment.meteorclient.gui.widgets.WLabel;
 import meteordevelopment.meteorclient.gui.widgets.WWidget;
 import meteordevelopment.meteorclient.gui.widgets.containers.WTable;
+import meteordevelopment.meteorclient.gui.widgets.input.WTextBox;
 import meteordevelopment.meteorclient.gui.widgets.pressable.WButton;
-import meteordevelopment.meteorclient.gui.widgets.pressable.WCheckbox;
-import meteordevelopment.meteorclient.gui.widgets.pressable.WMinus;
 import meteordevelopment.meteorclient.settings.*;
 import meteordevelopment.meteorclient.systems.modules.Categories;
 import meteordevelopment.meteorclient.systems.modules.Module;
@@ -27,17 +25,22 @@ import meteordevelopment.meteorclient.utils.Utils;
 import meteordevelopment.meteorclient.utils.player.PlayerUtils;
 import meteordevelopment.meteorclient.utils.render.color.Color;
 import meteordevelopment.orbit.EventHandler;
+import net.greemdev.meteor.gui.JourneyMapWaypointsImportScreen;
 import net.minecraft.client.gui.screen.DeathScreen;
 import net.minecraft.text.MutableText;
 import net.minecraft.text.Text;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Vec3d;
 
+import java.io.File;
+import java.nio.file.InvalidPathException;
+import java.nio.file.Path;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.ListIterator;
 
 import static meteordevelopment.meteorclient.utils.player.ChatUtils.formatCoords;
+import static net.greemdev.meteor.util.accessors.baritone;
 
 public class WaypointsModule extends Module {
     private static final Color GRAY = new Color(200, 200, 200);
@@ -142,39 +145,43 @@ public class WaypointsModule extends Module {
             WLabel name = table.add(theme.label(waypoint.name.get())).expandCellX().widget();
             if (!validDim) name.color = GRAY;
 
-            WCheckbox visible = table.add(theme.checkbox(waypoint.visible.get())).widget();
-            visible.action = () -> {
-                waypoint.visible.set(visible.checked);
+            table.add(theme.checkbox(waypoint.visible.get(), (checked) -> {
+                waypoint.visible.set(checked);
                 Waypoints.get().save();
-            };
+            }));
 
-            WButton edit = table.add(theme.button(GuiRenderer.EDIT)).widget();
-            edit.action = () -> mc.setScreen(new EditWaypointScreen(theme, waypoint, null));
+            table.add(theme.editButton(() -> mc.setScreen(new EditWaypointScreen(theme, waypoint, null))));
 
             // Goto
             if (validDim) {
-                WButton gotoB = table.add(theme.button("Goto")).widget();
-                gotoB.action = () -> {
-                    IBaritone baritone = BaritoneAPI.getProvider().getPrimaryBaritone();
-                    if (baritone.getPathingBehavior().isPathing()) baritone.getPathingBehavior().cancelEverything();
-                    baritone.getCustomGoalProcess().setGoalAndPath(new GoalGetToBlock(waypoint.getPos()));
-                };
+                table.add(theme.button("Goto", () -> {
+
+                    if (baritone().getPathingBehavior().isPathing())
+                        baritone().getPathingBehavior().cancelEverything();
+
+                    baritone().getCustomGoalProcess().setGoalAndPath(new GoalGetToBlock(waypoint.getPos()));
+                }));
             }
 
-            WMinus remove = table.add(theme.minus()).widget();
-            remove.action = () -> {
+            table.add(theme.minus(() -> {
                 Waypoints.get().remove(waypoint);
                 initTable(theme, table);
-            };
+            }));
 
             table.row();
         }
 
-        table.add(theme.horizontalSeparator()).expandX();
-        table.row();
-
-        WButton create = table.add(theme.button("Create")).expandX().widget();
-        create.action = () -> mc.setScreen(new EditWaypointScreen(theme, null, () -> initTable(theme, table)));
+        if (Waypoints.get().waypoints.size() > 0) {
+            table.add(theme.horizontalSeparator()).expandX();
+            table.row();
+        }
+        table.add(theme.button("Create", () ->
+            mc.setScreen(new EditWaypointScreen(theme, null, () -> initTable(theme, table)))
+        )).expandX().widget();
+        WButton importBtn = table.add(theme.button("Import from JourneyMap...", () ->
+            mc.setScreen(new JourneyMapWaypointsImportScreen(theme))
+        )).widget();
+        importBtn.tooltip = "The waypoints will be imported to the current world.";
     }
 
     private class EditWaypointScreen extends EditSystemScreen<Waypoint> {

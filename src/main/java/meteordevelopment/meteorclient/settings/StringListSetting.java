@@ -8,6 +8,7 @@ package meteordevelopment.meteorclient.settings;
 import meteordevelopment.meteorclient.gui.GuiTheme;
 import meteordevelopment.meteorclient.gui.renderer.GuiRenderer;
 import meteordevelopment.meteorclient.gui.utils.CharFilter;
+import meteordevelopment.meteorclient.gui.utils.StarscriptTextBoxRenderer;
 import meteordevelopment.meteorclient.gui.widgets.containers.WTable;
 import meteordevelopment.meteorclient.gui.widgets.input.WTextBox;
 import meteordevelopment.meteorclient.gui.widgets.pressable.WButton;
@@ -86,13 +87,12 @@ public class StringListSetting extends Setting<List<String>> {
             textBox.action = () -> strings.set(msgI, textBox.get());
             textBox.actionOnUnfocused = () -> setting.set(strings);
 
-            WMinus delete = table.add(theme.minus()).widget();
-            delete.action = () -> {
+            table.add(theme.minus(() -> {
                 strings.remove(msgI);
                 setting.set(strings);
 
                 fillTable(theme, table, setting);
-            };
+            }));
 
             table.row();
         }
@@ -111,12 +111,11 @@ public class StringListSetting extends Setting<List<String>> {
             fillTable(theme, table, setting);
         };
 
-        WButton reset = table.add(theme.button(GuiRenderer.RESET)).widget();
-        reset.action = () -> {
+        table.add(theme.resetButton(() -> {
             setting.reset();
 
             fillTable(theme, table, setting);
-        };
+        }));
     }
 
     public static class Builder extends SettingBuilder<Builder, List<String>, StringListSetting> {
@@ -135,6 +134,10 @@ public class StringListSetting extends Setting<List<String>> {
         public Builder renderer(Class<? extends WTextBox.Renderer> renderer) {
             this.renderer = renderer;
             return this;
+        }
+
+        public Builder renderStarscript() {
+            return renderer(StarscriptTextBoxRenderer.class);
         }
 
         public Builder filter(CharFilter filter) {

@@ -21,8 +21,6 @@ import java.util.Collection;
 import java.util.concurrent.CompletableFuture;
 
 public class FakePlayerArgumentType implements ArgumentType<String> {
-    private static final Collection<String> EXAMPLES =
-        MeteorClient.MOD_META.getAuthors().stream().map(Person::getName).toList();
 
     public static FakePlayerArgumentType create() {
         return new FakePlayerArgumentType();
@@ -44,6 +42,6 @@ public class FakePlayerArgumentType implements ArgumentType<String> {
 
     @Override
     public Collection<String> getExamples() {
-        return EXAMPLES;
+        return MeteorClient.authors();
     }
 }

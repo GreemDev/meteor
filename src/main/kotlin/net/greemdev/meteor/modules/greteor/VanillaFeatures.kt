@@ -3,7 +3,7 @@
  * Copyright (c) Meteor Development.
  */
 
-package net.greemdev.meteor.modules
+package net.greemdev.meteor.modules.greteor
 
 import net.greemdev.meteor.GModule
 import net.greemdev.meteor.util.meteor.bool
@@ -29,6 +29,7 @@ object VanillaFeatures : GModule(
     val pauseOnLostFocus by sg bool {
         name("pause-on-lost-focus")
         description("Whether or not to pause the game when you're tabbed out.")
+        defaultValue(mc.options.pauseOnLostFocus)
         serialize(false)
         onChanged {
             mc.options.pauseOnLostFocus = it

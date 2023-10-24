@@ -861,7 +861,7 @@ public class Notebot extends Module {
     @Nullable
     public Instrument getMappedInstrument(Instrument inst) {
         if (mode.get() == NotebotUtils.NotebotMode.ExactInstruments) {
-            return ((NotebotUtils.OptionalInstrument) sgNoteMap.getByIndex(inst.ordinal()).get()).toMinecraftInstrument();
+            return ((NotebotUtils.OptionalInstrument) sgNoteMap.get(inst.ordinal()).get()).toMinecraftInstrument();
         } else {
             return inst;
         }

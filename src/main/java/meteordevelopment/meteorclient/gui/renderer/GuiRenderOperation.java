@@ -5,6 +5,7 @@
 
 package meteordevelopment.meteorclient.gui.renderer;
 
+import meteordevelopment.meteorclient.utils.Utils;
 import meteordevelopment.meteorclient.utils.misc.Pool;
 import meteordevelopment.meteorclient.utils.render.color.Color;
 
@@ -20,7 +21,7 @@ public abstract class GuiRenderOperation<T extends GuiRenderOperation<T>> {
 
     public void run(Pool<T> pool) {
         onRun();
-        pool.free((T) this);
+        pool.free(Utils.cast(this));
     }
 
     protected abstract void onRun();

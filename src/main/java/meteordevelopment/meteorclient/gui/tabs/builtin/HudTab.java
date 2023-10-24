@@ -66,7 +66,7 @@ public class HudTab extends Tab {
 
             bottom.add(theme.label("Active: "));
             bottom.add(theme.checkbox(hud.active, (checked) -> hud.active = checked)).expandCellX();
-            bottom.add(theme.button(GuiRenderer.RESET, hud.settings::reset));
+            bottom.add(theme.resetButton(hud.settings::reset));
         }
 
         @Override

@@ -5,7 +5,7 @@
 
 package meteordevelopment.meteorclient.mixin;
 
-import net.greemdev.meteor.modules.presence.MinecraftPresenceKt;
+import net.greemdev.meteor.modules.greteor.MinecraftPresenceKt;
 import net.minecraft.client.main.Main;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;

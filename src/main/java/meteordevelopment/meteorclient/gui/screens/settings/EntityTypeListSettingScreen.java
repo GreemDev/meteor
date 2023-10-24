@@ -124,10 +124,9 @@ public class EntityTypeListSettingScreen extends WindowScreen {
 
         // Misc
         List<EntityType<?>> miscE = new ArrayList<>();
-        WCheckbox miscC = theme.checkbox(hasMisc > 0);
+        WCheckbox miscC = theme.checkbox(hasMisc > 0, (checked) -> tableChecked(miscE, checked));
 
         misc = theme.section("Misc", misc != null && misc.isExpanded(), miscC);
-        miscC.action = () -> tableChecked(miscE, miscC.checked);
 
         Cell<WSection> miscCell = add(misc).expandX();
         miscT = misc.add(theme.table()).expandX().widget();

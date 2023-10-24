@@ -10,19 +10,23 @@ import meteordevelopment.meteorclient.events.world.TickEvent;
 import meteordevelopment.meteorclient.utils.PreInit;
 import meteordevelopment.meteorclient.utils.misc.MeteorIdentifier;
 import meteordevelopment.orbit.EventHandler;
+import net.greemdev.meteor.util.Http;
 import net.minecraft.client.texture.NativeImage;
 import net.minecraft.client.texture.NativeImageBackedTexture;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.util.Identifier;
+import org.jetbrains.annotations.Nullable;
 
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.*;
-import java.util.stream.Stream;
 
 import static meteordevelopment.meteorclient.MeteorClient.mc;
 
-public class Capes {
+public final class Capes {
+
+    private Capes() {}
+
     private static final String CAPE_OWNERS_URL = "https://meteorclient.com/api/capeowners";
     private static final String CAPES_URL = "https://meteorclient.com/api/capes";
 
@@ -43,27 +47,27 @@ public class Capes {
         TO_RETRY.clear();
         TO_REMOVE.clear();
 
-        MeteorExecutor.execute(() -> {
-            // Cape owners
-            Stream<String> lines = Http.get(CAPE_OWNERS_URL).sendLines();
-            if (lines != null) lines.forEach(s -> {
-                String[] split = s.split(" ");
+        Http.get(CAPE_OWNERS_URL).requestLinesAsync(lines -> {
+            if (lines != null)
+                lines.forEach(s -> {
+                    String[] split = s.split(" ");
 
-                if (split.length >= 2) {
-                    OWNERS.put(UUID.fromString(split[0]), split[1]);
-                    if (!TEXTURES.containsKey(split[1])) TEXTURES.put(split[1], new Cape(split[1]));
-                }
-            });
+                    if (split.length >= 2) {
+                        OWNERS.put(UUID.fromString(split[0]), split[1]);
+                        if (!TEXTURES.containsKey(split[1])) TEXTURES.put(split[1], new Cape(split[1]));
+                    }
+                });
+        });
 
-            // Capes
-            lines = Http.get(CAPES_URL).sendLines();
-            if (lines != null) lines.forEach(s -> {
-                String[] split = s.split(" ");
+        Http.get(CAPES_URL).requestLinesAsync(lines -> {
+            if (lines != null)
+                lines.forEach(s -> {
+                    String[] split = s.split(" ");
 
-                if (split.length >= 2) {
-                    if (!URLS.containsKey(split[0])) URLS.put(split[0], split[1]);
-                }
-            });
+                    if (split.length >= 2) {
+                        if (!URLS.containsKey(split[0])) URLS.put(split[0], split[1]);
+                    }
+                });
         });
 
         MeteorClient.EVENT_BUS.subscribe(Capes.class);
@@ -92,6 +96,7 @@ public class Capes {
         }
     }
 
+    @Nullable
     public static Identifier get(PlayerEntity player) {
         String capeName = OWNERS.get(player.getUuid());
         if (capeName != null) {
@@ -140,7 +145,7 @@ public class Capes {
                         }
                     }
 
-                    InputStream in = Http.get(url).sendInputStream();
+                    InputStream in = Http.get(url).requestInputStream();
                     if (in == null) {
                         synchronized (TO_RETRY) {
                             TO_RETRY.add(this);
@@ -156,6 +161,7 @@ public class Capes {
                         TO_REGISTER.add(this);
                     }
                 } catch (IOException e) {
+                    MeteorClient.LOG.info("Could not download cape for %s".formatted(name));
                     e.printStackTrace();
                 }
             });

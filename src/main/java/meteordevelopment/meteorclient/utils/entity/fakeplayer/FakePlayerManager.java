@@ -14,7 +14,10 @@ import java.util.stream.Stream;
 
 import static meteordevelopment.meteorclient.MeteorClient.mc;
 
-public class FakePlayerManager {
+public final class FakePlayerManager {
+
+    private FakePlayerManager() {}
+
     private static final List<FakePlayerEntity> ENTITIES = new ArrayList<>();
 
     public static FakePlayerEntity get(String name) {

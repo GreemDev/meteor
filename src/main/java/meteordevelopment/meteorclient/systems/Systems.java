@@ -17,8 +17,10 @@ import meteordevelopment.meteorclient.systems.modules.Modules;
 import meteordevelopment.meteorclient.systems.profiles.Profiles;
 import meteordevelopment.meteorclient.systems.proxies.Proxies;
 import meteordevelopment.meteorclient.systems.waypoints.Waypoints;
+import meteordevelopment.meteorclient.utils.Utils;
 import meteordevelopment.orbit.EventHandler;
 import net.greemdev.meteor.util.meteor.HiddenModules;
+import net.greemdev.meteor.utils;
 
 import java.io.File;
 import java.util.ArrayList;
@@ -95,8 +97,7 @@ public class Systems {
         load(null);
     }
 
-    @SuppressWarnings("unchecked")
     public static <T extends System<?>> T get(Class<T> klass) {
-        return (T) systems.get(klass);
+        return Utils.cast(systems.get(klass));
     }
 }

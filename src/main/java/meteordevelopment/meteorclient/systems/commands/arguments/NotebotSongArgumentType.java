@@ -32,14 +32,14 @@ public class NotebotSongArgumentType implements ArgumentType<Path> {
         final String text = reader.getRemaining();
         reader.setCursor(reader.getTotalLength());
         System.out.println("READER: "+text);
-        return MeteorClient.FOLDER.toPath().resolve("notebot/"+text);
+        return MeteorClient.FOLDER.toPath().resolve("notebot/" + text);
     }
 
     @Override
     public <S> CompletableFuture<Suggestions> listSuggestions(CommandContext<S> context, SuggestionsBuilder builder) {
-        try {
-            return CommandSource.suggestMatching(Files.list(MeteorClient.FOLDER.toPath().resolve("notebot"))
-                    .filter(SongDecoders::hasDecoder)
+        try (var files = Files.list(MeteorClient.FOLDER.toPath().resolve("notebot"))) {
+            return CommandSource.suggestMatching(
+                files.filter(SongDecoders::hasDecoder)
                     .map(path -> path.getFileName().toString()),
                 builder
             );

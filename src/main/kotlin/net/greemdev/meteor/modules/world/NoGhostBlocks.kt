@@ -3,7 +3,7 @@
  * Copyright (c) Meteor Development.
  */
 
-package net.greemdev.meteor.modules
+package net.greemdev.meteor.modules.world
 
 import meteordevelopment.meteorclient.events.entity.player.BreakBlockEvent
 import meteordevelopment.orbit.EventHandler

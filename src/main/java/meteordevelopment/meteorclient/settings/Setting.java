@@ -5,9 +5,9 @@
 
 package meteordevelopment.meteorclient.settings;
 
+import kotlin.text.StringsKt;
 import meteordevelopment.meteorclient.systems.modules.Module;
 import meteordevelopment.meteorclient.utils.Utils;
-import meteordevelopment.meteorclient.utils.misc.IGetter;
 import meteordevelopment.meteorclient.utils.misc.ISerializable;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.util.Identifier;
@@ -19,7 +19,7 @@ import java.util.Objects;
 import java.util.function.Consumer;
 import java.util.function.Supplier;
 
-public abstract class Setting<T> implements IGetter<T>, ISerializable<T> {
+public abstract class Setting<T> implements Supplier<T>, ISerializable<T> {
     private static final List<String> NO_SUGGESTIONS = new ArrayList<>(0);
 
     public final String name, title, description;
@@ -75,9 +75,11 @@ public abstract class Setting<T> implements IGetter<T>, ISerializable<T> {
     }
 
     public T getDefaultValue() {
-        if (defaultValue instanceof Supplier<?> s)
-            return (T)s.get();
-        return (T)defaultValue;
+        return Utils.cast(
+            defaultValue instanceof Supplier<?> s
+                ? s.get()
+                : defaultValue
+        );
     }
 
     public boolean parse(String str) {
@@ -94,7 +96,7 @@ public abstract class Setting<T> implements IGetter<T>, ISerializable<T> {
     }
 
     public boolean wasChanged() {
-        return !Objects.equals(value, defaultValue);
+        return !Objects.equals(value, getDefaultValue());
     }
 
     public void onChanged() {
@@ -155,7 +157,7 @@ public abstract class Setting<T> implements IGetter<T>, ISerializable<T> {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         Setting<?> setting = (Setting<?>) o;
-        return Objects.equals(name, setting.name);
+        return Objects.equals(name, setting.name) && Objects.equals(module, setting.module);
     }
 
     @Override
@@ -166,12 +168,13 @@ public abstract class Setting<T> implements IGetter<T>, ISerializable<T> {
     public static <T> T parseId(Registry<T> registry, String name) {
         name = name.trim();
 
-        Identifier id;
-        if (name.contains(":")) id = new Identifier(name);
-        else id = new Identifier("minecraft", name);
-        if (registry.containsId(id)) return registry.get(id);
+        Identifier id = name.contains(":")
+            ? new Identifier(name)
+            : new Identifier("minecraft", name);
 
-        return null;
+        return registry.containsId(id)
+            ? registry.get(id)
+            : null;
     }
 
     public abstract static class SettingBuilder<B, V, S> {
@@ -188,47 +191,52 @@ public abstract class Setting<T> implements IGetter<T>, ISerializable<T> {
 
         public B name(String name) {
             this.name = name;
-            return (B) this;
+            return Utils.cast(this);
         }
 
         public B description(String description) {
-            this.description = description;
-            return (B) this;
+            this.description = StringsKt.trimIndent(description); //automatic support for kotlin multiline strings
+            return Utils.cast(this);
         }
 
         public B defaultValue(V defaultValue) {
             this.defaultValue = defaultValue;
-            return (B) this;
+            return Utils.cast(this);
         }
 
         public B defaultValue(Supplier<V> defaultValue) {
             this.defaultValue = defaultValue;
-            return (B) this;
+            return Utils.cast(this);
         }
 
         public B serialize(boolean value) {
             this.serialize = value;
-            return (B)this;
+            return Utils.cast(this);
         }
 
         public B visible(IVisible visible) {
             this.visible = visible;
-            return (B) this;
+            return Utils.cast(this);
         }
 
+        /**
+         * Marks a setting as invisible in the UI.<br/>
+         * Useful for values you want to use the setting system for but don't want to be directly configurable.
+         * @return The current {@link Setting}
+         */
         public B invisible() {
             this.visible = () -> false;
-            return (B) this;
+            return Utils.cast(this);
         }
 
         public B onChanged(Consumer<V> onChanged) {
             this.onChanged = onChanged;
-            return (B) this;
+            return Utils.cast(this);
         }
 
         public B onModuleActivated(Consumer<Setting<V>> onModuleActivated) {
             this.onModuleActivated = onModuleActivated;
-            return (B) this;
+            return Utils.cast(this);
         }
 
         public abstract S build();

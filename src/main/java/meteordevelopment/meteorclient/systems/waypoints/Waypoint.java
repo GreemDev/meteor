@@ -13,8 +13,10 @@ import meteordevelopment.meteorclient.renderer.Renderer2D;
 import meteordevelopment.meteorclient.settings.*;
 import meteordevelopment.meteorclient.utils.misc.ISerializable;
 import meteordevelopment.meteorclient.utils.player.PlayerUtils;
+import meteordevelopment.meteorclient.utils.render.color.Color;
 import meteordevelopment.meteorclient.utils.render.color.SettingColor;
 import meteordevelopment.meteorclient.utils.world.Dimension;
+import net.greemdev.meteor.utils;
 import net.minecraft.client.texture.AbstractTexture;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.nbt.NbtElement;
@@ -22,6 +24,7 @@ import net.minecraft.util.math.BlockPos;
 
 import java.util.Map;
 import java.util.Objects;
+import java.util.function.Consumer;
 
 public class Waypoint implements ISerializable<Waypoint> {
     public final Settings settings = new Settings();
@@ -95,7 +98,7 @@ public class Waypoint implements ISerializable<Waypoint> {
         .build()
     );
 
-    private Waypoint() {}
+    public Waypoint() {}
     public Waypoint(NbtElement tag) {
         fromTag((NbtCompound) tag);
     }
@@ -115,8 +118,9 @@ public class Waypoint implements ISerializable<Waypoint> {
         color.get().a = preA;
     }
 
-    public Triple<Integer, Integer, Integer> rawPos() {
-        return new Triple<>(pos.get().getX(), pos.get().getY(), pos.get().getZ());
+    public Triple<Integer, Integer, Integer> xyz() {
+        BlockPos bp = pos.get();
+        return new Triple<>(bp.getX(), bp.getY(), bp.getZ());
     }
 
     public BlockPos getPos() {
@@ -147,6 +151,8 @@ public class Waypoint implements ISerializable<Waypoint> {
         private BlockPos pos = BlockPos.ORIGIN;
         private Dimension dimension = Dimension.Overworld;
 
+        private Color color = MeteorClient.COLOR;
+
         public Builder name(String name) {
             this.name = name;
             return this;
@@ -162,8 +168,23 @@ public class Waypoint implements ISerializable<Waypoint> {
             return this;
         }
 
+        public Builder pos(int x, int y, int z) {
+            this.pos = new BlockPos(x, y, z);
+            return this;
+        }
+
         public Builder dimension(Dimension dimension) {
             this.dimension = dimension;
+            return this;
+        }
+
+        public Builder color(Color color) {
+            this.color = color;
+            return this;
+        }
+
+        public Builder color(int r, int g, int b) {
+            this.color = new Color(r, g, b);
             return this;
         }
 
@@ -174,6 +195,7 @@ public class Waypoint implements ISerializable<Waypoint> {
             if (!icon.equals(waypoint.icon.getDefaultValue())) waypoint.icon.set(icon);
             if (!pos.equals(waypoint.pos.getDefaultValue())) waypoint.pos.set(pos);
             if (!dimension.equals(waypoint.dimension.getDefaultValue())) waypoint.dimension.set(dimension);
+            if (!color.equals(waypoint.color.getDefaultValue())) waypoint.color.set(color.toSetting());
 
             return waypoint;
         }

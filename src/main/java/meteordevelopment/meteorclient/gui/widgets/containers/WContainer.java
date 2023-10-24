@@ -11,6 +11,8 @@ import meteordevelopment.meteorclient.gui.widgets.WWidget;
 import net.minecraft.client.Mouse;
 
 import java.util.*;
+import java.util.function.BiConsumer;
+import java.util.function.Consumer;
 
 import static meteordevelopment.meteorclient.MeteorClient.mc;
 import static meteordevelopment.meteorclient.utils.Utils.getWindowHeight;
@@ -29,6 +31,19 @@ public abstract class WContainer extends WWidget {
         invalidate();
 
         return cell;
+    }
+
+    public <W extends WContainer> void within(W container, Consumer<W> widgets) {
+        widgets.accept(container);
+    }
+
+    public <W extends WContainer> void within(Cell<W> containerCell, Consumer<W> widgets) {
+        widgets.accept(containerCell.widget());
+    }
+
+    public <W extends WContainer> void add(W container, BiConsumer<Cell<W>, W> widgets) {
+        Cell<W> cell = add(container);
+        widgets.accept(cell, cell.widget());
     }
 
     public void clear() {

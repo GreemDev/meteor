@@ -5,7 +5,6 @@
 
 package net.greemdev.meteor.hud.notification
 
-import com.google.common.base.MoreObjects
 import meteordevelopment.meteorclient.systems.macros.Macro
 import meteordevelopment.meteorclient.systems.modules.Module
 import net.greemdev.meteor.*
@@ -13,38 +12,117 @@ import net.greemdev.meteor.hud.element.NotificationSource
 import net.greemdev.meteor.meteor
 import net.greemdev.meteor.util.meteor.*
 import net.greemdev.meteor.util.text.ChatColor
-import java.util.Objects
+import net.greemdev.meteor.util.text.buildText
+import net.greemdev.meteor.util.text.textOf
+import net.minecraft.text.Text
 import java.util.function.Consumer
 
+@Suppress("ObjectPropertyName")
+private val _defaultTextMapper: Mapper<Notification, Text> = { n ->
+    buildText {
+        addText {
+            addString(n.title.replace(colorCodeRegex, ""))
+            colored(n.color)
+        }
+        n.description?.let { addString(": $it") }
+    }
+}
 
-open class Notification(val title: String, val description: String?, color: AwtColor?, val event: NotificationEvent?, val source: NotificationSource?) {
-    companion object {
-        private var nextId: Int = 0
-        fun nextId() = nextId++
+fun notification(builder: Initializer<NotificationBuilder>) = NotificationBuilder(builder.java).build()
 
-        @JvmStatic
-        fun module(module: Module, isNowOn: Boolean) = Notification(
-            title = "&z${module.title}&r: ${if (isNowOn) "&aON" else "&4OFF"}",
-            color = if (isNowOn) MeteorColor.GREEN else MeteorColor.RED,
-            event = NotificationEvent.ModuleToggled(module),
-            NotificationSource.Module
-        )
-        @JvmStatic
-        fun notifier(title: String, description: String, color: MeteorColor) = Notification(title, description, color, NotificationSource.Notifier)
-        @JvmStatic
-        fun macro(macro: Macro, color: AwtColor) = Notification("&zMacro Triggered", macro.name(), color, NotificationSource.Macro)
-        @JvmStatic
-        fun command(title: String, description: String, color: MeteorColor) = Notification(title, description, color, NotificationSource.Command)
-        @JvmStatic
-        fun packet(typeName: String) = Notification(
-            "${if (typeName.contains("C2S")) "C2S " else if (typeName.contains("S2C")) "S2C " else ""}packet cancelled",
-            typeName.removeSuffix("Packet").replace("C2S", "").replace("S2C", ""),
-            ChatColor.darkRed.asMeteor(),
-            NotificationSource.Default
-        )
+class NotificationBuilder() {
+
+    constructor(javaInitializer: Consumer<NotificationBuilder>) : this() {
+        javaInitializer.kotlin(this)
     }
 
-    val id = nextId()
+    val onlyDescription: Mapper<Notification, Text> = { textOf(it.description) }
+    val onlyTitle: Mapper<Notification, Text> = { textOf(it.title) }
+    val defaultTextMapper: Mapper<Notification, Text> = _defaultTextMapper
+
+    var description: String? = null
+    var event: NotificationEvent? = null
+    var source: NotificationSource = NotificationSource.Default
+    private var asText: Mapper<Notification, Text> = defaultTextMapper
+    private var fallbackPredicate: Getter<Boolean>? = null
+    private var fallback: ValueAction<Text>? = null
+
+    private var _t: String? = null
+    var title: String
+        get() = _t ?: error("No title given")
+        set(value) {
+            _t = value
+        }
+
+    private var _c: AwtColor? = null
+    var color: MeteorColor
+        get() = _c?.meteor() ?: error("No color given")
+        set(value) {
+            _c = value.awt()
+        }
+
+    @JvmField
+    val presets = Presets(this)
+
+    class Presets(val b: NotificationBuilder) {
+        fun module(module: Module, isNowOn: Boolean) {
+            b._t = "&z${module.title}&r: ${if (isNowOn) "&aON" else "&4OFF"}"
+            b.color = if (isNowOn) MeteorColor.GREEN else MeteorColor.RED
+            b.event = NotificationEvent.ModuleToggled(module)
+            b.source = NotificationSource.Module
+        }
+
+        fun packet(typeName: String) {
+            b._t = "${if (typeName.contains("C2S")) "C2S " else if (typeName.contains("S2C")) "S2C " else ""}packet cancelled"
+            b.description = typeName.removeSuffix("Packet").replace("C2S", "").replace("S2C", "")
+            b._c = ChatColor.darkRed.asAwt()
+        }
+
+        fun macro(macro: Macro, color: AwtColor) {
+            b._t = "&zMacro Triggered"
+            b.description = macro.name()
+            b._c = color
+            b.source = NotificationSource.Notifier
+        }
+    }
+
+    fun textMapper(mapper: Mapper<Notification, Text>) {
+        asText = mapper
+    }
+
+    fun fallbackPredicate(predicate: Getter<Boolean>) {
+        fallbackPredicate = predicate
+    }
+
+    @JvmName("ktFallback")
+    fun fallback(action: ValueAction<Text>) {
+        fallback = action
+    }
+
+    @JvmName("fallback")
+    fun `java-fallback`(action: Consumer<Text>) {
+        fallback = action.kotlin
+    }
+
+    fun build() = Notification(title, description, _c, event, source, asText)
+
+    fun send() = build().send()
+    fun sendOrFallback() = build().sendOrFallback()
+}
+
+class Notification @JvmOverloads constructor(
+    val title: String,
+    val description: String? = null,
+    color: AwtColor? = null,
+    val event: NotificationEvent? = null,
+    val source: NotificationSource? = null,
+    private val _asText: Mapper<Notification, Text> = _defaultTextMapper,
+    val fallbackPredicate: Getter<Boolean>? = null,
+    val fallback: ValueAction<Text>? = null
+) {
+
+    fun asText() = _asText(this)
+
     val color: MeteorColor
 
     var startTime: Long = -1
@@ -52,16 +130,6 @@ open class Notification(val title: String, val description: String?, color: AwtC
     init {
         this.color = color?.meteor() ?: MeteorColor.ORANGE
     }
-
-    constructor(title: String, source: NotificationSource? = null) : this(title, null, null, null, source)
-    constructor(title: String, description: String, source: NotificationSource? = null) : this(title, description, null, null, source)
-    constructor(title: String, event: NotificationEvent, source: NotificationSource? = null) : this(title, null, null, event, source)
-    constructor(title: String, color: AwtColor, source: NotificationSource? = null) : this(title, null, color, null, source)
-    constructor(title: String, color: MeteorColor, source: NotificationSource? = null) : this(title, null, color.awt(), null, source)
-    constructor(title: String, description: String, color: AwtColor, source: NotificationSource? = null) : this(title, description, color, null, source)
-    constructor(title: String, description: String, color: MeteorColor, source: NotificationSource? = null) : this(title, description, color.awt(), null, source)
-    constructor(title: String, color: AwtColor, event: NotificationEvent, source: NotificationSource? = null) : this(title, null, color, event, source)
-    constructor(title: String, color: MeteorColor, event: NotificationEvent, source: NotificationSource? = null) : this(title, null, color.awt(), event, source)
 
     override fun toString() = stringHelper()
         .omitNullValues()
@@ -83,4 +151,6 @@ open class Notification(val title: String, val description: String?, color: AwtC
     fun sendOrRun(altMessage: String, func: Notification.(String) -> Unit) = notifications.sendOrRun(this, altMessage) { this.func(it) }
     fun sendOrRun(func: Notification.() -> Unit) = notifications.sendOrRun(this, "") { this.func() }
     fun sendOrElse(func: Consumer<Notification>) = sendOrRun(func::accept)
+
+    fun sendOrFallback() = notifications.sendOrFallback(this)
 }

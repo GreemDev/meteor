@@ -19,7 +19,10 @@ import net.minecraft.util.collection.DefaultedList;
 
 import static meteordevelopment.meteorclient.MeteorClient.mc;
 
-public class EChestMemory {
+public final class EChestMemory {
+
+    private EChestMemory() {}
+
     public static final DefaultedList<ItemStack> ITEMS = DefaultedList.ofSize(27, ItemStack.EMPTY);
     private static int echestOpenedState;
 
@@ -41,8 +44,8 @@ public class EChestMemory {
         }
         if (echestOpenedState == 0) return;
 
-        if (!(mc.currentScreen instanceof GenericContainerScreen)) return;
-        GenericContainerScreenHandler container = ((GenericContainerScreen) mc.currentScreen).getScreenHandler();
+        if (!(mc.currentScreen instanceof GenericContainerScreen cs)) return;
+        GenericContainerScreenHandler container = cs.getScreenHandler();
         if (container == null) return;
         Inventory inv = container.getInventory();
 

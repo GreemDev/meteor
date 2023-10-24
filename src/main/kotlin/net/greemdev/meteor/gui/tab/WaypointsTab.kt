@@ -20,7 +20,6 @@ import net.greemdev.meteor.util.minecraft
 import net.minecraft.client.gui.screen.Screen
 import net.minecraft.nbt.NbtIo
 import java.io.File
-import java.io.FileFilter
 
 object WaypointsTab : Tab("Waypoints", GuiRenderer.WAYPOINTS, Meteor.config().waypointsIcon::get) {
     override fun createScreen(theme: GuiTheme): TabScreen = WorldListScreen(theme, this)
@@ -29,7 +28,9 @@ object WaypointsTab : Tab("Waypoints", GuiRenderer.WAYPOINTS, Meteor.config().wa
 
 private class WorldListScreen(theme: GuiTheme, tab: Tab) : WindowTabScreen(theme, tab) {
     override fun initWidgets() {
-        within(add(theme.table()).expandX().minWidth(300.0)) { table ->
+        add(theme.table()) { cell, table ->
+            cell.expandX().minWidth(300.0)
+
             val folder = MeteorClient.FOLDER / "waypoints"
             val files = folder.filter {
                 it.isFile && it.name.endsWith(".nbt")
@@ -41,15 +42,18 @@ private class WorldListScreen(theme: GuiTheme, tab: Tab) : WindowTabScreen(theme
                     val nameLabel = table.add(theme.label(it.name.removeSuffix(".nbt"))).expandX().widget()
                     table.add(theme.verticalSeparator()).expandWidgetY()
                     table.add(theme.button("View") {
-                        getOrNull {
+                        runCatching {
                             minecraft.setScreen(ListScreen(this, theme, it))
-                        } ?: nameLabel.set("${nameLabel.get()} ERR")
+                        }.onFailure {
+                            nameLabel.color(MeteorColor.RED).append(" ERR")
+                        }
                     })
                     table.add(theme.verticalSeparator()).expandWidgetY()
-                    table.add(theme.minus {
+                    val minus = table.add(theme.minus {
                         it.delete()
                         reload()
-                    }.apply { tooltip = "Delete the waypoints file for this world." })
+                    }).widget()
+                    minus.tooltip = "Delete the waypoints file for this world."
                     table.row()
                 }
             } else
@@ -75,13 +79,14 @@ private class ListScreen(
 
     override fun initWidgets() {
         if (!wp.isEmpty) {
-            within(add(theme.table())) { it.fill() }
+            add(theme.table()) { _, table -> table.fill() }
             add(theme.horizontalSeparator()).expandX()
-            within(add(theme.horizontalList()).expandX()) {
-                it.add(theme.button("Save") {
+            add(theme.horizontalList()) { cell, hl ->
+                cell.expandX()
+                hl.add(theme.button("Save") {
                     NbtIo.write(wp.toTag(), file)
                 }).expandX()
-                it.add(theme.button("Delete All") {
+                hl.add(theme.button("Delete All") {
                     val prompt = confirm("delete-all-waypoints") {
                         title("Are you sure?")
                         message("This is a destructive and irreversible action. Are you sure you want to proceed?")
@@ -109,8 +114,9 @@ private class ListScreen(
             add(theme.verticalSeparator()).expandWidgetY()
             add(theme.label(it.dimension().name))
             add(theme.verticalSeparator()).expandWidgetY()
-            val (x, y, z) = it.rawPos()
-            add(theme.label("($x, $y, $z)"))
+            it.xyz().also { (x, y, z) ->
+                add(theme.label("($x, $y, $z)"))
+            }
             add(theme.verticalSeparator()).expandWidgetY()
             add(theme.minus {
                 wp.remove(it)

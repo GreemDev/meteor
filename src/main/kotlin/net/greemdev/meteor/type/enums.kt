@@ -15,6 +15,7 @@ enum class StringComparisonType {
     Contains,
     StartsWith,
     EndsWith;
+
     fun compare(base: String, to: String, ignoreCase: Boolean = true) = when (this) {
         Equals -> base.equals(to, ignoreCase)
         Contains -> base.contains(to, ignoreCase)
@@ -89,7 +90,7 @@ enum class ChatLogo {
 
     fun allowsLogo() = this != None
 
-    fun icon(): Optional<MeteorIdentifier> = optionalOf(
+    fun icon() = optionalOf(
         when (this) {
             Meteor -> MeteorIdentifier("textures/icons/chat/meteor.png")
             Greteor -> MeteorIdentifier("textures/icons/chat/greteor.png")

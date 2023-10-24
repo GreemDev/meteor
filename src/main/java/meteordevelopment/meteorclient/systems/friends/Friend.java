@@ -7,9 +7,9 @@ package meteordevelopment.meteorclient.systems.friends;
 
 import com.mojang.util.UUIDTypeAdapter;
 import meteordevelopment.meteorclient.utils.misc.ISerializable;
-import meteordevelopment.meteorclient.utils.network.Http;
 import meteordevelopment.meteorclient.utils.render.PlayerHeadTexture;
 import meteordevelopment.meteorclient.utils.render.PlayerHeadUtils;
+import net.greemdev.meteor.util.Http;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.nbt.NbtCompound;
 import org.jetbrains.annotations.NotNull;
@@ -45,7 +45,7 @@ public class Friend implements ISerializable<Friend>, Comparable<Friend> {
     }
 
     public void updateInfo() {
-        APIResponse res = Http.get("https://api.mojang.com/users/profiles/minecraft/" + name).sendJson(APIResponse.class);
+        APIResponse res = Http.get("https://api.mojang.com/users/profiles/minecraft/" + name).requestJson(APIResponse.class);
         if (res == null || res.name == null || res.id == null) return;
         name = res.name;
         id = UUID.fromString(res.id);

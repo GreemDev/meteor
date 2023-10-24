@@ -76,6 +76,14 @@ public interface CharFilter {
         };
     }
 
+    /**
+     * A {@link CharFilter} that ensures the input content is at most length long.
+     * @return A length-capping {@link CharFilter}.
+     */
+    static CharFilter noLongerThan(int length) {
+        return (t, c) -> t.length() <= length;
+    }
+
 
     boolean filter(String text, char c);
 }

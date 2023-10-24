@@ -6,14 +6,13 @@
 package meteordevelopment.meteorclient.systems.accounts.types;
 
 import meteordevelopment.meteorclient.systems.accounts.Account;
-import meteordevelopment.meteorclient.systems.accounts.AccountType;
 import net.minecraft.client.util.Session;
 
 import java.util.Optional;
 
 public class CrackedAccount extends Account<CrackedAccount> {
     public CrackedAccount(String name) {
-        super(AccountType.Cracked, name);
+        super(Type.Cracked, name);
     }
 
     @Override

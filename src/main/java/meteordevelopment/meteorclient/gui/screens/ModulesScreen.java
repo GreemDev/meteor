@@ -85,27 +85,39 @@ public class ModulesScreen extends TabScreen {
             // Titles
             Set<Module> modules = Modules.get().searchTitles(text);
 
-            if (modules.size() > 0) {
+            if (Config.get().hiddenModulesAffectsSearch.get()) {
+                modules = CollectionsKt.toSet(
+                    CollectionsKt.filter(modules, m ->
+                        !HiddenModules.contains(m)
+                    )
+                );
+            }
+
+            if (!modules.isEmpty()) {
                 WSection section = w.add(theme.section("Modules")).expandX().widget();
                 section.spacing = 0;
 
-                for (Module module : CollectionsKt.take(modules, Config.get().moduleSearchCount.get())) {
-                    if (!HiddenModules.contains(module))
-                        section.add(theme.module(module)).expandX();
-                }
+                for (Module module : CollectionsKt.take(modules, Config.get().moduleSearchCount.get()))
+                    section.add(theme.module(module)).expandX();
             }
 
             // Settings
             modules = Modules.get().searchSettingTitles(text);
 
-            if (modules.size() > 0) {
+            if (Config.get().hiddenModulesAffectsSearch.get()) {
+                modules = CollectionsKt.toSet(
+                    CollectionsKt.filter(modules, m ->
+                        !HiddenModules.contains(m)
+                    )
+                );
+            }
+
+            if (!modules.isEmpty()) {
                 WSection section = w.add(theme.section("Settings")).expandX().widget();
                 section.spacing = 0;
 
-                for (Module module : CollectionsKt.take(modules, Config.get().moduleSearchCount.get())) {
-                    if (!HiddenModules.contains(module))
-                        section.add(theme.module(module)).expandX();
-                }
+                for (Module module : CollectionsKt.take(modules, Config.get().moduleSearchCount.get()))
+                    section.add(theme.module(module)).expandX();
             }
         }
     }
@@ -114,9 +126,8 @@ public class ModulesScreen extends TabScreen {
         WWindow w = theme.window("Search");
         w.id = "search";
 
-        if (theme.categoryIcons()) {
+        if (theme.categoryIcons())
             w.beforeHeaderInit = wContainer -> wContainer.add(theme.item(Items.COMPASS.getDefaultStack())).pad(2);
-        }
 
         c.add(w);
         w.view.scrollOnlyWhenMouseOver = true;
@@ -125,8 +136,12 @@ public class ModulesScreen extends TabScreen {
 
         WVerticalList l = theme.verticalList();
 
-        WTextBox text = w.add(theme.textBox("")).minWidth(140).expandX().widget();
-        text.setFocused(true);
+        WTextBox text = w.add(theme.textBox(""))
+            .minWidth(140)
+            .expandX()
+            .widget()
+            .toggleFocusing();
+
         text.action = () -> {
             l.clear();
             createSearchW(l, text.get());

@@ -30,6 +30,7 @@ public class Rotation extends Module {
     private final Setting<Double> yawAngle = sgYaw.add(new DoubleSetting.Builder()
         .name("yaw-angle")
         .description("Yaw angle in degrees.")
+        .visible(() -> yawLockMode.get().isSimple())
         .defaultValue(0)
         .sliderMax(360)
         .max(360)
@@ -48,6 +49,7 @@ public class Rotation extends Module {
     private final Setting<Double> pitchAngle = sgPitch.add(new DoubleSetting.Builder()
         .name("pitch-angle")
         .description("Pitch angle in degrees.")
+        .visible(() -> pitchLockMode.get().isSimple())
         .defaultValue(0)
         .range(-90, 90)
         .sliderRange(-90, 90)
@@ -93,6 +95,10 @@ public class Rotation extends Module {
     public enum LockMode {
         Smart,
         Simple,
-        None
+        None;
+
+        public boolean isSimple() {
+            return this == Simple;
+        }
     }
 }

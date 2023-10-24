@@ -67,24 +67,29 @@ public class ModuleListSetting extends Setting<List<Module>> {
 
     @Override
     public NbtCompound save(NbtCompound tag) {
-        NbtList modulesTag = new NbtList();
-        for (Module module : get()) {
-            if (bypassFilterWhenSavingAndLoading || (filter == null || filter.test(module)))
-                modulesTag.add(NbtString.of(module.name));
+        if (serialize) {
+            NbtList modulesTag = new NbtList();
+            for (Module module : get()) {
+                if (bypassFilterWhenSavingAndLoading || (filter == null || filter.test(module)))
+                    modulesTag.add(NbtString.of(module.name));
+            }
+            tag.put("modules", modulesTag);
         }
-        tag.put("modules", modulesTag);
 
         return tag;
     }
 
     @Override
     public List<Module> load(NbtCompound tag) {
-        get().clear();
+        if (serialize) {
+            get().clear();
 
-        NbtList valueTag = tag.getList("modules", 8);
-        for (NbtElement tagI : valueTag) {
-            Module module = Modules.get().get(tagI.asString());
-            if (module != null && (bypassFilterWhenSavingAndLoading || (filter == null || filter.test(module)))) get().add(module);
+            NbtList valueTag = tag.getList("modules", 8);
+            for (NbtElement tagI : valueTag) {
+                Module module = Modules.get().get(tagI.asString());
+                if (module != null && (bypassFilterWhenSavingAndLoading || (filter == null || filter.test(module))))
+                    get().add(module);
+            }
         }
 
         return get();

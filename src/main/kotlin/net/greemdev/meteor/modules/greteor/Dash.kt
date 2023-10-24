@@ -3,12 +3,11 @@
  * Copyright (c) Meteor Development.
  */
 
-package net.greemdev.meteor.modules
+package net.greemdev.meteor.modules.greteor
 
 import meteordevelopment.meteorclient.gui.screens.ModuleScreen
 import meteordevelopment.meteorclient.gui.screens.ModulesScreen
 import net.greemdev.meteor.GModule
-import net.greemdev.meteor.util.*
 import net.greemdev.meteor.util.meteor.*
 import net.greemdev.meteor.util.misc.*
 

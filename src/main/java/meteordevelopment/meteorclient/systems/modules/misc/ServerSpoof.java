@@ -90,11 +90,11 @@ public class ServerSpoof extends Module {
                 event.cancel();
                 info(text(msg -> {
                     msg.addString("This server has ");
-                    msg.addString(packet.isRequired() ? "a required " : "an optional ");
-                    msg.add("resource pack", link -> {
+                    msg.addString(packet.isRequired() ? "a required" : "an optional");
+                    msg.add(" resource pack", link -> {
                         link.colored(ChatColor.blue).underlined();
                         link.clicked(actions.openURL, packet.getURL());
-                        link.hovered(actions.showText, Text.literal("Click to download"));
+                        link.hoveredText(Text.literal("Click to download"));
                     });
                     msg.addString(".");
                 }));

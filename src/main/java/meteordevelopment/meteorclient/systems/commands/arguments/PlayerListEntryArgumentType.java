@@ -12,6 +12,10 @@ import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import com.mojang.brigadier.exceptions.DynamicCommandExceptionType;
 import com.mojang.brigadier.suggestion.Suggestions;
 import com.mojang.brigadier.suggestion.SuggestionsBuilder;
+import meteordevelopment.meteorclient.MeteorClient;
+import net.fabricmc.loader.api.metadata.Person;
+import net.greemdev.meteor.commands.api.SuggestingKt;
+import net.greemdev.meteor.utils;
 import net.minecraft.client.network.PlayerListEntry;
 import net.minecraft.command.CommandSource;
 import net.minecraft.text.Text;
@@ -24,8 +28,6 @@ import static meteordevelopment.meteorclient.MeteorClient.mc;
 
 public class PlayerListEntryArgumentType implements ArgumentType<PlayerListEntry> {
     private static final DynamicCommandExceptionType NO_SUCH_PLAYER = new DynamicCommandExceptionType(name -> Text.literal("Player list entry with name " + name + " doesn't exist."));
-
-    private static final Collection<String> EXAMPLES = List.of("seasnail8169", "MineGame159");
 
     public static PlayerListEntryArgumentType create() {
         return new PlayerListEntryArgumentType();
@@ -58,6 +60,6 @@ public class PlayerListEntryArgumentType implements ArgumentType<PlayerListEntry
 
     @Override
     public Collection<String> getExamples() {
-        return EXAMPLES;
+        return MeteorClient.authors();
     }
 }

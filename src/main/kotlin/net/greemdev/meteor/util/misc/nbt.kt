@@ -12,23 +12,28 @@ import java.io.File
 import java.util.function.Consumer
 
 fun File.write(tag: NbtCompound) =
-    catchErrors { NbtIo.write(tag, this) }
+    runCatching { NbtIo.write(tag, this) }.exceptionOrNull()
 
 fun File.readNbt(): NbtCompound = NbtIo.read(this) ?: error("File at $absolutePath doesn't exist.")
 
-fun File.readNbtOrNull() =
-    getOrNull(this::readNbt)
+fun File.readNbtOrNull() = getOrNull(this::readNbt)
 
 object Nbt {
     infix fun compound(builder: Initializer<NbtCompound>) = NbtCompound().apply(builder)
     infix fun list(builder: Initializer<NbtList>) = NbtList().apply(builder)
 
     @JvmStatic
-    infix fun list(elements: Collection<NbtElement>) = list { elements.forEach { add(it) } }
+    fun list(elements: Collection<Any>) = listElements(elements.map(Any::toNBT))
     @JvmStatic
-    fun newCompound(builder: Consumer<NbtCompound>) = compound { builder.accept(this) }
+    fun list(vararg elements: Any) = list(elements.toList())
     @JvmStatic
-    fun newList(builder: Consumer<NbtList>) = list { builder.accept(this) }
+    infix fun listElements(elements: Collection<NbtElement>) = list { elements.forEach { add(it) } }
+    @JvmStatic
+    @JvmName("newCompound")
+    fun `java-compound`(builder: Consumer<NbtCompound>) = compound { builder.accept(this) }
+    @JvmStatic
+    @JvmName("newList")
+    fun `java-list`(builder: Consumer<NbtList>) = list { builder.accept(this) }
 }
 
 fun Any.toNBT(): NbtElement = when (this) {
@@ -39,7 +44,7 @@ fun Any.toNBT(): NbtElement = when (this) {
     is Double -> NbtDouble.of(this)
     is Float -> NbtFloat.of(this)
     is Long -> NbtLong.of(this)
-    else -> error("Unknown or unsupported object type.")
+    else -> error("Unknown or unsupported object type ${this::class.java.simpleName}. Valid NBT non-collection values are: [String, Int, Byte, Boolean, Double, Float, Long]")
 }
 
 enum class NbtDataType(val byte: kotlin.Byte) {
@@ -60,8 +65,10 @@ enum class NbtDataType(val byte: kotlin.Byte) {
     val int = byte.toInt()
 }
 
-fun NbtCompound.getList(name: String, type: NbtDataType): NbtList = getList(name, type.int)
-fun NbtCompound.collectList(name: String, type: NbtDataType) = getList(name, type).collect()
+fun NbtCompound.getList(name: String, type: NbtDataType): NbtList =
+    getList(name, type.int)
+fun NbtCompound.collectList(name: String, type: NbtDataType) =
+    getList(name, type).collect()
 
 @Suppress("UNCHECKED_CAST")
 inline fun<reified T> Array<T>.toNBT(): NbtElement = when (T::class) {
@@ -71,7 +78,7 @@ inline fun<reified T> Array<T>.toNBT(): NbtElement = when (T::class) {
     else -> error("Unknown or unsupported array type Supported are Byte, Long, and Int.")
 }
 
-fun Collection<*>.toNBT() = Nbt list mapNotNull { it?.toNBT() }
+fun Collection<*>.toNBT() = Nbt listElements mapNotNull { it?.toNBT() }
 
 fun NbtList.collect() = mapNotNull(NbtElement::asString)
 

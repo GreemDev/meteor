@@ -13,7 +13,10 @@ import java.util.*;
 /**
  * Some utilities for {@link Text}
  */
-public class TextUtils {
+public final class TextUtils {
+
+    private TextUtils() {}
+
     public static List<ColoredText> toColoredTextList(Text text) {
         Stack<ColoredText> stack = new Stack<>();
         List<ColoredText> coloredTexts = new ArrayList<>();

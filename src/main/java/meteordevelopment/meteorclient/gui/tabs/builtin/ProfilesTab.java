@@ -30,7 +30,7 @@ import static meteordevelopment.meteorclient.MeteorClient.mc;
 public class ProfilesTab extends Tab {
     public static final String NAME = "Profiles";
     public ProfilesTab() {
-        super(NAME, GuiRenderer.PROFILES, Config.get().profilesIcon::get);
+        super(NAME, GuiRenderer.PROFILES, Config.get().profilesIcon);
     }
 
     @Override
@@ -67,20 +67,16 @@ public class ProfilesTab extends Tab {
             for (Profile profile : Profiles.get()) {
                 table.add(theme.label(profile.name.get())).expandCellX();
 
-                WButton save = table.add(theme.button("Save")).widget();
-                save.action = profile::save;
+                table.add(theme.button("Save", profile::save));
 
-                WButton load = table.add(theme.button("Load")).widget();
-                load.action = profile::load;
+                table.add(theme.button("Load", profile::load));
 
-                WButton edit = table.add(theme.button(GuiRenderer.EDIT)).widget();
-                edit.action = () -> mc.setScreen(new EditProfileScreen(theme, profile, this::reload));
+                table.add(theme.editButton(() -> mc.setScreen(new EditProfileScreen(theme, profile, this::reload))));
 
-                WMinus remove = table.add(theme.minus()).widget();
-                remove.action = () -> {
+                table.add(theme.minus(() -> {
                     Profiles.get().remove(profile);
                     reload();
-                };
+                })).widget();
 
                 table.row();
             }

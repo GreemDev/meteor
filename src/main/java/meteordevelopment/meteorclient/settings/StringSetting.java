@@ -6,6 +6,7 @@
 package meteordevelopment.meteorclient.settings;
 
 import meteordevelopment.meteorclient.gui.utils.CharFilter;
+import meteordevelopment.meteorclient.gui.utils.StarscriptTextBoxRenderer;
 import meteordevelopment.meteorclient.gui.widgets.input.WTextBox;
 import net.minecraft.nbt.NbtCompound;
 
@@ -60,6 +61,10 @@ public class StringSetting extends Setting<String> {
         public Builder renderer(Class<? extends WTextBox.Renderer> renderer) {
             this.renderer = renderer;
             return this;
+        }
+
+        public Builder renderStarscript() {
+            return renderer(StarscriptTextBoxRenderer.class);
         }
 
         public Builder filter(CharFilter filter) {

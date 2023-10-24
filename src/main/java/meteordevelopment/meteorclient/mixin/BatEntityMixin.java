@@ -6,13 +6,16 @@
 package meteordevelopment.meteorclient.mixin;
 
 import meteordevelopment.meteorclient.systems.modules.Modules;
-import net.greemdev.meteor.modules.GameTweaks;
+import net.greemdev.meteor.modules.greteor.GameTweaks;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.mob.AmbientEntity;
 import net.minecraft.entity.passive.BatEntity;
 import net.minecraft.world.World;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
+import org.spongepowered.asm.mixin.injection.At;
+import org.spongepowered.asm.mixin.injection.Inject;
+import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
 @Mixin(BatEntity.class)
 public abstract class BatEntityMixin extends AmbientEntity {
@@ -24,12 +27,10 @@ public abstract class BatEntityMixin extends AmbientEntity {
         super(entityType, world);
     }
 
-    @Override
-    public float getSoundVolume() {
+    @Inject(method = "getSoundVolume", at = @At("RETURN"), cancellable = true)
+    public void getSoundVolume(CallbackInfoReturnable<Float> info) {
         if (Modules.get().get(GameTweaks.class).bats())
-            return 0;
-        else
-            return 0.1f;
+            info.setReturnValue(0f);
     }
 
     @Override

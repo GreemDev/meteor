@@ -12,8 +12,10 @@ import com.mojang.brigadier.context.CommandContext;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import com.mojang.brigadier.suggestion.Suggestions;
 import com.mojang.brigadier.suggestion.SuggestionsBuilder;
+import meteordevelopment.meteorclient.MeteorClient;
 import meteordevelopment.meteorclient.systems.friends.Friend;
 import meteordevelopment.meteorclient.systems.friends.Friends;
+import net.fabricmc.loader.api.metadata.Person;
 
 import java.util.Collection;
 import java.util.List;
@@ -22,7 +24,6 @@ import java.util.concurrent.CompletableFuture;
 import static net.minecraft.command.CommandSource.suggestMatching;
 
 public class FriendArgumentType implements ArgumentType<String> {
-    private static final Collection<String> EXAMPLES = List.of("seasnail8169", "MineGame159");
 
     public static FriendArgumentType create() {
         return new FriendArgumentType();
@@ -44,6 +45,6 @@ public class FriendArgumentType implements ArgumentType<String> {
 
     @Override
     public Collection<String> getExamples() {
-        return EXAMPLES;
+        return MeteorClient.authors();
     }
 }

@@ -37,7 +37,11 @@ public class ProxiesImportScreen extends WindowScreen {
     public void initWidgets() {
         if (file.exists() && file.isFile()) {
             add(theme.label("Importing proxies from " + file.getName() + "...").color(Color.GREEN));
-            WVerticalList list = add(theme.section("Log", false)).widget().add(theme.verticalList()).expandX().widget();
+            WVerticalList list = add(theme.section("Log", false))
+                .widget()
+                .add(theme.verticalList())
+                    .expandX()
+                    .widget();
             Proxies proxies = Proxies.get();
             try {
                 int pog = 0, bruh = 0;
@@ -80,7 +84,6 @@ public class ProxiesImportScreen extends WindowScreen {
             add(theme.label("Invalid File!"));
         }
         add(theme.horizontalSeparator()).expandX();
-        WButton btnBack = add(theme.button("Back")).expandX().widget();
-        btnBack.action = this::close;
+        add(theme.button("Back", this::close)).expandX();
     }
 }

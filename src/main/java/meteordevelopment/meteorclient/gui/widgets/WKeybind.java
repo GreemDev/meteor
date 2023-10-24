@@ -42,12 +42,11 @@ public class WKeybind extends WHorizontalList {
             if (actionOnSet != null) actionOnSet.run();
         }));
 
-        WLabel release = add(theme.label("  Released: ")).widget();
-        release.tooltip = "Activate this keybind when the specified key/mouse button is &zreleased&r.";
+        add(theme.label("  Released: ", "Activate this keybind when the specified key/mouse button is &zreleased&r."));
 
         onRelease = add(theme.checkbox(keybind.onRelease, (c) -> keybind.onRelease = c)).widget();
 
-        add(theme.button(GuiRenderer.RESET, this::resetBind)).expandCellX().right();
+        add(theme.resetButton(this::resetBind)).expandCellX().right();
     }
 
     public WKeybind onSet(Runnable onSet) {

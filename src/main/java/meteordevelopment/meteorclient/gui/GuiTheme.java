@@ -5,6 +5,8 @@
 
 package meteordevelopment.meteorclient.gui;
 
+import meteordevelopment.meteorclient.MeteorClient;
+import meteordevelopment.meteorclient.gui.renderer.GuiRenderer;
 import meteordevelopment.meteorclient.gui.renderer.packer.GuiTexture;
 import meteordevelopment.meteorclient.gui.screens.*;
 import meteordevelopment.meteorclient.gui.tabs.TabScreen;
@@ -29,7 +31,8 @@ import meteordevelopment.meteorclient.utils.render.color.Color;
 import net.greemdev.meteor.gui.widget.WGuiTexture;
 import net.greemdev.meteor.gui.widget.WWaypointIcon;
 import net.greemdev.meteor.type.ColorSettingScreenMode;
-import net.greemdev.meteor.util.meteor.LegacyText;
+import net.greemdev.meteor.utils;
+import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NbtCompound;
@@ -39,6 +42,8 @@ import java.lang.reflect.InvocationTargetException;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.function.Consumer;
+
+import static meteordevelopment.meteorclient.MeteorClient.mc;
 
 public abstract class GuiTheme implements ISerializable<GuiTheme> {
     public static final double TITLE_TEXT_SCALE = 1.25;
@@ -80,6 +85,14 @@ public abstract class GuiTheme implements ISerializable<GuiTheme> {
         return label(text, false);
     }
 
+    public WLabel label(String text, String onHover) {
+        return label(text, false, onHover);
+    }
+
+    public WLabel label(String text, boolean title, String onHover) {
+        return utils.apply(label(text, title), l -> l.tooltip = onHover);
+    }
+
     public abstract WHorizontalSeparator horizontalSeparator(String text);
     public WHorizontalSeparator horizontalSeparator() {
         return horizontalSeparator(null);
@@ -101,6 +114,14 @@ public abstract class GuiTheme implements ISerializable<GuiTheme> {
     }
     public WButton button(GuiTexture texture, Runnable action) {
         return button(texture).action(action);
+    }
+
+    public WButton resetButton(Runnable action) {
+        return button(GuiRenderer.RESET, action);
+    }
+
+    public WButton editButton(Runnable action) {
+        return button(GuiRenderer.EDIT, action);
     }
 
     public abstract WMinus minus();
@@ -347,7 +368,12 @@ public abstract class GuiTheme implements ISerializable<GuiTheme> {
     }
 
     public double scale(double value) {
-        return value * scalar();
+        double scaled = value * scalar();
+
+        if (MinecraftClient.IS_SYSTEM_MAC) //retina displays are different because of course they are
+            scaled /= (double) mc.getWindow().getWidth() / mc.getWindow().getFramebufferWidth();
+
+        return scaled;
     }
 
     public abstract boolean categoryIcons();

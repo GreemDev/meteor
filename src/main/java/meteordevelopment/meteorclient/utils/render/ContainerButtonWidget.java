@@ -6,6 +6,7 @@
 package meteordevelopment.meteorclient.utils.render;
 
 import com.mojang.blaze3d.systems.RenderSystem;
+import meteordevelopment.meteorclient.MeteorClient;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.font.TextRenderer;
 import net.minecraft.client.gui.widget.ButtonWidget;
@@ -21,8 +22,6 @@ public class ContainerButtonWidget extends ButtonWidget {
 
     @Override
     public void renderButton(MatrixStack matrices, int mouseX, int mouseY, float delta) {
-        MinecraftClient minecraftClient = MinecraftClient.getInstance();
-        TextRenderer textRenderer = minecraftClient.textRenderer;
         RenderSystem.setShader(GameRenderer::getPositionTexShader);
         RenderSystem.setShaderTexture(0, WIDGETS_TEXTURE);
         RenderSystem.setShaderColor(1.0F, 1.0F, 1.0F, alpha);
@@ -40,6 +39,6 @@ public class ContainerButtonWidget extends ButtonWidget {
         drawTexture(matrices, x + halfWidth, y, 200 - halfWidth, 46 + texY, halfWidth, halfHeight);
         drawTexture(matrices, x + halfWidth, y + halfHeight, 200 - halfWidth, 46 + texY + 14, halfWidth, halfHeight);
 
-        drawCenteredText(matrices, textRenderer, getMessage(), x + width / 2, (y + height / 2) - 4, active ? 16777215 : 10526880 | MathHelper.ceil(alpha * 255.0F) << 24);
+        drawCenteredText(matrices, MeteorClient.mc.textRenderer, getMessage(), x + width / 2, (y + height / 2) - 4, active ? 16777215 : 10526880 | MathHelper.ceil(alpha * 255.0F) << 24);
     }
 }

@@ -10,22 +10,14 @@ import net.greemdev.meteor.commands.api.*
 import net.greemdev.meteor.util.misc.*
 import net.minecraft.entity.player.PlayerEntity
 
-object UuidCommand : GCommand("uuid", "Get the UUID of a player or yourself.") {
-    override fun CommandBuilder.inject() {
-        alwaysRuns(::selfUUID)
-        then(arg.player()) {
-            alwaysRuns {
-                val player by it(arg.player())
-                playerUUID(player)
-            }
-        }
-    }
-
-    private fun selfUUID(ctx: MinecraftCommandContext) {
+object UuidCommand : GCommand("uuid", "Get the UUID of a player or yourself.", {
+    alwaysRuns {
         info("Your UUID is '${mc.player().uuid}'")
     }
-
-    private fun playerUUID(player: PlayerEntity) {
-        info("${player.gameProfile.name}'s UUID is '${player.uuid}'")
+    then(arg.player()) {
+        alwaysRuns {
+            val player by it.argument(arg.player())
+            info("${player.gameProfile.name}'s UUID is '${player.uuid}'")
+        }
     }
-}
+})

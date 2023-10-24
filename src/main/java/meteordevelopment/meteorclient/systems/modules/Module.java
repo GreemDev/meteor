@@ -16,7 +16,10 @@ import meteordevelopment.meteorclient.utils.misc.Keybind;
 import meteordevelopment.meteorclient.utils.player.ChatUtils;
 import meteordevelopment.meteorclient.utils.render.color.Color;
 import net.greemdev.meteor.hud.notification.Notification;
+import net.greemdev.meteor.hud.notification.NotificationBuilder;
 import net.greemdev.meteor.hud.notification.Notifications;
+import net.greemdev.meteor.util.accessors;
+import net.greemdev.meteor.utils;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.nbt.NbtElement;
@@ -25,6 +28,8 @@ import net.minecraft.util.Formatting;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.Objects;
+
+import static net.greemdev.meteor.util.accessors.text;
 
 public abstract class Module implements ISerializable<Module>, Comparable<Module> {
     protected final MinecraftClient mc;
@@ -69,6 +74,8 @@ public abstract class Module implements ISerializable<Module>, Comparable<Module
     public void onDeactivate() {}
 
     public void toggle() {
+        if (!canActivate) return;
+
         if (!active) {
             active = true;
             Modules.get().addActive(this);
@@ -92,13 +99,14 @@ public abstract class Module implements ISerializable<Module>, Comparable<Module
     }
 
     public void sendToggledMsg() {
-        Notifications.sendOrRun(Notification.module(this, active),
-            "Toggled (highlight)%s(default) %s(default).", (alt) -> {
-                if (Config.get().chatFeedback.get() && chatFeedback) {
-                    ChatUtils.forceNextPrefixClass(getClass());
-                    ChatUtils.sendMsg(this.hashCode(), Formatting.GRAY, alt, title, isActive() ? Formatting.GREEN + "on" : Formatting.RED + "off");
-                }
-        });
+        new NotificationBuilder(nb -> {
+            nb.presets.module(this, active);
+            nb.fallbackPredicate(() -> Config.get().chatFeedback.get() && chatFeedback);
+            nb.fallback(ignored -> {
+                ChatUtils.forceNextPrefixClass(getClass());
+                ChatUtils.sendMsg(this.hashCode(), Formatting.GRAY, "Toggled (highlight)%s(default) %s(default).", title, isActive() ? Formatting.GREEN + "on" : Formatting.RED + "off");
+            });
+        }).sendOrFallback();
     }
 
     public void info(Text message) {

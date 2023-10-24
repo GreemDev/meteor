@@ -10,12 +10,16 @@ import meteordevelopment.meteorclient.utils.player.EChestMemory
 import net.greemdev.meteor.GCommand
 import net.minecraft.item.Items
 
-object EnderCommand : GCommand("ender", "Open a preview your ender chest.", {
+object EnderCommand : GCommand("ender", "Open a preview of your ender chest.", {
     alwaysRuns {
-        Utils.openContainer(
-            Items.ENDER_CHEST.defaultStack,
-            EChestMemory.ITEMS.toArray(emptyArray()),
-            true
-        )
+        if (EChestMemory.ITEMS.isEmpty())
+            error("Can't open ender chest; no known items. Open an ender chest in the world first.")
+        else {
+            Utils.openContainer(
+                Items.ENDER_CHEST.defaultStack,
+                EChestMemory.ITEMS.toArray(emptyArray()),
+                true
+            )
+        }
     }
 })
