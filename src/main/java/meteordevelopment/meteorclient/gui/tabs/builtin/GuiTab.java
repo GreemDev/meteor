@@ -19,8 +19,10 @@ import net.minecraft.nbt.NbtCompound;
 import static meteordevelopment.meteorclient.MeteorClient.mc;
 
 public class GuiTab extends Tab {
+    public static String NAME = "GUI";
+
     public GuiTab() {
-        super("GUI");
+        super(NAME);
     }
 
     @Override

@@ -15,7 +15,7 @@ import java.util.List;
 import java.util.function.Consumer;
 
 public class ColorListSetting extends Setting<List<SettingColor>> {
-    public ColorListSetting(String name, String description, List<SettingColor> defaultValue, Consumer<List<SettingColor>> onChanged, Consumer<Setting<List<SettingColor>>> onModuleActivated, IVisible visible) {
+    public ColorListSetting(String name, String description, Object defaultValue, Consumer<List<SettingColor>> onChanged, Consumer<Setting<List<SettingColor>>> onModuleActivated, IVisible visible) {
         super(name, description, defaultValue, onChanged, onModuleActivated, visible);
     }
 
@@ -32,9 +32,11 @@ public class ColorListSetting extends Setting<List<SettingColor>> {
 
     @Override
     protected void resetImpl() {
-        value = new ArrayList<>(defaultValue.size());
+        var def = getDefaultValue();
 
-        for (SettingColor settingColor : defaultValue) {
+        value = new ArrayList<>(def.size());
+
+        for (SettingColor settingColor : def) {
             value.add(new SettingColor(settingColor));
         }
     }

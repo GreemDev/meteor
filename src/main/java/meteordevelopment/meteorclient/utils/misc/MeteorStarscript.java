@@ -74,7 +74,8 @@ public class MeteorStarscript {
         StandardLib.init(ss);
 
         // General
-        ss.set("mc_version", SharedConstants.getGameVersion().getName());
+        ss.set("kotlin", MeteorClient.KOTLIN_VERSION);
+        ss.set("gameVersion", SharedConstants.getGameVersion().getName());
         ss.set("fps", () -> Value.number(MinecraftClientAccessor.getFps()));
         ss.set("ping", MeteorStarscript::ping);
         ss.set("time", () -> Value.string(LocalTime.now().format(DateTimeFormatter.ofLocalizedTime(FormatStyle.SHORT))));
@@ -83,20 +84,20 @@ public class MeteorStarscript {
         // Meteor
         ss.set("meteor", new ValueMap()
             .set("name", MeteorClient.NAME)
-            .set("version", MeteorClient.VERSION != null ? (MeteorClient.DEV_BUILD.isEmpty() ? MeteorClient.VERSION.toString() : MeteorClient.VERSION + " " + MeteorClient.DEV_BUILD) : "")
+            .set("version", MeteorClient.fullVersion())
             .set("modules", () -> Value.number(Modules.get().getAll().size()))
-            .set("active_modules", () -> Value.number(Modules.get().getActive().size()))
-            .set("is_module_active", MeteorStarscript::isModuleActive)
-            .set("get_module_info", MeteorStarscript::getModuleInfo)
+            .set("activeModules", () -> Value.number(Modules.get().getActive().size()))
+            .set("isModuleActive", MeteorStarscript::isModuleActive)
+            .set("getModuleInfo", MeteorStarscript::getModuleInfo)
             .set("prefix", MeteorStarscript::getMeteorPrefix)
         );
 
         // Baritone
         ss.set("baritone", new ValueMap()
-            .set("is_pathing", () -> Value.bool(BaritoneAPI.getProvider().getPrimaryBaritone().getPathingBehavior().isPathing()))
-            .set("distance_to_goal", MeteorStarscript::baritoneDistanceToGoal)
+            .set("isPathing", () -> Value.bool(BaritoneAPI.getProvider().getPrimaryBaritone().getPathingBehavior().isPathing()))
+            .set("distanceToGoal", MeteorStarscript::baritoneDistanceToGoal)
             .set("process", MeteorStarscript::baritoneProcess)
-            .set("process_name", MeteorStarscript::baritoneProcessName)
+            .set("processName", MeteorStarscript::baritoneProcessName)
             .set("eta", MeteorStarscript::baritoneETA)
         );
 
@@ -128,18 +129,18 @@ public class MeteorStarscript {
             .set("hunger", () -> Value.number(mc.player != null ? mc.player.getHungerManager().getFoodLevel() : 0))
 
             .set("speed", () -> Value.number(Utils.getPlayerSpeed().horizontalLength()))
-            .set("speed_all", new ValueMap()
+            .set("speedAll", new ValueMap()
                 .set("_toString", () -> Value.string(mc.player != null ? Utils.getPlayerSpeed().toString() : ""))
                 .set("x", () -> Value.number(mc.player != null ? Utils.getPlayerSpeed().x : 0))
                 .set("y", () -> Value.number(mc.player != null ? Utils.getPlayerSpeed().y : 0))
                 .set("z", () -> Value.number(mc.player != null ? Utils.getPlayerSpeed().z : 0))
             )
 
-            .set("breaking_progress", () -> Value.number(mc.interactionManager != null ? ((ClientPlayerInteractionManagerAccessor) mc.interactionManager).getBreakingProgress() : 0))
+            .set("breakingProgress", () -> Value.number(mc.interactionManager != null ? ((ClientPlayerInteractionManagerAccessor) mc.interactionManager).getBreakingProgress() : 0))
             .set("biome", MeteorStarscript::biome)
 
             .set("dimension", () -> Value.string(PlayerUtils.getDimension().name()))
-            .set("opposite_dimension", () -> Value.string(PlayerUtils.getDimension().opposite().name()))
+            .set("dimensionOpposite", () -> Value.string(PlayerUtils.getDimension().opposite().name()))
 
             .set("pos", new ValueMap()
                 .set("_toString", () -> posString(false, false))
@@ -147,7 +148,7 @@ public class MeteorStarscript {
                 .set("y", () -> Value.number(mc.player != null ? mc.player.getY() : 0))
                 .set("z", () -> Value.number(mc.player != null ? mc.player.getZ() : 0))
             )
-            .set("opposite_dim_pos", new ValueMap()
+            .set("posOpposite", new ValueMap()
                 .set("_toString", () -> posString(true, false))
                 .set("x", () -> oppositeX(false))
                 .set("y", () -> Value.number(mc.player != null ? mc.player.getY() : 0))
@@ -160,9 +161,9 @@ public class MeteorStarscript {
 
             .set("hand", () -> mc.player != null ? wrap(mc.player.getMainHandStack()) : Value.null_())
             .set("offhand", () -> mc.player != null ? wrap(mc.player.getOffHandStack()) : Value.null_())
-            .set("hand_or_offhand", MeteorStarscript::handOrOffhand)
-            .set("get_item", MeteorStarscript::getItem)
-            .set("count_items", MeteorStarscript::countItems)
+            .set("handOrOffhand", MeteorStarscript::handOrOffhand)
+            .set("getItem", MeteorStarscript::getItem)
+            .set("countItems", MeteorStarscript::countItems)
 
             .set("xp", new ValueMap()
                 .set("level", () -> Value.number(mc.player != null ? mc.player.experienceLevel : 0))
@@ -170,14 +171,14 @@ public class MeteorStarscript {
                 .set("total", () -> Value.number(mc.player != null ? mc.player.totalExperience : 0))
             )
 
-            .set("has_potion_effect", MeteorStarscript::hasPotionEffect)
-            .set("get_potion_effect", MeteorStarscript::getPotionEffect)
+            .set("hasPotionEffect", MeteorStarscript::hasPotionEffect)
+            .set("getEotionEffect", MeteorStarscript::getPotionEffect)
 
-            .set("get_stat", MeteorStarscript::getStat)
+            .set("getStat", MeteorStarscript::getStat)
         );
 
         // Crosshair target
-        ss.set("crosshair_target", new ValueMap()
+        ss.set("crosshairTarget", new ValueMap()
             .set("type", MeteorStarscript::crosshairType)
             .set("value", MeteorStarscript::crosshairValue)
         );
@@ -187,7 +188,7 @@ public class MeteorStarscript {
             .set("_toString", () -> Value.string(Utils.getWorldName()))
             .set("tps", () -> Value.number(TickRate.INSTANCE.getTickRate()))
             .set("time", () -> Value.string(Utils.getWorldTime()))
-            .set("player_count", () -> Value.number(mc.getNetworkHandler() != null ? mc.getNetworkHandler().getPlayerList().size() : 0))
+            .set("playerCount", () -> Value.number(mc.getNetworkHandler() != null ? mc.getNetworkHandler().getPlayerList().size() : 0))
             .set("difficulty", () -> Value.string(mc.world != null ? mc.world.getDifficulty().getName() : ""))
         );
     }

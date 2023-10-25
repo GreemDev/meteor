@@ -46,7 +46,7 @@ public class Waypoint implements ISerializable<Waypoint> {
     public Setting<SettingColor> color = sgVisual.add(new ColorSetting.Builder()
         .name("color")
         .description("The color of the waypoint.")
-        .defaultValue(MeteorClient.ADDON.color.toSetting())
+        .defaultValue(MeteorClient.COLOR.toSetting())
         .build()
     );
 
@@ -153,6 +153,11 @@ public class Waypoint implements ISerializable<Waypoint> {
 
         public Builder pos(BlockPos pos) {
             this.pos = pos;
+            return this;
+        }
+
+        public Builder pos(int x, int y, int z) {
+            this.pos = new BlockPos(x, y, z);
             return this;
         }
 

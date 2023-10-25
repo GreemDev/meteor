@@ -17,7 +17,7 @@ public class Vector3dSetting extends Setting<Vector3d> {
     public final int decimalPlaces;
     public final boolean noSlider;
 
-    public Vector3dSetting(String name, String description, Vector3d defaultValue, Consumer<Vector3d> onChanged, Consumer<Setting<Vector3d>> onModuleActivated, IVisible visible, double min, double max, double sliderMin, double sliderMax, boolean onSliderRelease, int decimalPlaces, boolean noSlider) {
+    public Vector3dSetting(String name, String description, Object defaultValue, Consumer<Vector3d> onChanged, Consumer<Setting<Vector3d>> onModuleActivated, IVisible visible, double min, double max, double sliderMin, double sliderMax, boolean onSliderRelease, int decimalPlaces, boolean noSlider) {
         super(name, description, defaultValue, onChanged, onModuleActivated, visible);
 
         this.min = min;
@@ -36,8 +36,10 @@ public class Vector3dSetting extends Setting<Vector3d> {
 
     @Override
     protected void resetImpl() {
-        if (value == null) value = new Vector3d();
-        value.set(defaultValue);
+        if (value == null)
+            value = getDefaultValue();
+        else
+            value.set(getDefaultValue());
     }
 
     @Override
@@ -71,7 +73,11 @@ public class Vector3dSetting extends Setting<Vector3d> {
     protected Vector3d load(NbtCompound tag) {
         NbtCompound valueTag = tag.getCompound("value");
 
-        set(valueTag.getDouble("x"), valueTag.getDouble("y"), valueTag.getDouble("z"));
+        set(
+            valueTag.getDouble("x"),
+            valueTag.getDouble("y"),
+            valueTag.getDouble("z")
+        );
 
         return get();
     }

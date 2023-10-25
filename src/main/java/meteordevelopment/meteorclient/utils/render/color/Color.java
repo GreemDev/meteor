@@ -13,6 +13,9 @@ import net.minecraft.text.TextColor;
 import net.minecraft.util.Formatting;
 import net.minecraft.util.math.Vec3d;
 import org.joml.Vector3f;
+import net.greemdev.meteor.utils;
+
+import java.util.concurrent.ThreadLocalRandom;
 
 @SuppressWarnings("unused")
 public class Color implements ICopyable<Color>, ISerializable<Color> {
@@ -121,6 +124,18 @@ public class Color implements ICopyable<Color>, ISerializable<Color> {
         }
     }
 
+    public static Color randomColor(boolean randomizeAlpha) {
+        var r = ThreadLocalRandom.current();
+        return new Color(
+            r.nextInt(0, 256),
+            r.nextInt(0, 256),
+            r.nextInt(0, 256),
+            randomizeAlpha
+                ? r.nextInt(0, 256)
+                : 255
+        );
+    }
+
     public static int fromRGBA(int r, int g, int b, int a) {
         return (r << 16) + (g << 8) + (b) + (a << 24);
     }
@@ -196,6 +211,26 @@ public class Color implements ICopyable<Color>, ISerializable<Color> {
                 break;
         }
         return new Color((int) (r * 255), (int) (g * 255), (int) (b * 255), 255);
+    }
+
+    public static Color fromString(String text) {
+        String[] split = text.split(",");
+        if (split.length != 3 && split.length != 4)
+            throw new IllegalArgumentException("Invalid RGB(A) number sequence provided.");
+
+        var color = new Color();
+        try {
+            color.r = Integer.parseInt(split[0]);
+            color.g = Integer.parseInt(split[1]);
+            color.b = Integer.parseInt(split[2]);
+
+            if (split.length == 4)
+                color.a = Integer.parseInt(split[3]);
+
+            return color;
+        } catch (NumberFormatException e) {
+            throw new IllegalArgumentException("Invalid RGB(A) number sequence provided.", e);
+        }
     }
 
     public Color set(int r, int g, int b, int a) {
@@ -286,6 +321,26 @@ public class Color implements ICopyable<Color>, ISerializable<Color> {
 
     public Style styleWith(Style style) {
         return style.withColor(toTextColor());
+    }
+
+    public String hexString() {
+        var hex = "#%02x%02x%02x".formatted(r, g, b);
+        if (a != 255)
+            hex += "%02x".formatted(a);
+        return hex.toUpperCase();
+    }
+
+    public java.awt.Color awt() {
+        validate();
+        return new java.awt.Color(r, g, b, a);
+    }
+
+    public Color darker() {
+        return set(utils.meteor(awt().darker()));
+    }
+
+    public Color brighter() {
+        return set(utils.meteor(awt().brighter()));
     }
 
     public void validate() {

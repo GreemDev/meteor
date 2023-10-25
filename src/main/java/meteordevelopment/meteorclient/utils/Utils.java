@@ -616,4 +616,9 @@ public class Utils {
         if (text.contains(":") && character == ':') return false;
         return (character >= 'a' && character <= 'z') || (character >= 'A' && character <= 'Z') || (character >= '0' && character <= '9') || character == '.';
     }
+
+    @SuppressWarnings("unchecked")
+    public static <T> T cast(Object value) {
+        return (T)value;
+    }
 }

@@ -23,8 +23,10 @@ import net.minecraft.client.gui.screen.Screen;
 import static meteordevelopment.meteorclient.MeteorClient.mc;
 
 public class MacrosTab extends Tab {
+    public static String NAME = "Macros";
+
     public MacrosTab() {
-        super("Macros");
+        super(NAME);
     }
 
     @Override

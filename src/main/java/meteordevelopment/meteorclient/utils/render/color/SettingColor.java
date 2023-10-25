@@ -13,6 +13,10 @@ import net.minecraft.util.Formatting;
 public class SettingColor extends Color {
     public boolean rainbow;
 
+    public static SettingColor rainbow() {
+        return RainbowColor.asSetting();
+    }
+
     public SettingColor() {
         super();
     }
@@ -78,6 +82,10 @@ public class SettingColor extends Color {
         if (value instanceof SettingColor) rainbow = ((SettingColor) value).rainbow;
 
         return this;
+    }
+
+    public SettingColor set(int r, int g, int b) {
+        return set(new SettingColor(r, g, b));
     }
 
     @Override

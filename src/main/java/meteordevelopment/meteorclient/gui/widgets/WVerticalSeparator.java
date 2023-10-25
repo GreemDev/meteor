@@ -6,6 +6,17 @@
 package meteordevelopment.meteorclient.gui.widgets;
 
 public class WVerticalSeparator extends WWidget {
+
+    public boolean unicolor;
+
+    public WVerticalSeparator() {
+        this(false);
+    }
+
+    public WVerticalSeparator(boolean unicolor) {
+        this.unicolor = unicolor;
+    }
+
     @Override
     protected void onCalculateSize() {
         width = theme.scale(3);

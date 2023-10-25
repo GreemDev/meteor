@@ -80,6 +80,11 @@ dependencies {
     annotationProcessor "com.github.LlamaLad7.MixinExtras:mixinextras-fabric:${project.mixin_extras_version}"
 }
 
+compileKotlin {
+    kotlinOptions.freeCompilerArgs += "-Xcontext-receivers"
+    kotlinOptions.jvmTarget = "17"
+}
+
 loom {
     accessWidenerPath = file("src/main/resources/meteor-client.accesswidener")
 }

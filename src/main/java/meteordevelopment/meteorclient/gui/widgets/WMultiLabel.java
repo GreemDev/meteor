@@ -20,6 +20,11 @@ public abstract class WMultiLabel extends WLabel {
     }
 
     @Override
+    public String get() {
+        return text;
+    }
+
+    @Override
     protected void onCalculateSize() {
         lines.clear();
 
@@ -63,7 +68,7 @@ public abstract class WMultiLabel extends WLabel {
             }
         }
 
-        if (sb.length() > 0) lines.add(sb.toString());
+        if (!sb.isEmpty()) lines.add(sb.toString());
 
         width = maxLineWidth;
         height = theme.textHeight(title) * lines.size();

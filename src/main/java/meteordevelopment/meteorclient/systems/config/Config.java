@@ -62,13 +62,6 @@ public class Config extends System<Config> {
         .build()
     );
 
-    public final Setting<Boolean> titleScreenSplashes = sgVisual.add(new BoolSetting.Builder()
-        .name("title-screen-splashes")
-        .description("Show Meteor splash texts on title screen")
-        .defaultValue(true)
-        .build()
-    );
-
     public final Setting<Boolean> customWindowTitle = sgVisual.add(new BoolSetting.Builder()
         .name("custom-window-title")
         .description("Show custom text in the window title.")
@@ -119,6 +112,35 @@ public class Config extends System<Config> {
     );
 
     // Misc
+
+    public final Setting<Boolean> lastTabMemory = sgMisc.add(new BoolSetting.Builder()
+        .name("remember-last-tab")
+        .description("Reopen the last tab you were using in Meteor's GUI.")
+        .defaultValue(false)
+        .build()
+    );
+
+    public final Setting<Boolean> useCustomSplashes = sgMisc.add(new BoolSetting.Builder()
+        .name("use-custom-splashes")
+        .description("Show custom splash texts on title screen")
+        .defaultValue(false)
+        .build()
+    );
+
+    public final Setting<List<String>> customSplashes = sgMisc.add(new StringListSetting.Builder()
+        .name("custom-splashes")
+        .description("Custom splash texts to use on the title screen.\nAmpersands are automatically replaced with section symbols so you can use styling.")
+        .defaultValue("Meteor on Crack!",
+            "github.com/GreemDev/meteor",
+            "Star Meteor Client on GitHub!",
+            "Based utility mod.",
+            "&6MineGame159 &fbased god",
+            "&4meteorclient.com",
+            "&4Meteor on Crack!",
+            "&6Meteor on Crack!")
+        .visible(useCustomSplashes::get)
+        .build()
+    );
 
     public final Setting<Integer> rotationHoldTicks = sgMisc.add(new IntSetting.Builder()
         .name("rotation-hold")

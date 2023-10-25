@@ -16,13 +16,13 @@ import net.minecraft.util.Identifier;
 import java.util.function.Consumer;
 
 public class StatusEffectAmplifierMapSetting extends Setting<Object2IntMap<StatusEffect>> {
-    public StatusEffectAmplifierMapSetting(String name, String description, Object2IntMap<StatusEffect> defaultValue, Consumer<Object2IntMap<StatusEffect>> onChanged, Consumer<Setting<Object2IntMap<StatusEffect>>> onModuleActivated, IVisible visible) {
+    public StatusEffectAmplifierMapSetting(String name, String description, Object defaultValue, Consumer<Object2IntMap<StatusEffect>> onChanged, Consumer<Setting<Object2IntMap<StatusEffect>>> onModuleActivated, IVisible visible) {
         super(name, description, defaultValue, onChanged, onModuleActivated, visible);
     }
 
     @Override
     public void resetImpl() {
-        value = new Object2IntArrayMap<>(defaultValue);
+        value = new Object2IntArrayMap<>(getDefaultValue());
     }
 
     @Override

@@ -30,6 +30,7 @@ import meteordevelopment.meteorclient.systems.accounts.Account;
 import meteordevelopment.meteorclient.systems.modules.Module;
 import meteordevelopment.meteorclient.utils.render.color.Color;
 import meteordevelopment.meteorclient.utils.render.color.SettingColor;
+import net.greemdev.meteor.type.ColorSettingScreenMode;
 
 import static meteordevelopment.meteorclient.MeteorClient.mc;
 import static net.minecraft.client.MinecraftClient.IS_SYSTEM_MAC;
@@ -169,14 +170,20 @@ public class MeteorGuiTheme extends GuiTheme {
         super("Meteor");
 
         settingsFactory = new DefaultSettingsWidgetFactory(this);
+        colorScreenMode = sgColors.add(new EnumSetting.Builder<ColorSettingScreenMode>()
+            .name("color-editing-mode")
+            .description("Which fields to display in the color editing screen.")
+            .defaultValue(ColorSettingScreenMode.All)
+            .build()
+        );
     }
 
     private Setting<SettingColor> color(SettingGroup group, String name, String description, SettingColor color) {
         return group.add(new ColorSetting.Builder()
-                .name(name + "-color")
-                .description(description)
-                .defaultValue(color)
-                .build());
+            .name(name + "-color")
+            .description(description)
+            .defaultValue(color)
+            .build());
     }
     private Setting<SettingColor> color(String name, String description, SettingColor color) {
         return color(sgColors, name, description, color);
@@ -201,8 +208,8 @@ public class MeteorGuiTheme extends GuiTheme {
     }
 
     @Override
-    public WVerticalSeparator verticalSeparator() {
-        return w(new WMeteorVerticalSeparator());
+    public WVerticalSeparator verticalSeparator(boolean unicolor) {
+        return w(new WMeteorVerticalSeparator(unicolor));
     }
 
     @Override
@@ -352,8 +359,8 @@ public class MeteorGuiTheme extends GuiTheme {
     // Other
 
     @Override
-    public TextRenderer textRenderer() {
-        return TextRenderer.get();
+    public double scalar() {
+        return scale.get();
     }
 
     @Override

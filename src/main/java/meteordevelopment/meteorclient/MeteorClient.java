@@ -13,6 +13,7 @@ import meteordevelopment.meteorclient.events.meteor.MouseButtonEvent;
 import meteordevelopment.meteorclient.events.world.TickEvent;
 import meteordevelopment.meteorclient.gui.GuiThemes;
 import meteordevelopment.meteorclient.gui.WidgetScreen;
+import meteordevelopment.meteorclient.gui.tabs.TabScreen;
 import meteordevelopment.meteorclient.gui.tabs.Tabs;
 import meteordevelopment.meteorclient.systems.Systems;
 import meteordevelopment.meteorclient.systems.config.Config;
@@ -27,13 +28,19 @@ import meteordevelopment.meteorclient.utils.misc.Version;
 import meteordevelopment.meteorclient.utils.misc.input.KeyAction;
 import meteordevelopment.meteorclient.utils.misc.input.KeyBinds;
 import meteordevelopment.meteorclient.utils.network.OnlinePlayers;
+import meteordevelopment.meteorclient.utils.render.color.Color;
 import meteordevelopment.orbit.EventBus;
 import meteordevelopment.orbit.EventHandler;
 import meteordevelopment.orbit.EventPriority;
 import meteordevelopment.orbit.IEventBus;
 import net.fabricmc.api.ClientModInitializer;
 import net.fabricmc.loader.api.FabricLoader;
+import net.fabricmc.loader.api.metadata.CustomValue;
 import net.fabricmc.loader.api.metadata.ModMetadata;
+import net.fabricmc.loader.api.metadata.Person;
+import net.greemdev.meteor.Greteor;
+import net.greemdev.meteor.util.meteor.Meteor;
+import net.greemdev.meteor.utils;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.screen.ChatScreen;
 import org.slf4j.Logger;
@@ -41,21 +48,40 @@ import org.slf4j.LoggerFactory;
 
 import java.io.File;
 import java.lang.invoke.MethodHandles;
+import java.util.List;
 
 public class MeteorClient implements ClientModInitializer {
     public static final String MOD_ID = "meteor-client";
-    public static final ModMetadata MOD_META;
     public static final String NAME;
-    public static final  Version VERSION;
-    public static final  String DEV_BUILD;
+    public static final ModMetadata MOD_META;
+
+    public static CustomValue getMetaCustomValue(String jsonKey) {
+        return MOD_META.getCustomValue(MOD_ID + ':' + jsonKey);
+    }
+    public static final Version VERSION;
+
+    public static final Color COLOR;
+    public static final int REVISION;
+    public static final String KOTLIN_VERSION, FABRIC_KOTLIN_VERSION;
 
     public static MeteorClient INSTANCE;
-    public static MeteorAddon ADDON;
 
     public static MinecraftClient mc;
     public static final IEventBus EVENT_BUS = new EventBus();
     public static final File FOLDER = FabricLoader.getInstance().getGameDir().resolve(MOD_ID).toFile();
     public static final Logger LOG;
+
+    public static Person randomAuthor() {
+        return utils.getRandomElement(MeteorClient.MOD_META.getAuthors());
+    }
+
+    public static List<String> authors() {
+        return MeteorClient.MOD_META.getAuthors().stream().map(Person::getName).toList();
+    }
+
+    public static String fullVersion() {
+        return "%s-rev%d".formatted(VERSION, REVISION);
+    }
 
     static {
         MOD_META = FabricLoader.getInstance().getModContainer(MOD_ID).orElseThrow().getMetadata();
@@ -70,7 +96,10 @@ public class MeteorClient implements ClientModInitializer {
         if (versionString.equals("${version}")) versionString = "0.0.0";
 
         VERSION = new Version(versionString);
-        DEV_BUILD = MOD_META.getCustomValue(MeteorClient.MOD_ID + ":devbuild").getAsString();
+        REVISION = Integer.parseInt(getMetaCustomValue("revision").getAsString());
+        COLOR = utils.colorOf(getMetaCustomValue("color").getAsString());
+        FABRIC_KOTLIN_VERSION = getMetaCustomValue("kotlin").getAsString();
+        KOTLIN_VERSION = FABRIC_KOTLIN_VERSION.split("kotlin")[1].substring(1);
     }
 
     @Override
@@ -92,18 +121,8 @@ public class MeteorClient implements ClientModInitializer {
             Systems.addPreLoadTask(() -> Modules.get().get(DiscordPresence.class).toggle());
         }
 
-        // Register addons
-        AddonManager.init();
-
         // Register event handlers
-        EVENT_BUS.registerLambdaFactory(ADDON.getPackage() , (lookupInMethod, klass) -> (MethodHandles.Lookup) lookupInMethod.invoke(null, klass, MethodHandles.lookup()));
-        AddonManager.ADDONS.forEach(addon -> {
-            try {
-                EVENT_BUS.registerLambdaFactory(addon.getPackage(), (lookupInMethod, klass) -> (MethodHandles.Lookup) lookupInMethod.invoke(null, klass, MethodHandles.lookup()));
-            } catch (AbstractMethodError e) {
-                throw new RuntimeException("Addon \"%s\" is too old and cannot be ran.".formatted(addon.name), e);
-            }
-        });
+        Greteor.lambdaFactoriesFor("meteordevelopment.meteorclient", "net.greemdev.meteor");
 
         // Register init classes
         ReflectInit.registerPackages();
@@ -117,13 +136,13 @@ public class MeteorClient implements ClientModInitializer {
         // Load systems
         Systems.init();
 
+        // Load Greteor features
+        Greteor.init();
+
         // Subscribe after systems are loaded
         EVENT_BUS.subscribe(this);
 
-        // Initialise addons
-        AddonManager.ADDONS.forEach(MeteorAddon::onInitialize);
-
-        // Sort modules after addons have added their own
+        // Sort modules
         Modules.get().sortModules();
 
         // Load configs
@@ -162,8 +181,10 @@ public class MeteorClient implements ClientModInitializer {
     }
 
     private void toggleGui() {
-        if (Utils.canCloseGui()) mc.currentScreen.close();
-        else if (Utils.canOpenGui()) Tabs.get().get(0).openScreen(GuiThemes.get());
+        if (mc.currentScreen instanceof TabScreen ts)
+            ts.close();
+        else if (Utils.canOpenGui())
+            Tabs.getTabToOpen().openScreen(Meteor.currentTheme());
     }
 
     // Hide HUD

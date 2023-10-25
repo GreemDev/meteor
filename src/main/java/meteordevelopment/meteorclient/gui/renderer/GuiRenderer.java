@@ -19,6 +19,8 @@ import meteordevelopment.meteorclient.utils.misc.Pool;
 import meteordevelopment.meteorclient.utils.render.ByteTexture;
 import meteordevelopment.meteorclient.utils.render.RenderUtils;
 import meteordevelopment.meteorclient.utils.render.color.Color;
+import net.greemdev.meteor.gui.renderer.LegacyTextOperation;
+import net.greemdev.meteor.gui.theme.round.util.RoundedRenderer2D;
 import net.minecraft.client.gui.DrawContext;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.Identifier;
@@ -37,14 +39,12 @@ public class GuiRenderer {
     private static final TexturePacker TEXTURE_PACKER = new TexturePacker();
     private static ByteTexture TEXTURE;
 
-    public static GuiTexture CIRCLE;
-    public static GuiTexture TRIANGLE;
-    public static GuiTexture EDIT;
-    public static GuiTexture RESET;
-    public static GuiTexture FAVORITE_NO, FAVORITE_YES;
+    public static GuiTexture CIRCLE, CLEF, COG, EDIT, FAVORITE_NO, FAVORITE_YES, FRIENDS, GUI, MACROS, PROFILES, RESET, TRIANGLE, WAYPOINTS;
 
     public GuiTheme theme;
 
+    public final RoundedRenderer2D roundRenderer2D = RoundedRenderer2D.normal();
+    public final RoundedRenderer2D roundRenderer2DTex = RoundedRenderer2D.textured();
     private final Renderer2D r = new Renderer2D(false);
     private final Renderer2D rTex = new Renderer2D(true);
 
@@ -52,7 +52,8 @@ public class GuiRenderer {
     private final Stack<Scissor> scissorStack = new Stack<>();
 
     private final Pool<TextOperation> textPool = new Pool<>(TextOperation::new);
-    private final List<TextOperation> texts = new ArrayList<>();
+    private final Pool<LegacyTextOperation> lTextPool = new Pool<>(LegacyTextOperation::new);
+    private final List<GuiRenderOperation<? extends GuiRenderOperation<?>>> texts = new ArrayList<>();
 
     private final List<Runnable> postTasks = new ArrayList<>();
 
@@ -69,11 +70,18 @@ public class GuiRenderer {
     @PostInit
     public static void init() {
         CIRCLE = addTexture(new MeteorIdentifier("textures/icons/gui/circle.png"));
-        TRIANGLE = addTexture(new MeteorIdentifier("textures/icons/gui/triangle.png"));
+        CLEF = addTexture(new MeteorIdentifier("textures/icons/gui/clef.png"));
+        COG = addTexture(new MeteorIdentifier("textures/icons/gui/cog.png"));
         EDIT = addTexture(new MeteorIdentifier("textures/icons/gui/edit.png"));
-        RESET = addTexture(new MeteorIdentifier("textures/icons/gui/reset.png"));
         FAVORITE_NO = addTexture(new MeteorIdentifier("textures/icons/gui/favorite_no.png"));
         FAVORITE_YES = addTexture(new MeteorIdentifier("textures/icons/gui/favorite_yes.png"));
+        FRIENDS = addTexture(new MeteorIdentifier("textures/icons/gui/friends.png"));
+        GUI = addTexture(new MeteorIdentifier("textures/icons/gui/gui.png"));
+        MACROS = addTexture(new MeteorIdentifier("textures/icons/gui/macros.png"));
+        PROFILES = addTexture(new MeteorIdentifier("textures/icons/gui/profiles.png"));
+        RESET = addTexture(new MeteorIdentifier("textures/icons/gui/reset.png"));
+        TRIANGLE = addTexture(new MeteorIdentifier("textures/icons/gui/triangle.png"));
+        WAYPOINTS = addTexture(new MeteorIdentifier("textures/icons/gui/waypoints.png"));
 
         TEXTURE = TEXTURE_PACKER.pack();
     }
@@ -110,16 +118,34 @@ public class GuiRenderer {
         rTex.render(drawContext.getMatrices());
 
         // Normal text
-        theme.textRenderer().begin(theme.scale(1));
-        for (TextOperation text : texts) {
-            if (!text.title) text.run(textPool);
+        theme.textRenderer().begin(theme.scalar());
+
+        for (GuiRenderOperation<?> text : texts) {
+            if (text instanceof TextOperation to)
+                if (!to.title) {
+                    to.run(textPool);
+                    continue;
+                }
+
+            if (text instanceof LegacyTextOperation lto)
+                if (!lto.getTitle())
+                    lto.run(lTextPool);
         }
+
         theme.textRenderer().end(drawContext.getMatrices());
 
         // Title text
-        theme.textRenderer().begin(theme.scale(1.25));
-        for (TextOperation text : texts) {
-            if (text.title) text.run(textPool);
+        theme.textRenderer().begin(theme.scale(GuiTheme.TITLE_TEXT_SCALE));
+        for (GuiRenderOperation<?> text : texts) {
+            if (text instanceof TextOperation to)
+                if (to.title) {
+                    to.run(textPool);
+                    continue;
+                }
+
+            if (text instanceof LegacyTextOperation lto)
+                if (lto.getTitle())
+                    lto.run(lTextPool);
         }
         theme.textRenderer().end(drawContext.getMatrices());
 
@@ -221,7 +247,15 @@ public class GuiRenderer {
     }
 
     public void text(String text, double x, double y, Color color, boolean title) {
-        texts.add(getOp(textPool, x, y, color).set(text, theme.textRenderer(), title));
+        texts.add(getOp(textPool, x, y, color)
+            .set(text, theme.textRenderer(), title)
+        );
+    }
+
+    public void legacyText(String text, double x, double y, Color color, boolean title, boolean shadow) {
+        texts.add(getOp(lTextPool, x, y, color)
+            .set(text, theme.textRenderer(), title, shadow)
+        );
     }
 
     public void texture(double x, double y, double width, double height, double rotation, Texture texture) {

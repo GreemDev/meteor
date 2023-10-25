@@ -27,8 +27,10 @@ import java.util.List;
 import static meteordevelopment.meteorclient.MeteorClient.mc;
 
 public class ProfilesTab extends Tab {
+    public static String NAME = "Profiles";
+
     public ProfilesTab() {
-        super("Profiles");
+        super(NAME);
     }
 
     @Override

@@ -685,6 +685,16 @@ public abstract class WTextBox extends WWidget {
         if (wasJustFocused) onCursorChanged();
     }
 
+    public WTextBox toggleFocusing() {
+        setFocused(!focused);
+        return this;
+    }
+
+    public WTextBox action(Runnable task) {
+        action = task;
+        return this;
+    }
+
     public void setCursorMax() {
         cursor = text.length();
     }

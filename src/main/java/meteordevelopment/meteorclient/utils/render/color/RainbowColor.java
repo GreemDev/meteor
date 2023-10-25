@@ -9,6 +9,14 @@ public class RainbowColor extends Color {
     private double speed;
     private static final float[] hsb = new float[3];
 
+    public static RainbowColor current() {
+        return RainbowColors.GLOBAL;
+    }
+
+    public static SettingColor asSetting() {
+        return current().toSetting();
+    }
+
     public RainbowColor() {
         super();
     }

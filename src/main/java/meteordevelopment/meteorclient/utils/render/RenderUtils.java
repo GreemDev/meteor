@@ -62,6 +62,14 @@ public class RenderUtils {
         drawItem(drawContext, itemStack, x, y, scale, overlay, null);
     }
 
+    public static void drawItem(DrawContext drawContext, ItemStack itemStack, int x, int y, boolean overlay) {
+        drawItem(drawContext, itemStack, x, y, 1, overlay);
+    }
+
+    public static void drawShadowed(DrawContext drawContext, String text, int x, int y, int color) {
+        drawContext.drawText(mc.textRenderer, text, x, y, color, true);
+    }
+
     public static void updateScreenCenter() {
         MinecraftClient mc = MinecraftClient.getInstance();
 

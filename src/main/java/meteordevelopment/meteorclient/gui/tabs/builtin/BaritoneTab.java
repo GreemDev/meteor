@@ -27,12 +27,17 @@ import java.util.List;
 import java.util.Map;
 
 public class BaritoneTab extends Tab {
+    public static String NAME = "Baritone";
+
+    public BaritoneTab() {
+        super(NAME);
+    }
+
+
     private static Settings settings;
     private static Map<String, String> descriptions;
 
-    public BaritoneTab() {
-        super("Baritone");
-    }
+
 
     @SuppressWarnings("unchecked")
     private static Settings getSettings() {

@@ -5,10 +5,13 @@
 
 package meteordevelopment.meteorclient.gui.widgets;
 
+import meteordevelopment.meteorclient.gui.GuiTheme;
 import meteordevelopment.meteorclient.gui.widgets.pressable.WPressable;
 import meteordevelopment.meteorclient.utils.render.color.Color;
 
-public abstract class WLabel extends WPressable {
+import java.util.function.Supplier;
+
+public abstract class WLabel extends WPressable implements Supplier<String> {
     public Color color;
 
     protected String text;
@@ -17,6 +20,14 @@ public abstract class WLabel extends WPressable {
     public WLabel(String text, boolean title) {
         this.text = text;
         this.title = title;
+    }
+
+    public Color getEffectiveColor(GuiTheme theme) {
+        return color != null
+            ? color
+            : title
+            ? theme.titleTextColor()
+            : theme.textColor();
     }
 
     @Override
@@ -43,6 +54,7 @@ public abstract class WLabel extends WPressable {
         this.text = text;
     }
 
+    @Override
     public String get() {
         return text;
     }

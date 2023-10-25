@@ -39,6 +39,13 @@ public class SettingGroup implements ISerializable<SettingGroup>, Iterable<Setti
         return setting;
     }
 
+    public <B extends Setting.SettingBuilder<B, V, S>, V, S extends Setting<V>> S add(B settingBuilder) {
+        var setting = settingBuilder.build();
+        settings.add(setting);
+
+        return setting;
+    }
+
     public Setting<?> getByIndex(int index) {
         return settings.get(index);
     }

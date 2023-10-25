@@ -10,7 +10,7 @@ import meteordevelopment.meteorclient.gui.WindowScreen;
 import meteordevelopment.meteorclient.gui.widgets.containers.WTable;
 import meteordevelopment.meteorclient.gui.widgets.pressable.WButton;
 import meteordevelopment.meteorclient.settings.PotionSetting;
-import meteordevelopment.meteorclient.utils.misc.MyPotion;
+import meteordevelopment.meteorclient.utils.misc.PotionTypes;
 
 public class PotionSettingScreen extends WindowScreen {
     private final PotionSetting setting;
@@ -25,7 +25,7 @@ public class PotionSettingScreen extends WindowScreen {
     public void initWidgets() {
         WTable table = add(theme.table()).expandX().widget();
 
-        for (MyPotion potion : MyPotion.values()) {
+        for (PotionTypes potion : PotionTypes.values()) {
             table.add(theme.itemWithLabel(potion.potion, potion.potion.getName().getString()));
 
             WButton select = table.add(theme.button("Select")).widget();

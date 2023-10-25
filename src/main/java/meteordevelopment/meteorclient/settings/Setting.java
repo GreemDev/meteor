@@ -17,14 +17,15 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 import java.util.function.Consumer;
+import java.util.function.Supplier;
 
-public abstract class Setting<T> implements IGetter<T>, ISerializable<T> {
+public abstract class Setting<T> implements IGetter<T>, ISerializable<T>, Supplier<T> {
     private static final List<String> NO_SUGGESTIONS = new ArrayList<>(0);
 
     public final String name, title, description;
     private final IVisible visible;
 
-    protected final T defaultValue;
+    protected final Object defaultValue;
     protected T value;
 
     public final Consumer<Setting<T>> onModuleActivated;
@@ -33,7 +34,7 @@ public abstract class Setting<T> implements IGetter<T>, ISerializable<T> {
     public Module module;
     public boolean lastWasVisible;
 
-    public Setting(String name, String description, T defaultValue, Consumer<T> onChanged, Consumer<Setting<T>> onModuleActivated, IVisible visible) {
+    public Setting(String name, String description, Object defaultValue, Consumer<T> onChanged, Consumer<Setting<T>> onModuleActivated, IVisible visible) {
         this.name = name;
         this.title = Utils.nameToTitle(name);
         this.description = description;
@@ -58,7 +59,7 @@ public abstract class Setting<T> implements IGetter<T>, ISerializable<T> {
     }
 
     protected void resetImpl() {
-        value = defaultValue;
+        value = getDefaultValue();
     }
 
     public void reset() {
@@ -67,7 +68,11 @@ public abstract class Setting<T> implements IGetter<T>, ISerializable<T> {
     }
 
     public T getDefaultValue() {
-        return defaultValue;
+        return Utils.cast(
+            defaultValue instanceof Supplier<?> s
+                ? s.get()
+                : defaultValue
+        );
     }
 
     public boolean parse(String str) {

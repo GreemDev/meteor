@@ -12,7 +12,7 @@ import net.minecraft.potion.Potion;
 import net.minecraft.potion.PotionUtil;
 import net.minecraft.potion.Potions;
 
-public enum MyPotion {
+public enum PotionTypes {
     Swiftness(Potions.SWIFTNESS, Items.NETHER_WART, Items.SUGAR),
     SwiftnessLong(Potions.LONG_SWIFTNESS, Items.NETHER_WART, Items.SUGAR, Items.REDSTONE),
     SwiftnessStrong(Potions.STRONG_SWIFTNESS, Items.NETHER_WART, Items.SUGAR, Items.GLOWSTONE_DUST),
@@ -68,7 +68,7 @@ public enum MyPotion {
     public final ItemStack potion;
     public final Item[] ingredients;
 
-    MyPotion(Potion potion, Item... ingredients) {
+    PotionTypes(Potion potion, Item... ingredients) {
         this.potion = PotionUtil.setPotion(new ItemStack(Items.POTION), potion);
         this.ingredients = ingredients;
     }

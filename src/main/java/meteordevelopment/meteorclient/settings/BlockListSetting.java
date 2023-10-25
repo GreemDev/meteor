@@ -22,7 +22,7 @@ import java.util.function.Predicate;
 public class BlockListSetting extends Setting<List<Block>> {
     public final Predicate<Block> filter;
 
-    public BlockListSetting(String name, String description, List<Block> defaultValue, Consumer<List<Block>> onChanged, Consumer<Setting<List<Block>>> onModuleActivated, Predicate<Block> filter, IVisible visible) {
+    public BlockListSetting(String name, String description, Object defaultValue, Consumer<List<Block>> onChanged, Consumer<Setting<List<Block>>> onModuleActivated, Predicate<Block> filter, IVisible visible) {
         super(name, description, defaultValue, onChanged, onModuleActivated, visible);
 
         this.filter = filter;
@@ -30,7 +30,7 @@ public class BlockListSetting extends Setting<List<Block>> {
 
     @Override
     public void resetImpl() {
-        value = new ArrayList<>(defaultValue);
+        value = new ArrayList<>(getDefaultValue());
     }
 
     @Override

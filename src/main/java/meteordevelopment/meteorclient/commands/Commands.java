@@ -11,6 +11,8 @@ import meteordevelopment.meteorclient.commands.commands.*;
 import meteordevelopment.meteorclient.utils.PostInit;
 import net.minecraft.client.network.ClientCommandSource;
 import net.minecraft.command.CommandSource;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 import java.util.ArrayList;
 import java.util.Comparator;
@@ -75,13 +77,13 @@ public class Commands {
         DISPATCHER.execute(message, COMMAND_SOURCE);
     }
 
+    @Nullable
     public static Command get(String name) {
-        for (Command command : COMMANDS) {
-            if (command.getName().equals(name)) {
-                return command;
-            }
-        }
+        return COMMANDS.stream().filter(c -> c.getName().equals(name)).findFirst().orElse(null);
+    }
 
-        return null;
+    @NotNull
+    public static Command get(Class<? extends Command> commandClass) {
+        return COMMANDS.stream().filter(c -> c.getClass().equals(commandClass)).findFirst().orElseThrow();
     }
 }

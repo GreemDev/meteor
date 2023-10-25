@@ -5,6 +5,7 @@
 
 package meteordevelopment.meteorclient.gui;
 
+import meteordevelopment.meteorclient.gui.renderer.GuiRenderer;
 import meteordevelopment.meteorclient.gui.renderer.packer.GuiTexture;
 import meteordevelopment.meteorclient.gui.screens.ModuleScreen;
 import meteordevelopment.meteorclient.gui.screens.ModulesScreen;
@@ -21,6 +22,7 @@ import meteordevelopment.meteorclient.gui.widgets.input.*;
 import meteordevelopment.meteorclient.gui.widgets.pressable.*;
 import meteordevelopment.meteorclient.renderer.Texture;
 import meteordevelopment.meteorclient.renderer.text.TextRenderer;
+import meteordevelopment.meteorclient.settings.Setting;
 import meteordevelopment.meteorclient.settings.Settings;
 import meteordevelopment.meteorclient.systems.accounts.Account;
 import meteordevelopment.meteorclient.systems.modules.Module;
@@ -28,6 +30,7 @@ import meteordevelopment.meteorclient.utils.misc.ISerializable;
 import meteordevelopment.meteorclient.utils.misc.Keybind;
 import meteordevelopment.meteorclient.utils.misc.Names;
 import meteordevelopment.meteorclient.utils.render.color.Color;
+import net.greemdev.meteor.type.ColorSettingScreenMode;
 import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NbtCompound;
@@ -37,6 +40,9 @@ import java.lang.reflect.InvocationTargetException;
 import java.util.HashMap;
 import java.util.Map;
 
+import static meteordevelopment.meteorclient.MeteorClient.mc;
+import static net.minecraft.client.MinecraftClient.IS_SYSTEM_MAC;
+
 public abstract class GuiTheme implements ISerializable<GuiTheme> {
     public static final double TITLE_TEXT_SCALE = 1.25;
 
@@ -44,6 +50,8 @@ public abstract class GuiTheme implements ISerializable<GuiTheme> {
     public final Settings settings = new Settings();
 
     public boolean disableHoverColor;
+
+    public Setting<ColorSettingScreenMode> colorScreenMode;
 
     protected SettingsWidgetFactory settingsFactory;
 
@@ -79,18 +87,37 @@ public abstract class GuiTheme implements ISerializable<GuiTheme> {
     public WHorizontalSeparator horizontalSeparator() {
         return horizontalSeparator(null);
     }
-    public abstract WVerticalSeparator verticalSeparator();
+    public abstract WVerticalSeparator verticalSeparator(boolean unicolor);
+    public WVerticalSeparator verticalSeparator() {
+        return verticalSeparator(false);
+    }
 
     protected abstract WButton button(String text, GuiTexture texture);
     public WButton button(String text) {
-        return button(text, null);
+        return button(text, (GuiTexture)null);
+    }
+    public WButton button(String text, Runnable action) {
+        return button(text).action(action);
     }
     public WButton button(GuiTexture texture) {
         return button(null, texture);
     }
+    public WButton button(GuiTexture texture, Runnable action) {
+        return button(texture).action(action);
+    }
+
+    public WButton resetButton(Runnable action) {
+        return button(GuiRenderer.RESET).action(action);
+    }
 
     public abstract WMinus minus();
+    public WMinus minus(Runnable action) {
+        return minus().action(action);
+    }
     public abstract WPlus plus();
+    public WPlus plus(Runnable action) {
+        return plus().action(action);
+    }
 
     public abstract WCheckbox checkbox(boolean checked);
 
@@ -100,6 +127,9 @@ public abstract class GuiTheme implements ISerializable<GuiTheme> {
     public WTextBox textBox(String text, CharFilter filter, Class<? extends WTextBox.Renderer> renderer) {
         return textBox(text, null, filter, renderer);
     }
+    public WTextBox textBox(String text, Class<? extends WTextBox.Renderer> renderer) {
+        return textBox(text, null, renderer);
+    }
     public WTextBox textBox(String text, String placeholder, CharFilter filter) {
         return textBox(text, placeholder, filter, null);
     }
@@ -107,10 +137,18 @@ public abstract class GuiTheme implements ISerializable<GuiTheme> {
         return textBox(text, filter, null);
     }
     public WTextBox textBox(String text, String placeholder) {
-        return textBox(text, placeholder, (text1, c) -> true, null);
+        return textBox(text, placeholder, (CharFilter)null);
     }
     public WTextBox textBox(String text) {
-        return textBox(text, (text1, c) -> true, null);
+        return textBox(text, (CharFilter)null);
+    }
+
+    public WTextBox textBox(String text, Runnable action) {
+        return textBox(text, (CharFilter)null).action(action);
+    }
+
+    public WTextBox textBox(String text, String placeholder, Runnable action) {
+        return textBox(text, placeholder).action(action);
     }
 
     public abstract <T> WDropdown<T> dropdown(T[] values, T value);
@@ -242,6 +280,8 @@ public abstract class GuiTheme implements ISerializable<GuiTheme> {
 
     public abstract Color textColor();
 
+    public abstract Color titleTextColor();
+
     public abstract Color textSecondaryColor();
 
     //     Starscript
@@ -268,9 +308,21 @@ public abstract class GuiTheme implements ISerializable<GuiTheme> {
 
     // Other
 
-    public abstract TextRenderer textRenderer();
+    public TextRenderer textRenderer() {
+        return TextRenderer.get();
+    }
 
-    public abstract double scale(double value);
+    public double scale(double value) {
+        double scaled = value * scalar();
+
+        if (IS_SYSTEM_MAC) {
+            scaled /= (double) mc.getWindow().getWidth() / mc.getWindow().getFramebufferWidth();
+        }
+
+        return scaled;
+    }
+
+    public abstract double scalar();
 
     public abstract boolean categoryIcons();
 

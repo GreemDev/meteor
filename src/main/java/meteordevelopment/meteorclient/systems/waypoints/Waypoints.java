@@ -91,6 +91,21 @@ public class Waypoints extends System<Waypoints> implements Iterable<Waypoint> {
         return added != null;
     }
 
+    public int addAll(Collection<Waypoint> newWaypoints) {
+        if (newWaypoints.isEmpty()) return 0;
+
+        int added = 0;
+        for (var waypoint : newWaypoints) {
+            Waypoint addedWaypoint = waypoints.put(waypoint.name.get().toLowerCase(Locale.ROOT), waypoint);
+            if (addedWaypoint != null) added++;
+        }
+
+        if (added > 0)
+            save();
+
+        return added;
+    }
+
     public boolean remove(Waypoint waypoint) {
         Waypoint removed = waypoints.remove(waypoint.name.get().toLowerCase(Locale.ROOT));
         if (removed != null) {

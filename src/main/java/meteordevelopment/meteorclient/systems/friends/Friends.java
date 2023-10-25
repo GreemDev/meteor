@@ -54,22 +54,30 @@ public class Friends extends System<Friends> implements Iterable<Friend> {
         return false;
     }
 
-    public Friend get(String name) {
-        for (Friend friend : friends) {
-            if (friend.name.equals(name)) {
-                return friend;
-            }
-        }
-
-        return null;
+    public Friend get(String name, boolean ignoreCase) {
+        return friends.stream()
+            .filter(f -> ignoreCase
+                ? f.getName().equalsIgnoreCase(name)
+                : f.getName().equals(name))
+            .findFirst()
+            .orElse(null);
     }
 
+    public Friend get(String name) {
+        return get(name, false);
+    }
+
+
     public Friend get(PlayerEntity player) {
-        return get(player.getEntityName());
+        return player == null
+            ? null
+            : get(player.getEntityName());
     }
 
     public Friend get(PlayerListEntry player) {
-        return get(player.getProfile().getName());
+        return player == null
+            ? null
+            : get(player.getProfile().getName());
     }
 
     public boolean isFriend(PlayerEntity player) {

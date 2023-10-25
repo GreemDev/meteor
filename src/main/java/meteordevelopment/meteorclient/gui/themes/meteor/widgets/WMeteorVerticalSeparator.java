@@ -12,13 +12,22 @@ import meteordevelopment.meteorclient.gui.widgets.WVerticalSeparator;
 import meteordevelopment.meteorclient.utils.render.color.Color;
 
 public class WMeteorVerticalSeparator extends WVerticalSeparator implements MeteorWidget {
+
+    public WMeteorVerticalSeparator() {
+        super(false);
+    }
+
+    public WMeteorVerticalSeparator(boolean unicolor) {
+        super(unicolor);
+    }
+
     @Override
     protected void onRender(GuiRenderer renderer, double mouseX, double mouseY, double delta) {
         MeteorGuiTheme theme = theme();
-        Color colorEdges = theme.separatorEdges.get();
+        Color colorEdges = unicolor ? theme.separatorCenter.get() : theme.separatorEdges.get();
         Color colorCenter = theme.separatorCenter.get();
 
-        double s = theme.scale(1);
+        double s = theme.scalar();
         double offsetX = Math.round(width / 2.0);
 
         renderer.quad(x + offsetX, y, s, height / 2, colorEdges, colorEdges, colorCenter, colorCenter);

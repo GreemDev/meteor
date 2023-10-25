@@ -16,8 +16,9 @@ import meteordevelopment.meteorclient.utils.render.prompts.YesNoPrompt;
 import net.minecraft.client.gui.screen.Screen;
 
 public class ConfigTab extends Tab {
+    public static String NAME = "Config";
     public ConfigTab() {
-        super("Config");
+        super(NAME);
     }
 
     @Override

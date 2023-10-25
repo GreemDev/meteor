@@ -21,7 +21,7 @@ public class KeybindSetting extends Setting<Keybind> {
     private final Runnable action;
     public WKeybind widget;
 
-    public KeybindSetting(String name, String description, Keybind defaultValue, Consumer<Keybind> onChanged, Consumer<Setting<Keybind>> onModuleActivated, IVisible visible, Runnable action) {
+    public KeybindSetting(String name, String description, Object defaultValue, Consumer<Keybind> onChanged, Consumer<Setting<Keybind>> onModuleActivated, IVisible visible, Runnable action) {
         super(name, description, defaultValue, onChanged, onModuleActivated, visible);
 
         this.action = action;
@@ -54,8 +54,10 @@ public class KeybindSetting extends Setting<Keybind> {
 
     @Override
     public void resetImpl() {
-        if (value == null) value = defaultValue.copy();
-        else value.set(defaultValue);
+        if (value == null)
+            value = getDefaultValue().copy();
+        else
+            value.set(getDefaultValue());
 
         if (widget != null) widget.reset();
     }

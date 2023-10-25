@@ -21,8 +21,10 @@ import meteordevelopment.meteorclient.utils.network.MeteorExecutor;
 import net.minecraft.client.gui.screen.Screen;
 
 public class FriendsTab extends Tab {
+    public static String NAME = "Friends";
+
     public FriendsTab() {
-        super("Friends");
+        super(NAME);
     }
 
     @Override
