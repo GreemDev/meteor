@@ -41,6 +41,8 @@ enum class PrefixBrackets(pairing: Pair<String, String>) {
 
     override fun toString() = "$left $right"
 
+    fun surround(text: String) = left + text + right
+
     val left = pairing.first
     val right = pairing.second
 }

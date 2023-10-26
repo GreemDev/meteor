@@ -17,6 +17,7 @@ import meteordevelopment.meteorclient.mixininterface.IMessageHandler;
 import meteordevelopment.meteorclient.systems.modules.Modules;
 import meteordevelopment.meteorclient.systems.modules.misc.BetterChat;
 import meteordevelopment.meteorclient.systems.modules.render.NoRender;
+import net.greemdev.meteor.util.misc.KMC;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.font.TextRenderer;
 import net.minecraft.client.gui.DrawContext;
@@ -65,6 +66,15 @@ public abstract class ChatHudMixin implements IChatHud {
     @Inject(method = "addMessage(Lnet/minecraft/text/Text;Lnet/minecraft/network/message/MessageSignatureData;ILnet/minecraft/client/gui/hud/MessageIndicator;Z)V", at = @At(value = "INVOKE", target = "Ljava/util/List;add(ILjava/lang/Object;)V", ordinal = 0, shift = At.Shift.AFTER))
     private void onAddMessageAfterNewChatHudLineVisible(Text message, MessageSignatureData signature, int ticks, MessageIndicator indicator, boolean refresh, CallbackInfo info) {
         ((IChatHudLine) (Object) visibleMessages.get(0)).meteor$setId(nextId);
+    }
+
+    @Inject(method = "clear", at = @At("HEAD"), cancellable = true)
+    private void clear$meteor(boolean clear, CallbackInfo info) {
+        if (!KMC.allowNextChatClear) {
+            info.cancel();
+        } else {
+            KMC.allowNextChatClear = false;
+        }
     }
 
     @Inject(method = "addMessage(Lnet/minecraft/text/Text;Lnet/minecraft/network/message/MessageSignatureData;ILnet/minecraft/client/gui/hud/MessageIndicator;Z)V", at = @At(value = "INVOKE", target = "Ljava/util/List;add(ILjava/lang/Object;)V", ordinal = 1, shift = At.Shift.AFTER))

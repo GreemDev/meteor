@@ -26,10 +26,13 @@ import meteordevelopment.meteorclient.settings.Setting;
 import meteordevelopment.meteorclient.settings.Settings;
 import meteordevelopment.meteorclient.systems.accounts.Account;
 import meteordevelopment.meteorclient.systems.modules.Module;
+import meteordevelopment.meteorclient.systems.waypoints.Waypoint;
 import meteordevelopment.meteorclient.utils.misc.ISerializable;
 import meteordevelopment.meteorclient.utils.misc.Keybind;
 import meteordevelopment.meteorclient.utils.misc.Names;
 import meteordevelopment.meteorclient.utils.render.color.Color;
+import net.greemdev.meteor.gui.widget.WGuiTexture;
+import net.greemdev.meteor.gui.widget.WWaypointIcon;
 import net.greemdev.meteor.type.ColorSettingScreenMode;
 import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.item.ItemStack;
@@ -180,6 +183,10 @@ public abstract class GuiTheme implements ISerializable<GuiTheme> {
         return w(new WTable());
     }
 
+    public WWaypointIcon waypointIcon(Waypoint waypoint) {
+        return w(new WWaypointIcon(waypoint));
+    }
+
     public abstract WSection section(String title, boolean expanded, WWidget headerWidget);
     public WSection section(String title, boolean expanded) {
         return section(title, expanded, null);
@@ -208,6 +215,9 @@ public abstract class GuiTheme implements ISerializable<GuiTheme> {
         return itemWithLabel(stack, Names.get(stack.getItem()));
     }
 
+    public WGuiTexture guiTexture(GuiTexture texture, Color color) {
+        return w(new WGuiTexture(texture, color));
+    }
     public WTexture texture(double width, double height, double rotation, Texture texture) {
         return w(new WTexture(width, height, rotation, texture));
     }

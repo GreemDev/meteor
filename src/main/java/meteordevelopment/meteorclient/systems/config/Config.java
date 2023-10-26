@@ -6,16 +6,23 @@
 package meteordevelopment.meteorclient.systems.config;
 
 import meteordevelopment.meteorclient.MeteorClient;
+import meteordevelopment.meteorclient.gui.widgets.WTopBar;
 import meteordevelopment.meteorclient.renderer.Fonts;
 import meteordevelopment.meteorclient.renderer.text.FontFace;
 import meteordevelopment.meteorclient.settings.*;
 import meteordevelopment.meteorclient.systems.System;
 import meteordevelopment.meteorclient.systems.Systems;
+import meteordevelopment.meteorclient.utils.player.ChatUtils;
 import meteordevelopment.meteorclient.utils.render.color.SettingColor;
+import net.greemdev.meteor.type.ChatLogo;
+import net.greemdev.meteor.type.PrefixBrackets;
+import net.greemdev.meteor.util.text.ChatColor;
+import net.greemdev.meteor.util.text.FormattedText;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.nbt.NbtElement;
 import net.minecraft.nbt.NbtList;
 import net.minecraft.nbt.NbtString;
+import net.minecraft.text.Text;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -28,6 +35,8 @@ public class Config extends System<Config> {
     private final SettingGroup sgVisual = settings.createGroup("Visual");
     private final SettingGroup sgChat = settings.createGroup("Chat");
     private final SettingGroup sgMisc = settings.createGroup("Misc");
+
+    private final SettingGroup sgTopBar = settings.createGroup("Top Bar", false);
 
     // Visual
 
@@ -55,9 +64,9 @@ public class Config extends System<Config> {
         .build()
     );
 
-    public final Setting<Boolean> titleScreenCredits = sgVisual.add(new BoolSetting.Builder()
-        .name("title-screen-credits")
-        .description("Show Meteor credits on title screen")
+    public final Setting<Boolean> titleScreenVersionInfo = sgVisual.add(new BoolSetting.Builder()
+        .name("title-screen-version")
+        .description("Show Greteor version info on title screen")
         .defaultValue(true)
         .build()
     );
@@ -111,6 +120,52 @@ public class Config extends System<Config> {
         .build()
     );
 
+    public final Setting<ChatLogo> chatLogo = sgChat.add(new EnumSetting.Builder<ChatLogo>()
+        .name("chat-feedback-icon")
+        .description("The icon to appear before Meteor-related chat feedback.")
+        .defaultValue(ChatLogo.Meteor)
+        .visible(chatFeedback::get)
+        .build()
+    );
+
+    public final Setting<String> meteorPrefix = sgChat.add(new StringSetting.Builder()
+        .name("chat-prefix")
+        .description("The prefix to appear before all Meteor chat feedback messages.")
+        .defaultValue("Meteor")
+        .onChanged(s -> {
+            if (s.equalsIgnoreCase("Baritone")) {
+                ChatUtils.sendMsg(Text.of("You are not allowed to use the Baritone prefix."));
+                resetPrefix();
+            }
+        })
+        .build()
+    );
+
+    public final Setting<SettingColor> meteorPrefixColor = sgChat.add(new ColorSetting.Builder()
+        .name("chat-prefix-color")
+        .description("Color of the main prefix text.")
+        .defaultValue(MeteorClient.COLOR)
+        .build()
+    );
+
+    private void resetPrefix() {
+        meteorPrefix.reset();
+    }
+
+    public final Setting<PrefixBrackets> meteorPrefixBrackets = sgChat.add(new EnumSetting.Builder<PrefixBrackets>()
+        .name("chat-prefix-brackets")
+        .description("The brackets to be placed before and after the Meteor chat feedback prefix.")
+        .defaultValue(PrefixBrackets.Square)
+        .build()
+    );
+
+    public final Setting<SettingColor> meteorPrefixBracketsColor = sgChat.add(new ColorSetting.Builder()
+        .name("chat-prefix-brackets-color")
+        .description("Color of the brackets around the prefix text.")
+        .defaultValue(ChatColor.grey.asMeteor())
+        .build()
+    );
+
     // Misc
 
     public final Setting<Boolean> lastTabMemory = sgMisc.add(new BoolSetting.Builder()
@@ -161,6 +216,54 @@ public class Config extends System<Config> {
         .description("Amount of modules and settings to be shown in the module search bar.")
         .defaultValue(8)
         .min(1).sliderMax(12)
+        .build()
+    );
+
+    public final Setting<Boolean> baritoneIcon = sgTopBar.add(new BoolSetting.Builder()
+        .name("baritone-icon")
+        .description("Replace Baritone in top bar with the Baritone bass clef icon.")
+        .defaultValue(true)
+        .onChanged(b -> WTopBar.NEEDS_REFRESH = true)
+        .build()
+    );
+
+    public final Setting<Boolean> friendsIcon = sgTopBar.add(new BoolSetting.Builder()
+        .name("friends-icon")
+        .description("Replace Friends in top bar with the friends icon.")
+        .defaultValue(false)
+        .onChanged(b -> WTopBar.NEEDS_REFRESH = true)
+        .build()
+    );
+
+    public final Setting<Boolean> profilesIcon = sgTopBar.add(new BoolSetting.Builder()
+        .name("profiles-icon")
+        .description("Replace Profiles in top bar with a profile icon.")
+        .defaultValue(false)
+        .onChanged(b -> WTopBar.NEEDS_REFRESH = true)
+        .build()
+    );
+
+    public final Setting<Boolean> guiIcon = sgTopBar.add(new BoolSetting.Builder()
+        .name("GUI-icon")
+        .description("Replace GUI in top bar with a GUI icon.")
+        .defaultValue(false)
+        .onChanged(b -> WTopBar.NEEDS_REFRESH = true)
+        .build()
+    );
+
+    public final Setting<Boolean> waypointsIcon = sgTopBar.add(new BoolSetting.Builder()
+        .name("waypoints-icon")
+        .description("Replace Waypoints in top bar with a location pin icon.")
+        .defaultValue(true)
+        .onChanged(b -> WTopBar.NEEDS_REFRESH = true)
+        .build()
+    );
+
+    public final Setting<Boolean> macrosIcon = sgTopBar.add(new BoolSetting.Builder()
+        .name("macros-icon")
+        .description("Replace Macros in top bar with an M icon.")
+        .defaultValue(true)
+        .onChanged(b -> WTopBar.NEEDS_REFRESH = true)
         .build()
     );
 

@@ -8,7 +8,6 @@
 package net.greemdev.meteor.util.misc
 
 import meteordevelopment.meteorclient.mixin.ChatHudAccessor
-import meteordevelopment.meteorclient.utils.render.ContainerButtonWidget
 import meteordevelopment.meteorclient.utils.world.Dimension
 import net.greemdev.meteor.Initializer
 import net.greemdev.meteor.Predicate
@@ -30,6 +29,9 @@ import net.minecraft.util.math.*
 import net.minecraft.world.GameMode
 import java.util.Optional
 import java.util.function.Consumer
+
+@JvmField
+var allowNextChatClear = false
 
 fun MinecraftClient.setPlayerPos(x: Double = player!!.x, y: Double = player!!.y, z: Double = player!!.z) {
     player!!.setPos(x, y, z)
@@ -65,15 +67,6 @@ fun ClientWorld?.currentDimension() =
         "the_end" -> Dimension.End
         else -> Dimension.Overworld
     }
-
-fun ChatHud.clearChat(includeHistory: Boolean = false) {
-    this as ChatHudAccessor
-    messageQueue.clear()
-    visibleMessages.clear()
-    messages.clear()
-    if (includeHistory)
-        messageHistory.clear()
-}
 
 infix fun ItemStack.eq(other: ItemStack) = ItemStack.areEqual(this, other)
 infix fun ItemStack.neq(other: ItemStack) = !(this eq other)
@@ -131,104 +124,19 @@ operator fun Vec3d.div(value: Vec3d): Vec3d = crossProduct(value)
 fun MinecraftClient.rotation(): Vec2f = player().rotationClient
 fun MinecraftClient.rotationVec(): Vec3d = player().rotationVector
 
-fun MinecraftClient.sendCommand(command: String, preview: Text? = null) =
-    player().sendCommand(command.removePrefix("/"), preview)
+fun MinecraftClient.sendCommand(command: String) = network().sendCommand(command)
+
+
 
 fun MinecraftClient.showMessage(text: Text) = player().sendMessage(text)
 fun MinecraftClient.showActionBar(text: Text) = player().sendMessage(text, true)
 fun MinecraftClient.showActionBar(message: String) = showActionBar(textOf(message))
-fun MinecraftClient.sendChatMessage(message: String, preview: Text? = null) = player().sendChatMessage(message, preview)
-fun MinecraftClient.sendAsPlayer(message: String, preview: Text? = null) {
+fun MinecraftClient.sendChatMessage(message: String) = network().sendChatMessage(message)
+fun MinecraftClient.sendAsPlayer(message: String) {
     inGameHud.chatHud.addToMessageHistory(message)
 
     if (message.startsWith('/'))
-        sendCommand(message, preview)
+        sendCommand(message)
     else
-        sendChatMessage(message, preview)
+        sendChatMessage(message)
 }
-
-fun buttonWidget(builder: Initializer<ButtonWidgetBuilder>) = ButtonWidgetBuilder().apply(builder).build()
-fun containerButtonWidget(builder: Initializer<ButtonWidgetBuilder>) = ButtonWidgetBuilder().apply(builder).buildContainer()
-
-class ButtonWidgetBuilder {
-    @JvmField
-    var x: Int? = null
-    @JvmField
-    var y: Int? = null
-    @JvmField
-    var width: Int? = null
-    @JvmField
-    var height: Int? = null
-    @JvmField
-    var message: Text? = null
-    @JvmField
-    var pressAction: ButtonWidget.PressAction? = null
-    @JvmField
-    var tooltipSupplier: ButtonWidget.TooltipSupplier = ButtonWidget.EMPTY
-
-    fun x(pos: Int): ButtonWidgetBuilder {
-        x = pos
-        return this
-    }
-
-    fun y(pos: Int): ButtonWidgetBuilder {
-        y = pos
-        return this
-    }
-
-    fun width(value: Int): ButtonWidgetBuilder {
-        x = value
-        return this
-    }
-
-    fun height(value: Int): ButtonWidgetBuilder {
-        x = value
-        return this
-    }
-
-    fun text(text: Text): ButtonWidgetBuilder {
-        message = text
-        return this
-    }
-
-    fun text(text: String) = text(textOf(text))
-
-    @JvmName("ktText")
-    fun text(text: context(ChatColor.Companion) FormattedTextBuilder.() -> Unit) =
-        text(buildText(block = text))
-
-    @JvmName("text")
-    fun `java-text`(text: Consumer<FormattedTextBuilder>) =
-        text(FormattedText.build(text))
-
-    fun onPress(handler: ButtonWidget.PressAction): ButtonWidgetBuilder {
-        pressAction = handler
-        return this
-    }
-
-    fun tooltip(supplier: ButtonWidget.TooltipSupplier): ButtonWidgetBuilder {
-        tooltipSupplier = supplier
-        return this
-    }
-
-    fun build() = ButtonWidget(
-        x ?: error("X position not specified."),
-        y ?: error("Y position not specified."),
-        width ?: error("Button width not specified."),
-        height ?: error("Button height not specified."),
-        message ?: error("Button text not specified"),
-        pressAction ?: error("Button press action not specified."),
-        tooltipSupplier
-    )
-
-    fun buildContainer() = ContainerButtonWidget(
-        x ?: error("X position not specified."),
-        y ?: error("Y position not specified."),
-        width ?: error("Button width not specified."),
-        height ?: error("Button height not specified."),
-        message ?: error("Button text not specified"),
-        pressAction ?: error("Button press action not specified.")
-    )
-
-}
-

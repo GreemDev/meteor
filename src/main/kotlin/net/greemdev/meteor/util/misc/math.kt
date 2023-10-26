@@ -5,7 +5,6 @@
 
 package net.greemdev.meteor.util.misc
 
-import meteordevelopment.meteorclient.utils.Utils
 import net.greemdev.meteor.Initializer
 import net.minecraft.client.util.math.MatrixStack
 import net.minecraft.util.math.MathHelper
@@ -18,7 +17,7 @@ import kotlin.math.pow
 val minecraftRandom: Random by lazy { Random.create() }
 
 fun Number.clamp(min: Number, max: Number): Double =
-    Utils.clamp(toDouble(), min.toDouble(), max.toDouble())
+    MathHelper.clamp(toDouble(), min.toDouble(), max.toDouble())
 
 infix fun MatrixStack.onTop(logic: Initializer<MatrixStack>) {
     push()

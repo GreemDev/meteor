@@ -7,6 +7,7 @@ package meteordevelopment.meteorclient.utils.render.color;
 
 import meteordevelopment.meteorclient.utils.misc.ICopyable;
 import meteordevelopment.meteorclient.utils.misc.ISerializable;
+import net.greemdev.meteor.util.Strings;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.text.Style;
 import net.minecraft.text.TextColor;
@@ -324,10 +325,10 @@ public class Color implements ICopyable<Color>, ISerializable<Color> {
     }
 
     public String hexString() {
-        var hex = "#%02x%02x%02x".formatted(r, g, b);
-        if (a != 255)
-            hex += "%02x".formatted(a);
-        return hex.toUpperCase();
+        return Strings.buildString("#%02x%02x%02x".formatted(r, g, b), sb -> {
+            if (a != 255)
+                sb.append("%02x".formatted(a));
+        }).toUpperCase();
     }
 
     public java.awt.Color awt() {

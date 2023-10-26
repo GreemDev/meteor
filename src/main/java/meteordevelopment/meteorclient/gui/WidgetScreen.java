@@ -28,6 +28,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicReference;
+import java.util.function.BiConsumer;
 import java.util.function.Consumer;
 
 import static meteordevelopment.meteorclient.MeteorClient.mc;
@@ -43,7 +44,7 @@ public abstract class WidgetScreen extends Screen {
     protected Runnable enterAction;
 
     public Screen parent;
-    private final WContainer root;
+    protected final WContainer root;
 
     protected final GuiTheme theme;
 
@@ -82,6 +83,22 @@ public abstract class WidgetScreen extends Screen {
         return root.add(widget);
     }
 
+    protected <W extends WContainer> void within(W container, Consumer<W> widgets) {
+        widgets.accept(container);
+    }
+
+    protected <W extends WContainer> void within(Cell<W> containerCell, Consumer<W> widgets) {
+        widgets.accept(containerCell.widget());
+    }
+
+    protected <W extends WContainer> void add(W container, BiConsumer<Cell<W>, W> configContainer) {
+        Cell<W> cell = add(container);
+        within(cell.widget(), c ->
+            configContainer.accept(cell, c)
+        );
+    }
+
+
     public void clear() {
         root.clear();
     }
@@ -107,6 +124,11 @@ public abstract class WidgetScreen extends Screen {
     public void reload() {
         clear();
         initWidgets();
+    }
+
+    public void reloadParent() {
+        if (parent != null && parent instanceof WidgetScreen ws)
+            ws.reload();
     }
 
     public void onClosed(Runnable action) {

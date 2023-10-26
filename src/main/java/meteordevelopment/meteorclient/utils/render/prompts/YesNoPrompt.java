@@ -78,9 +78,9 @@ public class YesNoPrompt {
         return this;
     }
 
-    public void show() {
+    public boolean show() {
         if (id == null) this.id(this.title);
-        if (Config.get().dontShowAgainPrompts.contains(id)) return;
+        if (Config.get().dontShowAgainPrompts.contains(id)) return false;
 
         if (!RenderSystem.isOnRenderThread()) {
             RenderSystem.recordRenderCall(() -> mc.setScreen(new PromptScreen(theme)));
@@ -88,6 +88,7 @@ public class YesNoPrompt {
         else {
             mc.setScreen(new PromptScreen(theme));
         }
+        return true;
     }
 
     private class PromptScreen extends WindowScreen {
@@ -108,19 +109,17 @@ public class YesNoPrompt {
 
             WHorizontalList list = add(theme.horizontalList()).expandX().widget();
 
-            WButton yesButton = list.add(theme.button("Yes")).expandX().widget();
-            yesButton.action = () -> {
+            list.add(theme.button("Yes", () -> {
                 if (dontShowAgainCheckbox.checked) Config.get().dontShowAgainPrompts.add(id);
                 onYes.run();
                 close();
-            };
+            })).expandX();
 
-            WButton noButton = list.add(theme.button("No")).expandX().widget();
-            noButton.action = () -> {
+            list.add(theme.button("No", () -> {
                 if (dontShowAgainCheckbox.checked) Config.get().dontShowAgainPrompts.add(id);
                 onNo.run();
                 close();
-            };
+            })).expandX();
         }
     }
 }

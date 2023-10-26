@@ -5,6 +5,7 @@
 
 package meteordevelopment.meteorclient.systems.waypoints;
 
+import kotlin.Triple;
 import meteordevelopment.meteorclient.MeteorClient;
 import meteordevelopment.meteorclient.renderer.GL;
 import meteordevelopment.meteorclient.renderer.Renderer2D;
@@ -103,7 +104,7 @@ public class Waypoint implements ISerializable<Waypoint> {
         if (texture == null) return;
 
         int preA = color.get().a;
-        color.get().a *= a;
+        color.get().a *= (int) a;
 
         GL.bindTexture(texture.getGlId());
         Renderer2D.TEXTURE.begin();
@@ -111,6 +112,11 @@ public class Waypoint implements ISerializable<Waypoint> {
         Renderer2D.TEXTURE.render(null);
 
         color.get().a = preA;
+    }
+
+    public Triple<Integer, Integer, Integer> xyz() {
+        var bp = pos.get();
+        return new Triple<>(bp.getX(), bp.getY(), bp.getZ());
     }
 
     public BlockPos getPos() {

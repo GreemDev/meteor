@@ -7,8 +7,8 @@
 package net.greemdev.meteor.util.text
 
 import net.greemdev.meteor.invoking
-import net.greemdev.meteor.util.*
-import net.greemdev.meteor.util.meteor.*
+import net.greemdev.meteor.invoke
+import net.greemdev.meteor.util.meteor.Meteor
 
 @get:JvmName("prefix")
 val feedbackPrefix by invoking {

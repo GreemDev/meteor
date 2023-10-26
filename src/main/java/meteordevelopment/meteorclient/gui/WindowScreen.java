@@ -15,7 +15,12 @@ public abstract class WindowScreen extends WidgetScreen {
     public WindowScreen(GuiTheme theme, WWidget icon, String title) {
         super(theme, title);
 
-        window = super.add(theme.window(icon, title)).center().widget();
+        window = super.add(
+            icon != null
+                ? theme.window(icon, title)
+                : theme.window(title)
+        ).center().widget();
+
         window.view.scrollOnlyWhenMouseOver = false;
     }
 

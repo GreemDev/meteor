@@ -9,6 +9,7 @@ import meteordevelopment.meteorclient.gui.GuiTheme;
 import meteordevelopment.meteorclient.gui.tabs.Tab;
 import meteordevelopment.meteorclient.gui.tabs.TabScreen;
 import meteordevelopment.meteorclient.gui.tabs.WindowTabScreen;
+import meteordevelopment.meteorclient.gui.widgets.WTopBar;
 import meteordevelopment.meteorclient.settings.Settings;
 import meteordevelopment.meteorclient.systems.config.Config;
 import meteordevelopment.meteorclient.utils.misc.NbtUtils;
@@ -84,8 +85,13 @@ public class ConfigTab extends Tab {
         @Override
         public void tick() {
             super.tick();
-
             settings.tick(window, theme);
+
+            if (WTopBar.NEEDS_REFRESH) {
+                reloadTopBar();
+                WTopBar.NEEDS_REFRESH = false;
+            }
+
         }
 
         @Override

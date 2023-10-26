@@ -7,8 +7,10 @@
 package net.greemdev.meteor.util
 
 import net.greemdev.meteor.invoking
+import net.greemdev.meteor.kotlin
 import java.net.URI
 import java.util.*
+import java.util.function.Consumer
 import kotlin.io.path.Path
 
 
@@ -117,5 +119,10 @@ inline fun string(initial: CharSequence = "", appendNullLiteral: Boolean = true,
     StringScope(appendNullLiteral, StringBuilder(initial)).apply(builderScope).currentString
 
 
+@JvmName("buildStringKt")
 inline fun buildString(initialValue: String, builderAction: StringBuilder.() -> Unit) =
     StringBuilder(initialValue).apply(builderAction).toString()
+
+@JvmName("buildString")
+fun `buildStringJava`(initialValue: String, builderAction: Consumer<StringBuilder>) =
+    StringBuilder(initialValue).apply(builderAction.kotlin).toString()
