@@ -13,7 +13,6 @@ import net.greemdev.meteor.gui.theme.round.RoundedWidget
 import net.greemdev.meteor.invoke
 import net.greemdev.meteor.util.*
 import net.greemdev.meteor.util.misc.clamp
-import net.greemdev.meteor.util.meteor.*
 import org.lwjgl.glfw.GLFW.GLFW_MOUSE_BUTTON_LEFT
 import org.lwjgl.glfw.GLFW.GLFW_MOUSE_BUTTON_RIGHT
 
@@ -56,7 +55,7 @@ class WRoundedModule(private val module: Module) : WPressable(), RoundedWidget {
     }
 
     override fun onRender(renderer: GuiRenderer, mouseX: Double, mouseY: Double, delta: Double) {
-        val theme = theme()
+        val theme = roundedTheme()
         val pad = pad()
 
         animationProgress1 += delta * 4 * if (module.isActive || mouseOver) 1 else -1

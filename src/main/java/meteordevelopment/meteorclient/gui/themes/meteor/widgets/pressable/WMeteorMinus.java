@@ -16,6 +16,6 @@ public class WMeteorMinus extends WMinus implements MeteorWidget {
         double s = theme.scale(3);
 
         renderBackground(renderer, this, pressed, mouseOver);
-        renderer.quad(x + pad, y + height / 2 - s / 2, width - pad * 2, s, theme().minusColor.get());
+        renderer.quad(x + pad, y + height / 2 - s / 2, width - pad * 2, s, meteorTheme().minusColor.get());
     }
 }

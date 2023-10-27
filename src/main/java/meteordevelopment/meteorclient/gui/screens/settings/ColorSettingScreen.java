@@ -13,6 +13,7 @@ import meteordevelopment.meteorclient.gui.widgets.WWidget;
 import meteordevelopment.meteorclient.gui.widgets.containers.WHorizontalList;
 import meteordevelopment.meteorclient.gui.widgets.containers.WTable;
 import meteordevelopment.meteorclient.gui.widgets.input.WIntEdit;
+import meteordevelopment.meteorclient.gui.widgets.input.WTextBox;
 import meteordevelopment.meteorclient.gui.widgets.pressable.WButton;
 import meteordevelopment.meteorclient.gui.widgets.pressable.WCheckbox;
 import meteordevelopment.meteorclient.settings.Setting;
@@ -37,6 +38,7 @@ public class ColorSettingScreen extends WindowScreen {
     private WHueQuad hueQuad;
 
     private WIntEdit rItb, gItb, bItb, aItb;
+    private WTextBox hexTb;
     private WCheckbox rainbow;
 
     public ColorSettingScreen(GuiTheme theme, Setting<SettingColor> setting) {
@@ -105,59 +107,92 @@ public class ColorSettingScreen extends WindowScreen {
         return color;
     }
 
+    private void incrementalClicked(Color c) {
+        displayQuad.color.set(c);
+        hueQuad.calculateFromSetting(true);
+        brightnessQuad.calculateFromColor(c, true);
+
+        if (theme.colorScreenMode.get().isRgbaVisible()) {
+            rItb.set(c.r);
+            gItb.set(c.g);
+            bItb.set(c.b);
+            aItb.set(c.a);
+        }
+        if (theme.colorScreenMode.get().isHexVisible())
+            hexTb.set(c.hexString());
+
+        setting.onChanged();
+        callAction();
+    }
+
     @Override
     public void initWidgets() {
         // Top
         displayQuad = add(theme.quad(setting.get())).expandX().widget();
-
         brightnessQuad = add(new WBrightnessQuad()).expandX().widget();
-
         hueQuad = add(new WHueQuad()).expandX().widget();
 
+        within(add(theme.horizontalList()).expandX(), list -> {
+            list.add(theme.button("Brighter", () ->
+                incrementalClicked(setting.get().brighter())
+            )).expandX();
+            list.add(theme.button("Darker", () ->
+                incrementalClicked(setting.get().darker())
+            )).expandX().right();
+        });
+
+
         // RGBA
-        WTable rgbaTable = add(theme.table()).expandX().widget();
+        within(add(theme.table()).expandX(), table -> {
+            if (theme.colorScreenMode.get().isRgbaVisible()) {
+                table.add(theme.label("R:"));
+                rItb = table.add(theme.intEdit(setting.get().r, 0, 255, 0, 255, false)).expandX().widget();
+                rItb.action = this::rgbaChanged;
+                table.row();
 
-        rgbaTable.add(theme.label("R:"));
-        rItb = rgbaTable.add(theme.intEdit(setting.get().r, 0, 255, 0, 255, false)).expandX().widget();
-        rItb.action = this::rgbaChanged;
-        rgbaTable.row();
+                table.add(theme.label("G:"));
+                gItb = table.add(theme.intEdit(setting.get().g, 0, 255, 0, 255, false)).expandX().widget();
+                gItb.action = this::rgbaChanged;
+                table.row();
 
-        rgbaTable.add(theme.label("G:"));
-        gItb = rgbaTable.add(theme.intEdit(setting.get().g, 0, 255, 0, 255, false)).expandX().widget();
-        gItb.action = this::rgbaChanged;
-        rgbaTable.row();
+                table.add(theme.label("B:"));
+                bItb = table.add(theme.intEdit(setting.get().b, 0, 255, 0, 255, false)).expandX().widget();
+                bItb.action = this::rgbaChanged;
+                table.row();
 
-        rgbaTable.add(theme.label("B:"));
-        bItb = rgbaTable.add(theme.intEdit(setting.get().b, 0, 255, 0, 255, false)).expandX().widget();
-        bItb.action = this::rgbaChanged;
-        rgbaTable.row();
+                table.add(theme.label("A:"));
+                aItb = table.add(theme.intEdit(setting.get().a, 0, 255, 0, 255, false)).expandX().widget();
+                aItb.action = this::rgbaChanged;
+            }
 
-        rgbaTable.add(theme.label("A:"));
-        aItb = rgbaTable.add(theme.intEdit(setting.get().a, 0, 255, 0, 255, false)).expandX().widget();
-        aItb.action = this::rgbaChanged;
+            if (theme.colorScreenMode.get().isAll())
+                table.row();
+
+            if (theme.colorScreenMode.get().isHexVisible()) {
+                table.add(theme.label("Hex:"));
+                hexTb = table.add(theme.textBox(setting.get().hexString(), this::hexChanged)).expandX().widget();
+            }
+        });
 
         // Rainbow
-        WHorizontalList rainbowList = add(theme.horizontalList()).expandX().widget();
-        rainbowList.add(theme.label("Rainbow: "));
-        rainbow = theme.checkbox(setting.get().rainbow);
-        rainbow.action = () -> {
-            setting.get().rainbow = rainbow.checked;
-            setting.onChanged();
-        };
-        rainbowList.add(rainbow).expandCellX().right();
+        within(add(theme.horizontalList()).expandX(), list -> {
+            list.add(theme.label("Rainbow: "));
+            rainbow = list.add(theme.checkbox(setting.get().rainbow, (checked) -> {
+                setting.get().rainbow = rainbow.checked;
+                setting.onChanged();
+            })).expandCellX().right().widget();
+        });
 
         // Bottom
-        WHorizontalList bottomList = add(theme.horizontalList()).expandX().widget();
+        within(add(theme.horizontalList()).expandX(), list -> {
+            list.add(theme.button("Back", this::close)).expandX();
 
-        WButton backButton = bottomList.add(theme.button("Back")).expandX().widget();
-        backButton.action = this::close;
-
-        WButton resetButton = bottomList.add(theme.button(GuiRenderer.RESET)).widget();
-        resetButton.action = () -> {
-            setting.reset();
-            setFromSetting();
-            callAction();
-        };
+            list.add(theme.resetButton(() -> {
+                setting.reset();
+                setFromSetting();
+                callAction();
+            }));
+        });
 
         hueQuad.calculateFromSetting(false);
         brightnessQuad.calculateFromColor(setting.get(), false);
@@ -195,19 +230,21 @@ public class ColorSettingScreen extends WindowScreen {
         c.b = bItb.get();
         c.a = aItb.get();
 
-        c.validate();
+        refresh(c);
+    }
 
-        if (c.r != rItb.get()) rItb.set(c.r);
-        if (c.g != gItb.get()) gItb.set(c.g);
-        if (c.b != bItb.get()) bItb.set(c.b);
-        if (c.a != aItb.get()) aItb.set(c.a);
+    private void hexChanged() {
+        var c = setting.get();
+        var newC = parseHex(hexTb.get());
 
-        displayQuad.color.set(c);
-        hueQuad.calculateFromSetting(true);
-        brightnessQuad.calculateFromColor(setting.get(), true);
+        if (newC == null) return; //if invalid hex the user is likely in the middle of typing, as such don't update any color values until the hex is complete
 
-        setting.onChanged();
-        callAction();
+        c.r = newC.r;
+        c.g = newC.g;
+        c.b = newC.b;
+        c.a = newC.a;
+
+        refresh(c);
     }
 
     private void hsvChanged() {
@@ -275,13 +312,28 @@ public class ColorSettingScreen extends WindowScreen {
         c.r = (int) (r * 255);
         c.g = (int) (g * 255);
         c.b = (int) (b * 255);
-        c.validate();
 
-        rItb.set(c.r);
-        gItb.set(c.g);
-        bItb.set(c.b);
+        refresh(c);
+    }
 
-        displayQuad.color.set(c);
+    private void refresh(Color newColor) {
+        newColor.validate();
+        if (theme.colorScreenMode.get().isRgbaVisible()) {
+            if (newColor.r != rItb.get()) rItb.set(newColor.r);
+            if (newColor.g != gItb.get()) gItb.set(newColor.g);
+            if (newColor.b != bItb.get()) bItb.set(newColor.b);
+            if (newColor.a != aItb.get()) aItb.set(newColor.a);
+        }
+        if (theme.colorScreenMode.get().isHexVisible() && !newColor.hexString().equals(hexTb.get()))
+            hexTb.set(newColor.hexString());
+
+        if (newColor instanceof SettingColor sc)
+            rainbow.checked = sc.rainbow;
+
+        displayQuad.color.set(newColor);
+        hueQuad.calculateFromSetting(true);
+        brightnessQuad.calculateFromColor(newColor, true);
+
         setting.onChanged();
         callAction();
     }

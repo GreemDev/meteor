@@ -68,17 +68,16 @@ enum class NbtDataType(val byte: kotlin.Byte) {
 fun NbtCompound.getList(name: String, type: NbtDataType): NbtList =
     getList(name, type.int)
 fun NbtCompound.collectList(name: String, type: NbtDataType) =
-    getList(name, type).collect()
+    getList(name, type).collectAsStrings()
 
-@Suppress("UNCHECKED_CAST")
 inline fun<reified T> Array<T>.toNBT(): NbtElement = when (T::class) {
-    Byte::class -> NbtByteArray((this as Array<Byte>).toList())
-    Long::class -> NbtLongArray((this as Array<Long>).toList())
-    Int::class -> NbtIntArray((this as Array<Int>).toList())
+    Byte::class -> NbtByteArray(castFast<Array<Byte>>().toList())
+    Long::class -> NbtLongArray(castFast<Array<Long>>().toList())
+    Int::class -> NbtIntArray(castFast<Array<Int>>().toList())
     else -> error("Unknown or unsupported array type Supported are Byte, Long, and Int.")
 }
 
 fun Collection<*>.toNBT() = Nbt listElements mapNotNull { it?.toNBT() }
 
-fun NbtList.collect() = mapNotNull(NbtElement::asString)
+fun NbtList.collectAsStrings() = mapNotNull(NbtElement::asString)
 

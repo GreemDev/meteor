@@ -24,7 +24,7 @@ public class WMeteorSlider extends WSlider implements MeteorWidget {
     }
 
     private void renderBar(GuiRenderer renderer, double valueWidth) {
-        MeteorGuiTheme theme = theme();
+        MeteorGuiTheme theme = meteorTheme();
 
         double s = theme.scale(3);
         double handleSize = handleSize();
@@ -37,7 +37,7 @@ public class WMeteorSlider extends WSlider implements MeteorWidget {
     }
 
     private void renderHandle(GuiRenderer renderer, double valueWidth) {
-        MeteorGuiTheme theme = theme();
+        MeteorGuiTheme theme = meteorTheme();
         double s = handleSize();
 
         renderer.quad(x + valueWidth, y, s, s, GuiRenderer.CIRCLE, theme.sliderHandle.get(dragging, handleMouseOver));

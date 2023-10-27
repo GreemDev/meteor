@@ -12,6 +12,6 @@ import net.greemdev.meteor.invoke
 
 class WRoundedTooltip(text: String) : WTooltip(text), RoundedWidget {
     override fun onRender(renderer: GuiRenderer, mouseX: Double, mouseY: Double, delta: Double) {
-        renderer.roundRenderer2D.quad(x, y, adjustWidth(), adjustHeight(), theme().backgroundColor(), theme().round())
+        renderer.roundRenderer2D.quad(x, y, adjustWidth(), adjustHeight(), roundedTheme().backgroundColor(), roundedTheme().round())
     }
 }

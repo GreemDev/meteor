@@ -9,12 +9,15 @@
 package net.greemdev.meteor.commands.api
 
 import com.mojang.brigadier.arguments.*
+import meteordevelopment.meteorclient.commands.Commands
 import meteordevelopment.meteorclient.commands.arguments.*
 import net.greemdev.meteor.commands.args.DirectionArgumentType
 import net.greemdev.meteor.commands.args.PathArgumentType
 import net.minecraft.command.CommandRegistryAccess
 import net.minecraft.command.argument.*
 import net.minecraft.predicate.NumberRange
+import net.minecraft.registry.BuiltinRegistries
+import net.minecraft.server.command.CommandManager
 
 inline infix fun <reified T> MinecraftCommandContext.argument(name: String): Lazy<T> = lazy { getArgument(name, T::class.java) }
 
@@ -27,15 +30,16 @@ inline fun<reified T> MinecraftCommandContext.argument(
     parser(name)
 
 object Arguments {
-    fun module(): ModuleArgumentType = ModuleArgumentType.create()
-    fun friend(): FriendArgumentType = FriendArgumentType.create()
-    fun player(): PlayerArgumentType = PlayerArgumentType.create()
-    fun playerListEntry(): PlayerListEntryArgumentType = PlayerListEntryArgumentType.create()
-    fun profile(): ProfileArgumentType = ProfileArgumentType.create()
-    fun setting(): SettingArgumentType = SettingArgumentType.create()
-    fun settingValue(): SettingValueArgumentType = SettingValueArgumentType.create()
-    fun waypoint(): WaypointArgumentType = WaypointArgumentType.create()
-    fun direction() = DirectionArgumentType.create()
+    @JvmOverloads fun blockPredicate(registryAccess: CommandRegistryAccess = Commands.REGISTRY_ACCESS): BlockPredicateArgumentType =
+        BlockPredicateArgumentType.blockPredicate(registryAccess)
+    @JvmOverloads fun blockState(registryAccess: CommandRegistryAccess = Commands.REGISTRY_ACCESS): BlockStateArgumentType =
+        BlockStateArgumentType.blockState(registryAccess)
+    @JvmOverloads fun itemPredicate(registryAccess: CommandRegistryAccess = Commands.REGISTRY_ACCESS): ItemPredicateArgumentType =
+        ItemPredicateArgumentType.itemPredicate(registryAccess)
+    @JvmOverloads fun itemStack(registryAccess: CommandRegistryAccess = Commands.REGISTRY_ACCESS): ItemStackArgumentType =
+        ItemStackArgumentType.itemStack(registryAccess)
+    @JvmOverloads fun particleEffect(registryAccess: CommandRegistryAccess = Commands.REGISTRY_ACCESS): ParticleEffectArgumentType =
+        ParticleEffectArgumentType.particleEffect(registryAccess)
 
     @JvmOverloads fun path(
         baseStringType: ArgumentType<String> = greedyString(),
@@ -79,12 +83,21 @@ object Arguments {
     ): Vec3ArgumentType =
         Vec3ArgumentType.vec3(centerIntegers)
 
+
+    fun module(): ModuleArgumentType = ModuleArgumentType.create()
+    fun friend(): FriendArgumentType = FriendArgumentType.create()
+    fun player(): PlayerArgumentType = PlayerArgumentType.create()
+    fun playerListEntry(): PlayerListEntryArgumentType = PlayerListEntryArgumentType.create()
+    fun profile(): ProfileArgumentType = ProfileArgumentType.create()
+    fun setting(): SettingArgumentType = SettingArgumentType.create()
+    fun settingValue(): SettingValueArgumentType = SettingValueArgumentType.create()
+    fun waypoint(): WaypointArgumentType = WaypointArgumentType.create()
+    fun direction() = DirectionArgumentType.create()
+
     fun boolean(): BoolArgumentType = BoolArgumentType.bool()
     fun wordString(): StringArgumentType = StringArgumentType.word()
     fun quotableString(): StringArgumentType = StringArgumentType.string()
     fun greedyString(): StringArgumentType = StringArgumentType.greedyString()
-    fun blockPredicate(registryAccess: CommandRegistryAccess): BlockPredicateArgumentType = BlockPredicateArgumentType.blockPredicate(registryAccess)
-    fun blockState(registryAccess: CommandRegistryAccess): BlockStateArgumentType = BlockStateArgumentType.blockState(registryAccess)
     fun blockPos(): BlockPosArgumentType = BlockPosArgumentType.blockPos()
     fun columnPos(): ColumnPosArgumentType = ColumnPosArgumentType.columnPos()
     fun rotation(): RotationArgumentType = RotationArgumentType.rotation()
@@ -92,8 +105,6 @@ object Arguments {
     fun swizzle(): SwizzleArgumentType = SwizzleArgumentType.swizzle()
     fun commandFunction(): CommandFunctionArgumentType = CommandFunctionArgumentType.commandFunction()
     fun testFunction(): TestFunctionArgumentType = TestFunctionArgumentType.testFunction()
-    fun itemPredicate(registryAccess: CommandRegistryAccess): ItemPredicateArgumentType = ItemPredicateArgumentType.itemPredicate(registryAccess)
-    fun itemStack(registryAccess: CommandRegistryAccess): ItemStackArgumentType = ItemStackArgumentType.itemStack(registryAccess)
     fun itemSlot(): ItemSlotArgumentType = ItemSlotArgumentType.itemSlot()
     fun angle(): AngleArgumentType = AngleArgumentType.angle()
     fun color(): ColorArgumentType = ColorArgumentType.color()
@@ -112,7 +123,6 @@ object Arguments {
     fun objective(): ScoreboardObjectiveArgumentType = ScoreboardObjectiveArgumentType.scoreboardObjective()
     fun objectiveCriteria(): ScoreboardCriterionArgumentType = ScoreboardCriterionArgumentType.scoreboardCriterion()
     fun operation(): OperationArgumentType = OperationArgumentType.operation()
-    fun particleEffect(registryAccess: CommandRegistryAccess): ParticleEffectArgumentType = ParticleEffectArgumentType.particleEffect(registryAccess)
     fun intRange(): NumberRangeArgumentType<NumberRange.IntRange> = NumberRangeArgumentType.intRange()
     fun floatRange(): NumberRangeArgumentType<NumberRange.FloatRange> = NumberRangeArgumentType.floatRange()
     fun scoreboardSlot(): ScoreboardSlotArgumentType = ScoreboardSlotArgumentType.scoreboardSlot()

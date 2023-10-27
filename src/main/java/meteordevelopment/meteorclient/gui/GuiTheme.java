@@ -42,6 +42,7 @@ import net.minecraft.util.math.BlockPos;
 import java.lang.reflect.InvocationTargetException;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.function.Consumer;
 
 import static meteordevelopment.meteorclient.MeteorClient.mc;
 import static net.minecraft.client.MinecraftClient.IS_SYSTEM_MAC;
@@ -86,6 +87,10 @@ public abstract class GuiTheme implements ISerializable<GuiTheme> {
         return label(text, false);
     }
 
+    public WLabel label(String text, String onHover) {
+        return net.greemdev.meteor.utils.apply(label(text, false), l -> l.tooltip = onHover);
+    }
+
     public abstract WHorizontalSeparator horizontalSeparator(String text);
     public WHorizontalSeparator horizontalSeparator() {
         return horizontalSeparator(null);
@@ -123,6 +128,10 @@ public abstract class GuiTheme implements ISerializable<GuiTheme> {
     }
 
     public abstract WCheckbox checkbox(boolean checked);
+
+    public WCheckbox checkbox(boolean checked, Consumer<Boolean> action) {
+        return checkbox(checked).action(action);
+    }
 
     public abstract WSlider slider(double value, double min, double max);
 
@@ -248,6 +257,16 @@ public abstract class GuiTheme implements ISerializable<GuiTheme> {
 
     public WKeybind keybind(Keybind keybind) {
         return keybind(keybind, Keybind.none());
+    }
+
+    public WKeybind keybind(Keybind keybind, Runnable onSet) {
+        return keybind(keybind).onSet(onSet);
+    }
+
+    public WKeybind moduleKeybind(Keybind keybind, Runnable onSet) {
+        var kb = keybind(keybind, onSet);
+        kb.module = true;
+        return kb;
     }
 
     public WKeybind keybind(Keybind keybind, Keybind defaultValue) {

@@ -16,6 +16,6 @@ public class WMeteorFavorite extends WFavorite implements MeteorWidget {
 
     @Override
     protected Color getColor() {
-        return theme().favoriteColor.get();
+        return meteorTheme().favoriteColor.get();
     }
 }

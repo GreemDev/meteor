@@ -31,6 +31,7 @@ import meteordevelopment.meteorclient.systems.modules.Module;
 import meteordevelopment.meteorclient.utils.render.color.Color;
 import meteordevelopment.meteorclient.utils.render.color.SettingColor;
 import net.greemdev.meteor.type.ColorSettingScreenMode;
+import net.greemdev.meteor.type.setting.TriStateColorSetting;
 
 import static meteordevelopment.meteorclient.MeteorClient.mc;
 import static net.minecraft.client.MinecraftClient.IS_SYSTEM_MAC;
@@ -104,7 +105,7 @@ public class MeteorGuiTheme extends GuiTheme {
 
     // Background
 
-    public final ThreeStateColorSetting backgroundColor = new ThreeStateColorSetting(
+    public final TriStateColorSetting backgroundColor = new TriStateColorSetting(
             sgBackgroundColors,
             "background",
             new SettingColor(20, 20, 20, 200),
@@ -116,7 +117,7 @@ public class MeteorGuiTheme extends GuiTheme {
 
     // Outline
 
-    public final ThreeStateColorSetting outlineColor = new ThreeStateColorSetting(
+    public final TriStateColorSetting outlineColor = new TriStateColorSetting(
             sgOutline,
             "outline",
             new SettingColor(0, 0, 0),
@@ -132,7 +133,7 @@ public class MeteorGuiTheme extends GuiTheme {
 
     // Scrollbar
 
-    public final ThreeStateColorSetting scrollbarColor = new ThreeStateColorSetting(
+    public final TriStateColorSetting scrollbarColor = new TriStateColorSetting(
             sgScrollbar,
             "Scrollbar",
             new SettingColor(30, 30, 30, 200),
@@ -142,7 +143,7 @@ public class MeteorGuiTheme extends GuiTheme {
 
     // Slider
 
-    public final ThreeStateColorSetting sliderHandle = new ThreeStateColorSetting(
+    public final TriStateColorSetting sliderHandle = new TriStateColorSetting(
             sgSlider,
             "slider-handle",
             new SettingColor(130, 0, 255),
@@ -178,7 +179,7 @@ public class MeteorGuiTheme extends GuiTheme {
         );
     }
 
-    private Setting<SettingColor> color(SettingGroup group, String name, String description, SettingColor color) {
+    private static Setting<SettingColor> color(SettingGroup group, String name, String description, SettingColor color) {
         return group.add(new ColorSetting.Builder()
             .name(name + "-color")
             .description(description)
@@ -300,6 +301,11 @@ public class MeteorGuiTheme extends GuiTheme {
     }
 
     @Override
+    public Color titleTextColor() {
+        return titleTextColor.get();
+    }
+
+    @Override
     public Color textSecondaryColor() {
         return textSecondaryColor.get();
     }
@@ -382,28 +388,5 @@ public class MeteorGuiTheme extends GuiTheme {
     @Override
     public boolean hideHUD() {
         return hideHUD.get();
-    }
-
-    public class ThreeStateColorSetting {
-        private final Setting<SettingColor> normal, hovered, pressed;
-
-        public ThreeStateColorSetting(SettingGroup group, String name, SettingColor c1, SettingColor c2, SettingColor c3) {
-            normal = color(group, name, "Color of " + name + ".", c1);
-            hovered = color(group, "hovered-" + name, "Color of " + name + " when hovered.", c2);
-            pressed = color(group, "pressed-" + name, "Color of " + name + " when pressed.", c3);
-        }
-
-        public SettingColor get() {
-            return normal.get();
-        }
-
-        public SettingColor get(boolean pressed, boolean hovered, boolean bypassDisableHoverColor) {
-            if (pressed) return this.pressed.get();
-            return (hovered && (bypassDisableHoverColor || !disableHoverColor)) ? this.hovered.get() : this.normal.get();
-        }
-
-        public SettingColor get(boolean pressed, boolean hovered) {
-            return get(pressed, hovered, false);
-        }
     }
 }

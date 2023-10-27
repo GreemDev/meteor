@@ -12,7 +12,7 @@ import net.greemdev.meteor.gui.theme.round.RoundedWidget
 
 class WRoundedButton(text: String?, texture: GuiTexture?) : WButton(text, texture), RoundedWidget {
     override fun onRender(renderer: GuiRenderer, mouseX: Double, mouseY: Double, delta: Double) {
-        val theme = theme()
+        val theme = roundedTheme()
         val pad = pad()
 
         renderer.roundedBackground(this, pressed, mouseOver)

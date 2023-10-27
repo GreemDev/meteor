@@ -10,7 +10,10 @@ import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import meteordevelopment.meteorclient.commands.commands.*;
 import meteordevelopment.meteorclient.utils.PostInit;
 import net.minecraft.client.network.ClientCommandSource;
+import net.minecraft.command.CommandRegistryAccess;
 import net.minecraft.command.CommandSource;
+import net.minecraft.registry.BuiltinRegistries;
+import net.minecraft.server.command.CommandManager;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -21,6 +24,7 @@ import java.util.List;
 import static meteordevelopment.meteorclient.MeteorClient.mc;
 
 public class Commands {
+    public static final CommandRegistryAccess REGISTRY_ACCESS = CommandManager.createRegistryAccess(BuiltinRegistries.createWrapperLookup());
     public static final CommandDispatcher<CommandSource> DISPATCHER = new CommandDispatcher<>();
     public static final CommandSource COMMAND_SOURCE = new ClientCommandSource(null, mc);
     public static final List<Command> COMMANDS = new ArrayList<>();

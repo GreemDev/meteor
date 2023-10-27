@@ -15,6 +15,7 @@ import meteordevelopment.meteorclient.gui.widgets.containers.WContainer;
 import meteordevelopment.meteorclient.gui.widgets.containers.WTable;
 import meteordevelopment.meteorclient.gui.widgets.pressable.WButton;
 import meteordevelopment.meteorclient.gui.widgets.pressable.WMinus;
+import meteordevelopment.meteorclient.systems.config.Config;
 import meteordevelopment.meteorclient.systems.profiles.Profile;
 import meteordevelopment.meteorclient.systems.profiles.Profiles;
 import meteordevelopment.meteorclient.utils.Utils;
@@ -30,7 +31,7 @@ public class ProfilesTab extends Tab {
     public static String NAME = "Profiles";
 
     public ProfilesTab() {
-        super(NAME);
+        super(NAME, GuiRenderer.PROFILES, Config.get().profilesIcon);
     }
 
     @Override

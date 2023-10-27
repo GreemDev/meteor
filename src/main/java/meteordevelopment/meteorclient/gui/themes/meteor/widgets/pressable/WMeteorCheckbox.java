@@ -21,7 +21,7 @@ public class WMeteorCheckbox extends WCheckbox implements MeteorWidget {
 
     @Override
     protected void onRender(GuiRenderer renderer, double mouseX, double mouseY, double delta) {
-        MeteorGuiTheme theme = theme();
+        MeteorGuiTheme theme = meteorTheme();
 
         animProgress += (checked ? 1 : -1) * delta * 14;
         animProgress = MathHelper.clamp(animProgress, 0, 1);

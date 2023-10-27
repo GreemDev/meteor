@@ -6,6 +6,7 @@
 package meteordevelopment.meteorclient.gui.tabs.builtin;
 
 import meteordevelopment.meteorclient.gui.GuiTheme;
+import meteordevelopment.meteorclient.gui.renderer.GuiRenderer;
 import meteordevelopment.meteorclient.gui.tabs.Tab;
 import meteordevelopment.meteorclient.gui.tabs.TabScreen;
 import meteordevelopment.meteorclient.gui.tabs.WindowTabScreen;
@@ -19,7 +20,7 @@ import net.minecraft.client.gui.screen.Screen;
 public class ConfigTab extends Tab {
     public static String NAME = "Config";
     public ConfigTab() {
-        super(NAME);
+        super(NAME, GuiRenderer.COG);
     }
 
     @Override

@@ -13,7 +13,7 @@ import meteordevelopment.meteorclient.gui.widgets.pressable.WPlus;
 public class WMeteorPlus extends WPlus implements MeteorWidget {
     @Override
     protected void onRender(GuiRenderer renderer, double mouseX, double mouseY, double delta) {
-        MeteorGuiTheme theme = theme();
+        MeteorGuiTheme theme = meteorTheme();
         double pad = pad();
         double s = theme.scale(3);
 

@@ -18,9 +18,9 @@ open class WRoundedLabel(text: String?, title: Boolean) : WLabel(text, title), R
         if (!text.isNullOrEmpty()) {
             val c = getEffectiveColor(theme)
 
-            if (colorCodeRegex in text || text.lineCount() > 1) {
+            if (colorCodeRegex in text || text.lineCount() > 1)
                 renderer.legacyText(text, x, y, c, title, false)
-            } else
+            else
                 renderer.text(text, x, y, c, title)
         }
     }

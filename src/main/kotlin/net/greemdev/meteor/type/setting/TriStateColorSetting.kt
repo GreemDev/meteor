@@ -11,6 +11,9 @@ import meteordevelopment.meteorclient.settings.SettingGroup
 import meteordevelopment.meteorclient.utils.render.color.SettingColor
 import net.greemdev.meteor.util.meteor.color
 
+fun SettingGroup.triColorSetting(name: String, normal: SettingColor, hovered: SettingColor, pressed: SettingColor) =
+    TriStateColorSetting(this, name, normal, hovered, pressed)
+
 class TriStateColorSetting(
     private val group: SettingGroup,
     name: String,
@@ -23,11 +26,9 @@ class TriStateColorSetting(
     private val hovered = createColorSetting("hovered-$name", "Color of $name when hovered.", hovered)
     private val pressed = createColorSetting("pressed-$name", "Color of $name when pressed.", pressed)
 
-    @JvmName("get")
-    operator fun invoke(): SettingColor = normal.get()
     @JvmOverloads
     @JvmName("get")
-    operator fun invoke(pressed: Boolean, hovered: Boolean, bypassDisableHoverColor: Boolean = false): SettingColor =
+    operator fun invoke(pressed: Boolean = false, hovered: Boolean = false, bypassDisableHoverColor: Boolean = false): SettingColor =
         if (pressed)
             this.pressed.get()
         else if (hovered and (bypassDisableHoverColor or !GuiThemes.get().disableHoverColor))
@@ -36,11 +37,12 @@ class TriStateColorSetting(
             this.normal.get()
 
 
-    private fun createColorSetting(name: String, description: String, color: SettingColor): ColorSetting = group.color {
-        name("$name-color")
-        description(description)
-        defaultValue(color)
-    }.getValue(null, ::group)
+    private fun createColorSetting(name: String, description: String, color: SettingColor): ColorSetting =
+        group.color {
+            name("$name-color")
+            description(description)
+            defaultValue(color)
+        }.getValue(null, ::group)
 
 
 }

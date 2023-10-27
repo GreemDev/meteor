@@ -40,11 +40,14 @@ inline fun String.widestLine(getWidth: (String) -> Double) = lines().maxOf { get
 
 
 fun String.lineCount(): Int {
-    return if (endsWith('\n'))
-        1
+    val count = count { it == '\n' }
+    return if (endsWith('\n') && count == 1)
+        count
     else
-        count { it == '\n' } + 1 //0 newline literals makes one line, 1 newline makes 2 lines, etc
+        count + 1
 }
+     //0 newline literals makes one line, 1 newline makes 2 lines, etc
+
 
 @JvmOverloads
 fun String.ensureSuffix(suffix: String, ignoreCase: Boolean = false) =

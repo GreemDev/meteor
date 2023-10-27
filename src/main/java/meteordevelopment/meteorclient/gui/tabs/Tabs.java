@@ -9,6 +9,7 @@ import meteordevelopment.meteorclient.gui.tabs.builtin.*;
 import meteordevelopment.meteorclient.systems.config.Config;
 import meteordevelopment.meteorclient.utils.PreInit;
 import meteordevelopment.meteorclient.utils.Utils;
+import net.greemdev.meteor.gui.tab.WaypointsTab;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.ArrayList;
@@ -79,10 +80,10 @@ public class Tabs {
         return get(BaritoneTab.NAME);
     }
 
-    /*@NotNull
+    @NotNull
     public static WaypointsTab waypoints() {
         return WaypointsTab.INSTANCE;
-    }*/
+    }
 
     @NotNull
     public static ConfigTab config() {
@@ -99,6 +100,7 @@ public class Tabs {
         add(new MacrosTab());
         add(new ProfilesTab());
         add(new BaritoneTab());
+        add(WaypointsTab.INSTANCE);
     }
 
     public static void add(Tab tab) {

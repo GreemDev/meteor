@@ -32,7 +32,7 @@ public class WMeteorTextBox extends WTextBox implements MeteorWidget {
         return new WVerticalList() {
             @Override
             protected void onRender(GuiRenderer renderer1, double mouseX, double mouseY, double delta) {
-                MeteorGuiTheme theme1 = theme();
+                MeteorGuiTheme theme1 = meteorTheme();
                 double s = theme1.scale(2);
                 Color c = theme1.outlineColor.get();
 
@@ -107,7 +107,7 @@ public class WMeteorTextBox extends WTextBox implements MeteorWidget {
 
         renderBackground(renderer, this, false, false);
 
-        MeteorGuiTheme theme = theme();
+        MeteorGuiTheme theme = meteorTheme();
         double pad = pad();
         double overflowWidth = getOverflowWidthForRender();
 

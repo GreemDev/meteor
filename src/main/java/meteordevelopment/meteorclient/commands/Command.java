@@ -26,7 +26,7 @@ public abstract class Command {
     protected static final CommandRegistryAccess REGISTRY_ACCESS = CommandManager.createRegistryAccess(BuiltinRegistries.createWrapperLookup());
 
     private final String name;
-    private final String title;
+    protected final String title;
     private final String description;
     private final List<String> aliases = new ArrayList<>();
 

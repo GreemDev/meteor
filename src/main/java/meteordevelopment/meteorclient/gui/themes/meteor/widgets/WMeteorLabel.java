@@ -8,6 +8,8 @@ package meteordevelopment.meteorclient.gui.themes.meteor.widgets;
 import meteordevelopment.meteorclient.gui.renderer.GuiRenderer;
 import meteordevelopment.meteorclient.gui.themes.meteor.MeteorWidget;
 import meteordevelopment.meteorclient.gui.widgets.WLabel;
+import meteordevelopment.meteorclient.utils.render.color.Color;
+import net.greemdev.meteor.util.meteor.LegacyText;
 
 public class WMeteorLabel extends WLabel implements MeteorWidget {
     public WMeteorLabel(String text, boolean title) {
@@ -16,8 +18,13 @@ public class WMeteorLabel extends WLabel implements MeteorWidget {
 
     @Override
     protected void onRender(GuiRenderer renderer, double mouseX, double mouseY, double delta) {
-        if (!text.isEmpty()) {
-            renderer.text(text, x, y, color != null ? color : (title ? theme().titleTextColor.get() : theme().textColor.get()), title);
+        if (text != null && !text.isEmpty()) {
+            Color c = getEffectiveColor(theme);
+
+            if (LegacyText.needsSpecialRenderer(text))
+                renderer.legacyText(text, x, y, c, title, false);
+            else
+                renderer.text(text, x, y, c, title);
         }
     }
 }

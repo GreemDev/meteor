@@ -15,6 +15,7 @@ import meteordevelopment.meteorclient.gui.widgets.containers.WTable;
 import meteordevelopment.meteorclient.gui.widgets.pressable.WButton;
 import meteordevelopment.meteorclient.gui.widgets.pressable.WMinus;
 import meteordevelopment.meteorclient.settings.Settings;
+import meteordevelopment.meteorclient.systems.config.Config;
 import meteordevelopment.meteorclient.systems.macros.Macro;
 import meteordevelopment.meteorclient.systems.macros.Macros;
 import meteordevelopment.meteorclient.utils.misc.NbtUtils;
@@ -26,7 +27,7 @@ public class MacrosTab extends Tab {
     public static String NAME = "Macros";
 
     public MacrosTab() {
-        super(NAME);
+        super(NAME, GuiRenderer.MACROS, Config.get().macrosIcon);
     }
 
     @Override

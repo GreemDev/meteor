@@ -12,7 +12,7 @@ import net.greemdev.meteor.invoke
 
 class WRoundedPlus : WPlus(), RoundedWidget {
     override fun onRender(renderer: GuiRenderer, mouseX: Double, mouseY: Double, delta: Double) {
-        val theme = theme()
+        val theme = roundedTheme()
         val pad = pad()
         val s = theme.scale(3.0)
 

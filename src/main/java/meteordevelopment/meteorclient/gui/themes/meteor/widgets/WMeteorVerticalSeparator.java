@@ -23,7 +23,7 @@ public class WMeteorVerticalSeparator extends WVerticalSeparator implements Mete
 
     @Override
     protected void onRender(GuiRenderer renderer, double mouseX, double mouseY, double delta) {
-        MeteorGuiTheme theme = theme();
+        MeteorGuiTheme theme = meteorTheme();
         Color colorEdges = unicolor ? theme.separatorCenter.get() : theme.separatorEdges.get();
         Color colorCenter = theme.separatorCenter.get();
 

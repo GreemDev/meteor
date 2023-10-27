@@ -66,6 +66,7 @@ public class DefaultSettingsWidgetFactory extends SettingsWidgetFactory {
         factories.put(BlockDataSetting.class, (table, setting) -> blockDataW(table, (BlockDataSetting<?>) setting));
         factories.put(PotionSetting.class, (table, setting) -> potionW(table, (PotionSetting) setting));
         factories.put(StringListSetting.class, (table, setting) -> stringListW(table, (StringListSetting) setting));
+        factories.put(StringMapSetting.class, (table, setting) -> stringMapW(table, (StringMapSetting) setting));
         factories.put(BlockPosSetting.class, (table, setting) -> blockPosW(table, (BlockPosSetting) setting));
         factories.put(ColorListSetting.class, (table, setting) -> colorListW(table, (ColorListSetting) setting));
         factories.put(FontFaceSetting.class, (table, setting) -> fontW(table, (FontFaceSetting) setting));
@@ -197,8 +198,20 @@ public class DefaultSettingsWidgetFactory extends SettingsWidgetFactory {
     }
 
     private void stringListW(WTable table, StringListSetting setting) {
-        WTable wtable = table.add(theme.table()).expandX().widget();
-        StringListSetting.fillTable(theme, wtable, setting);
+        Cell<WTable> cell = table.add(theme.table()).expandX();
+        if (setting.wide)
+            cell.minWidth(Utils.getWindowWidth() / 2.5);
+
+        StringListSetting.fillTable(theme, cell.widget(), setting);
+    }
+
+
+    private void stringMapW(WTable table, StringMapSetting setting) {
+        Cell<WTable> cell = table.add(theme.table()).expandX();
+        if (setting.wide)
+            cell.minWidth(Utils.getWindowWidth() / 2.5);
+
+        StringMapSetting.fillTable(theme, cell.widget(), setting);
     }
 
     private <T extends Enum<?>> void enumW(WTable table, EnumSetting<T> setting) {

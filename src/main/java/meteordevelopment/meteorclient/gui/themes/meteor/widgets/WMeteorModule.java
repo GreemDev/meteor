@@ -8,7 +8,6 @@ package meteordevelopment.meteorclient.gui.themes.meteor.widgets;
 import meteordevelopment.meteorclient.gui.renderer.GuiRenderer;
 import meteordevelopment.meteorclient.gui.themes.meteor.MeteorGuiTheme;
 import meteordevelopment.meteorclient.gui.themes.meteor.MeteorWidget;
-import meteordevelopment.meteorclient.gui.utils.AlignmentX;
 import meteordevelopment.meteorclient.gui.widgets.pressable.WPressable;
 import meteordevelopment.meteorclient.systems.modules.Module;
 import net.minecraft.util.math.MathHelper;
@@ -30,13 +29,7 @@ public class WMeteorModule extends WPressable implements MeteorWidget {
         this.module = module;
         this.tooltip = module.description;
 
-        if (module.isActive()) {
-            animationProgress1 = 1;
-            animationProgress2 = 1;
-        } else {
-            animationProgress1 = 0;
-            animationProgress2 = 0;
-        }
+        animationProgress1 = animationProgress2 = module.isActive() ? 1 : 0;
     }
 
     @Override
@@ -62,7 +55,7 @@ public class WMeteorModule extends WPressable implements MeteorWidget {
 
     @Override
     protected void onRender(GuiRenderer renderer, double mouseX, double mouseY, double delta) {
-        MeteorGuiTheme theme = theme();
+        MeteorGuiTheme theme = meteorTheme();
         double pad = pad();
 
         animationProgress1 += delta * 4 * ((module.isActive() || mouseOver) ? 1 : -1);
@@ -81,12 +74,10 @@ public class WMeteorModule extends WPressable implements MeteorWidget {
         double x = this.x + pad;
         double w = width - pad * 2;
 
-        if (theme.moduleAlignment.get() == AlignmentX.Center) {
+        if (theme.moduleAlignment.get().center())
             x += w / 2 - titleWidth / 2;
-        }
-        else if (theme.moduleAlignment.get() == AlignmentX.Right) {
+        else if (theme.moduleAlignment.get().right())
             x += w - titleWidth;
-        }
 
         renderer.text(module.title, x, y + pad, theme.textColor.get(), false);
     }

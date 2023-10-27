@@ -5,8 +5,6 @@
 
 package meteordevelopment.meteorclient;
 
-import meteordevelopment.meteorclient.addons.AddonManager;
-import meteordevelopment.meteorclient.addons.MeteorAddon;
 import meteordevelopment.meteorclient.events.game.OpenScreenEvent;
 import meteordevelopment.meteorclient.events.meteor.KeyEvent;
 import meteordevelopment.meteorclient.events.meteor.MouseButtonEvent;
@@ -40,7 +38,9 @@ import net.fabricmc.loader.api.metadata.ModMetadata;
 import net.fabricmc.loader.api.metadata.Person;
 import net.greemdev.meteor.Greteor;
 import net.greemdev.meteor.util.meteor.Meteor;
+import net.greemdev.meteor.util.misc.GVersioning;
 import net.greemdev.meteor.utils;
+import net.minecraft.SharedConstants;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.screen.ChatScreen;
 import org.slf4j.Logger;
@@ -104,10 +104,10 @@ public class MeteorClient implements ClientModInitializer {
 
     @Override
     public void onInitializeClient() {
-        if (INSTANCE == null) {
-            INSTANCE = this;
+        if (INSTANCE != null) {
             return;
         }
+        INSTANCE = this;
 
         LOG.info("Initializing {}", NAME);
 
@@ -118,11 +118,10 @@ public class MeteorClient implements ClientModInitializer {
         if (!FOLDER.exists()) {
             FOLDER.getParentFile().mkdirs();
             FOLDER.mkdir();
-            Systems.addPreLoadTask(() -> Modules.get().get(DiscordPresence.class).toggle());
         }
 
         // Register event handlers
-        Greteor.lambdaFactoriesFor("meteordevelopment.meteorclient", "net.greemdev.meteor");
+        Greteor.lambdaFactoriesFor(MeteorClient.class.getPackageName(), Greteor.class.getPackageName());
 
         // Register init classes
         ReflectInit.registerPackages();
@@ -142,9 +141,6 @@ public class MeteorClient implements ClientModInitializer {
         // Subscribe after systems are loaded
         EVENT_BUS.subscribe(this);
 
-        // Sort modules
-        Modules.get().sortModules();
-
         // Load configs
         Systems.load();
 
@@ -157,6 +153,13 @@ public class MeteorClient implements ClientModInitializer {
             Systems.save();
             GuiThemes.save();
         }));
+
+
+        SharedConstants.isDevelopment = Boolean.parseBoolean(System.getProperty("meteor.minecraft.dev", "false"));
+        if (SharedConstants.isDevelopment)
+            LOG.warn("Property 'meteor.minecraft.dev' is 'true'; Now running in development mode.");
+        else if (GVersioning.isOutdated())
+            LOG.warn("Not currently on the latest revision! Running %d revisions behind. Latest is %s.".formatted(GVersioning.revisionsBehind(), GVersioning.getLatestRevision()));
     }
 
     @EventHandler

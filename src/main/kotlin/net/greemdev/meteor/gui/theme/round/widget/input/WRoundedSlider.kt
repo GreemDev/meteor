@@ -19,7 +19,7 @@ class WRoundedSlider(value: Double, min: Double, max: Double) : WSlider(value, m
     }
 
     private fun GuiRenderer.renderBar(valueWidth: Double) {
-        val theme = theme()
+        val theme = roundedTheme()
 
         val s = theme.scale(3.0)
         val handleSize = handleSize()
@@ -32,7 +32,7 @@ class WRoundedSlider(value: Double, min: Double, max: Double) : WSlider(value, m
     }
 
     private fun GuiRenderer.renderHandle(valueWidth: Double) {
-        val theme = theme()
+        val theme = roundedTheme()
         val s = handleSize()
 
         quad(x + valueWidth, y, s, s, GuiRenderer.CIRCLE, theme.sliderHandle(dragging, handleMouseOver))

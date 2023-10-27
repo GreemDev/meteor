@@ -13,7 +13,7 @@ import kotlin.math.round
 
 class WRoundedHorizontalSeparator(text: String?) : WHorizontalSeparator(text), RoundedWidget {
     override fun onRender(renderer: GuiRenderer, mouseX: Double, mouseY: Double, delta: Double) {
-        val theme = theme()
+        val theme = roundedTheme()
         if (text == null) { //render without text
             val s = theme.scalar()
             val w = width / 2

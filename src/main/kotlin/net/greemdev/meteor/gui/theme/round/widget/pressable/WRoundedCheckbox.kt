@@ -20,7 +20,7 @@ class WRoundedCheckbox(checked: Boolean) : WCheckbox(checked), RoundedWidget {
     }
 
     override fun onRender(renderer: GuiRenderer, mouseX: Double, mouseY: Double, delta: Double) {
-        val theme = theme()
+        val theme = roundedTheme()
 
         animProgress += (if (checked) 1 else -1) * delta * 14
         animProgress = animProgress.clamp(0, 1)

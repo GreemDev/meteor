@@ -14,7 +14,7 @@ class WRoundedDropdown<T>(values: Array<out T>, value: T) : WDropdown<T>(values,
     override fun createValueWidget(): WDropdownValue = WValue()
 
     override fun onRender(renderer: GuiRenderer, mouseX: Double, mouseY: Double, delta: Double) {
-        val theme = theme()
+        val theme = roundedTheme()
         val pad = pad()
         val s = theme.textHeight()
 
@@ -28,7 +28,7 @@ class WRoundedDropdown<T>(values: Array<out T>, value: T) : WDropdown<T>(values,
 
     private inner class WRoot : WDropdownRoot(), RoundedWidget {
         override fun onRender(renderer: GuiRenderer, mouseX: Double, mouseY: Double, delta: Double) {
-            val theme = theme()
+            val theme = roundedTheme()
             val s = theme.scale(2.0)
             val c = theme.outlineColor()
 
@@ -49,7 +49,7 @@ class WRoundedDropdown<T>(values: Array<out T>, value: T) : WDropdown<T>(values,
         }
 
         override fun onRender(renderer: GuiRenderer, mouseX: Double, mouseY: Double, delta: Double) {
-            val theme = theme()
+            val theme = roundedTheme()
 
             val color = theme.backgroundColor(pressed, mouseOver, true)
             val preA = color.a

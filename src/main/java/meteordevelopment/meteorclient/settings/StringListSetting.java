@@ -8,6 +8,7 @@ package meteordevelopment.meteorclient.settings;
 import meteordevelopment.meteorclient.gui.GuiTheme;
 import meteordevelopment.meteorclient.gui.renderer.GuiRenderer;
 import meteordevelopment.meteorclient.gui.utils.CharFilter;
+import meteordevelopment.meteorclient.gui.utils.StarscriptTextBoxRenderer;
 import meteordevelopment.meteorclient.gui.widgets.containers.WTable;
 import meteordevelopment.meteorclient.gui.widgets.input.WTextBox;
 import meteordevelopment.meteorclient.gui.widgets.pressable.WButton;
@@ -25,12 +26,14 @@ import java.util.function.Consumer;
 public class StringListSetting extends Setting<List<String>>{
     public final Class<? extends WTextBox.Renderer> renderer;
     public final CharFilter filter;
+    public final boolean wide;
 
-    public StringListSetting(String name, String description, Object defaultValue, Consumer<List<String>> onChanged, Consumer<Setting<List<String>>> onModuleActivated, IVisible visible, Class<? extends WTextBox.Renderer> renderer, CharFilter filter) {
+    protected StringListSetting(String name, String description, Object defaultValue, Consumer<List<String>> onChanged, Consumer<Setting<List<String>>> onModuleActivated, IVisible visible, Class<? extends WTextBox.Renderer> renderer, boolean wide, CharFilter filter) {
         super(name, description, defaultValue, onChanged, onModuleActivated, visible);
 
         this.renderer = renderer;
         this.filter = filter;
+        this.wide = wide;
     }
 
     @Override
@@ -121,12 +124,23 @@ public class StringListSetting extends Setting<List<String>>{
         private Class<? extends WTextBox.Renderer> renderer;
         private CharFilter filter;
 
+        private boolean wide = false;
+
         public Builder() {
             super(new ArrayList<>(0));
         }
 
+        public Builder wide() {
+            wide = !wide;
+            return this;
+        }
+
         public Builder defaultValue(String... defaults) {
             return defaultValue(defaults != null ? Arrays.asList(defaults) : new ArrayList<>());
+        }
+
+        public Builder renderStarscript() {
+            return renderer(StarscriptTextBoxRenderer.class);
         }
 
         public Builder renderer(Class<? extends WTextBox.Renderer> renderer) {
@@ -141,7 +155,7 @@ public class StringListSetting extends Setting<List<String>>{
 
         @Override
         public StringListSetting build() {
-            return new StringListSetting(name, description, defaultValue, onChanged, onModuleActivated, visible, renderer, filter);
+            return new StringListSetting(name, description, defaultValue, onChanged, onModuleActivated, visible, renderer, wide, filter);
         }
     }
 }

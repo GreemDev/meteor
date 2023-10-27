@@ -5,8 +5,11 @@
 
 package meteordevelopment.meteorclient.utils.misc;
 
+import meteordevelopment.meteorclient.events.meteor.KeyEvent;
+import meteordevelopment.meteorclient.events.meteor.MouseButtonEvent;
 import meteordevelopment.meteorclient.utils.Utils;
 import meteordevelopment.meteorclient.utils.misc.input.Input;
+import meteordevelopment.meteorclient.utils.misc.input.KeyAction;
 import net.minecraft.nbt.NbtCompound;
 
 import java.util.Objects;
@@ -17,8 +20,14 @@ public class Keybind implements ISerializable<Keybind>, ICopyable<Keybind> {
     private boolean isKey;
     private int value;
 
+    public boolean onRelease;
+
     private Keybind(boolean isKey, int value) {
         set(isKey, value);
+    }
+    private Keybind(boolean isKey, int value, boolean onRelease) {
+        this(isKey, value);
+        this.onRelease = onRelease;
     }
 
     public static Keybind none() {
@@ -51,12 +60,30 @@ public class Keybind implements ISerializable<Keybind>, ICopyable<Keybind> {
         this.value = value;
     }
 
+    public void set(boolean isKey, int value, boolean onRelease) {
+        this.isKey = isKey;
+        this.value = value;
+        this.onRelease = onRelease;
+    }
+
     @Override
     public Keybind set(Keybind value) {
         this.isKey = value.isKey;
         this.value = value.value;
 
         return this;
+    }
+
+    public void unset() {
+        set(Keybind.none());
+    }
+
+    public boolean matches(KeyEvent event) {
+        return ((event.action == KeyAction.Release && onRelease) || (event.action == KeyAction.Press && !onRelease)) && matches(true, event.key);
+    }
+
+    public boolean matches(MouseButtonEvent event) {
+        return ((event.action == KeyAction.Release && onRelease) || (event.action == KeyAction.Press && !onRelease)) && matches(false, event.button);
     }
 
     public boolean matches(boolean isKey, int value) {
@@ -108,6 +135,7 @@ public class Keybind implements ISerializable<Keybind>, ICopyable<Keybind> {
 
         tag.putBoolean("isKey", isKey);
         tag.putInt("value", value);
+        tag.putBoolean("onRelease", onRelease);
 
         return tag;
     }
@@ -116,6 +144,8 @@ public class Keybind implements ISerializable<Keybind>, ICopyable<Keybind> {
     public Keybind fromTag(NbtCompound tag) {
         isKey = tag.getBoolean("isKey");
         value = tag.getInt("value");
+        if (tag.contains("onRelease"))
+            onRelease = tag.getBoolean("onRelease");
 
         return this;
     }

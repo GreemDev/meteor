@@ -42,9 +42,13 @@ data class ChatColor private constructor(val mc: Formatting) {
 
     @get:JvmName("name")
     val name: String by invoking(mc::getName)
+    @get:JvmName("code")
     val code by invoking(mc::getCode)
+    @get:JvmName("isModifier")
     val isModifier by invoking(mc::isModifier)
+    @get:JvmName("isColor")
     val isColor by invoking(mc::isColor)
+    @get:JvmName("rgb")
     val rgb by invoking(mc::getColorValue)
 
 

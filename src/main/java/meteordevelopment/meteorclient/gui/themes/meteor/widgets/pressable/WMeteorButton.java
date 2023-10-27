@@ -18,7 +18,7 @@ public class WMeteorButton extends WButton implements MeteorWidget {
 
     @Override
     protected void onRender(GuiRenderer renderer, double mouseX, double mouseY, double delta) {
-        MeteorGuiTheme theme = theme();
+        MeteorGuiTheme theme = meteorTheme();
         double pad = pad();
 
         renderBackground(renderer, this, pressed, mouseOver);

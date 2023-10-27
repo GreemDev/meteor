@@ -87,6 +87,7 @@ data class BrigadierBuilder<T : BArgBuilder<CommandSource, T>>(val builder: T) {
      */
     fun triesRunning(errorLogger: Initializer<Throwable> = { }, command: (ctx: MinecraftCommandContext) -> Unit) =
         runs { it.runCatching(command).onFailure(errorLogger).isSuccess.asInt() }
+
     /** Provide a Brigadier executes block via a lambda. The executes block always results in [Command.SINGLE_SUCCESS]. */
     infix fun alwaysRuns(command: (ctx: MinecraftCommandContext) -> Unit) =
         runs { ctx -> Command.SINGLE_SUCCESS.also { command(ctx) }}

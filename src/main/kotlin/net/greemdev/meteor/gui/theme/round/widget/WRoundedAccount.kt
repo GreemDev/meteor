@@ -13,6 +13,6 @@ import net.greemdev.meteor.gui.theme.round.RoundedWidget
 import net.greemdev.meteor.*
 
 class WRoundedAccount(screen: WidgetScreen, account: Account<*>) : WAccount(screen, account), RoundedWidget {
-    override fun loggedInColor(): Color = theme().loggedInColor()
+    override fun loggedInColor(): Color = roundedTheme().loggedInColor()
     override fun accountTypeColor(): Color = theme.textSecondaryColor()
 }

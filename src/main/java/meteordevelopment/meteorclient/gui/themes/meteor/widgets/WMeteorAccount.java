@@ -18,11 +18,11 @@ public class WMeteorAccount extends WAccount implements MeteorWidget {
 
     @Override
     protected Color loggedInColor() {
-        return theme().loggedInColor.get();
+        return meteorTheme().loggedInColor.get();
     }
 
     @Override
     protected Color accountTypeColor() {
-        return theme().textSecondaryColor.get();
+        return meteorTheme().textSecondaryColor.get();
     }
 }

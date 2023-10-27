@@ -17,6 +17,6 @@ class WRoundedMinus : WMinus(), RoundedWidget {
         val s = theme.scale(3.0)
 
         renderer.roundedBackground(this, pressed, mouseOver)
-        renderer.quad(x + pad, y + height / 2 - s / 2, width - pad * 2, s, theme().minusColor())
+        renderer.quad(x + pad, y + height / 2 - s / 2, width - pad * 2, s, roundedTheme().minusColor())
     }
 }

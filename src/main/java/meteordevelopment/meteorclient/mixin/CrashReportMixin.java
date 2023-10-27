@@ -25,10 +25,8 @@ public class CrashReportMixin {
     @Inject(method = "addStackTrace", at = @At("TAIL"))
     private void onAddStackTrace(StringBuilder sb, CallbackInfo info) {
         sb.append("\n\n-- Meteor Client --\n\n");
-        sb.append("Version: ").append(MeteorClient.VERSION).append("\n");
-        if (!MeteorClient.DEV_BUILD.isEmpty()) {
-            sb.append("Dev Build: ").append(MeteorClient.DEV_BUILD).append("\n");
-        }
+        sb.append("Do NOT report this to the original Meteor Client developers. Report only to GreemDev.\n");
+        sb.append("Version: ").append(MeteorClient.fullVersion()).append("\n");
 
         if (Modules.get() != null) {
             boolean modulesActive = false;

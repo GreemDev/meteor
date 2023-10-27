@@ -11,6 +11,7 @@ import baritone.api.IBaritoneProvider
 import meteordevelopment.meteorclient.MeteorClient
 import net.fabricmc.loader.api.FabricLoader
 import net.greemdev.meteor.invoking
+import net.greemdev.meteor.util.meteor.Meteor
 import net.greemdev.meteor.util.text.FormattedText
 import net.greemdev.meteor.util.text.FormattedTextBuilder
 import net.greemdev.meteor.util.text.emptyText
@@ -20,7 +21,7 @@ import java.util.function.Consumer
 @get:JvmName("minecraft")
 val minecraft: MinecraftClient by invoking(MinecraftClient::getInstance)
 @get:JvmName("meteor")
-val meteor: MeteorClient = MeteorClient.INSTANCE
+val meteor: MeteorClient = Meteor.client
 @get:JvmName("modLoader")
 val modLoader: FabricLoader by invoking(FabricLoader::getInstance)
 @get:JvmName("textBuilder")

@@ -467,14 +467,14 @@ public class Utils {
         return min + (max - min) * random.nextDouble();
     }
 
-    public static void leftClick() {
+    public static void pressAttackKey() {
         mc.options.attackKey.setPressed(true);
-        ((MinecraftClientAccessor) mc).leftClick();
+        ((MinecraftClientAccessor) mc).attack();
         mc.options.attackKey.setPressed(false);
     }
 
-    public static void rightClick() {
-        ((IMinecraftClient) mc).rightClick();
+    public static void pressItemUseKey() {
+        ((IMinecraftClient) mc).meteor$useItem();
     }
 
     public static boolean isShulker(Item item) {

@@ -11,15 +11,19 @@ import meteordevelopment.meteorclient.gui.widgets.WWidget
 import net.greemdev.meteor.invoke
 
 interface RoundedWidget : BaseWidget {
-    fun theme() = theme as RoundedTheme
-    fun GuiRenderer.roundedBackground(widget: WWidget, pressed: Boolean, mouseOver: Boolean, outline: Boolean = true) {
-        val t = theme()
+    fun roundedTheme() = theme as RoundedTheme
+
+    fun roundness(): Double = roundedTheme().round()
+
+    fun GuiRenderer.roundedBackground(widget: WWidget, pressed: Boolean, mouseOver: Boolean, outline: Boolean = true, bypassDisableHover: Boolean = false) {
+        val t = roundedTheme()
         val s = t.scale(2.0)
-        val outlineColor = t.outlineColor(pressed, mouseOver)
+
         roundRenderer2D.quad(widget.x + s, widget.y + s,
             widget.width - s * 2, widget.height - s * 2,
-            t.backgroundColor(pressed, mouseOver), t.round() - s)
+            t.backgroundColor(pressed, mouseOver, bypassDisableHover), t.round() - s)
+
         if (outline)
-            roundRenderer2D.widgetQuadOutline(widget, outlineColor, t.round(), s)
+            roundRenderer2D.widgetQuadOutline(widget, t.outlineColor(pressed, mouseOver, bypassDisableHover), t.round(), s)
     }
 }

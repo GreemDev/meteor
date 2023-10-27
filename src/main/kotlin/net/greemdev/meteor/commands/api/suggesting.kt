@@ -17,6 +17,7 @@ import java.util.concurrent.CompletableFuture
 import java.util.stream.Stream
 
 // SuggestionsBuilder extension versions of CommandSource.suggestX methods
+// mostly because using these methods directly on the SuggestionsBuilder is cleaner than via a static method on CommandSource.
 
 /** @sample identifiers */
 fun SuggestionsBuilder.identifiers(candidates: Iterable<Identifier>, prefix: String? = null): CompletableFuture<Suggestions> {

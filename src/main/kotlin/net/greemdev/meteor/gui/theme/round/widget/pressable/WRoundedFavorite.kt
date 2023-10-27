@@ -11,5 +11,5 @@ import net.greemdev.meteor.gui.theme.round.RoundedWidget
 import net.greemdev.meteor.invoke
 
 class WRoundedFavorite(checked: Boolean) : WFavorite(checked), RoundedWidget {
-    override fun getColor(): Color = theme().favoriteColor()
+    override fun getColor(): Color = roundedTheme().favoriteColor()
 }

@@ -281,5 +281,17 @@ public class TextHud extends HudElement {
                 case WhenFalse -> "When False";
             };
         }
+
+        public boolean always() {
+            return this == Always;
+        }
+
+        public boolean whenTrue() {
+            return this == WhenTrue;
+        }
+
+        public boolean whenFalse() {
+            return this == WhenFalse;
+        }
     }
 }

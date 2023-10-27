@@ -33,6 +33,6 @@ public class TitleScreenMixin extends Screen {
 
     @Inject(method = "render", at = @At("TAIL"))
     private void onRender(DrawContext context, int mouseX, int mouseY, float delta, CallbackInfo ci) {
-        if (Config.get().titleScreenCredits.get()) TitleScreenInfo.render(context);
+        if (Config.get().titleScreenVersionInfo.get()) TitleScreenInfo.render(context);
     }
 }

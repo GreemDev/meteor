@@ -149,8 +149,8 @@ fun colorOf(value: Any): MeteorColor = when (value) {
 
 fun Date.format(fmt: String): String = SimpleDateFormat(fmt).format(this)
 
-fun <T> firstNotNull(vararg nullables: T?) = nullables.firstNotNullOf(selfMapper())
-fun <T> Iterable<T?>.firstNotNull(): T = firstNotNullOf(selfMapper())
+fun <T> firstNotNull(vararg nullables: T?) = nullables.firstNotNullOf(Lambdas.selfMapper())
+fun <T> Iterable<T?>.firstNotNull(): T = firstNotNullOf(Lambdas.selfMapper())
 
 fun <T> List<T>.indexedForEach(consumer: BiConsumer<Int, T>) =
     this.forEachIndexed { index, t -> consumer.accept(index, t) }
@@ -334,7 +334,7 @@ inline fun <T, R> Result<T>.mapTo(
     failedMessage: String = "mapTo can only be run on a successful Result<R>",
     transform: Mapper<T, R>
 ) =
-    throwIfFailure(constant(failedMessage))
+    throwIfFailure(Lambdas.constant(failedMessage))
         .map(transform)
         .getOrThrow()
 
@@ -348,12 +348,24 @@ inline fun<T, reified E : Throwable> Result<T>.onFailureOf(type: KClass<E>, acti
     return this
 }
 
+inline fun<reified T> Any.cast() =
+    if (this::class.java.canonicalName == T::class.java.canonicalName)
+        castFast<T>()
+    else error("Cannot cast an object of type '${E::class.qualifiedName}' to type '${this::class.qualifiedName}'.")
+
+
+@Suppress("UNCHECKED_CAST")
+fun<T> Any.castFast() = this as T
+
 
 inline fun <T, R> Result<T>.mapToOrNull(transform: Mapper<T, R>) = map(transform).getOrNull()
 
 
-inline fun <T : Throwable> T.suppressing(first: Throwable, vararg otherThrowables: Throwable): T {
+inline fun <T : Throwable> T.suppressAll(first: Throwable, vararg otherThrowables: Throwable): T {
     addSuppressed(first)
+
+    if (otherThrowables.isEmpty()) return this
+
     otherThrowables.forEach(this::addSuppressed)
     return this
 }
@@ -364,11 +376,12 @@ inline fun <T : Throwable> T.suppressing(first: Throwable, vararg otherThrowable
 fun Boolean.asInt() = if (this) 1 else 0
 fun Int.asBoolean() = this >= 1
 
-inline fun noop(): Action = { }
-inline fun <T> void(): ValueAction<T> = { }
-inline fun <T> constant(value: T): Getter<T> = { value }
-inline fun <T> selfMapper(): Mapper<T, T> = { it }
-
+object Lambdas {
+    @JvmField val noOperation: Action = { }
+    @JvmStatic fun <T> void(): ValueAction<T> = { }
+    @JvmStatic fun <T> constant(value: T): Getter<T> = { value }
+    @JvmStatic fun <T> selfMapper(): Mapper<T, T> = { it }
+}
 
 typealias Action = () -> Unit
 typealias SuspendingAction = suspend () -> Unit

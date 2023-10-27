@@ -57,6 +57,8 @@ import org.lwjgl.glfw.GLFW;
 import java.io.File;
 import java.util.*;
 import java.util.concurrent.atomic.AtomicReference;
+import java.util.function.Predicate;
+import java.util.function.Supplier;
 import java.util.stream.Stream;
 
 import static meteordevelopment.meteorclient.MeteorClient.mc;
@@ -254,21 +256,23 @@ public class Modules extends System<Modules> {
     @EventHandler(priority = EventPriority.HIGH)
     private void onKey(KeyEvent event) {
         if (event.action == KeyAction.Repeat) return;
-        onAction(true, event.key, event.action == KeyAction.Press);
+
+        onKeyAction((kb) -> kb.matches(event));
     }
 
     @EventHandler(priority = EventPriority.HIGH)
     private void onMouseButton(MouseButtonEvent event) {
         if (event.action == KeyAction.Repeat) return;
-        onAction(false, event.button, event.action == KeyAction.Press);
+
+        onKeyAction((kb) -> kb.matches(event));
     }
 
-    private void onAction(boolean isKey, int value, boolean isPress) {
+    private void onKeyAction(Predicate<Keybind> matches) {
         if (mc.currentScreen == null && !Input.isKeyPressed(GLFW.GLFW_KEY_F3)) {
             for (Module module : moduleInstances.values()) {
-                if (module.keybind.matches(isKey, value) && (isPress || module.toggleOnBindRelease)) {
+                if (matches.test(module.keybind)) {
                     module.toggle();
-                    module.sendToggledMsg();
+                    module.sendToggledMsg();;
                 }
             }
         }
@@ -281,7 +285,7 @@ public class Modules extends System<Modules> {
         if (!Utils.canUpdate()) return;
 
         for (Module module : moduleInstances.values()) {
-            if (module.toggleOnBindRelease && module.isActive()) {
+            if (module.keybind.onRelease && module.isActive()) {
                 module.toggle();
                 module.sendToggledMsg();
             }

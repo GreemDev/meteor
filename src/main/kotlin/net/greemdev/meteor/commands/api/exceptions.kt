@@ -35,34 +35,34 @@ object CommandExceptions {
 
     @JvmName("dynamicTyped")
     inline fun<reified T : Any> dynamic(crossinline func: (T) -> Message) =
-        dynamic { func(it.cast()) }
+        dynamic { func(it.argCast()) }
 
     @JvmName("dynamic2Typed")
     inline fun<reified T1 : Any, reified T2 : Any> dynamic2(crossinline func: (T1, T2) -> Message) =
         dynamic2 { it1, it2 ->
-            func(it1.cast(), it2.cast())
+            func(it1.argCast(), it2.argCast())
         }
 
     @JvmName("dynamic3Typed")
     inline fun<reified T1 : Any, reified T2 : Any, reified T3 : Any> dynamic3(crossinline func: (T1, T2, T3) -> Message) =
         dynamic3 { it1, it2, it3 ->
-            func(it1.cast(), it2.cast(), it3.cast())
+            func(it1.argCast(), it2.argCast(), it3.argCast())
         }
 
     @JvmName("dynamic4Typed")
     inline fun<reified T1 : Any, reified T2 : Any, reified T3 : Any, reified T4 : Any> dynamic4(crossinline func: (T1, T2, T3, T4) -> Message) =
         dynamic4 { it1, it2, it3, it4 ->
-            func(it1.cast(), it2.cast(), it3.cast(), it4.cast())
+            func(it1.argCast(), it2.argCast(), it3.argCast(), it4.argCast())
         }
 
     @JvmName("dynamicNTyped")
     inline fun<reified T : Any> dynamicN(crossinline func: (Array<T>) -> Message) =
         dynamicN {
-            func(it.map<Any, T>(Any::cast).toTypedArray())
+            func(it.map<Any, T>(Any::argCast).toTypedArray())
         }
 }
 
-inline fun<reified E> Any.cast() =
+inline fun<reified E> Any.argCast() =
     if (this::class.java.canonicalName == E::class.java.canonicalName)
         this as E
     else error("Cannot create a typed command exception with argument of type ${E::class.simpleName} with provided value of type ${this::class.simpleName}")
@@ -121,20 +121,12 @@ fun CommandExceptionType.throwNew(vararg args: Any, readerContext: ImmutableStri
         is Dynamic3CommandExceptionType -> {
             require(args.size == 3) { "Dynamic3CommandExceptionType requires three arguments." }
 
-            val arg1 = args.first()
-            val arg2 = args[1]
-            val arg3 = args.last()
-
-            readerContext.new(arg1, arg2, arg3)
+            readerContext.new(args.first(), args[1], args.last())
         }
         is Dynamic4CommandExceptionType -> {
             require(args.size == 4) { "Dynamic4CommandExceptionType requires four arguments." }
 
-            val arg1 = args.first()
-            val arg2 = args[1]
-            val arg3 = args[2]
-            val arg4 = args.last()
-            readerContext.new(arg1, arg2, arg3, arg4)
+            readerContext.new(args.first(), args[1], args[2], args.last())
         }
         is DynamicNCommandExceptionType -> {
             require(args.isNotEmpty()) { "DynamicNCommandExceptionType at least one argument." }
@@ -148,38 +140,19 @@ fun CommandExceptionType.throwNew(vararg args: Any, readerContext: ImmutableStri
 }
 
 context(SimpleCommandExceptionType)
-private fun ImmutableStringReader?.new() =
-    if (this != null)
-        createWithContext(this)
-    else create()
-
+private fun ImmutableStringReader?.new() = this?.let { createWithContext(it) } ?: create()
 
 context(DynamicCommandExceptionType)
-private fun ImmutableStringReader?.new(arg: Any) =
-    if (this != null)
-        createWithContext(this, arg)
-    else create(arg)
+private fun ImmutableStringReader?.new(arg: Any) = this?.let { createWithContext(it, arg) } ?: create(arg)
 
 context(Dynamic2CommandExceptionType)
-private fun ImmutableStringReader?.new(arg1: Any, arg2: Any) =
-    if (this != null)
-        createWithContext(this, arg1, arg2)
-    else create(arg1, arg2)
+private fun ImmutableStringReader?.new(arg1: Any, arg2: Any) = this?.let { createWithContext(it, arg1, arg2) } ?: create(arg1, arg2)
 
 context(Dynamic3CommandExceptionType)
-private fun ImmutableStringReader?.new(arg1: Any, arg2: Any, arg3: Any) =
-    if (this != null)
-        createWithContext(this, arg1, arg2, arg3)
-    else create(arg1, arg2, arg3)
+private fun ImmutableStringReader?.new(arg1: Any, arg2: Any, arg3: Any) = this?.let { createWithContext(it, arg1, arg2, arg3) } ?: create(arg1, arg2, arg3)
 
 context(Dynamic4CommandExceptionType)
-private fun ImmutableStringReader?.new(arg1: Any, arg2: Any, arg3: Any, arg4: Any) =
-    if (this != null)
-        createWithContext(this, arg1, arg2, arg3, arg4)
-    else create(arg1, arg2, arg3, arg4)
+private fun ImmutableStringReader?.new(arg1: Any, arg2: Any, arg3: Any, arg4: Any) = this?.let { createWithContext(it, arg1, arg2, arg3, arg4) } ?: create(arg1, arg2, arg3, arg4)
 
 context(DynamicNCommandExceptionType)
-private fun ImmutableStringReader?.new(vararg args: Any) =
-    if (this != null)
-        createWithContext(this, *args)
-    else create(args.first(), args.drop(1))
+private fun ImmutableStringReader?.new(vararg args: Any) = this?.let { createWithContext(it, *args) } ?: create(args.first(), args.drop(1))

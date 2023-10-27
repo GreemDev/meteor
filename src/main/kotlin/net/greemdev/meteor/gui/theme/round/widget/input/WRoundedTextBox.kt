@@ -38,7 +38,7 @@ class WRoundedTextBox(text: String, placeholder: String?, filter: CharFilter, re
 
         renderer.roundedBackground(this, pressed = false, mouseOver = false)
 
-        val theme = theme()
+        val theme = roundedTheme()
         val pad = pad()
         val overflowW = overflowWidthForRender
 
@@ -73,7 +73,7 @@ class WRoundedTextBox(text: String, placeholder: String?, filter: CharFilter, re
 
     override fun createCompletionsRootWidget(): WVerticalList = object : WVerticalList(), RoundedWidget {
         override fun onRender(renderer: GuiRenderer, mouseX: Double, mouseY: Double, delta: Double) {
-            val theme = theme()
+            val theme = roundedTheme()
             val s = theme.scale(2.0)
             val c = theme.outlineColor()
 

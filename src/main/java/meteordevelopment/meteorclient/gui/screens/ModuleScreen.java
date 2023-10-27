@@ -5,6 +5,7 @@
 
 package meteordevelopment.meteorclient.gui.screens;
 
+import kotlin.text.StringsKt;
 import meteordevelopment.meteorclient.events.meteor.ActiveModulesChangedEvent;
 import meteordevelopment.meteorclient.events.meteor.ModuleBindChangedEvent;
 import meteordevelopment.meteorclient.gui.GuiTheme;
@@ -44,7 +45,10 @@ public class ModuleScreen extends WindowScreen {
     @Override
     public void initWidgets() {
         // Description
-        add(theme.label(module.description, getWindowWidth() / 2.0));
+        StringsKt.split(module.description, new char[]{'\n'}, false, 0)
+            .forEach(line ->
+                add(theme.label(line, getWindowWidth() / 2.0))
+            );
 
         // Settings
         if (module.settings.groups.size() > 0) {
@@ -62,43 +66,39 @@ public class ModuleScreen extends WindowScreen {
         }
 
         // Bind
-        WSection section = add(theme.section("Bind", true)).expandX().widget();
+        within(add(theme.section("Bind", true)).expandX(), sec -> {
+            if (module.canBind && module.canActivate)
+                keybind = sec.add(theme.moduleKeybind(module.keybind, () ->
+                    Modules.get().setModuleToBind(module))
+                ).expandX().widget();
 
-        // Keybind
-        WHorizontalList bind = section.add(theme.horizontalList()).expandX().widget();
+            if (module.allowChatFeedback || module.forceDisplayChatFeedbackCheckbox) {
+                within(sec.add(theme.horizontalList()), list -> {
+                    list.add(theme.label("Chat Feedback: "));
+                    list.add(theme.checkbox(module.chatFeedback, (c) ->
+                        module.chatFeedback = c)
+                    );
+                });
+            }
+        });
 
-        bind.add(theme.label("Bind: "));
-        keybind = bind.add(theme.keybind(module.keybind)).expandX().widget();
-        keybind.actionOnSet = () -> Modules.get().setModuleToBind(module);
 
-        WButton reset = bind.add(theme.button(GuiRenderer.RESET)).expandCellX().right().widget();
-        reset.action = keybind::resetBind;
 
-        // Toggle on bind release
-        WHorizontalList tobr = section.add(theme.horizontalList()).widget();
-
-        tobr.add(theme.label("Toggle on bind release: "));
-        WCheckbox tobrC = tobr.add(theme.checkbox(module.toggleOnBindRelease)).widget();
-        tobrC.action = () -> module.toggleOnBindRelease = tobrC.checked;
-
-        // Chat feedback
-        WHorizontalList cf = section.add(theme.horizontalList()).widget();
-
-        cf.add(theme.label("Chat Feedback: "));
-        WCheckbox cfC = cf.add(theme.checkbox(module.chatFeedback)).widget();
-        cfC.action = () -> module.chatFeedback = cfC.checked;
-
-        add(theme.horizontalSeparator()).expandX();
-
-        // Bottom
-        WHorizontalList bottom = add(theme.horizontalList()).expandX().widget();
-
-        //   Active
-        bottom.add(theme.label("Active: "));
-        active = bottom.add(theme.checkbox(module.isActive())).expandCellX().widget();
-        active.action = () -> {
-            if (module.isActive() != active.checked) module.toggle();
-        };
+        if (module.canActivate) {
+            add(theme.horizontalSeparator()).expandX();
+            // Bottom
+            within(add(theme.horizontalList()).expandX(), list -> {
+                // Active
+                list.add(theme.label("Active: "));
+                active = list.add(theme.checkbox(module.isActive(), checked -> {
+                        if (module.isActive() != checked) {
+                            module.toggle();
+                            reload();
+                        }
+                    })).expandCellX()
+                    .widget();
+            });
+        }
     }
 
     @Override

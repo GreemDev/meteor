@@ -109,7 +109,9 @@ processResources {
     filesMatching("fabric.mod.json") {
         expand "version": project.version,
             "rev": project.revision,
-            "kotlinVersion": project.fabric_kotlin_version
+            "kotlinVersion": project.fabric_kotlin_version,
+            "minecraftVersion": project.minecraft_version,
+            "loaderVersion": project.loader_version
     }
 }
 

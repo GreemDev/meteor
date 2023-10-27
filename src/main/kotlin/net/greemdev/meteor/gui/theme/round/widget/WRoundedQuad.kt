@@ -13,6 +13,6 @@ import net.greemdev.meteor.invoke
 
 class WRoundedQuad(color: Color) : WQuad(color), RoundedWidget {
     override fun onRender(renderer: GuiRenderer, mouseX: Double, mouseY: Double, delta: Double) {
-        renderer.roundRenderer2D.quad(x, y, width, height, color, theme().round())
+        renderer.roundRenderer2D.quad(x, y, width, height, color, roundedTheme().round())
     }
 }

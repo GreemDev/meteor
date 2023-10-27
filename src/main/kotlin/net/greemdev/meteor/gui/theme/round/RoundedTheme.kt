@@ -28,6 +28,7 @@ import net.greemdev.meteor.type.setting.TriStateColorSetting
 import net.greemdev.meteor.util.*
 import net.greemdev.meteor.util.meteor.*
 import net.greemdev.meteor.invoke
+import net.greemdev.meteor.type.setting.triColorSetting
 
 
 object RoundedTheme : GuiTheme("Rounded") {
@@ -83,32 +84,32 @@ object RoundedTheme : GuiTheme("Rounded") {
 
     // Colors
 
-    val accentColor by colorSetting("accent", "Main color of the GUI.", SettingColor.rainbow())
-    val checkboxColor by colorSetting("checkbox", "Color of checkbox.", SettingColor.rainbow())
-    val plusColor by colorSetting("plus", "Color of plus button.", SettingColor(0, 255, 0))
-    val minusColor by colorSetting("minus", "Color of minus button.", SettingColor(255, 0, 0))
-    val favoriteColor by colorSetting("favorite", "Color of checked favorite button.", SettingColor(255, 255, 0))
+    val accentColor by sgC.colorSetting("accent", "Main color of the GUI.", SettingColor.rainbow())
+    val checkboxColor by sgC.colorSetting("checkbox", "Color of checkbox.", SettingColor.rainbow())
+    val plusColor by sgC.colorSetting("plus", "Color of plus button.", SettingColor(0, 255, 0))
+    val minusColor by sgC.colorSetting("minus", "Color of minus button.", SettingColor(255, 0, 0))
+    val favoriteColor by sgC.colorSetting("favorite", "Color of checked favorite button.", SettingColor(255, 255, 0))
 
     // Text
-    val textColor by colorSetting(sgTC, "text", "Color of text.", SettingColor(255, 255, 255))
-    val textSecondaryColor by colorSetting(sgTC, "text-secondary-text", "Color of secondary text.", SettingColor(150, 150, 150))
-    val textHighlightColor by colorSetting(sgTC, "text-highlight", "Color of text highlighting.", SettingColor(45, 125, 245, 100))
-    val titleTextColor by colorSetting(sgTC, "title-text", "Color of title text.", SettingColor(255, 255, 255))
-    val loggedInColor by colorSetting(sgTC, "logged-in-text", "Color of logged in account name.", SettingColor(45, 225, 45))
-    val placeholderColor by colorSetting(sgTC, "placeholder", "Color of placeholder text.", SettingColor(255, 255, 255, 20))
+    val textColor by sgTC.colorSetting("text", "Color of text.", SettingColor(255, 255, 255))
+    val textSecondaryColor by sgTC.colorSetting("text-secondary-text", "Color of secondary text.", SettingColor(150, 150, 150))
+    val textHighlightColor by sgTC.colorSetting("text-highlight", "Color of text highlighting.", SettingColor(45, 125, 245, 100))
+    val titleTextColor by sgTC.colorSetting("title-text", "Color of title text.", SettingColor(255, 255, 255))
+    val loggedInColor by sgTC.colorSetting("logged-in-text", "Color of logged in account name.", SettingColor(45, 225, 45))
+    val placeholderColor by sgTC.colorSetting("placeholder", "Color of placeholder text.", SettingColor(255, 255, 255, 20))
 
     // Background
-    val backgroundColor = TriStateColorSetting(sgBC,
+    val backgroundColor = sgBC.triColorSetting(
         "background",
         SettingColor(20, 20, 20, 200),
         SettingColor(30, 30, 30, 200),
         SettingColor(40, 40, 40, 200)
     )
 
-    val moduleBackground by colorSetting(sgBC, "module-background", "Color of module background when active.", SettingColor(50, 50, 50))
+    val moduleBackground by sgBC.colorSetting("module-background", "Color of module background when active.", SettingColor(50, 50, 50))
 
     // Outline
-    val outlineColor = TriStateColorSetting(sgO,
+    val outlineColor = sgO.triColorSetting(
         "outline",
         SettingColor(0, 0, 0),
         SettingColor(10, 10, 10),
@@ -116,12 +117,12 @@ object RoundedTheme : GuiTheme("Rounded") {
     )
 
     // Separator
-    val separatorText by colorSetting(sgSep, "separator-text", "Color of separator text", SettingColor(255, 255, 255))
-    val separatorCenter by colorSetting(sgSep, "separator-center", "Center color of separators.", SettingColor(255, 255, 255))
-    val separatorEdges by colorSetting(sgSep, "separator-edges", "Color of separator edges.", SettingColor(225, 225, 225, 150))
+    val separatorText by sgSep.colorSetting("separator-text", "Color of separator text", SettingColor(255, 255, 255))
+    val separatorCenter by sgSep.colorSetting("separator-center", "Center color of separators.", SettingColor(255, 255, 255))
+    val separatorEdges by sgSep.colorSetting("separator-edges", "Color of separator edges.", SettingColor(225, 225, 225, 150))
 
     //Scrollbar
-    val scrollbarColor = TriStateColorSetting(sgSB,
+    val scrollbarColor = sgSB.triColorSetting(
         "scrollbar",
         SettingColor(30, 30, 30, 200),
         SettingColor(40, 40, 40, 200),
@@ -129,35 +130,35 @@ object RoundedTheme : GuiTheme("Rounded") {
     )
 
     //Slider
-    val sliderHandle = TriStateColorSetting(sgSl,
+    val sliderHandle = sgSl.triColorSetting(
         "slider-handle",
         SettingColor(0, 255, 180),
         SettingColor(0, 240, 165),
         SettingColor(0, 225, 150)
     )
 
-    val sliderLeft by colorSetting(sgSl, "slider-left", "Color of slider left part.", SettingColor(0, 150, 80))
-    val sliderRight by colorSetting(sgSl, "slider-right", "Color of slider right part.", SettingColor(50, 50, 50))
+    val sliderLeft by sgSl.colorSetting("slider-left", "Color of slider left part.", SettingColor(0, 150, 80))
+    val sliderRight by sgSl.colorSetting("slider-right", "Color of slider right part.", SettingColor(50, 50, 50))
 
     //Starscript
-    private val starscriptText by colorSetting(sgSS, "starscript-text", "Color of text in Starscript code.", SettingColor(169, 183, 198))
-    private val starscriptBraces by colorSetting(sgSS, "starscript-braces", "Color of braces in Starscript code.", SettingColor(150, 150, 150))
-    private val starscriptParenthesis by colorSetting(sgSS,
+    private val starscriptText by sgSS.colorSetting("starscript-text", "Color of text in Starscript code.", SettingColor(169, 183, 198))
+    private val starscriptBraces by sgSS.colorSetting("starscript-braces", "Color of braces in Starscript code.", SettingColor(150, 150, 150))
+    private val starscriptParenthesis by sgSS.colorSetting(
         "starscript-parenthesis",
         "Color of parenthesis in Starscript code.",
         SettingColor(169, 183, 198)
     )
-    private val starscriptDots by colorSetting(sgSS, "starscript-dots", "Color of dots in starscript code.", SettingColor(169, 183, 198))
-    private val starscriptCommas by colorSetting(sgSS, "starscript-commas", "Color of commas in starscript code.", SettingColor(169, 183, 198))
-    private val starscriptOperators by colorSetting(sgSS,
+    private val starscriptDots by sgSS.colorSetting("starscript-dots", "Color of dots in starscript code.", SettingColor(169, 183, 198))
+    private val starscriptCommas by sgSS.colorSetting("starscript-commas", "Color of commas in starscript code.", SettingColor(169, 183, 198))
+    private val starscriptOperators by sgSS.colorSetting(
         "starscript-operators",
         "Color of operators in Starscript code.",
         SettingColor(169, 183, 198)
     )
-    private val starscriptStrings by colorSetting(sgSS, "starscript-strings", "Color of strings in Starscript code.", SettingColor(106, 135, 89))
-    private val starscriptNumbers by colorSetting(sgSS, "starscript-numbers", "Color of numbers in Starscript code.", SettingColor(104, 141, 187))
-    private val starscriptKeywords by colorSetting(sgSS, "starscript-keywords", "Color of keywords in Starscript code.", SettingColor(204, 120, 50))
-    private val starscriptAccessedObjects by colorSetting(sgSS,
+    private val starscriptStrings by sgSS.colorSetting("starscript-strings", "Color of strings in Starscript code.", SettingColor(106, 135, 89))
+    private val starscriptNumbers by sgSS.colorSetting("starscript-numbers", "Color of numbers in Starscript code.", SettingColor(104, 141, 187))
+    private val starscriptKeywords by sgSS.colorSetting("starscript-keywords", "Color of keywords in Starscript code.", SettingColor(204, 120, 50))
+    private val starscriptAccessedObjects by sgSS.colorSetting(
         "starscript-accessed-objects",
         "Color of accessed objects (before a dot) in Starscript code.",
         SettingColor(152, 118, 170)
@@ -250,9 +251,7 @@ object RoundedTheme : GuiTheme("Rounded") {
     override fun categoryIcons(): Boolean = showCategoryIcons()
     override fun hideHUD(): Boolean = hideHud()
 
-    private fun colorSetting(name: String, description: String, defaultValue: SettingColor) = colorSetting(sgC, name, description, defaultValue)
-
-    private fun colorSetting(group: SettingGroup, name: String, description: String, defaultValue: SettingColor) = group color {
+    private fun SettingGroup.colorSetting(name: String, description: String, defaultValue: SettingColor) = color {
         name("$name-color")
         description(description)
         defaultValue(defaultValue)

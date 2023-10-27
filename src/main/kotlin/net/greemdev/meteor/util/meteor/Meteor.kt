@@ -5,6 +5,7 @@
 
 package net.greemdev.meteor.util.meteor
 
+import meteordevelopment.meteorclient.MeteorClient
 import meteordevelopment.meteorclient.commands.Command
 import meteordevelopment.meteorclient.commands.Commands
 import meteordevelopment.meteorclient.gui.GuiTheme
@@ -23,12 +24,17 @@ import meteordevelopment.meteorclient.systems.proxies.Proxies
 import meteordevelopment.meteorclient.systems.waypoints.Waypoint
 import meteordevelopment.meteorclient.systems.waypoints.Waypoints
 import net.greemdev.meteor.invoke
+import net.greemdev.meteor.invoking
 import net.minecraft.entity.player.PlayerEntity
 import java.util.*
 import java.util.function.Consumer
 import kotlin.reflect.KClass
 
 object Meteor {
+
+    @JvmStatic
+    @get:JvmName("get")
+    val client: MeteorClient = MeteorClient.INSTANCE
 
     @JvmStatic
     fun currentTheme(): GuiTheme = GuiThemes.get() ?: error("Themes system not yet available.")

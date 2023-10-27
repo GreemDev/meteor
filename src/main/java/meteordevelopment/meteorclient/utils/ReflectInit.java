@@ -6,8 +6,7 @@
 package meteordevelopment.meteorclient.utils;
 
 import meteordevelopment.meteorclient.MeteorClient;
-import meteordevelopment.meteorclient.addons.AddonManager;
-import meteordevelopment.meteorclient.addons.MeteorAddon;
+import net.greemdev.meteor.Greteor;
 import org.reflections.Reflections;
 import org.reflections.scanners.Scanners;
 
@@ -21,19 +20,11 @@ public class ReflectInit {
     private static final List<Reflections> reflections = new ArrayList<>();
 
     public static void registerPackages() {
-        add(MeteorClient.ADDON);
-
-        for (MeteorAddon addon : AddonManager.ADDONS) {
-            try {
-                add(addon);
-            } catch (AbstractMethodError e) {
-                throw new RuntimeException("Addon \"%s\" is too old and cannot be ran.".formatted(addon.name), e);
-            }
-        }
+        add(MeteorClient.class.getPackageName());
+        add(Greteor.class.getPackageName());
     }
 
-    private static void add(MeteorAddon addon) {
-        String pkg = addon.getPackage();
+    private static void add(String pkg) {
         if (pkg == null || pkg.isBlank()) return;
         reflections.add(new Reflections(pkg, Scanners.MethodsAnnotated));
     }

@@ -37,12 +37,17 @@ public abstract class Module implements ISerializable<Module>, Comparable<Module
 
     private boolean active;
 
+    public boolean canBind = true;
+    public boolean allowChatFeedback = true;
+    public boolean forceDisplayChatFeedbackCheckbox = false;
+    public boolean canActivate = true;
+
     public boolean serialize = true;
     public boolean runInMainMenu = false;
     public boolean autoSubscribe = true;
 
     public final Keybind keybind = Keybind.none();
-    public boolean toggleOnBindRelease = false;
+
     public boolean chatFeedback = true;
     public boolean favorite = false;
 
@@ -63,6 +68,8 @@ public abstract class Module implements ISerializable<Module>, Comparable<Module
     public void onDeactivate() {}
 
     public void toggle() {
+        if (!canActivate) return;
+
         if (!active) {
             active = true;
             Modules.get().addActive(this);
@@ -127,7 +134,6 @@ public abstract class Module implements ISerializable<Module>, Comparable<Module
 
         tag.putString("name", name);
         tag.put("keybind", keybind.toTag());
-        tag.putBoolean("toggleOnKeyRelease", toggleOnBindRelease);
         tag.putBoolean("chatFeedback", chatFeedback);
         tag.putBoolean("favorite", favorite);
         tag.put("settings", settings.toTag());
@@ -143,7 +149,6 @@ public abstract class Module implements ISerializable<Module>, Comparable<Module
         if (tag.contains("key")) keybind.set(true, tag.getInt("key"));
         else keybind.fromTag(tag.getCompound("keybind"));
 
-        toggleOnBindRelease = tag.getBoolean("toggleOnKeyRelease");
         chatFeedback = !tag.contains("chatFeedback") || tag.getBoolean("chatFeedback");
         favorite = tag.getBoolean("favorite");
 

@@ -8,6 +8,7 @@ package meteordevelopment.meteorclient.gui.widgets;
 import meteordevelopment.meteorclient.gui.GuiTheme;
 import meteordevelopment.meteorclient.gui.widgets.pressable.WPressable;
 import meteordevelopment.meteorclient.utils.render.color.Color;
+import net.greemdev.meteor.util.meteor.LegacyText;
 
 import java.util.function.Supplier;
 
@@ -26,13 +27,15 @@ public abstract class WLabel extends WPressable implements Supplier<String> {
         return color != null
             ? color
             : title
-            ? theme.titleTextColor()
-            : theme.textColor();
+                ? theme.titleTextColor()
+                : theme.textColor();
     }
 
     @Override
     protected void onCalculateSize() {
-        width = theme.textWidth(text, text.length(), title);
+        width = LegacyText.getColorCodeRegex().containsMatchIn(text)
+            ? LegacyText.getLegacyWidth(theme.textRenderer(), text)
+            : theme.textWidth(text);
         height = theme.textHeight(title);
     }
 
@@ -48,8 +51,14 @@ public abstract class WLabel extends WPressable implements Supplier<String> {
         return false;
     }
 
+
     public void set(String text) {
-        if (Math.round(theme.textWidth(text, text.length(), title)) != width) invalidate();
+        if (LegacyText.needsSpecialRenderer(text))
+            if (Math.round(LegacyText.getLegacyWidth(theme.textRenderer(), text, false)) != width)
+                invalidate();
+        else
+            if (Math.round(theme.textWidth(text, text.length(), title)) != width)
+                invalidate();
 
         this.text = text;
     }

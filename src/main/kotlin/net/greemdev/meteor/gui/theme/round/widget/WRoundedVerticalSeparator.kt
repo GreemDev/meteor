@@ -13,7 +13,7 @@ import kotlin.math.round
 
 class WRoundedVerticalSeparator(unicolor: Boolean = false) : WVerticalSeparator(unicolor), RoundedWidget {
     override fun onRender(renderer: GuiRenderer, mouseX: Double, mouseY: Double, delta: Double) {
-        val theme = theme()
+        val theme = roundedTheme()
         val colorEdges = if (unicolor) theme.separatorCenter() else theme.separatorEdges()
         val colorCenter = theme.separatorCenter()
 

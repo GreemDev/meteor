@@ -19,8 +19,8 @@ import net.greemdev.meteor.util.minecraft
 import org.lwjgl.glfw.GLFW.glfwSetCursorPos
 
 class WRoundedTopBar : WTopBar(), RoundedWidget {
-    override fun getButtonColor(pressed: Boolean, hovered: Boolean) = theme().backgroundColor(pressed, hovered)
-    override fun getNameColor(): Color = theme().textColor()
+    override fun getButtonColor(pressed: Boolean, hovered: Boolean) = roundedTheme().backgroundColor(pressed, hovered)
+    override fun getNameColor(): Color = roundedTheme().textColor()
 
     override fun init() {
         clear()
@@ -73,9 +73,9 @@ class WRoundedTopBar : WTopBar(), RoundedWidget {
             )
 
             when (state) {
-                1 -> renderer.roundRenderer2D.widgetQuadSide(this, color, theme().round(), false)
-                2 -> renderer.roundRenderer2D.widgetQuadSide(this, color, theme().round(), true)
-                3 -> renderer.roundRenderer2D.widgetQuad(this, color, theme().round())
+                1 -> renderer.roundRenderer2D.widgetQuadSide(this, color, roundedTheme().round(), false)
+                2 -> renderer.roundRenderer2D.widgetQuadSide(this, color, roundedTheme().round(), true)
+                3 -> renderer.roundRenderer2D.widgetQuad(this, color, roundedTheme().round())
                 else -> renderer.quad(this, color)
             }
 
