@@ -22,18 +22,6 @@ class WRoundedTopBar : WTopBar(), RoundedWidget {
     override fun getButtonColor(pressed: Boolean, hovered: Boolean) = roundedTheme().backgroundColor(pressed, hovered)
     override fun getNameColor(): Color = roundedTheme().textColor()
 
-    override fun init() {
-        clear()
-        val (tabs, iconTabs) = Tabs.get().renderOrder()
-
-        tabs.forEach { add(WRoundedTopBarButton(it)) }
-
-        if (tabs.isNotEmpty())
-            add(theme.verticalSeparator(true)).expandWidgetY()
-
-        iconTabs.forEach { add(WRoundedTopBarButton(it)) }
-    }
-
     private inner class WRoundedTopBarButton(val tab: Tab) : WPressable() {
         private val state by invoking {
             var a = 0

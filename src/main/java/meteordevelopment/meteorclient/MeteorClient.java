@@ -104,10 +104,10 @@ public class MeteorClient implements ClientModInitializer {
 
     @Override
     public void onInitializeClient() {
-        if (INSTANCE != null) {
+        if (INSTANCE == null) {
+            INSTANCE = this;
             return;
         }
-        INSTANCE = this;
 
         LOG.info("Initializing {}", NAME);
 

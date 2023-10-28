@@ -5,6 +5,7 @@
 
 package meteordevelopment.meteorclient.gui.tabs;
 
+import com.google.common.collect.ImmutableList;
 import meteordevelopment.meteorclient.gui.tabs.builtin.*;
 import meteordevelopment.meteorclient.systems.config.Config;
 import meteordevelopment.meteorclient.utils.PreInit;
@@ -13,7 +14,9 @@ import net.greemdev.meteor.gui.tab.WaypointsTab;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 public class Tabs {
     private static Tab _lastTab;
@@ -32,17 +35,10 @@ public class Tabs {
             ? _lastTab
             : modules();
     }
-    private static final List<Tab> tabs = new ArrayList<>();
+    private static final Map<String, Tab> tabs = new HashMap<>();
 
     public static <T extends Tab> T get(String name) {
-        return Utils.cast(
-            tabs.stream()
-                .filter(t -> t.name.equals(name))
-                .findFirst()
-                .orElseThrow(() ->
-                    new IllegalArgumentException("Tab with name %s does not exist.".formatted(name))
-                )
-        );
+        return Utils.cast(tabs.get(name));
     }
 
     @NotNull
@@ -90,8 +86,7 @@ public class Tabs {
         return get(ConfigTab.NAME);
     }
 
-    @PreInit
-    public static void init() {
+    static {
         add(new ModulesTab());
         add(new ConfigTab());
         add(new GuiTab());
@@ -104,10 +99,12 @@ public class Tabs {
     }
 
     public static void add(Tab tab) {
-        tabs.add(tab);
+        tabs.put(tab.name, tab);
     }
 
     public static List<Tab> get() {
-        return tabs;
+        return new ImmutableList.Builder<Tab>()
+            .addAll(tabs.values())
+            .build();
     }
 }

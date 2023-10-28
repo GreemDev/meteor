@@ -160,15 +160,6 @@ class RoundedRenderer2D(@get:JvmName("renderer") val r2d: Renderer2D) {
 
     }
 
-    fun triangle(i1: Int, i2: Int, i3: Int, entity: Mesh) {
-        val p = entity.currentIndicesPtr() + entity.indicesCount() * 4
-        MemoryUtil.memPutInt(p, i1)
-        MemoryUtil.memPutInt(p + 4, i2)
-        MemoryUtil.memPutInt(p + 8, i3)
-        entity.incrementIndicesCount(3)
-        entity.growIfNeeded()
-    }
-
     fun circleDepth(r: Double, angle: Double) =
         (angle * r / circleQuarter).toInt().coerceAtLeast(1)
 

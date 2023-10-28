@@ -5,6 +5,7 @@
 
 package meteordevelopment.meteorclient.mixin;
 
+import kotlin.jvm.functions.Function1;
 import meteordevelopment.meteorclient.systems.config.Config;
 import net.minecraft.client.gui.screen.SplashTextRenderer;
 import net.minecraft.client.resource.SplashTextResourceSupplier;
@@ -25,12 +26,12 @@ public class SplashTextResourceSupplierMixin {
     private boolean override = true;
 
     @Inject(method = "get", at = @At("HEAD"), cancellable = true)
-    private void onApply(CallbackInfoReturnable<String> cir) {
+    private void onApply(CallbackInfoReturnable<SplashTextRenderer> cir) {
         if (Config.get() == null || !Config.get().useCustomSplashes.get()) return;
 
         if (override) {
             var splashes = Config.get().customSplashes.get();
-            cir.setReturnValue(splashes.get(ThreadLocalRandom.current().nextInt(splashes.size())).replace('&', '§'));
+            cir.setReturnValue(new SplashTextRenderer(splashes.get(ThreadLocalRandom.current().nextInt(splashes.size())).replace('&', '§')));
         }
         override = !override;
     }

@@ -53,19 +53,6 @@ public class Mesh {
     private ByteBuffer indices;
     private long indicesPointer;
 
-    public long currentIndicesPtr() {
-        return indicesPointer;
-    }
-
-    public int indicesCount() {
-        return indicesCount;
-    }
-
-    //dangerous operation: do not use lightly
-    public void incrementIndicesCount(int amount) {
-        indicesCount += amount;
-    }
-
     private int vertexI, indicesCount;
 
     private boolean building, rendering3D;

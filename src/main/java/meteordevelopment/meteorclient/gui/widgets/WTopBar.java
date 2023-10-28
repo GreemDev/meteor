@@ -37,7 +37,7 @@ public abstract class WTopBar extends WHorizontalList {
 
         tabs.getFirst().forEach(t -> add(new WTopBarButton(t)));
 
-        if (!tabs.getFirst().isEmpty())
+        if (!tabs.getSecond().isEmpty())
             add(theme.verticalSeparator(true)).expandWidgetY();
 
         tabs.getSecond().forEach(t -> add(new WTopBarButton(t)));

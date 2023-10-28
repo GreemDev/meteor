@@ -35,6 +35,7 @@ import kotlin.contracts.ExperimentalContracts
 import kotlin.contracts.InvocationKind
 import kotlin.contracts.contract
 import kotlin.properties.ReadOnlyProperty
+import kotlin.properties.ReadWriteProperty
 import kotlin.reflect.KClass
 import kotlin.reflect.KMutableProperty
 import kotlin.reflect.KProperty
@@ -241,8 +242,6 @@ inline val <I, O> Function<I, O>.kotlin: Mapper<I, O>
 
 inline operator fun<I, O> Function<I, O>.invoke(arg: I) = kotlin(arg)
 
-
-
 fun <T : Any> optionalOf(value: T? = null): Optional<T> = Optional.ofNullable(value)
 
 fun <T : Any> T.optionally(predicate: Predicate<T>) = optionalOf(takeIf(predicate))
@@ -253,6 +252,32 @@ inline fun <T> invokingOrNull(noinline func: Getter<T>): FunctionProperty<T?> = 
 
 class FunctionProperty<T>(private val getter: Getter<T>) : ReadOnlyProperty<Any?, T> {
     override fun getValue(thisRef: Any?, property: KProperty<*>) = getter()
+}
+
+fun<T> observable(value: T, observer: ValueAction<T>, vararg otherObservers: ValueAction<T>) =
+    Observable(value, otherObservers.toMutableList()).apply { this.observers.add(observer) }
+
+class Observable<T>(private var value: T, val observers: MutableList<ValueAction<T>>) : ReadWriteProperty<Any?, T> {
+    override fun getValue(thisRef: Any?, property: KProperty<*>) = value
+    override fun setValue(thisRef: Any?, property: KProperty<*>, value: T) = set(value)
+
+    fun get() = value
+
+    fun set(value: T) {
+        this.value = value
+        observers.call()
+    }
+
+    private fun List<ValueAction<T>>.call() {
+        forEach { it(value) }
+    }
+}
+
+@FunctionalInterface
+interface Observer<T> : ValueAction<T> {
+    override operator fun invoke(arg: T) = valueChanged(arg)
+
+    fun valueChanged(value: T)
 }
 
 operator fun File.div(child: String) = File(this, child)

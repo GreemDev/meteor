@@ -14,6 +14,7 @@ import meteordevelopment.meteorclient.renderer.GL;
 import meteordevelopment.meteorclient.renderer.Renderer2D;
 import meteordevelopment.meteorclient.renderer.Texture;
 import meteordevelopment.meteorclient.utils.PostInit;
+import meteordevelopment.meteorclient.utils.PreInit;
 import meteordevelopment.meteorclient.utils.misc.MeteorIdentifier;
 import meteordevelopment.meteorclient.utils.misc.Pool;
 import meteordevelopment.meteorclient.utils.render.ByteTexture;
@@ -67,7 +68,7 @@ public class GuiRenderer {
         return TEXTURE_PACKER.add(id);
     }
 
-    @PostInit
+    @PreInit
     public static void init() {
         CIRCLE = addTexture(new MeteorIdentifier("textures/icons/gui/circle.png"));
         CLEF = addTexture(new MeteorIdentifier("textures/icons/gui/clef.png"));
