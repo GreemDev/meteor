@@ -25,7 +25,7 @@ public class StringMapSetting extends Setting<Map<String, String>> {
     public final Class<? extends WTextBox.Renderer> valueRenderer;
     public final boolean wide;
 
-    protected StringMapSetting(String name, String description, Object defaultValue, Consumer<Map<String, String>> onChanged, Consumer<Setting<Map<String, String>>> onModuleActivated, IVisible visible, Class<? extends WTextBox.Renderer> keyRenderer, Class<? extends WTextBox.Renderer> valueRenderer, boolean wide) {
+    protected StringMapSetting(String name, String description, Object defaultValue, Consumer<Map<String, String>> onChanged, Consumer<Setting<Map<String, String>>> onModuleActivated, Supplier<Boolean> visible, Class<? extends WTextBox.Renderer> keyRenderer, Class<? extends WTextBox.Renderer> valueRenderer, boolean wide) {
         super(name, description, defaultValue, onChanged, onModuleActivated, visible);
 
         this.keyRenderer = keyRenderer;

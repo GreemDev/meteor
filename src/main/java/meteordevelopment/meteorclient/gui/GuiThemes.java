@@ -9,7 +9,6 @@ import meteordevelopment.meteorclient.MeteorClient;
 import meteordevelopment.meteorclient.gui.themes.meteor.MeteorGuiTheme;
 import meteordevelopment.meteorclient.utils.PostInit;
 import meteordevelopment.meteorclient.utils.PreInit;
-import net.greemdev.meteor.gui.theme.round.RoundedTheme;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.nbt.NbtIo;
 
@@ -30,7 +29,6 @@ public class GuiThemes {
     @PreInit
     public static void init() {
         add(new MeteorGuiTheme());
-        //TODO: add(RoundedTheme.INSTANCE);
     }
 
     @PostInit
@@ -101,13 +99,7 @@ public class GuiThemes {
     }
 
     public static String[] getNames() {
-        String[] names = new String[themes.size()];
-
-        for (int i = 0; i < themes.size(); i++) {
-            names[i] = themes.get(i).name;
-        }
-
-        return names;
+        return themes.stream().map(t -> t.name).toArray(String[]::new);
     }
 
     // Saving

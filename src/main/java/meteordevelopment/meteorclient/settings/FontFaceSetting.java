@@ -13,9 +13,10 @@ import net.minecraft.nbt.NbtCompound;
 
 import java.util.List;
 import java.util.function.Consumer;
+import java.util.function.Supplier;
 
 public class FontFaceSetting extends Setting<FontFace> {
-    public FontFaceSetting(String name, String description, Object defaultValue, Consumer<FontFace> onChanged, Consumer<Setting<FontFace>> onModuleActivated, IVisible visible) {
+    protected FontFaceSetting(String name, String description, Object defaultValue, Consumer<FontFace> onChanged, Consumer<Setting<FontFace>> onModuleActivated, Supplier<Boolean> visible) {
         super(name, description, defaultValue, onChanged, onModuleActivated, visible);
     }
 

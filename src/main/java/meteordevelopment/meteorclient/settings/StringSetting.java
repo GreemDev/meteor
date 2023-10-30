@@ -11,13 +11,14 @@ import meteordevelopment.meteorclient.gui.widgets.input.WTextBox;
 import net.minecraft.nbt.NbtCompound;
 
 import java.util.function.Consumer;
+import java.util.function.Supplier;
 
 public class StringSetting extends Setting<String> {
     public final Class<? extends WTextBox.Renderer> renderer;
     public final CharFilter filter;
     public final boolean wide;
 
-    public StringSetting(String name, String description, Object defaultValue, Consumer<String> onChanged, Consumer<Setting<String>> onModuleActivated, IVisible visible, Class<? extends WTextBox.Renderer> renderer, CharFilter filter, boolean wide) {
+    protected StringSetting(String name, String description, Object defaultValue, Consumer<String> onChanged, Consumer<Setting<String>> onModuleActivated, Supplier<Boolean> visible, Class<? extends WTextBox.Renderer> renderer, CharFilter filter, boolean wide) {
         super(name, description, defaultValue, onChanged, onModuleActivated, visible);
 
         this.renderer = renderer;

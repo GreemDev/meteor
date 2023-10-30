@@ -240,7 +240,7 @@ public class MeteorGuiTheme extends GuiTheme {
 
     @Override
     public WTextBox textBox(String text, String placeholder, CharFilter filter, Class<? extends WTextBox.Renderer> renderer) {
-        return w(new WMeteorTextBox(text, placeholder, filter, renderer));
+        return w(new WMeteorTextBox(text, placeholder, CharFilter.orNone(filter), renderer));
     }
 
     @Override

@@ -9,7 +9,9 @@ import net.minecraft.block.BlockState;
 import net.minecraft.block.enums.Instrument;
 import net.minecraft.util.math.BlockPos;
 
-public interface InstrumentDetectFunction {
+import java.util.function.BiFunction;
+
+public interface InstrumentDetectFunction extends BiFunction<BlockState, BlockPos, Instrument> {
     /**
      * Detects an instrument for noteblock
      *
@@ -18,4 +20,8 @@ public interface InstrumentDetectFunction {
      * @return Detected instrument
      */
     Instrument detectInstrument(BlockState noteBlock, BlockPos blockPos);
+
+    default Instrument apply(BlockState arg1, BlockPos arg2) {
+        return detectInstrument(arg1, arg2);
+    }
 }

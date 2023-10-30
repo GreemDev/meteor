@@ -20,7 +20,7 @@ public class Keybind implements ISerializable<Keybind>, ICopyable<Keybind> {
     private boolean isKey;
     private int value;
 
-    public boolean onRelease;
+    public boolean onRelease = false;
 
     private Keybind(boolean isKey, int value) {
         set(isKey, value);
@@ -31,7 +31,7 @@ public class Keybind implements ISerializable<Keybind>, ICopyable<Keybind> {
     }
 
     public static Keybind none() {
-        return new Keybind(true, -1);
+        return new Keybind(true, -1, false);
     }
 
     public static Keybind fromKey(int key) {
@@ -51,8 +51,9 @@ public class Keybind implements ISerializable<Keybind>, ICopyable<Keybind> {
     }
 
     public boolean canBindTo(boolean isKey, int value) {
-        if (isKey) return value != GLFW_KEY_ESCAPE;
-        return value != GLFW_MOUSE_BUTTON_LEFT && value != GLFW_MOUSE_BUTTON_RIGHT;
+        return isKey
+            ? value != GLFW_KEY_ESCAPE
+            : value != GLFW_MOUSE_BUTTON_LEFT && value != GLFW_MOUSE_BUTTON_RIGHT;
     }
 
     public void set(boolean isKey, int value) {

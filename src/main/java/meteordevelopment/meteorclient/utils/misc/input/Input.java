@@ -7,12 +7,22 @@ package meteordevelopment.meteorclient.utils.misc.input;
 
 import meteordevelopment.meteorclient.gui.GuiKeyEvents;
 import meteordevelopment.meteorclient.utils.misc.CursorStyle;
+import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.option.KeyBinding;
 import org.lwjgl.glfw.GLFW;
 
-import static meteordevelopment.meteorclient.MeteorClient.mc;
+import static org.lwjgl.glfw.GLFW.*;
 
 public class Input {
+
+    public static boolean isCtrl(int modifiers) {
+        return modifiers == (
+            MinecraftClient.IS_SYSTEM_MAC
+                ? GLFW_MOD_SUPER
+                : GLFW_MOD_CONTROL
+        );
+    }
+
     private static final boolean[] keys = new boolean[512];
     private static final boolean[] buttons = new boolean[16];
 
@@ -48,7 +58,7 @@ public class Input {
 
     public static void setCursorStyle(CursorStyle style) {
         if (lastCursorStyle != style) {
-            GLFW.glfwSetCursor(mc.getWindow().getHandle(), style.getGlfwCursor());
+            GLFW.glfwSetCursor(MinecraftClient.getInstance().getWindow().getHandle(), style.getGlfwCursor());
             lastCursorStyle = style;
         }
     }

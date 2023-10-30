@@ -21,7 +21,6 @@ import meteordevelopment.meteorclient.utils.render.ByteTexture;
 import meteordevelopment.meteorclient.utils.render.RenderUtils;
 import meteordevelopment.meteorclient.utils.render.color.Color;
 import net.greemdev.meteor.gui.renderer.LegacyTextOperation;
-import net.greemdev.meteor.gui.theme.round.util.RoundedRenderer2D;
 import net.minecraft.client.gui.DrawContext;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.Identifier;
@@ -43,9 +42,6 @@ public class GuiRenderer {
     public static GuiTexture CIRCLE, CLEF, COG, EDIT, FAVORITE_NO, FAVORITE_YES, FRIENDS, GUI, MACROS, PROFILES, RESET, TRIANGLE, WAYPOINTS;
 
     public GuiTheme theme;
-
-    public final RoundedRenderer2D roundRenderer2D = RoundedRenderer2D.normal();
-    public final RoundedRenderer2D roundRenderer2DTex = RoundedRenderer2D.textured();
     private final Renderer2D r = new Renderer2D(false);
     private final Renderer2D rTex = new Renderer2D(true);
 

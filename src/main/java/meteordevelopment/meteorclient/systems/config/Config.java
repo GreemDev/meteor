@@ -12,17 +12,14 @@ import meteordevelopment.meteorclient.renderer.text.FontFace;
 import meteordevelopment.meteorclient.settings.*;
 import meteordevelopment.meteorclient.systems.System;
 import meteordevelopment.meteorclient.systems.Systems;
-import meteordevelopment.meteorclient.utils.player.ChatUtils;
 import meteordevelopment.meteorclient.utils.render.color.SettingColor;
-import net.greemdev.meteor.type.ChatLogo;
+import net.greemdev.meteor.type.ChatPrefix;
 import net.greemdev.meteor.type.PrefixBrackets;
 import net.greemdev.meteor.util.text.ChatColor;
-import net.greemdev.meteor.util.text.FormattedText;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.nbt.NbtElement;
 import net.minecraft.nbt.NbtList;
 import net.minecraft.nbt.NbtString;
-import net.minecraft.text.Text;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -100,7 +97,7 @@ public class Config extends System<Config> {
 
     public final Setting<String> prefix = sgChat.add(new StringSetting.Builder()
         .name("prefix")
-        .description("Prefix.")
+        .description("Command prefix.")
         .defaultValue(".")
         .build()
     );
@@ -115,29 +112,16 @@ public class Config extends System<Config> {
     public final Setting<Boolean> deleteChatFeedback = sgChat.add(new BoolSetting.Builder()
         .name("delete-chat-feedback")
         .description("Delete previous matching chat feedback to keep chat clear.")
-        .visible(chatFeedback::get)
+        .visible(chatFeedback)
         .defaultValue(true)
         .build()
     );
 
-    public final Setting<ChatLogo> chatLogo = sgChat.add(new EnumSetting.Builder<ChatLogo>()
-        .name("chat-feedback-icon")
+    public final Setting<ChatPrefix> chatPrefix = sgChat.add(new EnumSetting.Builder<ChatPrefix>()
+        .name("chat-feedback-prefix")
         .description("The icon to appear before Meteor-related chat feedback.")
-        .defaultValue(ChatLogo.Meteor)
-        .visible(chatFeedback::get)
-        .build()
-    );
-
-    public final Setting<String> meteorPrefix = sgChat.add(new StringSetting.Builder()
-        .name("chat-prefix")
-        .description("The prefix to appear before all Meteor chat feedback messages.")
-        .defaultValue("Meteor")
-        .onChanged(s -> {
-            if (s.equalsIgnoreCase("Baritone")) {
-                ChatUtils.sendMsg(Text.of("You are not allowed to use the Baritone prefix."));
-                resetPrefix();
-            }
-        })
+        .defaultValue(ChatPrefix.Meteor)
+        .visible(chatFeedback)
         .build()
     );
 
@@ -147,10 +131,6 @@ public class Config extends System<Config> {
         .defaultValue(MeteorClient.COLOR)
         .build()
     );
-
-    private void resetPrefix() {
-        meteorPrefix.reset();
-    }
 
     public final Setting<PrefixBrackets> meteorPrefixBrackets = sgChat.add(new EnumSetting.Builder<PrefixBrackets>()
         .name("chat-prefix-brackets")

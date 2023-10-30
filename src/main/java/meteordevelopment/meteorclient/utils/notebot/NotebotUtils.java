@@ -18,18 +18,27 @@ import java.util.Map;
 
 public class NotebotUtils {
 
-    public static Note getNoteFromNoteBlock(BlockState noteBlock, BlockPos blockPos, NotebotMode mode, InstrumentDetectFunction instrumentDetectFunction) {
+    public static Note getNoteFromNoteBlock(BlockState noteBlock, BlockPos blockPos, NotebotMode mode, InstrumentDetectFunction instrumentDetector) {
         Instrument instrument = null;
         int level = noteBlock.get(NoteBlock.NOTE);
-        if (mode == NotebotMode.ExactInstruments) {
-            instrument = instrumentDetectFunction.detectInstrument(noteBlock, blockPos);
-        }
+        if (mode.exactInstruments())
+            instrument = instrumentDetector.detectInstrument(noteBlock, blockPos);
+
 
         return new Note(instrument, level);
     }
 
     public enum NotebotMode {
-        AnyInstrument, ExactInstruments
+        AnyInstrument, ExactInstruments;
+
+        public boolean anyInstrument() {
+            return this == AnyInstrument;
+        }
+
+        public boolean exactInstruments() {
+            return this == ExactInstruments;
+        }
+
     }
 
     public enum OptionalInstrument {

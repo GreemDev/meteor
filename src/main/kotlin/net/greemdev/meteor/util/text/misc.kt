@@ -6,6 +6,7 @@
 package net.greemdev.meteor.util.text
 
 import net.greemdev.meteor.Initializer
+import net.greemdev.meteor.MeteorColor
 import net.greemdev.meteor.kotlin
 import net.minecraft.text.MutableText
 import net.minecraft.text.Text
@@ -26,6 +27,8 @@ inline fun buildText(initial: Text = emptyText(), block: context(ChatColor.Compa
         .text()
 
 object FormattedText {
+    @JvmStatic
+    fun colored(text: String, color: MeteorColor) = build(text) { it.colored(color) }
     @JvmStatic
     fun build(initial: Text, builder: Consumer<FormattedTextBuilder>) = builder(initial, builder).text()
     @JvmStatic

@@ -27,13 +27,13 @@ public class CPSUtils {
         long currentTime = System.currentTimeMillis();
         // Run every second
         if (currentTime - CPSUtils.lastTime >= 1000) {
-            if (CPSUtils.cps == 0) {
-                CPSUtils.clicks = 0;
-                CPSUtils.secondsClicking = 0;
+            if (cps == 0) {
+                clicks = 0;
+                secondsClicking = 0;
             } else {
-                CPSUtils.lastTime = currentTime;
-                CPSUtils.secondsClicking++;
-                CPSUtils.cps = 0;
+                lastTime = currentTime;
+                secondsClicking++;
+                cps = 0;
             }
         }
     }
@@ -45,6 +45,6 @@ public class CPSUtils {
     }
 
     public static int getCpsAverage() {
-        return clicks / (secondsClicking == 0 ? 1 : secondsClicking);
+        return clicks / Math.max(secondsClicking, 1);
     }
 }

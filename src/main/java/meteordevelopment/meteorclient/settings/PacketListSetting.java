@@ -18,12 +18,13 @@ import java.util.List;
 import java.util.Set;
 import java.util.function.Consumer;
 import java.util.function.Predicate;
+import java.util.function.Supplier;
 
 public class PacketListSetting extends Setting<Set<Class<? extends Packet<?>>>> {
     public final Predicate<Class<? extends Packet<?>>> filter;
     private static List<String> suggestions;
 
-    public PacketListSetting(String name, String description, Object defaultValue, Consumer<Set<Class<? extends Packet<?>>>> onChanged, Consumer<Setting<Set<Class<? extends Packet<?>>>>> onModuleActivated, Predicate<Class<? extends Packet<?>>> filter, IVisible visible) {
+    protected PacketListSetting(String name, String description, Object defaultValue, Consumer<Set<Class<? extends Packet<?>>>> onChanged, Consumer<Setting<Set<Class<? extends Packet<?>>>>> onModuleActivated, Predicate<Class<? extends Packet<?>>> filter, Supplier<Boolean> visible) {
         super(name, description, defaultValue, onChanged, onModuleActivated, visible);
 
         this.filter = filter;

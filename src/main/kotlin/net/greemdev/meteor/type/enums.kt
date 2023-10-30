@@ -43,7 +43,9 @@ enum class PrefixBrackets(pairing: Pair<String, String>) {
 
     fun surround(text: String) = left + text + right
 
+    @get:JvmName("left")
     val left = pairing.first
+    @get:JvmName("right")
     val right = pairing.second
 }
 
@@ -79,24 +81,12 @@ enum class ColorSettingScreenMode {
     fun isAll() = this == All
 }
 
-enum class ChatLogo {
+enum class ChatPrefix {
     Meteor,
-    Greteor,
-    None;
+    Greteor;
 
     override fun toString() = when (this) {
-        Meteor -> "Default Meteor"
-        Greteor -> "Greteor Custom"
-        None -> "No logo"
+        Meteor -> "Meteor"
+        Greteor -> "Greteor"
     }
-
-    fun allowsLogo() = this != None
-
-    fun icon() = optionalOf(
-        when (this) {
-            Meteor -> MeteorIdentifier("textures/icons/chat/meteor.png")
-            Greteor -> MeteorIdentifier("textures/icons/chat/greteor.png")
-            else -> null
-        }
-    )
 }

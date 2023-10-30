@@ -27,6 +27,7 @@ import org.jetbrains.annotations.Nullable;
 
 import java.util.*;
 import java.util.function.Consumer;
+import java.util.function.Supplier;
 import java.util.stream.Stream;
 
 public class StorageBlockListSetting extends Setting<List<BlockEntityType<?>>> {
@@ -34,7 +35,7 @@ public class StorageBlockListSetting extends Setting<List<BlockEntityType<?>>> {
 
     public static final Registry<BlockEntityType<?>> REGISTRY = new SRegistry();
 
-    public StorageBlockListSetting(String name, String description, Object defaultValue, Consumer<List<BlockEntityType<?>>> onChanged, Consumer<Setting<List<BlockEntityType<?>>>> onModuleActivated, IVisible visible) {
+    protected StorageBlockListSetting(String name, String description, Object defaultValue, Consumer<List<BlockEntityType<?>>> onChanged, Consumer<Setting<List<BlockEntityType<?>>>> onModuleActivated, Supplier<Boolean> visible) {
         super(name, description, defaultValue, onChanged, onModuleActivated, visible);
     }
 

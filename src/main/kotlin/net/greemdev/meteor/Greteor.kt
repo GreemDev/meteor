@@ -7,8 +7,12 @@ package net.greemdev.meteor
 
 import meteordevelopment.meteorclient.MeteorClient
 import meteordevelopment.meteorclient.commands.Commands
+import meteordevelopment.meteorclient.systems.hud.HudElement
+import meteordevelopment.meteorclient.systems.hud.HudElementInfo
 import meteordevelopment.meteorclient.systems.hud.HudGroup
 import meteordevelopment.meteorclient.systems.modules.Category
+import net.greemdev.meteor.hud.HudElementMetadata
+import net.greemdev.meteor.hud.element.ModuleKeybindHud
 //import net.greemdev.meteor.hud.element.*
 import net.greemdev.meteor.util.meteor.*
 import net.greemdev.meteor.util.meteor.starscript.initGStarscript
@@ -38,8 +42,8 @@ object Greteor {
         initGStarscript()
     }
 
-    /*@JvmStatic
-    fun hudElements() = listOf(ModuleKeybindHud, NotificationHud)*/
+    @JvmStatic
+    fun hudElements() = listOf<HudElementMetadata<*>>(ModuleKeybindHud)
 
     @JvmStatic
     fun lambdaFactoriesFor(vararg packages: String) =

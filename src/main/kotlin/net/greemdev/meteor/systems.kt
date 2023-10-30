@@ -18,15 +18,15 @@ import net.greemdev.meteor.util.minecraft
 import net.greemdev.meteor.util.text.*
 import net.minecraft.command.CommandSource
 
-sealed class GModule(name: String, description: String, category: Category = Greteor.category()) : Module(category, name, description) {
+abstract class GModule(name: String, description: String, category: Category = Greteor.category()) : Module(category, name, description) {
     protected val sg by lazy(settings::group)
 
-    sealed class Combat(name: String, description: String) : GModule(name, description, Categories.Combat)
-    sealed class Player(name: String, description: String) : GModule(name, description, Categories.Player)
-    sealed class Movement(name: String, description: String) : GModule(name, description, Categories.Movement)
-    sealed class Render(name: String, description: String) : GModule(name, description, Categories.Render)
-    sealed class World(name: String, description: String) : GModule(name, description, Categories.World)
-    sealed class Misc(name: String, description: String) : GModule(name, description, Categories.Misc)
+    abstract class Combat(name: String, description: String) : GModule(name, description, Categories.Combat)
+    abstract class Player(name: String, description: String) : GModule(name, description, Categories.Player)
+    abstract class Movement(name: String, description: String) : GModule(name, description, Categories.Movement)
+    abstract class Render(name: String, description: String) : GModule(name, description, Categories.Render)
+    abstract class World(name: String, description: String) : GModule(name, description, Categories.World)
+    abstract class Misc(name: String, description: String) : GModule(name, description, Categories.Misc)
 
     companion object {
         fun findAll() = findInstancesOfSubtypesOf<GModule>("net.greemdev.meteor.modules")

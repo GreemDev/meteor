@@ -8,6 +8,8 @@ package meteordevelopment.meteorclient.gui.utils;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
+import java.util.Objects;
+
 public interface CharFilter {
 
     /**
@@ -83,6 +85,22 @@ public interface CharFilter {
      */
     static CharFilter noLongerThan(int length) {
         return (t, c) -> t.length() <= length;
+    }
+
+    /**
+     * A {@link CharFilter} combinator, allowing you to more easily combine the conditions of 2 different {@link CharFilter} together into one callable {@link CharFilter}.
+     * <br/><br/>
+     * An example use for this would be {@code combine(strictAlphanumeric(), noLongerThan(25))} to create a {@link CharFilter} that is both strictly alphanumeric and has a capped length.
+     * @param first The first CharFilter to test.
+     * @param second The second CharFilter to test.
+     * @return A {@link CharFilter} which is effectively a combination of the 2 {@link CharFilter}s into one.
+     * @throws NullPointerException When either of the input arguments are null.
+     */
+    static CharFilter combine(CharFilter first, CharFilter second) {
+        Objects.requireNonNull(first, "CharFilter.combine cannot take null CharFilters.");
+        Objects.requireNonNull(second, "CharFilter.combine cannot take null CharFilters.");
+
+        return (t, c) -> first.filter(t, c) && second.filter(t, c);
     }
 
     boolean filter(String text, char c);

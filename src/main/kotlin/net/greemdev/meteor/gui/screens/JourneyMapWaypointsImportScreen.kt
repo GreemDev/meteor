@@ -3,7 +3,7 @@
  * Copyright (c) Meteor Development.
  */
 
-package net.greemdev.meteor.gui
+package net.greemdev.meteor.gui.screens
 
 import com.google.gson.GsonBuilder
 import kotlinx.coroutines.Job
@@ -17,12 +17,10 @@ import meteordevelopment.meteorclient.systems.waypoints.Waypoints
 import meteordevelopment.meteorclient.utils.render.color.Color
 import meteordevelopment.meteorclient.utils.render.color.SettingColor
 import meteordevelopment.meteorclient.utils.world.Dimension
-import net.greemdev.meteor.MeteorColor
 import net.greemdev.meteor.filter
 import net.greemdev.meteor.getOrNull
 import net.greemdev.meteor.invoke
 import net.greemdev.meteor.util.scope
-import net.minecraft.util.math.BlockPos
 import java.nio.file.InvalidPathException
 import java.util.concurrent.CancellationException
 import kotlin.io.path.Path

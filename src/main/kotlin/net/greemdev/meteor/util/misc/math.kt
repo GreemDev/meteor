@@ -40,16 +40,18 @@ fun lerp(delta: Number, start: Number, end: Number) = MathHelper.lerp(delta.toDo
 
 fun Random.nextGaussian(mean: Float, deviation: Float) = MathHelper.nextGaussian(this, mean, deviation)
 
-fun Float.precision(decimalPlaces: @Range(from = 1, to = 10) Int): Float {
-    val parts = coerceAtLeast(1f).coerceAtMost(10f)
-        .toString().split('.')
-    val decimal = parts.lastOrNull()?.take(decimalPlaces) ?: 0
-    return "${parts.first()}.$decimal".toFloat()
-}
+fun Float.precision(decimalPlaces: @Range(from = 1, to = 10) Int) =
+    precisionInternal(decimalPlaces) {
+        coerceAtLeast(1f).coerceAtMost(10f).toString()
+    }.toFloat()
 
-fun Double.precision(decimalPlaces: @Range(from = 1, to = 10) Int): Double {
-    val parts = coerceAtLeast(1.0).coerceAtMost(10.0)
-        .toString().split('.')
-    val decimal = parts.elementAtOrNull(1)?.take(decimalPlaces) ?: 0
-    return "${parts.first()}.$decimal".toDouble()
+fun Double.precision(decimalPlaces: @Range(from = 1, to = 10) Int) =
+    precisionInternal(decimalPlaces) {
+        coerceAtLeast(1.0).coerceAtMost(10.0).toString()
+    }.toDouble()
+
+fun precisionInternal(decimalPlaces: Int, numstr: () -> String): String {
+    val parts = numstr().split('.')
+    val decimal = parts.elementAtOrNull(1)?.take(decimalPlaces) ?: "0"
+    return "${parts.first()}.$decimal"
 }

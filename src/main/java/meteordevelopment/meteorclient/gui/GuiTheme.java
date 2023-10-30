@@ -34,6 +34,7 @@ import meteordevelopment.meteorclient.utils.render.color.Color;
 import net.greemdev.meteor.gui.widget.WGuiTexture;
 import net.greemdev.meteor.gui.widget.WWaypointIcon;
 import net.greemdev.meteor.type.ColorSettingScreenMode;
+import net.greemdev.meteor.utils;
 import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NbtCompound;
@@ -190,6 +191,10 @@ public abstract class GuiTheme implements ISerializable<GuiTheme> {
     }
     public WTable table() {
         return w(new WTable());
+    }
+
+    public WTable table(Consumer<WTable> tableModifier) {
+        return utils.apply(table(), tableModifier);
     }
 
     public WWaypointIcon waypointIcon(Waypoint waypoint) {

@@ -17,6 +17,7 @@ public class AddEasyMCAccountScreen extends AddAccountScreen {
 
     @Override
     public void initWidgets() {
+
         WTable t = add(theme.table()).widget();
 
         // Token
@@ -26,12 +27,11 @@ public class AddEasyMCAccountScreen extends AddAccountScreen {
         t.row();
 
         // Add
-        add = t.add(theme.button("Add")).expandX().widget();
-        add.action = () -> {
+        add = t.add(theme.button("Add", () -> {
             if (!token.get().isEmpty()) {
                 AccountsScreen.addAccount(this, parent, new EasyMCAccount(token.get()));
             }
-        };
+        })).expandX().widget();
 
         enterAction = add.action;
     }

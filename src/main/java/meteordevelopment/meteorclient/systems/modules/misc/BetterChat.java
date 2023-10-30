@@ -25,6 +25,7 @@ import meteordevelopment.meteorclient.utils.misc.MeteorIdentifier;
 import meteordevelopment.meteorclient.utils.player.ChatUtils;
 import meteordevelopment.meteorclient.utils.render.color.Color;
 import meteordevelopment.orbit.EventHandler;
+import net.greemdev.meteor.type.PrefixBrackets;
 import net.minecraft.client.gui.DrawContext;
 import net.minecraft.client.gui.hud.ChatHudLine;
 import net.minecraft.client.network.PlayerListEntry;
@@ -37,6 +38,7 @@ import net.minecraft.util.Identifier;
 
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
 import java.util.regex.Matcher;
@@ -348,7 +350,12 @@ public class BetterChat extends Module {
 
     // Player Heads
 
-    private record CustomHeadEntry(String prefix, Identifier texture) {}
+    private record CustomHeadEntry(String[] prefixes, Identifier texture) {
+        public boolean contains(String text, int toffset) {
+            return Arrays.stream(prefixes)
+                .anyMatch(p -> text.startsWith(p, toffset));
+        }
+    }
 
     private static final List<CustomHeadEntry> CUSTOM_HEAD_ENTRIES = new ArrayList<>();
 
@@ -356,12 +363,20 @@ public class BetterChat extends Module {
 
     /** Registers a custom player head to render based on a message prefix */
     public static void registerCustomHead(String prefix, Identifier texture) {
-        CUSTOM_HEAD_ENTRIES.add(new CustomHeadEntry(prefix, texture));
+        var brackets = PrefixBrackets.getEntries();
+        var prefixes = new String[brackets.size()];
+
+        for (int i = 0; i < brackets.size(); i++) {
+            prefixes[i] = brackets.get(i).surround(prefix);
+        }
+
+        CUSTOM_HEAD_ENTRIES.add(new CustomHeadEntry(prefixes, texture));
     }
 
     static {
-        registerCustomHead("[Meteor]", new MeteorIdentifier("textures/icons/chat/meteor.png"));
-        registerCustomHead("[Baritone]", new MeteorIdentifier("textures/icons/chat/baritone.png"));
+        registerCustomHead("Meteor", new MeteorIdentifier("textures/icons/chat/meteor.png"));
+        registerCustomHead("Baritone", new MeteorIdentifier("textures/icons/chat/baritone.png"));
+        registerCustomHead("Greteor", new MeteorIdentifier("textures/icons/chat/greteor.png"));
     }
 
     public int modifyChatWidth(int width) {
@@ -400,7 +415,7 @@ public class BetterChat extends Module {
 
         for (CustomHeadEntry entry : CUSTOM_HEAD_ENTRIES) {
             // Check prefix
-            if (text.startsWith(entry.prefix(), startOffset)) {
+            if (entry.contains(text, startOffset)) {
                 context.drawTexture(entry.texture(), 0, y, 8, 8, 0, 0, 64, 64, 64, 64);
                 return;
             }

@@ -9,6 +9,7 @@ import net.minecraft.nbt.NbtCompound;
 import org.joml.Vector3d;
 
 import java.util.function.Consumer;
+import java.util.function.Supplier;
 
 public class Vector3dSetting extends Setting<Vector3d> {
     public final double min, max;
@@ -17,7 +18,7 @@ public class Vector3dSetting extends Setting<Vector3d> {
     public final int decimalPlaces;
     public final boolean noSlider;
 
-    public Vector3dSetting(String name, String description, Object defaultValue, Consumer<Vector3d> onChanged, Consumer<Setting<Vector3d>> onModuleActivated, IVisible visible, double min, double max, double sliderMin, double sliderMax, boolean onSliderRelease, int decimalPlaces, boolean noSlider) {
+    protected Vector3dSetting(String name, String description, Object defaultValue, Consumer<Vector3d> onChanged, Consumer<Setting<Vector3d>> onModuleActivated, Supplier<Boolean> visible, double min, double max, double sliderMin, double sliderMax, boolean onSliderRelease, int decimalPlaces, boolean noSlider) {
         super(name, description, defaultValue, onChanged, onModuleActivated, visible);
 
         this.min = min;
@@ -93,14 +94,8 @@ public class Vector3dSetting extends Setting<Vector3d> {
             super(new Vector3d());
         }
 
-        @Override
-        public Builder defaultValue(Vector3d defaultValue) {
-            this.defaultValue.set(defaultValue);
-            return this;
-        }
-
         public Builder defaultValue(double x, double y, double z) {
-            this.defaultValue.set(x, y, z);
+            this.defaultValue = new Vector3d(x, y, z);
             return this;
         }
 

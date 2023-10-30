@@ -19,6 +19,8 @@ import meteordevelopment.meteorclient.utils.misc.Keybind;
 import meteordevelopment.meteorclient.utils.misc.NbtUtils;
 import meteordevelopment.meteorclient.utils.render.color.SettingColor;
 import meteordevelopment.orbit.EventHandler;
+import net.greemdev.meteor.Greteor;
+import net.greemdev.meteor.hud.HudElementMetadata;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.nbt.NbtElement;
 import org.jetbrains.annotations.NotNull;
@@ -71,7 +73,14 @@ public class Hud extends System<Hud> implements Iterable<HudElement> {
     public final Setting<List<SettingColor>> textColors = sgGeneral.add(new ColorListSetting.Builder()
         .name("text-colors")
         .description("Colors used for the Text element.")
-        .defaultValue(List.of(new SettingColor(), new SettingColor(175, 175, 175), new SettingColor(25, 225, 25), new SettingColor(225, 25, 25)))
+        .defaultValue(List.of(
+            new SettingColor(),
+            new SettingColor(175, 175, 175),
+            new SettingColor(25, 225, 25),
+            new SettingColor(225, 25, 25),
+            new SettingColor(112, 0, 251),
+            SettingColor.rainbow()
+        ))
         .build()
     );
 
@@ -128,6 +137,7 @@ public class Hud extends System<Hud> implements Iterable<HudElement> {
         register(ModuleInfosHud.INFO);
         register(PotionTimersHud.INFO);
         register(CombatHud.INFO);
+        Greteor.hudElements().stream().map(HudElementMetadata::getInfo).forEach(this::register);
 
         // Default config
         if (isFirstInit) resetToDefaultElements();

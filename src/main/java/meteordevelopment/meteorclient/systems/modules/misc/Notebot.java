@@ -502,7 +502,7 @@ public class Notebot extends Module {
         for (var entry : incorrectNoteBlocks.entrySet()) {
             List<BlockPos> positions = entry.getValue();
 
-            if (mode.get() == NotebotUtils.NotebotMode.ExactInstruments) {
+            if (mode.get().exactInstruments()) {
                 Instrument inst = entry.getKey();
 
                 List<Note> foundNotes = uniqueNotesToUse.stream()

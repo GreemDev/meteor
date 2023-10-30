@@ -91,10 +91,10 @@ public abstract class WidgetScreen extends Screen {
         widgets.accept(containerCell.widget());
     }
 
-    protected <W extends WContainer> void add(W container, BiConsumer<Cell<W>, W> configContainer) {
+    protected <W extends WContainer> void add(W container, BiConsumer<Cell<W>, W> containerModifier) {
         Cell<W> cell = add(container);
         within(cell.widget(), c ->
-            configContainer.accept(cell, c)
+            containerModifier.accept(cell, c)
         );
     }
 
@@ -140,9 +140,8 @@ public abstract class WidgetScreen extends Screen {
     public boolean mouseClicked(double mouseX, double mouseY, int button) {
         if (locked) return false;
 
-        double s = mc.getWindow().getScaleFactor();
-        mouseX *= s;
-        mouseY *= s;
+        mouseX *= mc.getWindow().getScaleFactor();
+        mouseY *= mc.getWindow().getScaleFactor();
 
         return root.mouseClicked(mouseX, mouseY, button, false);
     }
@@ -151,9 +150,8 @@ public abstract class WidgetScreen extends Screen {
     public boolean mouseReleased(double mouseX, double mouseY, int button) {
         if (locked) return false;
 
-        double s = mc.getWindow().getScaleFactor();
-        mouseX *= s;
-        mouseY *= s;
+        mouseX *= mc.getWindow().getScaleFactor();
+        mouseY *= mc.getWindow().getScaleFactor();
 
         return root.mouseReleased(mouseX, mouseY, button);
     }
@@ -162,9 +160,8 @@ public abstract class WidgetScreen extends Screen {
     public void mouseMoved(double mouseX, double mouseY) {
         if (locked) return;
 
-        double s = mc.getWindow().getScaleFactor();
-        mouseX *= s;
-        mouseY *= s;
+        mouseX *= mc.getWindow().getScaleFactor();
+        mouseY *= mc.getWindow().getScaleFactor();
 
         root.mouseMoved(mouseX, mouseY, lastMouseX, lastMouseY);
 
@@ -185,7 +182,7 @@ public abstract class WidgetScreen extends Screen {
     public boolean keyReleased(int keyCode, int scanCode, int modifiers) {
         if (locked) return false;
 
-        if ((modifiers == GLFW_MOD_CONTROL || modifiers == GLFW_MOD_SUPER) && keyCode == GLFW_KEY_9) {
+        if (Input.isCtrl(modifiers) && keyCode == GLFW_KEY_9) {
             debug = !debug;
             return true;
         }
@@ -238,12 +235,11 @@ public abstract class WidgetScreen extends Screen {
             return true;
         }
 
-        boolean control = MinecraftClient.IS_SYSTEM_MAC ? modifiers == GLFW_MOD_SUPER : modifiers == GLFW_MOD_CONTROL;
 
-        if (control && keyCode == GLFW_KEY_C && toClipboard()) {
+        if (Input.isCtrl(modifiers) && keyCode == GLFW_KEY_C && toClipboard()) {
             return true;
         }
-        else if (control && keyCode == GLFW_KEY_V && fromClipboard()) {
+        else if (Input.isCtrl(modifiers) && keyCode == GLFW_KEY_V && fromClipboard()) {
             reload();
             if (parent instanceof WidgetScreen wScreen) {
                 wScreen.reload();
@@ -272,8 +268,8 @@ public abstract class WidgetScreen extends Screen {
         if (!Utils.canUpdate()) renderBackground(context);
 
         double s = mc.getWindow().getScaleFactor();
-        mouseX *= s;
-        mouseY *= s;
+        mouseX *= (int) mc.getWindow().getScaleFactor();
+        mouseY *= (int) mc.getWindow().getScaleFactor();
 
         animProgress += delta / 20 * 14;
         animProgress = MathHelper.clamp(animProgress, 0, 1);
@@ -297,10 +293,9 @@ public abstract class WidgetScreen extends Screen {
         boolean tooltip = RENDERER.renderTooltip(context, mouseX, mouseY, delta / 20);
 
         if (debug) {
-            MatrixStack matrices = context.getMatrices();
-
-            DEBUG_RENDERER.render(root, matrices);
-            if (tooltip) DEBUG_RENDERER.render(RENDERER.tooltipWidget, matrices);
+            DEBUG_RENDERER.render(root, context.getMatrices());
+            if (tooltip)
+                DEBUG_RENDERER.render(RENDERER.tooltipWidget, context.getMatrices());
         }
 
         Utils.scaledProjection();

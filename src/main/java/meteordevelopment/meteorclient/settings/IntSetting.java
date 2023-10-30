@@ -8,13 +8,14 @@ package meteordevelopment.meteorclient.settings;
 import net.minecraft.nbt.NbtCompound;
 
 import java.util.function.Consumer;
+import java.util.function.Supplier;
 
 public class IntSetting extends Setting<Integer> {
     public final int min, max;
     public final int sliderMin, sliderMax;
     public final boolean noSlider;
 
-    private IntSetting(String name, String description, Object defaultValue, Consumer<Integer> onChanged, Consumer<Setting<Integer>> onModuleActivated, IVisible visible, int min, int max, int sliderMin, int sliderMax, boolean noSlider) {
+    protected IntSetting(String name, String description, Object defaultValue, Consumer<Integer> onChanged, Consumer<Setting<Integer>> onModuleActivated, Supplier<Boolean> visible, int min, int max, int sliderMin, int sliderMax, boolean noSlider) {
         super(name, description, defaultValue, onChanged, onModuleActivated, visible);
 
         this.min = min;
@@ -63,33 +64,36 @@ public class IntSetting extends Setting<Integer> {
 
         public Builder min(int min) {
             this.min = min;
+            this.sliderMin = min;
             return this;
         }
 
         public Builder max(int max) {
             this.max = max;
+            this.sliderMax = max;
             return this;
         }
 
         public Builder range(int min, int max) {
             this.min = Math.min(min, max);
             this.max = Math.max(min, max);
+            sliderRange(min, max);
             return this;
         }
 
         public Builder sliderMin(int min) {
-            this.sliderMin = min;
+            this.sliderMin = Math.max(min, this.min);
             return this;
         }
 
         public Builder sliderMax(int max) {
-            this.sliderMax = max;
+            this.sliderMax = Math.min(max, this.max);
             return this;
         }
 
         public Builder sliderRange(int min, int max) {
-            this.sliderMin = min;
-            this.sliderMax = max;
+            this.sliderMin = Math.max(min, this.min);
+            this.sliderMax = Math.min(max, this.max);
             return this;
         }
 

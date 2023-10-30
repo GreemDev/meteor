@@ -10,9 +10,10 @@ import net.minecraft.util.math.BlockPos;
 
 import java.util.List;
 import java.util.function.Consumer;
+import java.util.function.Supplier;
 
 public class BlockPosSetting extends Setting<BlockPos> {
-    public BlockPosSetting(String name, String description, Object defaultValue, Consumer<BlockPos> onChanged, Consumer<Setting<BlockPos>> onModuleActivated, IVisible visible) {
+    protected BlockPosSetting(String name, String description, Object defaultValue, Consumer<BlockPos> onChanged, Consumer<Setting<BlockPos>> onModuleActivated, Supplier<Boolean> visible) {
         super(name, description, defaultValue, onChanged, onModuleActivated, visible);
     }
 

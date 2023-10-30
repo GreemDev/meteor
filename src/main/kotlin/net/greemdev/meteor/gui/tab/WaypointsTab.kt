@@ -79,7 +79,7 @@ private class ListScreen(
 
     override fun initWidgets() {
         if (!wp.isEmpty) {
-            add(theme.table()) { _, table -> table.fill() }
+            add(theme.table { it.fill() })
             add(theme.horizontalSeparator()).expandX()
             add(theme.horizontalList()) { cell, hl ->
                 cell.expandX()

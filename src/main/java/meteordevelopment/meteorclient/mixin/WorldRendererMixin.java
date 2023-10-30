@@ -11,6 +11,7 @@ import meteordevelopment.meteorclient.systems.modules.world.Ambience;
 import meteordevelopment.meteorclient.utils.render.color.Color;
 import meteordevelopment.meteorclient.utils.render.postprocess.EntityShader;
 import meteordevelopment.meteorclient.utils.render.postprocess.PostProcessShaders;
+//import net.greemdev.meteor.modules.damageNumbers.DamageNumbers;
 import net.minecraft.block.BlockState;
 import net.minecraft.client.gl.Framebuffer;
 import net.minecraft.client.render.*;
@@ -62,6 +63,15 @@ public abstract class WorldRendererMixin {
 	private void hasBlindnessOrDarkness(Camera camera, CallbackInfoReturnable<Boolean> info) {
 		if (Modules.get().get(NoRender.class).noBlindness() || Modules.get().get(NoRender.class).noDarkness()) info.setReturnValue(null);
 	}
+
+    // Damage Numbers
+
+    @Inject(method = "render", at = @At("RETURN"))
+    private void onRenderReturn(MatrixStack matrices, float tickDelta, long limitTime,
+                                boolean renderBlockOutline, Camera camera, GameRenderer gameRenderer,
+                                LightmapTextureManager lightmapTextureManager, Matrix4f projectionMatrix, CallbackInfo info) {
+        //if (Modules.get().isActive(DamageNumbers.class)) DamageNumbers.render(matrices, camera);
+    }
 
     // Entity Shaders
 

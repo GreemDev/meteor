@@ -5,6 +5,7 @@
 
 package meteordevelopment.meteorclient.systems.modules.misc;
 
+import meteordevelopment.meteorclient.MeteorClient;
 import meteordevelopment.meteorclient.settings.BoolSetting;
 import meteordevelopment.meteorclient.settings.Setting;
 import meteordevelopment.meteorclient.settings.SettingGroup;
@@ -25,8 +26,8 @@ public class NameProtect extends Module {
     private final Setting<String> name = sgGeneral.add(new StringSetting.Builder()
         .name("name")
         .description("Name to be replaced with.")
-        .defaultValue("seasnail")
-        .visible(nameProtect::get)
+        .defaultValue(() -> MeteorClient.randomAuthor().getName())
+        .visible(nameProtect)
         .build()
     );
 

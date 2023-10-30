@@ -16,12 +16,13 @@ import meteordevelopment.orbit.EventPriority;
 import net.minecraft.nbt.NbtCompound;
 
 import java.util.function.Consumer;
+import java.util.function.Supplier;
 
 public class KeybindSetting extends Setting<Keybind> {
     private final Runnable action;
     public WKeybind widget;
 
-    public KeybindSetting(String name, String description, Object defaultValue, Consumer<Keybind> onChanged, Consumer<Setting<Keybind>> onModuleActivated, IVisible visible, Runnable action) {
+    protected KeybindSetting(String name, String description, Object defaultValue, Consumer<Keybind> onChanged, Consumer<Setting<Keybind>> onModuleActivated, Supplier<Boolean> visible, Runnable action) {
         super(name, description, defaultValue, onChanged, onModuleActivated, visible);
 
         this.action = action;

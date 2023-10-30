@@ -6,8 +6,8 @@
 package meteordevelopment.meteorclient.gui.widgets.input;
 
 import meteordevelopment.meteorclient.gui.widgets.containers.WHorizontalList;
+import net.greemdev.meteor.util.misc.MathKt;
 
-import java.util.Locale;
 
 public class WDoubleEdit extends WHorizontalList {
     private double value;
@@ -114,8 +114,7 @@ public class WDoubleEdit extends WHorizontalList {
         if (this.value == v) return;
 
         if (v < min) this.value = min;
-        else if (v > max) this.value = max;
-        else this.value = v;
+        else this.value = Math.min(v, max);
 
         if (this.value == v) {
             textBox.set(valueString());
@@ -138,6 +137,8 @@ public class WDoubleEdit extends WHorizontalList {
     }
 
     private String valueString() {
-        return String.format(Locale.US, "%." + decimalPlaces + "f", value);
+        return MathKt.precisionInternal(decimalPlaces, () ->
+            Double.toString(Math.min(Math.max(value, 1), 10))
+        );
     }
 }

@@ -12,11 +12,12 @@ import net.minecraft.util.Identifier;
 
 import java.util.function.Consumer;
 import java.util.function.Predicate;
+import java.util.function.Supplier;
 
 public class ItemSetting extends Setting<Item> {
     public final Predicate<Item> filter;
 
-    public ItemSetting(String name, String description, Object defaultValue, Consumer<Item> onChanged, Consumer<Setting<Item>> onModuleActivated, IVisible visible, Predicate<Item> filter) {
+    protected ItemSetting(String name, String description, Object defaultValue, Consumer<Item> onChanged, Consumer<Setting<Item>> onModuleActivated, Supplier<Boolean> visible, Predicate<Item> filter) {
         super(name, description, defaultValue, onChanged, onModuleActivated, visible);
 
         this.filter = filter;

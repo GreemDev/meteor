@@ -7,7 +7,6 @@ package meteordevelopment.meteorclient.settings;
 
 import meteordevelopment.meteorclient.systems.modules.Module;
 import meteordevelopment.meteorclient.utils.Utils;
-import meteordevelopment.meteorclient.utils.misc.IGetter;
 import meteordevelopment.meteorclient.utils.misc.ISerializable;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.registry.Registry;
@@ -19,11 +18,11 @@ import java.util.Objects;
 import java.util.function.Consumer;
 import java.util.function.Supplier;
 
-public abstract class Setting<T> implements IGetter<T>, ISerializable<T>, Supplier<T> {
+public abstract class Setting<T> implements ISerializable<T>, Supplier<T> {
     private static final List<String> NO_SUGGESTIONS = new ArrayList<>(0);
 
     public final String name, title, description;
-    private final IVisible visible;
+    private final Supplier<Boolean> visible;
 
     protected final Object defaultValue;
     protected T value;
@@ -34,7 +33,7 @@ public abstract class Setting<T> implements IGetter<T>, ISerializable<T>, Suppli
     public Module module;
     public boolean lastWasVisible;
 
-    public Setting(String name, String description, Object defaultValue, Consumer<T> onChanged, Consumer<Setting<T>> onModuleActivated, IVisible visible) {
+    public Setting(String name, String description, Object defaultValue, Consumer<T> onChanged, Consumer<Setting<T>> onModuleActivated, Supplier<Boolean> visible) {
         this.name = name;
         this.title = Utils.nameToTitle(name);
         this.description = description;
@@ -101,7 +100,7 @@ public abstract class Setting<T> implements IGetter<T>, ISerializable<T>, Suppli
     }
 
     public boolean isVisible() {
-        return visible == null || visible.isVisible();
+        return visible == null || visible.get();
     }
 
     protected abstract T parseImpl(String str);
@@ -169,12 +168,12 @@ public abstract class Setting<T> implements IGetter<T>, ISerializable<T>, Suppli
 
     public abstract static class SettingBuilder<B, V, S> {
         protected String name = "undefined", description = "";
-        protected V defaultValue;
-        protected IVisible visible;
+        protected Object defaultValue;
+        protected Supplier<Boolean> visible;
         protected Consumer<V> onChanged;
         protected Consumer<Setting<V>> onModuleActivated;
 
-        protected SettingBuilder(V defaultValue) {
+        protected SettingBuilder(Object defaultValue) {
             this.defaultValue = defaultValue;
         }
 
@@ -193,7 +192,12 @@ public abstract class Setting<T> implements IGetter<T>, ISerializable<T>, Suppli
             return (B) this;
         }
 
-        public B visible(IVisible visible) {
+        public B defaultValue(Supplier<V> defaultValue) {
+            this.defaultValue = defaultValue;
+            return (B) this;
+        }
+
+        public B visible(Supplier<Boolean> visible) {
             this.visible = visible;
             return (B) this;
         }

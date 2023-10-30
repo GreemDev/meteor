@@ -233,7 +233,19 @@ public class HandView extends Module {
 
     public enum SwingMode {
         Offhand,
-        Mainhand,
-        None
+        MainHand,
+        None;
+
+        public boolean offhand() {
+            return this == Offhand;
+        }
+
+        public boolean mainHand() {
+            return this == MainHand;
+        }
+
+        public Hand hand() {
+            return offhand() ? Hand.OFF_HAND : Hand.MAIN_HAND;
+        }
     }
 }

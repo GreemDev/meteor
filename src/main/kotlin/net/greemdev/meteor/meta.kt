@@ -180,7 +180,7 @@ fun <T, R : Comparable<R>> List<T>.sorted(
     sorted: Boolean = true,
     isAscending: Boolean = true,
     sorter: Mapper<T, R?>
-): List<T> = buildList {
+): List<T> = toMutableList().apply {
     if (sorted) {
         if (isAscending)
             sortBy(sorter)

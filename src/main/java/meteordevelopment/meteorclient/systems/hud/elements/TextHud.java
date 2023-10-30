@@ -43,8 +43,7 @@ public class TextHud extends HudElement {
         .description("Text to display with Starscript.")
         .defaultValue(MeteorClient.NAME)
         .onChanged(s -> recompile())
-        .wide()
-        .renderer(StarscriptTextBoxRenderer.class)
+        .renderStarscript()
         .build()
     );
 
@@ -88,7 +87,7 @@ public class TextHud extends HudElement {
     public final Setting<String> condition = sgShown.add(new StringSetting.Builder()
         .name("condition")
         .description("Condition to check when shown is not Always.")
-        .visible(() -> shown.get() != Shown.Always)
+        .visible(() -> shown.get().always())
         .defaultValue("")
         .onChanged(s -> recompile())
         .renderer(StarscriptTextBoxRenderer.class)
@@ -108,7 +107,7 @@ public class TextHud extends HudElement {
     public final Setting<Double> scale = sgScale.add(new DoubleSetting.Builder()
         .name("scale")
         .description("Custom scale.")
-        .visible(customScale::get)
+        .visible(customScale)
         .defaultValue(1)
         .onChanged(integer -> recalculateSize = true)
         .min(0.5)
@@ -128,7 +127,7 @@ public class TextHud extends HudElement {
     public final Setting<SettingColor> backgroundColor = sgBackground.add(new ColorSetting.Builder()
         .name("background-color")
         .description("Color used for the background.")
-        .visible(background::get)
+        .visible(background)
         .defaultValue(new SettingColor(25, 25, 25, 50))
         .build()
     );

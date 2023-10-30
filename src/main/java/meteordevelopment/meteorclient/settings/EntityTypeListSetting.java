@@ -18,11 +18,12 @@ import net.minecraft.util.Identifier;
 import java.util.Set;
 import java.util.function.Consumer;
 import java.util.function.Predicate;
+import java.util.function.Supplier;
 
 public class EntityTypeListSetting extends Setting<Set<EntityType<?>>> {
     public final Predicate<EntityType<?>> filter;
 
-    public EntityTypeListSetting(String name, String description, Object defaultValue, Consumer<Set<EntityType<?>>> onChanged, Consumer<Setting<Set<EntityType<?>>>> onModuleActivated, IVisible visible, Predicate<EntityType<?>> filter) {
+    protected EntityTypeListSetting(String name, String description, Object defaultValue, Consumer<Set<EntityType<?>>> onChanged, Consumer<Setting<Set<EntityType<?>>>> onModuleActivated, Supplier<Boolean> visible, Predicate<EntityType<?>> filter) {
         super(name, description, defaultValue, onChanged, onModuleActivated, visible);
 
         this.filter = filter;

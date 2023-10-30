@@ -94,22 +94,23 @@ public class Excavator extends Module {
 
     @EventHandler
     private void onMouseButton(MouseButtonEvent event) {
-        if (event.action != KeyAction.Press || event.button != selectionKey.get().getValue() || mc.currentScreen != null) {
-            return;
-        }
+        if (!selectionKey.get().matches(event) || mc.currentScreen != null) return;
+
         selectCorners();
     }
 
     @EventHandler
     private void onKey(KeyEvent event) {
-        if (event.action != KeyAction.Press || event.key != selectionKey.get().getValue() || mc.currentScreen != null) {
-            return;
-        }
+        if (!selectionKey.get().matches(event) || mc.currentScreen != null) return;
+
         selectCorners();
     }
 
     private void selectCorners() {
-        if (!(mc.crosshairTarget instanceof BlockHitResult result)) return;
+        if (!(mc.crosshairTarget instanceof BlockHitResult result)) {
+            warning("You're not looking at a block.");
+            return;
+        }
 
         if (status == Status.SEL_START) {
             start = BetterBlockPos.from(result.getBlockPos());

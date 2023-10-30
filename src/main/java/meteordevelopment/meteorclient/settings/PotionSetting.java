@@ -8,9 +8,10 @@ package meteordevelopment.meteorclient.settings;
 import meteordevelopment.meteorclient.utils.misc.PotionTypes;
 
 import java.util.function.Consumer;
+import java.util.function.Supplier;
 
 public class PotionSetting extends EnumSetting<PotionTypes> {
-    public PotionSetting(String name, String description, Object defaultValue, Consumer<PotionTypes> onChanged, Consumer<Setting<PotionTypes>> onModuleActivated, IVisible visible) {
+    protected PotionSetting(String name, String description, Object defaultValue, Consumer<PotionTypes> onChanged, Consumer<Setting<PotionTypes>> onModuleActivated, Supplier<Boolean> visible) {
         super(name, description, defaultValue, onChanged, onModuleActivated, visible);
     }
 

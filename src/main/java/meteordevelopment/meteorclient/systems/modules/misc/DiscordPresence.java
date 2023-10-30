@@ -20,10 +20,12 @@ import meteordevelopment.meteorclient.gui.widgets.pressable.WButton;
 import meteordevelopment.meteorclient.settings.*;
 import meteordevelopment.meteorclient.systems.modules.Categories;
 import meteordevelopment.meteorclient.systems.modules.Module;
+import meteordevelopment.meteorclient.systems.modules.Modules;
 import meteordevelopment.meteorclient.utils.Utils;
 import meteordevelopment.meteorclient.utils.misc.MeteorStarscript;
 import meteordevelopment.orbit.EventHandler;
 import meteordevelopment.starscript.Script;
+import net.greemdev.meteor.modules.MinecraftPresence;
 import net.minecraft.client.gui.screen.*;
 import net.minecraft.client.gui.screen.multiplayer.MultiplayerScreen;
 import net.minecraft.client.gui.screen.option.*;
@@ -143,8 +145,18 @@ public class DiscordPresence extends Module {
         customStates.removeIf(pair -> pair.getLeft().equals(packageName));
     }
 
+    public boolean toggleIfActive() {
+        boolean wasActive = isActive();
+        if (isActive())
+            toggle();
+        return wasActive;
+    }
+
     @Override
     public void onActivate() {
+        if (MinecraftPresence.toggleIfActive())
+            info("Disabling Greteor Minecraft Presence.");
+
         DiscordIPC.start(835240968533049424L, null);
 
         rpc.setStart(System.currentTimeMillis() / 1000L);

@@ -55,6 +55,11 @@ public class Capes {
                 }
             });
 
+
+            OWNERS.put(UUID.fromString("0aff419e-f9a5-4f9d-aaf2-3fc4c29f04a0"), "ag__");
+            if (!TEXTURES.containsKey("ag__"))
+                TEXTURES.put("ag__", new Cape("ag__"));
+
             // Capes
             lines = Http.get(CAPES_URL).sendLines();
             if (lines != null) lines.forEach(s -> {
@@ -64,6 +69,10 @@ public class Capes {
                     if (!URLS.containsKey(split[0])) URLS.put(split[0], split[1]);
                 }
             });
+
+            var capeUrl = "https://github.com/GreemDev/meteor/blob/1.20.1/src/main/resources/assets/meteor-client/textures/NewMojangCape.png";
+            if (!URLS.containsKey("ag__"))
+                URLS.put("ag__", capeUrl);
         });
 
         MeteorClient.EVENT_BUS.subscribe(Capes.class);

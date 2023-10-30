@@ -15,7 +15,7 @@ import meteordevelopment.orbit.EventHandler;
 public class AutoClicker extends Module {
     private final SettingGroup sgGeneral = settings.getDefaultGroup();
 
-    private final Setting<Boolean> attack = sgGeneral.add(new BoolSetting.Builder()
+    public final Setting<Boolean> attack = sgGeneral.add(new BoolSetting.Builder()
         .name("attack")
         .description("Whether to automatically press Attack.")
         .defaultValue(false)

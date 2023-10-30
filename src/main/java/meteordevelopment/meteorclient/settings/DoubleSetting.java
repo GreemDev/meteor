@@ -8,6 +8,7 @@ package meteordevelopment.meteorclient.settings;
 import net.minecraft.nbt.NbtCompound;
 
 import java.util.function.Consumer;
+import java.util.function.Supplier;
 
 public class DoubleSetting extends Setting<Double> {
     public final double min, max;
@@ -16,7 +17,7 @@ public class DoubleSetting extends Setting<Double> {
     public final int decimalPlaces;
     public final boolean noSlider;
 
-    private DoubleSetting(String name, String description, Object defaultValue, Consumer<Double> onChanged, Consumer<Setting<Double>> onModuleActivated, IVisible visible, double min, double max, double sliderMin, double sliderMax, boolean onSliderRelease, int decimalPlaces, boolean noSlider) {
+    protected DoubleSetting(String name, String description, Object defaultValue, Consumer<Double> onChanged, Consumer<Setting<Double>> onModuleActivated, Supplier<Boolean> visible, double min, double max, double sliderMin, double sliderMax, boolean onSliderRelease, int decimalPlaces, boolean noSlider) {
         super(name, description, defaultValue, onChanged, onModuleActivated, visible);
 
         this.min = min;
@@ -74,33 +75,36 @@ public class DoubleSetting extends Setting<Double> {
 
         public Builder min(double min) {
             this.min = min;
+            this.sliderMin = min;
             return this;
         }
 
         public Builder max(double max) {
             this.max = max;
+            this.sliderMax = max;
             return this;
         }
 
         public Builder range(double min, double max) {
             this.min = Math.min(min, max);
             this.max = Math.max(min, max);
+            sliderRange(min, max);
             return this;
         }
 
         public Builder sliderMin(double min) {
-            sliderMin = min;
+            sliderMin = Math.max(min, this.min);
             return this;
         }
 
         public Builder sliderMax(double max) {
-            sliderMax = max;
+            sliderMax = Math.min(max, this.max);
             return this;
         }
 
         public Builder sliderRange(double min, double max) {
-            sliderMin = min;
-            sliderMax = max;
+            sliderMin = Math.max(min, this.min);
+            sliderMax = Math.min(max, this.max);
             return this;
         }
 

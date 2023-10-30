@@ -22,13 +22,14 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.function.Consumer;
+import java.util.function.Supplier;
 
 public class StringListSetting extends Setting<List<String>>{
     public final Class<? extends WTextBox.Renderer> renderer;
     public final CharFilter filter;
     public final boolean wide;
 
-    protected StringListSetting(String name, String description, Object defaultValue, Consumer<List<String>> onChanged, Consumer<Setting<List<String>>> onModuleActivated, IVisible visible, Class<? extends WTextBox.Renderer> renderer, boolean wide, CharFilter filter) {
+    protected StringListSetting(String name, String description, Object defaultValue, Consumer<List<String>> onChanged, Consumer<Setting<List<String>>> onModuleActivated, Supplier<Boolean> visible, Class<? extends WTextBox.Renderer> renderer, boolean wide, CharFilter filter) {
         super(name, description, defaultValue, onChanged, onModuleActivated, visible);
 
         this.renderer = renderer;
