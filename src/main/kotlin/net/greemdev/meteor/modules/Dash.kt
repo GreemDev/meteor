@@ -47,11 +47,12 @@ object Dash : GModule("dash", "Boosts you forward in the direction you're lookin
         timer = autoDashInterval()
 
         if (!autoDash()) {
-            if (mc.player != null)
+            if (mc.player != null) {
                 when (mc.currentScreen) {
                     is Screen -> info("Did not activate dash because you're in a menu. Please use the keybind in-game.")
                     else -> dash()
                 }
+            }
 
             toggle()
         }

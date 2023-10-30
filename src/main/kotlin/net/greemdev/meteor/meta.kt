@@ -373,16 +373,6 @@ inline fun<T, reified E : Throwable> Result<T>.onFailureOf(type: KClass<E>, acti
     return this
 }
 
-inline fun<reified T> Any.cast() =
-    if (this::class.java.canonicalName == T::class.java.canonicalName)
-        castFast<T>()
-    else error("Cannot cast an object of type '${E::class.qualifiedName}' to type '${this::class.qualifiedName}'.")
-
-
-@Suppress("UNCHECKED_CAST")
-fun<T> Any.castFast() = this as T
-
-
 inline fun <T, R> Result<T>.mapToOrNull(transform: Mapper<T, R>) = map(transform).getOrNull()
 
 
@@ -394,6 +384,15 @@ inline fun <T : Throwable> T.suppressAll(first: Throwable, vararg otherThrowable
     otherThrowables.forEach(this::addSuppressed)
     return this
 }
+
+inline fun<reified T> Any.cast() =
+    if (this::class.java.canonicalName == T::class.java.canonicalName)
+        castFast<T>()
+    else error("Cannot cast an object of type '${E::class.qualifiedName}' to type '${this::class.qualifiedName}'.")
+
+
+@Suppress("UNCHECKED_CAST")
+fun<T> Any.castFast() = this as T
 
 /**
  * Returns 1 for true, and 0 for false.

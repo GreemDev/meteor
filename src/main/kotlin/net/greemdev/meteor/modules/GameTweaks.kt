@@ -14,22 +14,22 @@ import net.greemdev.meteor.invoke
 object GameTweaks : GModule(
     "game-tweaks", "Minor changes to the game experience to improve gameplay."
 ) {
-    val clipboardScreenshots by sg bool {
+    private val clipboardScreenshots by sg bool {
         name("copy-screenshots")
         description("Copy screenshots to the clipboard instead of creating a file in the game directory.")
         defaultValue(false)
     }
 
-    val developerMode by sg bool {
+    private val developerMode by sg bool {
         name("developer-mode")
-        description("Enable debugging features.")
+        description("Toggles debugging features via changing &znet.minecraft.SharedConstants::isDevelopment&r.")
         defaultValue(SharedConstants.isDevelopment)
         onChanged {
             SharedConstants.isDevelopment = it
         }
     }
 
-    val showScore by sg bool {
+    private val showScore by sg bool {
         name("score")
         description("Whether or not to show the weird Score on the death screen.")
         defaultValue(true)
