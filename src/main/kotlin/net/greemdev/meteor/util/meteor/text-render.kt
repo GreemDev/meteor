@@ -7,7 +7,6 @@
 package net.greemdev.meteor.util.meteor
 
 import meteordevelopment.meteorclient.renderer.text.TextRenderer
-import meteordevelopment.meteorclient.utils.render.color.RainbowColor
 import meteordevelopment.meteorclient.utils.render.color.RainbowColors
 import net.greemdev.meteor.*
 import net.greemdev.meteor.util.*
@@ -80,8 +79,7 @@ fun String.onlyVisibleContent() =
     .replace("\n", "")
     .replace("\r", "")
 
-fun needsSpecialRenderer(content: String) = colorCodeRegex in content || content.lineCount() > 1
+fun needsSpecialRenderer(content: String) = content.lineCount() > 1 || colorCodeRegex in content
 
-@JvmOverloads
-fun TextRenderer.getLegacyWidth(text: String, themeScaling: Boolean = true) =
-    getWidth(text.onlyVisibleContent()) * if (themeScaling) 1.0 else Meteor.currentTheme().scalar()
+fun TextRenderer.getLegacyWidth(text: String) =
+    getWidth(text.onlyVisibleContent()) * Meteor.currentTheme().scalar()

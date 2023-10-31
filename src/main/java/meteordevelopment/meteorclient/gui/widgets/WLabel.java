@@ -54,7 +54,7 @@ public abstract class WLabel extends WPressable implements Supplier<String> {
 
     public void set(String text) {
         if (LegacyText.needsSpecialRenderer(text))
-            if (Math.round(LegacyText.getLegacyWidth(theme.textRenderer(), text, false)) != width)
+            if (Math.round(LegacyText.getLegacyWidth(theme.textRenderer(), text)) != width)
                 invalidate();
         else
             if (Math.round(theme.textWidth(text, text.length(), title)) != width)

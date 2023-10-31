@@ -49,25 +49,21 @@ public abstract class WTooltip extends WContainer implements WRoot {
     protected double adjustWidth() {
         return lineCount == 1
             ? width
-            : padded(tooltipLabelCell, theme.scale(
-            Strings.widestLine(text, (l) ->
-                LegacyText.getLegacyWidth(theme.textRenderer(), l)
-            )
-        ), true);
+            : padded(theme.scale(Strings.widestLine(text, (l) -> LegacyText.getLegacyWidth(theme.textRenderer(), l))), true);
     }
 
 
     protected double adjustHeight() {
         return lineCount == 1
             ? height
-            : padded(tooltipLabelCell, theme.scale(
-            (lineCount * (theme.textRenderer().getHeight() + LegacyText.betweenLines)) - LegacyText.betweenLines
-        ), false);
+            : padded(
+                theme.scale((lineCount * (theme.textRenderer().getHeight() + LegacyText.betweenLines)) - LegacyText.betweenLines),
+            false);
     }
 
-    private double padded(Cell<?> cell, double value, boolean isWidth) {
+    private double padded(double value, boolean isWidth) {
         return isWidth
-            ? cell.padLeft() + value + cell.padRight()
-            : cell.padTop() + value + cell.padBottom();
+            ? tooltipLabelCell.padLeft() + value + tooltipLabelCell.padRight()
+            : tooltipLabelCell.padTop() + value + tooltipLabelCell.padBottom();
     }
 }
