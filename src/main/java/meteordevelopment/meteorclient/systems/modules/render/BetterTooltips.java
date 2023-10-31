@@ -21,8 +21,11 @@ import meteordevelopment.meteorclient.utils.misc.ByteCountDataOutput;
 import meteordevelopment.meteorclient.utils.misc.Keybind;
 import meteordevelopment.meteorclient.utils.player.EChestMemory;
 import meteordevelopment.meteorclient.utils.render.color.Color;
+import meteordevelopment.meteorclient.utils.render.color.SettingColor;
 import meteordevelopment.meteorclient.utils.tooltip.*;
 import meteordevelopment.orbit.EventHandler;
+import net.greemdev.meteor.util.text.ChatColor;
+import net.greemdev.meteor.util.text.FormattedText;
 import net.minecraft.block.entity.BannerPattern;
 import net.minecraft.block.entity.BannerPatterns;
 import net.minecraft.entity.Bucketable;
@@ -149,6 +152,14 @@ public class BetterTooltips extends Module {
         .name("byte-size")
         .description("Displays an item's size in bytes in the tooltip.")
         .defaultValue(true)
+        .build()
+    );
+
+    public final Setting<SettingColor> bytesColor = sgOther.add(new ColorSetting.Builder()
+        .name("byte-size-color")
+        .description("The color of the item bytes text.")
+        .defaultValue(ChatColor.grey.asMeteor())
+        .visible(byteSize)
         .build()
     );
 
@@ -285,14 +296,15 @@ public class BetterTooltips extends Module {
                 event.itemStack.writeNbt(new NbtCompound()).write(ByteCountDataOutput.INSTANCE);
 
                 int byteCount = ByteCountDataOutput.INSTANCE.getCount();
-                String count;
-
                 ByteCountDataOutput.INSTANCE.reset();
 
-                if (byteCount >= 1024) count = String.format("%.2f kb", byteCount / (float) 1024);
-                else count = String.format("%d bytes", byteCount);
+                String count = byteCount >= 1024 * 1024
+                    ? "%.2f MB".formatted(byteCount / 1024 / (float) 1024)
+                    : byteCount >= 1024
+                        ? "%.2f KB".formatted(byteCount / (float) 1024)
+                        : "%d bytes".formatted(byteCount);
 
-                event.list.add(Text.literal(count).formatted(Formatting.GRAY));
+                event.list.add(FormattedText.colored(count, bytesColor.get()));
             } catch (IOException e) {
                 e.printStackTrace();
             }

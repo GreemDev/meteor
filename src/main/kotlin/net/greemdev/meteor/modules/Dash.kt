@@ -65,7 +65,7 @@ object Dash : GModule("dash", "Boosts you forward in the direction you're lookin
             dash()
             timer = autoDashInterval()
         } else {
-            timer--;
+            timer--
         }
     }
 

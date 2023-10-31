@@ -38,22 +38,22 @@ public class LagNotifierHud extends HudElement {
     );
 
     private final Setting<SettingColor> color1 = sgGeneral.add(new ColorSetting.Builder()
-        .name("color-1")
-        .description("First color.")
+        .name("no-lag-color")
+        .description("No lag text color.")
         .defaultValue(new SettingColor(255, 255, 5))
         .build()
     );
 
     private final Setting<SettingColor> color2 = sgGeneral.add(new ColorSetting.Builder()
-        .name("color-2")
-        .description("Second color.")
+        .name("moderate-lag-color")
+        .description("Moderate lag text color.")
         .defaultValue(new SettingColor(235, 158, 52))
         .build()
     );
 
     private final Setting<SettingColor> color3 = sgGeneral.add(new ColorSetting.Builder()
-        .name("color-3")
-        .description("Third color.")
+        .name("terrible-lag-color")
+        .description("Bad lag text color.")
         .defaultValue(new SettingColor(225, 45, 45))
         .build()
     );
@@ -77,7 +77,7 @@ public class LagNotifierHud extends HudElement {
     private final Setting<Double> scale = sgScale.add(new DoubleSetting.Builder()
         .name("scale")
         .description("Custom scale.")
-        .visible(customScale::get)
+        .visible(customScale)
         .defaultValue(1)
         .min(0.5)
         .sliderRange(0.5, 3)
@@ -96,7 +96,7 @@ public class LagNotifierHud extends HudElement {
     private final Setting<SettingColor> backgroundColor = sgBackground.add(new ColorSetting.Builder()
         .name("background-color")
         .description("Color used for the background.")
-        .visible(background::get)
+        .visible(background)
         .defaultValue(new SettingColor(25, 25, 25, 50))
         .build()
     );
@@ -124,11 +124,12 @@ public class LagNotifierHud extends HudElement {
         float timeSinceLastTick = TickRate.INSTANCE.getTimeSinceLastTick();
 
         if (timeSinceLastTick >= 1f) {
-            Color color;
-
-            if (timeSinceLastTick > 10) color = color3.get();
-            else if (timeSinceLastTick > 3) color = color2.get();
-            else color = color1.get();
+            Color color =
+                timeSinceLastTick > 10
+                    ? color3.get()
+                    : timeSinceLastTick > 3
+                        ? color2.get()
+                        : color1.get();
 
             render(renderer, String.format("%.1f", timeSinceLastTick), color);
         }

@@ -22,6 +22,7 @@ import meteordevelopment.meteorclient.utils.entity.TargetUtils;
 import meteordevelopment.meteorclient.utils.player.PlayerUtils;
 import meteordevelopment.meteorclient.utils.render.color.Color;
 import meteordevelopment.meteorclient.utils.render.color.SettingColor;
+import net.greemdev.meteor.Greteor;
 import net.minecraft.client.gui.screen.ingame.InventoryScreen;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.enchantment.Enchantment;
@@ -207,14 +208,19 @@ public class CombatHud extends HudElement {
             if (playerEntity == null) return;
 
             // Player Model
-            InventoryScreen.drawEntity(
-                renderer.drawContext,
-                (int) (x + (25 * scale.get())),
-                (int) (y + (66 * scale.get())),
-                (int) (30 * scale.get()),
-                -MathHelper.wrapDegrees(playerEntity.prevYaw + (playerEntity.getYaw() - playerEntity.prevYaw) * mc.getTickDelta()),
-                -playerEntity.getPitch(), playerEntity
-            );
+            try {
+                InventoryScreen.drawEntity(
+                    renderer.drawContext,
+                    (int) (x + (25 * scale.get())),
+                    (int) (y + (66 * scale.get())),
+                    (int) (30 * scale.get()),
+                    -MathHelper.wrapDegrees(playerEntity.prevYaw + (playerEntity.getYaw() - playerEntity.prevYaw) * mc.getTickDelta()),
+                    -playerEntity.getPitch(), playerEntity
+                );
+            } catch (Exception e) {
+                Greteor.logger().error("could not render player in CombatHud");
+                Greteor.logger().catching(e);
+            }
 
             // Moving pos to past player model
             x += 50 * scale.get();

@@ -71,7 +71,7 @@ public class CrashReportMixin {
                     sb.append("Text\n{")
                       .append(textHud.text.get())
                       .append("}\n");
-                    if (textHud.shown.get() != TextHud.Shown.Always) {
+                    if (!textHud.shown.get().always()) {
                         sb.append("(")
                           .append(textHud.shown.get())
                           .append(textHud.condition.get())

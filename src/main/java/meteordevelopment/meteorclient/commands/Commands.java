@@ -61,7 +61,6 @@ public class Commands {
         add(new ModulesCommand());
         add(new BindsCommand());
         add(new GiveCommand());
-        add(new NameHistoryCommand());
         add(new BindCommand());
         add(new FovCommand());
         add(new RotationCommand());

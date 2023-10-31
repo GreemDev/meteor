@@ -3,7 +3,7 @@
  * Copyright (c) Meteor Development.
  */
 
-/*package net.greemdev.meteor.modules.damageNumbers
+package net.greemdev.meteor.modules.damageNumbers
 
 import net.greemdev.meteor.*
 import net.greemdev.meteor.util.minecraft
@@ -90,4 +90,3 @@ data class EntityState(val entity: LivingEntity) {
         }
     }
 }
-*/

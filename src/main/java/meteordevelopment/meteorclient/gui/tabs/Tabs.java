@@ -6,6 +6,7 @@
 package meteordevelopment.meteorclient.gui.tabs;
 
 import com.google.common.collect.ImmutableList;
+import it.unimi.dsi.fastutil.objects.ObjectImmutableList;
 import meteordevelopment.meteorclient.gui.tabs.builtin.*;
 import meteordevelopment.meteorclient.systems.config.Config;
 import meteordevelopment.meteorclient.utils.PreInit;
@@ -35,10 +36,15 @@ public class Tabs {
             ? _lastTab
             : modules();
     }
-    private static final Map<String, Tab> tabs = new HashMap<>();
+    private static final List<Tab> tabs = new ArrayList<>();
 
     public static <T extends Tab> T get(String name) {
-        return Utils.cast(tabs.get(name));
+        return Utils.cast(
+            tabs.stream()
+            .filter(t -> t.name.equals(name))
+            .findFirst()
+            .orElse(null)
+        );
     }
 
     @NotNull
@@ -78,7 +84,7 @@ public class Tabs {
 
     @NotNull
     public static WaypointsTab waypoints() {
-        return WaypointsTab.INSTANCE;
+        return get(WaypointsTab.NAME);
     }
 
     @NotNull
@@ -95,16 +101,14 @@ public class Tabs {
         add(new MacrosTab());
         add(new ProfilesTab());
         add(new BaritoneTab());
-        add(WaypointsTab.INSTANCE);
+        add(new WaypointsTab());
     }
 
     public static void add(Tab tab) {
-        tabs.put(tab.name, tab);
+        tabs.add(tab);
     }
 
     public static List<Tab> get() {
-        return new ImmutableList.Builder<Tab>()
-            .addAll(tabs.values())
-            .build();
+        return new ObjectImmutableList<>(tabs);
     }
 }

@@ -43,6 +43,7 @@ public class TextHud extends HudElement {
         .description("Text to display with Starscript.")
         .defaultValue(MeteorClient.NAME)
         .onChanged(s -> recompile())
+        .wide()
         .renderStarscript()
         .build()
     );
@@ -100,7 +101,7 @@ public class TextHud extends HudElement {
         .name("custom-scale")
         .description("Applies custom text scale rather than the global one.")
         .defaultValue(false)
-        .onChanged(integer -> recalculateSize = true)
+        .onChanged(i -> recalculateSize = true)
         .build()
     );
 
@@ -109,7 +110,7 @@ public class TextHud extends HudElement {
         .description("Custom scale.")
         .visible(customScale)
         .defaultValue(1)
-        .onChanged(integer -> recalculateSize = true)
+        .onChanged(i -> recalculateSize = true)
         .min(0.5)
         .sliderRange(0.5, 3)
         .build()
@@ -200,7 +201,7 @@ public class TextHud extends HudElement {
             }
             else script = Compiler.compile(result);
 
-            if (shown.get() != Shown.Always) {
+            if (!shown.get().always()) {
                 conditionScript = Compiler.compile(Parser.parse(condition.get()));
             }
 
@@ -218,10 +219,10 @@ public class TextHud extends HudElement {
             calculateSize(renderer);
         }
 
-        if (shown.get() != Shown.Always && conditionScript != null) {
+        if (!shown.get().always() && conditionScript != null) {
             String text = MeteorStarscript.run(conditionScript);
             if (text == null) visible = false;
-            else visible = shown.get() == Shown.WhenTrue ? text.equalsIgnoreCase("true") : text.equalsIgnoreCase("false");
+            else visible = shown.get().whenTrue() ? text.equalsIgnoreCase("true") : text.equalsIgnoreCase("false");
         }
 
         firstTick = false;
@@ -231,7 +232,7 @@ public class TextHud extends HudElement {
     public void render(HudRenderer renderer) {
         if (firstTick) runTick(renderer);
 
-        boolean visible = shown.get() == Shown.Always || this.visible;
+        boolean visible = shown.get().always() || this.visible;
 
         if ((empty || !visible) && isInEditor()) {
             renderer.line(x, y, x + getWidth(), y + getHeight(), Color.GRAY);

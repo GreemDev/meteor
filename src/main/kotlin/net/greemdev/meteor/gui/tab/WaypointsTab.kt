@@ -21,9 +21,14 @@ import net.minecraft.client.gui.screen.Screen
 import net.minecraft.nbt.NbtIo
 import java.io.File
 
-object WaypointsTab : Tab("Waypoints", GuiRenderer.WAYPOINTS, Meteor.config().waypointsIcon::get) {
+class WaypointsTab : Tab("Waypoints", GuiRenderer.WAYPOINTS, Meteor.config().waypointsIcon) {
     override fun createScreen(theme: GuiTheme): TabScreen = WorldListScreen(theme, this)
     override fun isScreen(screen: Screen) = screen is WorldListScreen
+
+    companion object {
+        const val NAME = "Waypoints"
+    }
+
 }
 
 private class WorldListScreen(theme: GuiTheme, tab: Tab) : WindowTabScreen(theme, tab) {

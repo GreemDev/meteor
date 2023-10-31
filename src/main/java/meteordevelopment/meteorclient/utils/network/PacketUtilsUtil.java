@@ -203,7 +203,7 @@ public class PacketUtilsUtil {
         writer.write("import java.util.stream.Stream;\n");
 
         //   Write class
-        writer.write("\npublic class PacketUtils {\n");
+        writer.write("\npublic final class PacketUtils {\n");
 
         //     Write fields
         writer.write("    public static final Registry<Class<? extends Packet<?>>> REGISTRY = new PacketRegistry();\n\n");

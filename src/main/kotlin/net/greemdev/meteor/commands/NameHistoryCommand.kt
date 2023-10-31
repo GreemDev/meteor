@@ -12,7 +12,7 @@ import meteordevelopment.meteorclient.utils.render.color.Color
 import net.greemdev.meteor.GCommand
 import net.greemdev.meteor.commands.api.argument
 import net.greemdev.meteor.format
-import net.greemdev.meteor.util.Http
+import net.greemdev.meteor.util.HTTP
 import net.greemdev.meteor.util.minecraft
 import net.greemdev.meteor.util.misc.currentWorld
 import net.greemdev.meteor.util.text.*
@@ -26,7 +26,7 @@ object NameHistoryCommand : GCommand(
                 MeteorExecutor.execute {
                     val target by it.argument(arg.playerListEntry(), "player")
 
-                    val history = Http.get("https://laby.net/api/v2/user/${target.profile.id}/get-profile").requestJson<NameHistory>()
+                    val history = HTTP.get("https://laby.net/api/v2/user/${target.profile.id}/get-profile").requestJson<NameHistory>()
                     if (history == null || history.username_history.isNullOrEmpty()) {
                         error("There was an error fetching that player's name history.")
                         return@execute

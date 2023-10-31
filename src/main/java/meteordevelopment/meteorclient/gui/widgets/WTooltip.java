@@ -51,7 +51,7 @@ public abstract class WTooltip extends WContainer implements WRoot {
             ? width
             : padded(tooltipLabelCell, theme.scale(
             Strings.widestLine(text, (l) ->
-                LegacyText.getLegacyWidth(theme.textRenderer(), l, false)
+                LegacyText.getLegacyWidth(theme.textRenderer(), l)
             )
         ), true);
     }

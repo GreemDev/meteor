@@ -8,8 +8,7 @@ package net.greemdev.meteor.modules
 import meteordevelopment.meteorclient.utils.misc.MeteorStarscript
 import meteordevelopment.starscript.Script
 import meteordevelopment.starscript.utils.StarscriptError
-import net.greemdev.meteor.GModule
-import net.greemdev.meteor.onFailureOf
+import net.greemdev.meteor.*
 import net.greemdev.meteor.util.meteor.*
 
 object CommandAliases : GModule(
@@ -25,7 +24,7 @@ object CommandAliases : GModule(
 
     fun find(name: String) = aliases.entries.firstOrNull {
         it.key.equals(name, true)
-    }
+    }?.value
 
     private var compiledCommands = mapOf<String, Script>()
     var aliases = mapOf<String, String>()
@@ -46,9 +45,9 @@ object CommandAliases : GModule(
 
     private fun recompile(scripts: Map<String, String>) {
         compiledCommands = buildMap {
-            scripts.forEach { (name, script) ->
-                this[name] = MeteorStarscript.compile(script)
-            }
+            putAll(scripts.map { (name, script) ->
+                name to MeteorStarscript.compile(script)
+            })
         }
 
         if (compiledCommands.isNotEmpty()) {

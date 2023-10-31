@@ -32,7 +32,7 @@ operator fun Vec3d.component2() = y
 operator fun Vec3d.component3() = z
 
 val Number.isZero
-    get() = abs(toDouble()) == 0.0
+    get() = toFloat().let { it == 0f || it == -0f }
 
 fun Number.power(of: Number) = toDouble().pow(of.toDouble())
 

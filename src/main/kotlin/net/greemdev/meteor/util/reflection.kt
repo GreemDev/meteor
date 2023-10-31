@@ -34,3 +34,6 @@ inline fun <reified T : Any> findInstancesOfSubtypesOf(pkg: String): List<T> =
     }
 
 inline fun buildReflections(crossinline cb: Initializer<ConfigurationBuilder>) = Reflections(ConfigurationBuilder().apply(cb))
+
+inline fun<reified T> className() = T::class.simpleName
+inline fun<reified T> qualifiedName() = T::class.qualifiedName

@@ -77,9 +77,7 @@ public class InventoryHud extends HudElement {
         if (hasContainer) Utils.getItemsInContainerItem(container, containerItems);
         Color drawColor = hasContainer ? Utils.getShulkerColor(container) : color.get();
 
-        if (background.get() != Background.None) {
-            drawBackground(renderer, (int) x, (int) y, drawColor);
-        }
+        background.get().render(renderer, (int) x, (int) y, getWidth(), getHeight(), drawColor);
 
         if (mc.player == null) return;
 
@@ -90,23 +88,20 @@ public class InventoryHud extends HudElement {
                     ItemStack stack = hasContainer ? containerItems[index] : mc.player.getInventory().getStack(index + 9);
                     if (stack == null) continue;
 
-                    int itemX = background.get() == Background.Texture ? (int) (x + (8 + i * 18) * scale.get()) : (int) (x + (1 + i * 18) * scale.get());
-                    int itemY = background.get() == Background.Texture ? (int) (y + (7 + row * 18) * scale.get()) : (int) (y + (1 + row * 18) * scale.get());
-
-                    renderer.item(stack, itemX, itemY, scale.get().floatValue(), true);
+                    renderer.item(
+                        stack,
+                        background.get().calculateX(x, i, scale.get()),
+                        background.get().calculateY(y, row, scale.get()),
+                        scale.get().floatValue(),
+                        true
+                    );
                 }
             }
         });
     }
 
     private void drawBackground(HudRenderer renderer, int x, int y, Color color) {
-        int w = getWidth();
-        int h = getHeight();
-
-        switch (background.get()) {
-            case Texture, Outline -> renderer.texture(background.get() == Background.Texture ? TEXTURE : TEXTURE_TRANSPARENT, x, y, w, h, color);
-            case Flat -> renderer.quad(x, y, w, h, color);
-        }
+        background.get().render(renderer, x, y, getWidth(), getHeight(), color);
     }
 
     private ItemStack getContainer() {
@@ -132,6 +127,31 @@ public class InventoryHud extends HudElement {
         Background(int width, int height) {
             this.width = width;
             this.height = height;
+        }
+
+        public Identifier texture() {
+            return switch (this) {
+                case Texture -> TEXTURE;
+                case Outline -> TEXTURE_TRANSPARENT;
+                case Flat, None -> null;
+            };
+        }
+
+        public void render(HudRenderer renderer, int x, int y, int w, int h, Color color) {
+            switch (this) {
+                case Texture, Outline -> renderer.texture(texture(), x, y, w, h, color);
+                case Flat -> renderer.quad(x, y, w, h, color);
+            }
+        }
+
+        public int calculateX(double x, int rowIndex, double scale) {
+            int magicNumber = this == Texture ? 8 : 1;
+            return (int)(x + (magicNumber + rowIndex * 18) * scale);
+        }
+
+        public int calculateY(double y, int row, double scale) {
+            int magicNumber = this == Texture ? 7 : 1;
+            return (int)(y + (magicNumber + row * 18) * scale);
         }
     }
 }

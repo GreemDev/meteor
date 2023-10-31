@@ -25,16 +25,17 @@ import net.minecraft.client.network.PlayerListEntry;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.decoration.EndCrystalEntity;
 import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.entity.projectile.ProjectileUtil;
 import net.minecraft.item.PotionItem;
 import net.minecraft.item.SwordItem;
 import net.minecraft.network.packet.c2s.play.PlayerMoveC2SPacket;
+import net.minecraft.util.hit.EntityHitResult;
 import net.minecraft.util.hit.HitResult;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.math.Direction;
-import net.minecraft.util.math.MathHelper;
-import net.minecraft.util.math.Vec3d;
+import net.minecraft.util.math.*;
 import net.minecraft.world.GameMode;
 import net.minecraft.world.RaycastContext;
+
+import java.util.function.Predicate;
 
 import static meteordevelopment.meteorclient.MeteorClient.mc;
 import static meteordevelopment.meteorclient.utils.Utils.WHITE;
@@ -109,6 +110,42 @@ public class PlayerUtils {
         mc.player.setPosition(x, mc.player.getY(), z);
         mc.player.networkHandler.sendPacket(new PlayerMoveC2SPacket.PositionAndOnGround(mc.player.getX(), mc.player.getY(), mc.player.getZ(), mc.player.isOnGround()));
     }
+
+    /**
+     * Retrieves the target that the crosshair is currently pointing at within a given range.
+     *
+     * @param  entity       the entity from which the crosshair originates
+     * @param  range        the maximum range to the target
+     * @param  ignoreBlocks determines whether blocks should be ignored when checking for targets
+     * @param  filter       a predicate used to filter potential targets
+     * @return              the hit result representing the target that the crosshair is pointing at, or null if no target is found
+     *
+     * @author Zgoly, from Meteorist
+     */
+    public static HitResult getCrosshairTarget(Entity entity, double range, boolean ignoreBlocks, Predicate<Entity> filter) {
+        if (entity == null || mc.world == null) return null;
+
+        Vec3d vec3d = entity.getCameraPosVec(1);
+        Vec3d vec3d2 = entity.getRotationVec(1);
+        Vec3d vec3d3 = vec3d.add(vec3d2.multiply(range));
+        Box box = entity.getBoundingBox().stretch(vec3d2.multiply(range)).expand(1);
+
+        RaycastContext raycastContext = new RaycastContext(vec3d, vec3d3, RaycastContext.ShapeType.COLLIDER, RaycastContext.FluidHandling.NONE, entity);
+        HitResult hitResult = mc.world.raycast(raycastContext);
+
+        double e = range * range;
+        if (hitResult != null && !ignoreBlocks) e = hitResult.getPos().squaredDistanceTo(vec3d);
+
+        EntityHitResult entityHitResult = ProjectileUtil.raycast(entity, vec3d, vec3d3, box, filter.and(targetEntity -> !targetEntity.isSpectator()), e);
+        if (entityHitResult != null) {
+            return entityHitResult;
+        } else if (!ignoreBlocks) {
+            return hitResult;
+        }
+
+        return null;
+    }
+
 
     public static boolean canSeeEntity(Entity entity) {
         Vec3d vec1 = new Vec3d(0, 0, 0);

@@ -5,28 +5,50 @@
 
 package meteordevelopment.meteorclient.utils.network;
 
-import meteordevelopment.meteorclient.utils.PreInit;
+import kotlin.Unit;
+import kotlinx.coroutines.Job;
+import kotlinx.coroutines.future.FutureKt;
+import net.greemdev.meteor.util.Coroutines;
+import net.greemdev.meteor.utils;
 
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
-import java.util.concurrent.atomic.AtomicInteger;
+import java.util.concurrent.CancellationException;
+import java.util.concurrent.CompletableFuture;
+import java.util.function.Consumer;
+import java.util.function.Supplier;
 
-public class MeteorExecutor {
-    public static ExecutorService executor;
+public final class MeteorExecutor {
 
-    @PreInit
-    public static void init() {
-        AtomicInteger threadNumber = new AtomicInteger(1);
+    private MeteorExecutor() {}
 
-        executor = Executors.newCachedThreadPool((task) -> {
-            Thread thread = new Thread(task);
-            thread.setDaemon(true);
-            thread.setName("Meteor-Executor-" + threadNumber.getAndIncrement());
-            return thread;
-        });
+    public static Job execute(Runnable task) {
+        return Coroutines.runInCoroutine(task, Coroutines.scope());
     }
 
-    public static void execute(Runnable task) {
-        executor.execute(task);
+    public static Job execute(Runnable task, Runnable success) {
+        return Coroutines.launchJob(builder ->
+            builder.whenDone(utils.kotlin(success))
+                .executing(execute(task))
+        );
+    }
+
+    public static Job execute(Runnable task, Runnable success, Consumer<Throwable> errored) {
+        return Coroutines.launchJob(builder ->
+            builder.whenDone(utils.kotlin(success))
+                .whenError(utils.kotlin(errored))
+                .executing(execute(task))
+        );
+    }
+
+    public static Job execute(Runnable task, Runnable success, Consumer<Throwable> errored, Consumer<CancellationException> cancelled) {
+        return Coroutines.launchJob(builder ->
+            builder.whenDone(utils.kotlin(success))
+                .whenError(utils.kotlin(errored))
+                .whenCancelled(utils.kotlin(cancelled))
+                .executing(execute(task))
+        );
+    }
+
+    public static <T> CompletableFuture<T> getAsync(Supplier<T> supplier) {
+        return FutureKt.asCompletableFuture(Coroutines.getAsync(supplier, Coroutines.scope()));
     }
 }

@@ -7,7 +7,6 @@
 
 package net.greemdev.meteor.util.misc
 
-import meteordevelopment.meteorclient.mixin.ChatHudAccessor
 import meteordevelopment.meteorclient.utils.world.Dimension
 import net.greemdev.meteor.Initializer
 import net.greemdev.meteor.Predicate
@@ -15,8 +14,6 @@ import net.greemdev.meteor.util.meteor.resource
 import net.greemdev.meteor.util.minecraft
 import net.greemdev.meteor.util.text.*
 import net.minecraft.client.MinecraftClient
-import net.minecraft.client.gui.hud.ChatHud
-import net.minecraft.client.gui.widget.ButtonWidget
 import net.minecraft.client.network.ClientPlayNetworkHandler
 import net.minecraft.client.network.PlayerListEntry
 import net.minecraft.client.world.ClientWorld
@@ -28,14 +25,31 @@ import net.minecraft.text.Text
 import net.minecraft.util.math.*
 import net.minecraft.world.GameMode
 import java.util.Optional
-import java.util.function.Consumer
 
 @JvmField
 var allowNextChatClear = false
 
-fun MinecraftClient.setPlayerPos(x: Double = player!!.x, y: Double = player!!.y, z: Double = player!!.z) {
+fun MinecraftClient.setPlayerPos(x: Double = playerX, y: Double = playerY, z: Double = playerZ) {
     player!!.setPos(x, y, z)
 }
+
+var MinecraftClient.playerX
+    get() = player().x
+    set(value) {
+        setPlayerPos(x = value)
+    }
+
+var MinecraftClient.playerY
+    get() = player().y
+    set(value) {
+        setPlayerPos(y = value)
+    }
+
+var MinecraftClient.playerZ
+    get() = player().z
+    set(value) {
+        setPlayerPos(z = value)
+    }
 
 fun Entity.editPos(x: Double = 0.0, y: Double = 0.0, z: Double = 0.0) {
     setPosition(this.x + x, this.y + y, this.z + z)

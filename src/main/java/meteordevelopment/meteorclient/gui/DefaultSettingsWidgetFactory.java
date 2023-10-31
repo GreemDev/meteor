@@ -121,8 +121,8 @@ public class DefaultSettingsWidgetFactory extends SettingsWidgetFactory {
 
             table.add(theme.label(setting.title)).top().marginTop(settingTitleTopMargin()).widget().tooltip = setting.description;
 
-            Factory factory = getFactory(setting.getClass());
-            if (factory != null) factory.create(table, setting);
+            var factory = getFactory(setting.getClass());
+            if (factory != null) factory.accept(table, setting);
 
             table.row();
         }
@@ -189,7 +189,8 @@ public class DefaultSettingsWidgetFactory extends SettingsWidgetFactory {
     private void stringW(WTable table, StringSetting setting) {
         CharFilter filter = setting.filter == null ? (text, c) -> true : setting.filter;
         Cell<WTextBox> cell = table.add(theme.textBox(setting.get(), filter, setting.renderer));
-        if (setting.wide) cell.minWidth(Utils.getWindowWidth() - Utils.getWindowWidth() / 4.0);
+        if (setting.wide)
+            cell.minWidth(Utils.getWindowWidth() / 2.5);
 
         WTextBox textBox = cell.expandX().widget();
         textBox.action = () -> setting.set(textBox.get());

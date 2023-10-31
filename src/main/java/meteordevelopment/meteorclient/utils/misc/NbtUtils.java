@@ -17,6 +17,7 @@ import org.apache.commons.io.output.ByteArrayOutputStream;
 import java.io.ByteArrayInputStream;
 import java.io.DataInputStream;
 import java.util.*;
+import java.util.function.Function;
 
 import static meteordevelopment.meteorclient.MeteorClient.mc;
 
@@ -27,10 +28,10 @@ public class NbtUtils {
         return tag;
     }
 
-    public static <T> List<T> listFromTag(NbtList tag, ToValue<T> toItem) {
+    public static <T> List<T> listFromTag(NbtList tag, Function<NbtElement, T> toItem) {
         List<T> list = new ArrayList<>(tag.size());
         for (NbtElement itemTag : tag) {
-            T value = toItem.toValue(itemTag);
+            T value = toItem.apply(itemTag);
             if (value != null) list.add(value);
         }
         return list;
@@ -42,9 +43,9 @@ public class NbtUtils {
         return tag;
     }
 
-    public static <K, V> Map<K, V> mapFromTag(NbtCompound tag, ToKey<K> toKey, ToValue<V> toValue) {
+    public static <K, V> Map<K, V> mapFromTag(NbtCompound tag, Function<String, K> toKey, Function<NbtElement, V> toValue) {
         Map<K, V> map = new HashMap<>(tag.getSize());
-        for (String key : tag.getKeys()) map.put(toKey.toKey(key), toValue.toValue(tag.get(key)));
+        for (String key : tag.getKeys()) map.put(toKey.apply(key), toValue.apply(tag.get(key)));
         return map;
     }
 
@@ -105,13 +106,5 @@ public class NbtUtils {
 
             return null;
         }
-    }
-
-    public interface ToKey<T> {
-        T toKey(String string);
-    }
-
-    public interface ToValue<T> {
-        T toValue(NbtElement tag);
     }
 }

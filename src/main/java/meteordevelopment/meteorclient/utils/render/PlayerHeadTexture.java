@@ -4,7 +4,8 @@ import com.mojang.blaze3d.platform.TextureUtil;
 import com.mojang.blaze3d.systems.RenderSystem;
 import meteordevelopment.meteorclient.renderer.Texture;
 import meteordevelopment.meteorclient.utils.misc.MeteorIdentifier;
-import meteordevelopment.meteorclient.utils.network.Http;
+import net.greemdev.meteor.util.HTTP;
+import net.greemdev.meteor.util.misc.KMC;
 import org.lwjgl.BufferUtils;
 import org.lwjgl.stb.STBImage;
 import org.lwjgl.system.MemoryStack;
@@ -23,7 +24,7 @@ public class PlayerHeadTexture extends Texture {
     public PlayerHeadTexture(String url) {
         BufferedImage skin;
         try {
-            skin = ImageIO.read(Http.get(url).sendInputStream());
+            skin = ImageIO.read(HTTP.get(url).requestInputStream());
         } catch (IOException e) {
             e.printStackTrace();
             return;
@@ -66,7 +67,7 @@ public class PlayerHeadTexture extends Texture {
 
     public PlayerHeadTexture() {
         try {
-            ByteBuffer data = TextureUtil.readResource(mc.getResourceManager().getResource(new MeteorIdentifier("textures/steve.png")).get().getInputStream());
+            ByteBuffer data = TextureUtil.readResource(KMC.getMeteorResource(mc, "textures/steve.png").get().getInputStream());
             data.rewind();
 
             try (MemoryStack stack = MemoryStack.stackPush()) {

@@ -3,25 +3,30 @@
  * Copyright (c) Meteor Development.
  */
 
-/*package net.greemdev.meteor.modules.damageNumbers
+package net.greemdev.meteor.modules.damageNumbers
 
+import com.mojang.blaze3d.systems.RenderSystem
 import meteordevelopment.meteorclient.events.world.TickEvent
+import meteordevelopment.meteorclient.renderer.text.TextRenderer
 import meteordevelopment.meteorclient.settings.ColorSetting
 import meteordevelopment.meteorclient.settings.EnumSetting
 import meteordevelopment.meteorclient.utils.render.color.*
 import meteordevelopment.orbit.EventHandler
+import net.fabricmc.fabric.api.client.rendering.v1.WorldRenderContext
 import net.greemdev.meteor.*
 import net.greemdev.meteor.type.DamageOperatorType
 import net.greemdev.meteor.util.meteor.*
 import net.greemdev.meteor.util.minecraft
-import net.greemdev.meteor.util.misc.isZero
-import net.greemdev.meteor.util.misc.precision
+import net.greemdev.meteor.util.misc.*
 import net.greemdev.meteor.util.text.ChatColor
+import net.minecraft.client.font.TextRenderer.TextLayerType
 import net.minecraft.client.gui.DrawContext
 import net.minecraft.client.render.Camera
+import net.minecraft.client.render.GameRenderer
 import net.minecraft.client.render.VertexConsumerProvider
 import net.minecraft.client.render.VertexConsumers
 import net.minecraft.client.util.math.MatrixStack
+import org.lwjgl.opengl.GL11
 import kotlin.math.abs
 import kotlin.math.round
 
@@ -40,7 +45,7 @@ object DamageNumbers : GModule(
         defaultValue(true)
     }
 
-    val operatorPrefix: EnumSetting<DamageOperatorType> by sg.enum {
+    val operatorPrefix: EnumSetting<DamageOperatorType> by sg enum {
         name("operator-prefix")
         description("The type of prefixing you want on the indicators.")
         defaultValue(DamageOperatorType.None)
@@ -131,7 +136,8 @@ object DamageNumbers : GModule(
         else if (isDamage) damageColor()
         else healColor()
 
-    fun drawNumber(drawContext: DrawContext, vertexConsumers: VertexConsumerProvider, dmg: Float, x: Int, y: Int, width: Float) {
+
+    fun drawNumber(matrices: MatrixStack, vertexConsumers: VertexConsumerProvider, dmg: Float, x: Int, y: Int, width: Float) {
         val number = abs(dmg).takeUnless(Number::isZero) ?: return
         val numStr = (
             if (showDecimal())
@@ -146,11 +152,17 @@ object DamageNumbers : GModule(
         val sw = minecraft.textRenderer.getWidth(formattedNumber)
         val color = getColor(dmg > 0)
 
-        drawContext.drawText(minecraft.textRenderer, formattedNumber, (x + (width / 2) - sw).toInt(), y + 5, color.packed, shadowedText())
-    }
-
-    fun drawText(text: String?, x: Int, y: Int, color: Int, shadow: Boolean): Int {
-        return 0 //figure out how the fuck we draw text without a DrawContext
+        minecraft.textRenderer.draw(
+            formattedNumber,
+            (x + (width / 2) - sw),
+            y + 5f,
+            color.packed,
+            shadowedText(),
+            matrices.peek().positionMatrix,
+            vertexConsumers,
+            TextLayerType.NORMAL,
+            0, 15728880,
+            minecraft.textRenderer.isRightToLeft)
     }
 
     @EventHandler
@@ -166,7 +178,40 @@ object DamageNumbers : GModule(
         particles.removeIf { it.age > DamageNumbers.maxAge() }
     }
     @JvmStatic
-    fun render(matrices: MatrixStack, camera: Camera) =
-        particles.forEach { it.render(matrices, camera) }
+    fun render(wrctx: WorldRenderContext) =
+        particles.forEach { render(it, wrctx) }
+
+    fun render(dn: DamageNumber, wrctx: WorldRenderContext) {
+        if (wrctx.camera().pos.squaredDistanceTo(dn.x, dn.y, dn.z) > distance().power(2)) return
+
+        val scaleFactor = scaleFactor().toFloat()
+        val tickDelta = minecraft.tickDelta
+
+        val xx = lerp(tickDelta, dn.prevX, dn.x)
+        val yy = lerp(tickDelta, dn.prevY, dn.y)
+        val zz = lerp(tickDelta, dn.prevZ, dn.z)
+
+        val (camX, camY, camZ) = wrctx.camera().pos
+
+        modifyTopCopy(wrctx.matrixStack()) {
+            translate(xx - camX, yy - camY, zz - camZ)
+
+            multiply(Axis.YP.degreesQuaternion(-wrctx.camera().yaw))
+            multiply(Axis.XP.degreesQuaternion(wrctx.camera().pitch))
+            scale(scaleFactor, scaleFactor, scaleFactor)
+
+            RenderSystem.setShader(GameRenderer::getPositionColorProgram)
+            RenderSystem.enableDepthTest()
+            RenderSystem.enableBlend()
+            RenderSystem.blendFuncSeparate(GL11.GL_SRC_ALPHA, GL11.GL_ONE_MINUS_SRC_ALPHA, GL11.GL_ONE, GL11.GL_ZERO)
+
+            val dmg = if (DamageNumbers.cumulative())
+                dn.entityState.lastDamageCumulative
+            else dn.damage
+
+            drawNumber(wrctx.matrixStack(), wrctx.consumers()!!, dmg, 0, 0, 10f)
+
+            RenderSystem.disableBlend()
+        }
+    }
 }
-*/

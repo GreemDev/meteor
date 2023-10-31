@@ -11,8 +11,12 @@ import meteordevelopment.meteorclient.systems.hud.HudElement
 import meteordevelopment.meteorclient.systems.hud.HudElementInfo
 import meteordevelopment.meteorclient.systems.hud.HudGroup
 import meteordevelopment.meteorclient.systems.modules.Category
+import net.fabricmc.fabric.api.client.rendering.v1.WorldRenderContext
+import net.fabricmc.fabric.api.client.rendering.v1.WorldRenderEvents
 import net.greemdev.meteor.hud.HudElementMetadata
 import net.greemdev.meteor.hud.element.ModuleKeybindHud
+import net.greemdev.meteor.modules.damageNumbers.DamageNumbers
+import net.greemdev.meteor.util.className
 //import net.greemdev.meteor.hud.element.*
 import net.greemdev.meteor.util.meteor.*
 import net.greemdev.meteor.util.meteor.starscript.initGStarscript
@@ -20,8 +24,8 @@ import net.greemdev.meteor.util.misc.GVersioning
 import net.minecraft.item.Items
 import java.lang.invoke.MethodHandles
 
-private val category = Category(Greteor::class.simpleName, Items.LIME_CONCRETE_POWDER.defaultStack)
-private val hudGroup = HudGroup(Greteor::class.simpleName)
+private val category = Category(className<Greteor>(), Items.LIME_CONCRETE_POWDER.defaultStack)
+private val hudGroup = HudGroup(className<Greteor>())
 
 object Greteor {
 
@@ -38,8 +42,9 @@ object Greteor {
 
         GCommand.findAll().forEach(Commands::add)
 
-        GVersioning.reloadLatestRevision()
         initGStarscript()
+
+        WorldRenderEvents.AFTER_ENTITIES.register(DamageNumbers::render)
     }
 
     @JvmStatic

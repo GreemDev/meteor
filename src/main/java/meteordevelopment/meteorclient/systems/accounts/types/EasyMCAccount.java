@@ -11,7 +11,7 @@ import meteordevelopment.meteorclient.mixin.MinecraftClientAccessor;
 import meteordevelopment.meteorclient.mixin.YggdrasilMinecraftSessionServiceAccessor;
 import meteordevelopment.meteorclient.systems.accounts.Account;
 import meteordevelopment.meteorclient.systems.accounts.AccountType;
-import meteordevelopment.meteorclient.utils.network.Http;
+import net.greemdev.meteor.util.HTTP;
 import net.minecraft.client.util.Session;
 
 import java.util.Optional;
@@ -32,9 +32,9 @@ public class EasyMCAccount extends Account<EasyMCAccount> {
         // we set the name to the session id after we redeem the token - the token length is 20, session id length is 43
         if (name.length() == 43) return true;
 
-        AuthResponse res = Http.post("https://api.easymc.io/v1/token/redeem")
+        AuthResponse res = HTTP.post("https://api.easymc.io/v1/token/redeem")
             .bodyJson("{\"token\":\"" + name + "\"}")
-            .sendJson(AuthResponse.class);
+            .requestJson(AuthResponse.class);
 
         if (res != null) {
             cache.username = res.mcName;

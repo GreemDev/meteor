@@ -94,17 +94,16 @@ public class ByteCountDataOutput implements DataOutput {
     }
 
     long getUTFLength(String s) {
-        long utflen = 0;
-        for (int cpos = 0; cpos < s.length(); cpos++) {
-            char c = s.charAt(cpos);
-            if (c >= 0x0001 && c <= 0x007F) {
-                utflen++;
-            } else if (c > 0x07FF) {
-                utflen += 3;
-            } else {
-                utflen += 2;
-            }
+        long length = 0;
+        for (int charPos = 0; charPos < s.length(); charPos++) {
+            char c = s.charAt(charPos);
+            if (c >= 0x0001 && c <= 0x007F)
+                length++;
+            else if (c > 0x07FF)
+                length += 3;
+            else
+                length += 2;
         }
-        return utflen;
+        return length;
     }
 }

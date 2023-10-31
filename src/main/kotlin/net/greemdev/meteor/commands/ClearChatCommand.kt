@@ -20,4 +20,4 @@ object ClearChatCommand : GCommand("clearchat", "Clears your chat.", {
         allowNextChatClear = true
         minecraft.inGameHud.chatHud.clear(false)
     }
-})
+}, "cc")

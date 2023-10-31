@@ -10,6 +10,7 @@ import meteordevelopment.meteorclient.events.world.TickEvent;
 import meteordevelopment.meteorclient.utils.PreInit;
 import meteordevelopment.meteorclient.utils.misc.MeteorIdentifier;
 import meteordevelopment.orbit.EventHandler;
+import net.greemdev.meteor.util.HTTP;
 import net.minecraft.client.texture.NativeImage;
 import net.minecraft.client.texture.NativeImageBackedTexture;
 import net.minecraft.entity.player.PlayerEntity;
@@ -18,11 +19,10 @@ import net.minecraft.util.Identifier;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.*;
-import java.util.stream.Stream;
 
 import static meteordevelopment.meteorclient.MeteorClient.mc;
 
-public class Capes {
+public final class Capes {
     private static final String CAPE_OWNERS_URL = "https://meteorclient.com/api/capeowners";
     private static final String CAPES_URL = "https://meteorclient.com/api/capes";
 
@@ -43,36 +43,38 @@ public class Capes {
         TO_RETRY.clear();
         TO_REMOVE.clear();
 
-        MeteorExecutor.execute(() -> {
-            // Cape owners
-            Stream<String> lines = Http.get(CAPE_OWNERS_URL).sendLines();
-            if (lines != null) lines.forEach(s -> {
-                String[] split = s.split(" ");
+        // Cape owners
+        HTTP.get(CAPE_OWNERS_URL).requestLinesAsync(lines -> {
+            if (lines != null)
+                lines.forEach(s -> {
+                    String[] split = s.split(" ");
 
-                if (split.length >= 2) {
-                    OWNERS.put(UUID.fromString(split[0]), split[1]);
-                    if (!TEXTURES.containsKey(split[1])) TEXTURES.put(split[1], new Cape(split[1]));
-                }
-            });
-
-
-            OWNERS.put(UUID.fromString("0aff419e-f9a5-4f9d-aaf2-3fc4c29f04a0"), GREEM_KEY);
-            if (!TEXTURES.containsKey(GREEM_KEY))
-                TEXTURES.put(GREEM_KEY, new Cape(GREEM_KEY));
-
-            // Capes
-            lines = Http.get(CAPES_URL).sendLines();
-            if (lines != null) lines.forEach(s -> {
-                String[] split = s.split(" ");
-
-                if (split.length >= 2) {
-                    if (!URLS.containsKey(split[0])) URLS.put(split[0], split[1]);
-                }
-            });
-
-            if (!URLS.containsKey(GREEM_KEY))
-                URLS.put(GREEM_KEY, GREEM_CAPE);
+                    if (split.length >= 2) {
+                        OWNERS.put(UUID.fromString(split[0]), split[1]);
+                        if (!TEXTURES.containsKey(split[1])) TEXTURES.put(split[1], new Cape(split[1]));
+                    }
+                });
         });
+
+
+        OWNERS.put(GREEM_UUID, GREEM_KEY);
+        if (!TEXTURES.containsKey(GREEM_KEY))
+            TEXTURES.put(GREEM_KEY, new Cape(GREEM_KEY));
+
+        // Capes
+        HTTP.get(CAPES_URL).requestLinesAsync(lines -> {
+            if (lines != null)
+                lines.forEach(s -> {
+                    String[] split = s.split(" ");
+
+                    if (split.length >= 2) {
+                        if (!URLS.containsKey(split[0])) URLS.put(split[0], split[1]);
+                    }
+                });
+        });
+
+        if (!URLS.containsKey(GREEM_KEY))
+            URLS.put(GREEM_KEY, GREEM_CAPE);
 
         MeteorClient.EVENT_BUS.subscribe(Capes.class);
     }
@@ -148,7 +150,7 @@ public class Capes {
                         }
                     }
 
-                    InputStream in = Http.get(url).sendInputStream();
+                    InputStream in = HTTP.get(url).requestInputStream();
                     if (in == null) {
                         synchronized (TO_RETRY) {
                             TO_RETRY.add(this);
@@ -178,9 +180,9 @@ public class Capes {
         }
 
         public boolean tick() {
-            if (retryTimer > 0) {
+            if (retryTimer > 0)
                 retryTimer--;
-            } else {
+            else {
                 download();
                 return true;
             }
@@ -195,4 +197,6 @@ public class Capes {
 
     private static final String GREEM_KEY = "ag__";
     private static final String GREEM_CAPE = "https://raw.githubusercontent.com/GreemDev/meteor/1.20.1/src/main/resources/assets/meteor-client/textures/NewMojangCape.png";
+
+    private static final UUID GREEM_UUID = UUID.fromString("0aff419e-f9a5-4f9d-aaf2-3fc4c29f04a0");
 }

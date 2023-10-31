@@ -57,7 +57,7 @@ public class PotionTimersHud extends HudElement {
 
     private final Setting<Double> rainbowSpeed = sgGeneral.add(new DoubleSetting.Builder()
         .name("rainbow-speed")
-        .description("Rainbow speed of rainbow color mode.")
+        .description("Color change speed of rainbow color mode.")
         .defaultValue(0.05)
         .sliderMin(0.01)
         .sliderMax(0.2)
@@ -128,7 +128,7 @@ public class PotionTimersHud extends HudElement {
     private final Setting<Double> scale = sgScale.add(new DoubleSetting.Builder()
         .name("scale")
         .description("Custom scale.")
-        .visible(customScale::get)
+        .visible(customScale)
         .defaultValue(1)
         .min(0.5)
         .sliderRange(0.5, 3)
@@ -147,7 +147,7 @@ public class PotionTimersHud extends HudElement {
     private final Setting<SettingColor> backgroundColor = sgBackground.add(new ColorSetting.Builder()
         .name("background-color")
         .description("Color used for the background.")
-        .visible(background::get)
+        .visible(background)
         .defaultValue(new SettingColor(25, 25, 25, 50))
         .build()
     );

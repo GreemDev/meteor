@@ -8,6 +8,7 @@ package net.greemdev.meteor.util.misc
 
 import net.greemdev.meteor.*
 import net.minecraft.nbt.*
+import net.minecraft.text.Text
 import java.io.File
 import java.util.function.Consumer
 
@@ -69,6 +70,8 @@ fun NbtCompound.getList(name: String, type: NbtDataType): NbtList =
     getList(name, type.int)
 fun NbtCompound.collectList(name: String, type: NbtDataType) =
     getList(name, type).collectAsStrings()
+
+fun NbtElement.asPrettyText(): Text = NbtHelper.toPrettyPrintedText(this)
 
 inline fun<reified T> Array<T>.toNBT(): NbtElement = when (T::class) {
     Byte::class -> NbtByteArray(castFast<Array<Byte>>().toList())

@@ -20,7 +20,7 @@ object CommandAliasesCommand : GCommand(
                 val name by ctx.argument(arg.greedyString(), "alias")
                 val mapping = CommandAliases.find(name) ?: notFound.throwNew(name)
 
-                minecraft.sendCommand(mapping.value)
+                minecraft.sendCommand(mapping)
             }
         }
     }, "ca"

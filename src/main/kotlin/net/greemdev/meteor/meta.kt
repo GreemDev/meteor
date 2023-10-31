@@ -193,9 +193,11 @@ fun <T, R : Comparable<R>> List<T>.sorted(
 
 
 // Action <-> Runnable
+@get:JvmName("java")
 inline val Action.java: Runnable
     get() = Runnable(this::invoke)
 
+@get:JvmName("kotlin")
 inline val Runnable.kotlin: Action
     get() = this::run
 
@@ -203,9 +205,11 @@ inline operator fun Runnable.invoke() = kotlin()
 
 
 // ValueAction <-> Consumer
+@get:JvmName("java")
 inline val <T> ValueAction<T>.java: Consumer<T>
     get() = Consumer(this::invoke)
 
+@get:JvmName("kotlin")
 inline val <T> Consumer<T>.kotlin: ValueAction<T>
     get() = this::accept
 
@@ -214,9 +218,11 @@ inline operator fun<T> Consumer<T>.invoke(arg: T) = kotlin(arg)
 
 private typealias JPredicate<T> = java.util.function.Predicate<T>
 
+@get:JvmName("java")
 inline val <T> Predicate<T>.java: JPredicate<T>
     get() = JPredicate(this::invoke)
 
+@get:JvmName("kotlin")
 inline val <T> JPredicate<T>.kotlin: Predicate<T>
     get() = this::test
 
@@ -224,9 +230,11 @@ inline operator fun<T> JPredicate<T>.invoke(arg: T) = kotlin(arg)
 
 
 // Getter <-> Supplier
+@get:JvmName("java")
 inline val <T> Getter<T>.java: Supplier<T>
     get() = Supplier(this::invoke)
 
+@get:JvmName("kotlin")
 inline val <T> Supplier<T>.kotlin: Getter<T>
     get() = this::get
 
@@ -234,9 +242,11 @@ inline operator fun<T> Supplier<T>.invoke() = kotlin()
 
 
 // Mapper <-> Function
+@get:JvmName("java")
 inline val <I, O> Mapper<I, O>.java: Function<I, O>
     get() = Function(this::invoke)
 
+@get:JvmName("kotlin")
 inline val <I, O> Function<I, O>.kotlin: Mapper<I, O>
     get() = this::apply
 

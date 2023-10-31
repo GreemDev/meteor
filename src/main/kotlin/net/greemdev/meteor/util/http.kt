@@ -9,7 +9,6 @@ import com.google.gson.GsonBuilder
 import com.google.gson.JsonObject
 import kotlinx.coroutines.async
 import kotlinx.coroutines.launch
-import meteordevelopment.meteorclient.MeteorClient
 import meteordevelopment.meteorclient.utils.other.JsonDateDeserializer
 import net.greemdev.meteor.*
 import java.io.InputStream
@@ -41,21 +40,31 @@ private val gson = GsonBuilder()
 // the functions have identical names because of how they're defined here via the @Jvm annotations,
 // and yet they both have method signatures that are different, and best used from the respective language.
 // (example, no Unit-returning lambdas for java functions, instead preferring standard java functional interfaces.)
-object Http {
+object HTTP {
     @JvmStatic
-    infix fun get(url: String) = Request.Method.GET(url)
+    fun get(url: String) = Request.Method.GET(url)
 
     @JvmStatic
-    infix fun post(url: String) = Request.Method.POST(url)
+    fun post(url: String) = Request.Method.POST(url)
 
     @JvmStatic
-    infix fun delete(url: String) = Request.Method.DELETE(url)
+    fun delete(url: String) = Request.Method.DELETE(url)
 
     @JvmStatic
-    infix fun patch(url: String) = Request.Method.PATCH(url)
+    fun patch(url: String) = Request.Method.PATCH(url)
 
     @JvmStatic
-    infix fun put(url: String) = Request.Method.PUT(url)
+    fun put(url: String) = Request.Method.PUT(url)
+
+    infix fun GET(url: String) = Request.Method.GET(url)
+
+    infix fun POST(url: String) = Request.Method.POST(url)
+
+    infix fun DELETE(url: String) = Request.Method.DELETE(url)
+
+    infix fun PATCH(url: String) = Request.Method.PATCH(url)
+
+    infix fun PUT(url: String) = Request.Method.PUT(url)
 
     class Request private constructor(
         private val builder: HttpRequest.Builder,
@@ -169,7 +178,7 @@ object Http {
         // Kotlin requesting via coroutines
         fun sendAsync() { scope.launch { send() } }
         @JvmName("ktSendAsync")
-        fun sendAsync(beforeValidation: Initializer<StatusCodeHandler<*>> = {}) { scope.launch { send(beforeValidation) } }
+        fun sendAsync(beforeValidation: Initializer<StatusCodeHandler<*>> = {}) = scope.launch { send(beforeValidation) }
 
         @JvmName("sendAsync")
         fun `java-sendAsync`(beforeValidation: Consumer<StatusCodeHandler<*>>) = sendAsync(beforeValidation.kotlin)
@@ -197,27 +206,32 @@ object Http {
 
         // Java-callable coroutine usage with via callbacks
         @JvmOverloads
-        fun requestInputStreamAsync(callback: Consumer<InputStream?>, beforeValidation: Consumer<StatusCodeHandler<InputStream>> = Consumer {}) {
+        @JvmName("requestInputStreamAsync")
+        fun `java-requestInputStreamAsync`(callback: Consumer<InputStream?>, beforeValidation: Consumer<StatusCodeHandler<InputStream>> = Consumer {}) {
             scope.launch { requestInputStreamAsync(beforeValidation.kotlin) thenTake callback.kotlin }
         }
 
         @JvmOverloads
-        fun requestStringAsync(callback: Consumer<String?>, beforeValidation: Consumer<StatusCodeHandler<String>> = Consumer {}) {
+        @JvmName("requestStringAsync")
+        fun `java-requestStringAsync`(callback: Consumer<String?>, beforeValidation: Consumer<StatusCodeHandler<String>> = Consumer {}) {
             scope.launch { requestStringAsync(beforeValidation.kotlin) thenTake callback.kotlin }
         }
 
         @JvmOverloads
-        fun requestLinesAsync(callback: Consumer<List<String>?>, beforeValidation: Consumer<StatusCodeHandler<Stream<String>>> = Consumer { }) {
+        @JvmName("requestLinesAsync")
+        fun `java-requestLinesAsync`(callback: Consumer<List<String>?>, beforeValidation: Consumer<StatusCodeHandler<Stream<String>>> = Consumer { }) {
             scope.launch { requestLinesAsync(beforeValidation.kotlin) thenTake callback.kotlin }
         }
 
         @JvmOverloads
-        fun requestJsonAsync(callback: Consumer<JsonObject?>, beforeValidation: Consumer<StatusCodeHandler<InputStream>> = Consumer { }) {
+        @JvmName("requestJsonAsync")
+        fun `java-requestJsonAsync`(callback: Consumer<JsonObject?>, beforeValidation: Consumer<StatusCodeHandler<InputStream>> = Consumer { }) {
             scope.launch { requestJsonAsync(beforeValidation.kotlin) thenTake callback.kotlin }
         }
 
         @JvmOverloads
-        fun <T> requestJsonAsync(cls: Class<T>, callback: Consumer<T?>, beforeValidation: Consumer<StatusCodeHandler<InputStream>> = Consumer {  }) {
+        @JvmName("requestJsonAsync")
+        fun <T> `java-requestJsonAsync`(cls: Class<T>, callback: Consumer<T?>, beforeValidation: Consumer<StatusCodeHandler<InputStream>> = Consumer {  }) {
             scope.launch {
                 async {
                     `java-requestJson`(cls, beforeValidation.kotlin)
@@ -227,7 +241,7 @@ object Http {
 
 
         /**
-         * Internal function for synchronously sending the current [Http].[Request]
+         * Internal function for synchronously sending the current [HTTP].[Request]
          * Returns null when some error occurred during sending, or when the response from the server isn't exactly HTTP 200.
          * Non-200 statuses can be handled via the [beforeValidation] callback.
          */
@@ -365,7 +379,8 @@ object Http {
 
 private fun newRequestBuilder(url: String): HttpRequest.Builder =
     runCatching(url::asURI)
-        .mapTo(failedMessage = "Parameter 'url' is not a valid java.net.URI.") {
+        .onFailure(Greteor.logger::catching)
+        .mapTo {
             HttpRequest.newBuilder(it)
-                .header("User-Agent", MeteorClient.NAME)
+                .header("User-Agent", "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/112.0.0.0 Safari/537.36")
         }
