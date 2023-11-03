@@ -56,8 +56,8 @@ public class MouseMixin {
             ((ICamera) camera).setRot(camera.getYaw() + cursorDeltaX * 0.15, camera.getPitch() + cursorDeltaY * 0.15);
         }
         else if (freeLook.cameraMode()) {
-            freeLook.cameraYaw += cursorDeltaX / freeLook.sensitivity.get().floatValue();
-            freeLook.cameraPitch += cursorDeltaY / freeLook.sensitivity.get().floatValue();
+            freeLook.cameraYaw += (float)cursorDeltaX / freeLook.sensitivity.get().floatValue();
+            freeLook.cameraPitch += (float)cursorDeltaY / freeLook.sensitivity.get().floatValue();
 
             if (Math.abs(freeLook.cameraPitch) > 90.0F) freeLook.cameraPitch = freeLook.cameraPitch > 0.0F ? 90.0F : -90.0F;
         }

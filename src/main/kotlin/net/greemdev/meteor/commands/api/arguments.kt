@@ -104,7 +104,6 @@ object Arguments {
     fun blockRotation(): BlockRotationArgumentType = BlockRotationArgumentType.blockRotation()
     fun swizzle(): SwizzleArgumentType = SwizzleArgumentType.swizzle()
     fun commandFunction(): CommandFunctionArgumentType = CommandFunctionArgumentType.commandFunction()
-    fun testFunction(): TestFunctionArgumentType = TestFunctionArgumentType.testFunction()
     fun itemSlot(): ItemSlotArgumentType = ItemSlotArgumentType.itemSlot()
     fun angle(): AngleArgumentType = AngleArgumentType.angle()
     fun color(): ColorArgumentType = ColorArgumentType.color()

@@ -21,6 +21,7 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.stream.Stream;
 
 public class NotebotSongsScreen extends WindowScreen {
     private static final Notebot notebot = Modules.get().get(Notebot.class);
@@ -37,13 +38,11 @@ public class NotebotSongsScreen extends WindowScreen {
     @Override
     public void initWidgets() {
         // Random Song
-        WButton randomSong = add(theme.button("Random Song")).minWidth(400).expandX().widget();
-        randomSong.action = notebot::playRandomSong;
+        add(theme.button("Random Song", notebot::playRandomSong)).minWidth(400).expandX();
 
         // Filter
         filter = add(theme.textBox("", "Search for the songs...")).minWidth(400).expandX().widget();
-        filter.setFocused(true);
-        filter.action = () -> {
+        filter.toggleFocusing().action = () -> {
             filterText = filter.get().trim();
 
             table.clear();
@@ -57,25 +56,24 @@ public class NotebotSongsScreen extends WindowScreen {
 
     private void initSongsTable() {
         AtomicBoolean noSongsFound = new AtomicBoolean(true);
-        try {
-            Files.list(MeteorClient.FOLDER.toPath().resolve("notebot")).forEach(path -> {
+        try (Stream<Path> paths = Files.list(MeteorClient.FOLDER.toPath().resolve("notebot"))) {
+            paths.forEach(path -> {
                 if (SongDecoders.hasDecoder(path)) {
                     String name = path.getFileName().toString();
 
-                    if (Utils.searchTextDefault(name, filterText, false)){
+                    if (Utils.searchTextDefault(name, filterText, false)) {
                         addPath(path);
                         noSongsFound.set(false);
                     }
                 }
             });
         } catch (IOException e) {
-            table.add(theme.label("Missing meteor-client/notebot folder.")).expandCellX();
+            table.add(theme.label("Missing &zmeteor-client/notebot&r folder.")).expandCellX();
             table.row();
         }
 
-        if (noSongsFound.get()) {
+        if (noSongsFound.get())
             table.add(theme.label("No songs found.")).expandCellX().center();
-        }
     }
 
     private void addPath(Path path) {
@@ -83,14 +81,12 @@ public class NotebotSongsScreen extends WindowScreen {
         table.row();
 
         table.add(theme.label(FilenameUtils.getBaseName(path.getFileName().toString()))).expandCellX();
-        WButton load = table.add(theme.button("Load")).right().widget();
-        load.action = () -> {
+        table.add(theme.button("Load", () -> {
             notebot.loadSong(path.toFile());
-        };
-        WButton preview = table.add(theme.button("Preview")).right().widget();
-        preview.action = () -> {
+        })).right();
+        table.add(theme.button("Preview", () -> {
             notebot.previewSong(path.toFile());
-        };
+        })).right();
 
         table.row();
     }

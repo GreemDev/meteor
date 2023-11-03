@@ -127,8 +127,7 @@ public class ModulesScreen extends TabScreen {
         WVerticalList l = theme.verticalList();
 
         WTextBox text = w.add(theme.textBox("")).minWidth(140).expandX().widget();
-        text.setFocused(true);
-        text.action = () -> {
+        text.toggleFocusing().action = () -> {
             l.clear();
             createSearchW(l, text.get());
         };

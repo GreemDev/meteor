@@ -73,6 +73,10 @@ public abstract class WLabel extends WPressable implements Supplier<String> {
         return this;
     }
 
+    public void set(Color color, String text) {
+        color(color).set(text);
+    }
+
     public WLabel prepend(String text) {
         this.text = text + this.text;
         return this;

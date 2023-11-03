@@ -9,6 +9,7 @@ import meteordevelopment.meteorclient.MeteorClient;
 import meteordevelopment.meteorclient.renderer.Fonts;
 import meteordevelopment.meteorclient.renderer.text.*;
 import meteordevelopment.meteorclient.utils.Utils;
+import net.greemdev.meteor.Greteor;
 import net.minecraft.util.Util;
 import org.lwjgl.BufferUtils;
 import org.lwjgl.stb.STBTTFontinfo;
@@ -159,7 +160,7 @@ public class FontUtils {
             return new FileInputStream(file);
         }
         catch (FileNotFoundException e) {
-            e.printStackTrace();
+            Greteor.logger().catching(e);
             return null;
         }
     }

@@ -73,16 +73,14 @@ public class BlockDataSettingScreen extends WindowScreen {
             table.add(theme.itemWithLabel(block.asItem().getDefaultStack(), Names.get(block))).expandCellX();
             table.add(theme.label((blockData != null && blockData.isChanged()) ? "*" : " "));
 
-            WButton edit = table.add(theme.button(GuiRenderer.EDIT)).widget();
-            edit.action = () -> {
+            table.add(theme.editButton(() -> {
                 T data = blockData;
                 if (data == null) data = (T) setting.defaultData.get().copy();
 
                 mc.setScreen(data.createScreen(theme, block, (BlockDataSetting<T>) setting));
-            };
+            }));
 
-            WButton reset = table.add(theme.button(GuiRenderer.RESET)).widget();
-            reset.action = () -> {
+            table.add(theme.resetButton(() -> {
                 setting.get().remove(block);
                 setting.onChanged();
 
@@ -90,7 +88,7 @@ public class BlockDataSettingScreen extends WindowScreen {
                     table.clear();
                     initTable();
                 }
-            };
+            }));
 
             table.row();
         }

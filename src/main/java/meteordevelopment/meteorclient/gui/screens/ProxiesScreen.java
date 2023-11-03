@@ -96,14 +96,12 @@ public class ProxiesScreen extends WindowScreen {
             ipList.add(theme.label(":")).widget().color = theme.textSecondaryColor();
             ipList.add(theme.label(Integer.toString(proxy.port.get())));
 
-            WButton edit = table.add(theme.button(GuiRenderer.EDIT)).widget();
-            edit.action = () -> mc.setScreen(new EditProxyScreen(theme, proxy, this::reload));
+            table.add(theme.editButton(() -> mc.setScreen(new EditProxyScreen(theme, proxy, this::reload))));
 
-            WMinus remove = table.add(theme.minus()).widget();
-            remove.action = () -> {
+            table.add(theme.minus(() -> {
                 Proxies.get().remove(proxy);
                 reload();
-            };
+            }));
 
             table.row();
         }

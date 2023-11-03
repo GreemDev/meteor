@@ -8,6 +8,10 @@ package meteordevelopment.meteorclient.gui.widgets;
 import meteordevelopment.meteorclient.gui.GuiTheme;
 import meteordevelopment.meteorclient.gui.renderer.GuiRenderer;
 import meteordevelopment.meteorclient.gui.utils.BaseWidget;
+import meteordevelopment.meteorclient.gui.utils.Cell;
+import meteordevelopment.meteorclient.gui.widgets.containers.WContainer;
+
+import java.util.function.Consumer;
 
 public abstract class WWidget implements BaseWidget {
     public boolean visible = true;
@@ -37,6 +41,15 @@ public abstract class WWidget implements BaseWidget {
 
     public double pad() {
         return theme.pad();
+    }
+
+    public void forEachWidget(Consumer<WWidget> action) {
+        action.accept(this);
+
+        if (this instanceof WContainer wc) {
+            for (Cell<?> cell : wc.cells)
+                cell.widget().forEachWidget(action);
+        }
     }
 
     // Layout

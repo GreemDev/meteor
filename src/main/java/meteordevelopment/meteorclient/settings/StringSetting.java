@@ -14,6 +14,10 @@ import java.util.function.Consumer;
 import java.util.function.Supplier;
 
 public class StringSetting extends Setting<String> {
+    public static Builder builder() {
+        return new Builder();
+    }
+
     public final Class<? extends WTextBox.Renderer> renderer;
     public final CharFilter filter;
     public final boolean wide;

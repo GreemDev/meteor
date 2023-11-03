@@ -11,6 +11,7 @@ import com.mojang.brigadier.context.CommandContext;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import com.mojang.brigadier.suggestion.Suggestions;
 import com.mojang.brigadier.suggestion.SuggestionsBuilder;
+import meteordevelopment.meteorclient.MeteorClient;
 import meteordevelopment.meteorclient.utils.entity.fakeplayer.FakePlayerEntity;
 import meteordevelopment.meteorclient.utils.entity.fakeplayer.FakePlayerManager;
 
@@ -21,7 +22,7 @@ import java.util.concurrent.CompletableFuture;
 import static net.minecraft.command.CommandSource.suggestMatching;
 
 public class FakePlayerArgumentType implements ArgumentType<String> {
-    private static final Collection<String> EXAMPLES = List.of("seasnail8169", "MineGame159");
+    private static final Collection<String> EXAMPLES = MeteorClient.authors();
 
     public static FakePlayerArgumentType create() {
         return new FakePlayerArgumentType();

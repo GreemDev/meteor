@@ -21,6 +21,10 @@ import java.util.function.Predicate;
 import java.util.function.Supplier;
 
 public class ItemListSetting extends Setting<List<Item>> {
+    public static Builder builder() {
+        return new Builder();
+    }
+
     public final Predicate<Item> filter;
     private final boolean bypassFilterWhenSavingAndLoading;
 

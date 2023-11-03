@@ -16,6 +16,10 @@ import java.util.function.Consumer;
 import java.util.function.Supplier;
 
 public class ColorListSetting extends Setting<List<SettingColor>> {
+    public static Builder builder() {
+        return new Builder();
+    }
+
     protected ColorListSetting(String name, String description, Object defaultValue, Consumer<List<SettingColor>> onChanged, Consumer<Setting<List<SettingColor>>> onModuleActivated, Supplier<Boolean> visible) {
         super(name, description, defaultValue, onChanged, onModuleActivated, visible);
     }

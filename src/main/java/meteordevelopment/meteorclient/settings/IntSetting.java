@@ -11,6 +11,10 @@ import java.util.function.Consumer;
 import java.util.function.Supplier;
 
 public class IntSetting extends Setting<Integer> {
+    public static Builder builder() {
+        return new Builder();
+    }
+
     public final int min, max;
     public final int sliderMin, sliderMax;
     public final boolean noSlider;
@@ -64,37 +68,30 @@ public class IntSetting extends Setting<Integer> {
 
         public Builder min(int min) {
             this.min = min;
-            this.sliderMin = min;
-            return this;
+            return sliderMin(min);
         }
 
         public Builder max(int max) {
             this.max = max;
-            this.sliderMax = max;
-            return this;
+            return sliderMax(max);
         }
 
         public Builder range(int min, int max) {
-            this.min = Math.min(min, max);
-            this.max = Math.max(min, max);
-            sliderRange(min, max);
-            return this;
+            return min(Math.min(min, max)).max(Math.max(min, max));
         }
 
         public Builder sliderMin(int min) {
-            this.sliderMin = Math.max(min, this.min);
+            sliderMin = min;
             return this;
         }
 
         public Builder sliderMax(int max) {
-            this.sliderMax = Math.min(max, this.max);
+            sliderMax = max;
             return this;
         }
 
         public Builder sliderRange(int min, int max) {
-            this.sliderMin = Math.max(min, this.min);
-            this.sliderMax = Math.min(max, this.max);
-            return this;
+            return sliderMin(Math.min(min, max)).sliderMax(Math.max(min, max));
         }
 
         public Builder noSlider() {

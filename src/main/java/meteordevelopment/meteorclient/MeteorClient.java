@@ -5,6 +5,7 @@
 
 package meteordevelopment.meteorclient;
 
+import meteordevelopment.discordipc.DiscordIPC;
 import meteordevelopment.meteorclient.events.game.OpenScreenEvent;
 import meteordevelopment.meteorclient.events.meteor.KeyEvent;
 import meteordevelopment.meteorclient.events.meteor.MouseButtonEvent;
@@ -37,6 +38,7 @@ import net.fabricmc.loader.api.metadata.CustomValue;
 import net.fabricmc.loader.api.metadata.ModMetadata;
 import net.fabricmc.loader.api.metadata.Person;
 import net.greemdev.meteor.Greteor;
+import net.greemdev.meteor.modules.MinecraftPresence;
 import net.greemdev.meteor.util.meteor.Meteor;
 import net.greemdev.meteor.util.misc.GVersioning;
 import net.greemdev.meteor.utils;
@@ -149,6 +151,9 @@ public class MeteorClient implements ClientModInitializer {
 
         // Save on shutdown
         Runtime.getRuntime().addShutdownHook(new Thread(() -> {
+            if (Modules.get().isActive(DiscordPresence.class) || Modules.get().isActive(MinecraftPresence.class))
+                DiscordIPC.stop();
+
             OnlinePlayers.leave();
             Systems.save();
             GuiThemes.save();
@@ -159,7 +164,7 @@ public class MeteorClient implements ClientModInitializer {
         if (SharedConstants.isDevelopment)
             LOG.warn("Property 'meteor.minecraft.dev' is 'true'; Now running in development mode.");
         else if (GVersioning.isOutdated())
-            LOG.warn("Not currently on the latest revision! Running %d revisions behind. Latest is %s.".formatted(GVersioning.revisionsBehind(), GVersioning.getLatestRevision()));
+            Greteor.logger().warn("Not currently on the latest revision! Running %d revisions behind. Latest is %s.".formatted(GVersioning.revisionsBehind(), GVersioning.getLatestRevision()));
     }
 
     @EventHandler
@@ -196,9 +201,7 @@ public class MeteorClient implements ClientModInitializer {
 
     @EventHandler(priority = EventPriority.LOWEST)
     private void onOpenScreen(OpenScreenEvent event) {
-        boolean hideHud = GuiThemes.get().hideHUD();
-
-        if (hideHud) {
+        if (GuiThemes.get().hideHUD()) {
             if (!wasWidgetScreen) wasHudHiddenRoot = mc.options.hudHidden;
 
             if (event.screen instanceof WidgetScreen) mc.options.hudHidden = true;

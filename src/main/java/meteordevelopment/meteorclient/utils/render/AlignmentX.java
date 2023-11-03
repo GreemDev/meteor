@@ -6,5 +6,17 @@
 package meteordevelopment.meteorclient.utils.render;
 
 public enum AlignmentX {
-    Left, Center, Right
+    Left, Center, Right;
+
+    public boolean right() {
+        return this == Right;
+    }
+
+    public boolean center() {
+        return this == Center;
+    }
+
+    public boolean left() {
+        return this == Left;
+    }
 }

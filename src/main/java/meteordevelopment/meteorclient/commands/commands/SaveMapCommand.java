@@ -8,6 +8,7 @@ package meteordevelopment.meteorclient.commands.commands;
 import com.mojang.brigadier.arguments.IntegerArgumentType;
 import com.mojang.brigadier.builder.LiteralArgumentBuilder;
 import com.mojang.brigadier.exceptions.SimpleCommandExceptionType;
+import meteordevelopment.meteorclient.MeteorClient;
 import meteordevelopment.meteorclient.commands.Command;
 import meteordevelopment.meteorclient.mixin.MapRendererAccessor;
 import net.minecraft.client.render.MapRenderer;
@@ -100,7 +101,7 @@ public class SaveMapCommand extends Command {
         try {
             ImageIO.write((scale == 128 ? image : scaledImage), "png", new File(path));
         } catch (IOException e) {
-            e.printStackTrace();
+            MeteorClient.LOG.error(e.getMessage(), e);
         }
     }
 

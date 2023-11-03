@@ -6,6 +6,8 @@
 package meteordevelopment.meteorclient.gui.utils;
 
 import meteordevelopment.meteorclient.gui.widgets.WWidget;
+import meteordevelopment.meteorclient.utils.render.AlignmentX;
+import meteordevelopment.meteorclient.utils.render.AlignmentY;
 
 public class Cell<T extends WWidget> {
     private final T widget;
@@ -56,6 +58,11 @@ public class Cell<T extends WWidget> {
         return this;
     }
 
+    public Cell<T> alignX(AlignmentX alignment) {
+        alignX = alignment;
+        return this;
+    }
+
     public Cell<T> centerY() {
         alignY = AlignmentY.Center;
         return this;
@@ -74,6 +81,11 @@ public class Cell<T extends WWidget> {
 
     public Cell<T> top() {
         alignY = AlignmentY.Top;
+        return this;
+    }
+
+    public Cell<T> alignY(AlignmentY alignment) {
+        alignY = alignment;
         return this;
     }
 

@@ -21,6 +21,10 @@ import java.util.function.Predicate;
 import java.util.function.Supplier;
 
 public class BlockListSetting extends Setting<List<Block>> {
+    public static Builder builder() {
+        return new Builder();
+    }
+
     public final Predicate<Block> filter;
 
     protected BlockListSetting(String name, String description, Object defaultValue, Consumer<List<Block>> onChanged, Consumer<Setting<List<Block>>> onModuleActivated, Predicate<Block> filter, Supplier<Boolean> visible) {

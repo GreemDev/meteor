@@ -5,6 +5,7 @@
 
 package meteordevelopment.meteorclient.gui.screens.accounts;
 
+import meteordevelopment.meteorclient.MeteorClient;
 import meteordevelopment.meteorclient.gui.GuiTheme;
 import meteordevelopment.meteorclient.gui.widgets.containers.WTable;
 import meteordevelopment.meteorclient.gui.widgets.input.WTextBox;
@@ -22,11 +23,11 @@ public class AddCrackedAccountScreen extends AddAccountScreen {
 
         // Name
         t.add(theme.label("Name: "));
-        WTextBox name = t.add(theme.textBox("", "seasnail8169", (text, c) ->
+        WTextBox name = t.add(theme.textBox("", MeteorClient.randomAuthor().getName(), (text, c) ->
             // Username can't contain spaces
             c != ' '
         )).minWidth(400).expandX().widget();
-        name.setFocused(true);
+        name.toggleFocusing();
         t.row();
 
         // Add

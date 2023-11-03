@@ -6,5 +6,17 @@
 package meteordevelopment.meteorclient.utils.render;
 
 public enum AlignmentY {
-    Top, Center, Bottom
+    Top, Center, Bottom;
+
+    public boolean top() {
+        return this == Top;
+    }
+
+    public boolean center() {
+        return this == Center;
+    }
+
+    public boolean bottom() {
+        return this == Bottom;
+    }
 }

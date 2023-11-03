@@ -6,7 +6,7 @@
 package meteordevelopment.meteorclient.gui.widgets.input;
 
 import meteordevelopment.meteorclient.gui.widgets.containers.WHorizontalList;
-import net.greemdev.meteor.util.misc.MathKt;
+import net.greemdev.meteor.util.math.MathKt;
 
 
 public class WDoubleEdit extends WHorizontalList {
@@ -137,8 +137,6 @@ public class WDoubleEdit extends WHorizontalList {
     }
 
     private String valueString() {
-        return MathKt.precisionInternal(decimalPlaces, () ->
-            Double.toString(Math.min(Math.max(value, 1), 10))
-        );
+        return MathKt.precision(decimalPlaces, value);
     }
 }

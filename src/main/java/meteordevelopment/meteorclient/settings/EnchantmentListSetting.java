@@ -20,6 +20,10 @@ import java.util.function.Consumer;
 import java.util.function.Supplier;
 
 public class EnchantmentListSetting extends Setting<List<Enchantment>> {
+    public static Builder builder() {
+        return new Builder();
+    }
+
     protected EnchantmentListSetting(String name, String description, Object defaultValue, Consumer<List<Enchantment>> onChanged, Consumer<Setting<List<Enchantment>>> onModuleActivated, Supplier<Boolean> visible) {
         super(name, description, defaultValue, onChanged, onModuleActivated, visible);
     }

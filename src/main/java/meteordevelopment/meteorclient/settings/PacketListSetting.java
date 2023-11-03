@@ -21,6 +21,10 @@ import java.util.function.Predicate;
 import java.util.function.Supplier;
 
 public class PacketListSetting extends Setting<Set<Class<? extends Packet<?>>>> {
+    public static Builder builder() {
+        return new Builder();
+    }
+
     public final Predicate<Class<? extends Packet<?>>> filter;
     private static List<String> suggestions;
 

@@ -83,9 +83,8 @@ public class Waypoints extends System<Waypoints> implements Iterable<Waypoint> {
 
     public boolean add(Waypoint waypoint) {
         Waypoint added = waypoints.put(waypoint.name.get().toLowerCase(Locale.ROOT), waypoint);
-        if (added != null) {
-            save();
-        }
+
+        save();
 
         return added != null;
     }

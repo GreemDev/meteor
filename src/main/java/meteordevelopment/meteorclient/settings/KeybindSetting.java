@@ -19,6 +19,10 @@ import java.util.function.Consumer;
 import java.util.function.Supplier;
 
 public class KeybindSetting extends Setting<Keybind> {
+    public static Builder builder() {
+        return new Builder();
+    }
+
     private final Runnable action;
     public WKeybind widget;
 

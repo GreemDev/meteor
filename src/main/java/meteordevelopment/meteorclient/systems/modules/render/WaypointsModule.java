@@ -209,34 +209,30 @@ public class WaypointsModule extends Module {
             table.add(new WIcon(waypoint));
 
             WLabel name = table.add(theme.label(waypoint.name.get())).expandCellX().widget();
-            if (!validDim) name.color = GRAY;
+            if (!validDim) name.color(GRAY);
 
-            WCheckbox visible = table.add(theme.checkbox(waypoint.visible.get())).widget();
-            visible.action = () -> {
-                waypoint.visible.set(visible.checked);
+            table.add(theme.checkbox(waypoint.visible.get(), c -> {
+                waypoint.visible.set(c);
                 Waypoints.get().save();
-            };
+            }));
 
-            WButton edit = table.add(theme.button(GuiRenderer.EDIT, () ->
+            table.add(theme.editButton(() ->
                 mc.setScreen(new EditWaypointScreen(theme, waypoint, null))
-            )).widget();
-            edit.action = () -> mc.setScreen(new EditWaypointScreen(theme, waypoint, null));
+            ));
 
             // Goto
             if (validDim) {
-                WButton gotoB = table.add(theme.button("Goto")).widget();
-                gotoB.action = () -> {
+                table.add(theme.button("Goto", () -> {
                     IBaritone baritone = BaritoneAPI.getProvider().getPrimaryBaritone();
                     if (baritone.getPathingBehavior().isPathing()) baritone.getPathingBehavior().cancelEverything();
                     baritone.getCustomGoalProcess().setGoalAndPath(new GoalGetToBlock(waypoint.getPos()));
-                };
+                }));
             }
 
-            WMinus remove = table.add(theme.minus()).widget();
-            remove.action = () -> {
+            table.add(theme.minus(() -> {
                 Waypoints.get().remove(waypoint);
                 initTable(theme, table);
-            };
+            }));
 
             table.row();
         }
@@ -244,14 +240,15 @@ public class WaypointsModule extends Module {
         table.add(theme.horizontalSeparator()).expandX();
         table.row();
 
-        table.add(theme.button("Create", () ->
-            mc.setScreen(new EditWaypointScreen(theme, null, () -> initTable(theme, table)))
-        )).expandX();
-
         table.add(theme.button("Import from JourneyMap...", () ->
             mc.setScreen(new JourneyMapWaypointsImportScreen(theme))
-        )).widget()
-            .tooltip = "The waypoints will be imported to the current world.";
+        )).expandX()
+            .widget().tooltip = "The waypoints will be imported to the current world.";
+
+        table.add(theme.plus(() ->
+            mc.setScreen(new EditWaypointScreen(theme, null, () -> initTable(theme, table)))
+        )).right()
+            .widget().tooltip = "Create a new waypoint.";
     }
 
     private class EditWaypointScreen extends EditSystemScreen<Waypoint> {

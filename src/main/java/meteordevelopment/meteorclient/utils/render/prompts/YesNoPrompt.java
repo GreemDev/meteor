@@ -10,7 +10,6 @@ import meteordevelopment.meteorclient.gui.GuiTheme;
 import meteordevelopment.meteorclient.gui.GuiThemes;
 import meteordevelopment.meteorclient.gui.WindowScreen;
 import meteordevelopment.meteorclient.gui.widgets.containers.WHorizontalList;
-import meteordevelopment.meteorclient.gui.widgets.pressable.WButton;
 import meteordevelopment.meteorclient.gui.widgets.pressable.WCheckbox;
 import meteordevelopment.meteorclient.systems.config.Config;
 import net.minecraft.client.gui.screen.Screen;
@@ -27,6 +26,8 @@ public class YesNoPrompt {
     private String title = "";
     private final List<String> messages = new ArrayList<>();
     private String id = null;
+
+    private boolean requiredToDisplay = false;
 
     private Runnable onYes = () -> {};
     private Runnable onNo = () -> {};
@@ -63,6 +64,11 @@ public class YesNoPrompt {
         return this;
     }
 
+    public YesNoPrompt displayRequired(boolean required) {
+        this.requiredToDisplay = required;
+        return this;
+    }
+
     public YesNoPrompt id(String from) {
         this.id = from;
         return this;
@@ -80,7 +86,7 @@ public class YesNoPrompt {
 
     public boolean show() {
         if (id == null) this.id(this.title);
-        if (Config.get().dontShowAgainPrompts.contains(id)) return false;
+        if (!requiredToDisplay && Config.get().dontShowAgainPrompts.contains(id)) return false;
 
         if (!RenderSystem.isOnRenderThread()) {
             RenderSystem.recordRenderCall(() -> mc.setScreen(new PromptScreen(theme)));
@@ -98,25 +104,33 @@ public class YesNoPrompt {
             this.parent = YesNoPrompt.this.parent;
         }
 
+        WCheckbox dontShowAgainCheckbox = null;
+
         @Override
         public void initWidgets() {
             for (String line : messages) add(theme.label(line)).expandX();
             add(theme.horizontalSeparator()).expandX();
 
-            WHorizontalList checkboxContainer = add(theme.horizontalList()).expandX().widget();
-            WCheckbox dontShowAgainCheckbox = checkboxContainer.add(theme.checkbox(false)).widget();
-            checkboxContainer.add(theme.label("Don't show this again.")).expandX();
+            if (!requiredToDisplay) {
+                WHorizontalList checkboxContainer = add(theme.horizontalList()).expandX().widget();
+                dontShowAgainCheckbox = checkboxContainer.add(theme.checkbox(false)).widget();
+                checkboxContainer.add(theme.label("Don't show this again.")).expandX();
+            }
 
             WHorizontalList list = add(theme.horizontalList()).expandX().widget();
 
             list.add(theme.button("Yes", () -> {
-                if (dontShowAgainCheckbox.checked) Config.get().dontShowAgainPrompts.add(id);
+                if (!requiredToDisplay) {
+                    if (dontShowAgainCheckbox.checked) Config.get().dontShowAgainPrompts.add(id);
+                }
                 onYes.run();
                 close();
             })).expandX();
 
             list.add(theme.button("No", () -> {
-                if (dontShowAgainCheckbox.checked) Config.get().dontShowAgainPrompts.add(id);
+                if (!requiredToDisplay) {
+                    if (dontShowAgainCheckbox.checked) Config.get().dontShowAgainPrompts.add(id);
+                }
                 onNo.run();
                 close();
             })).expandX();

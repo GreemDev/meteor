@@ -21,6 +21,11 @@ import java.util.function.Predicate;
 import java.util.function.Supplier;
 
 public class EntityTypeListSetting extends Setting<Set<EntityType<?>>> {
+    public static Builder builder() {
+        return new Builder();
+    }
+
+
     public final Predicate<EntityType<?>> filter;
 
     protected EntityTypeListSetting(String name, String description, Object defaultValue, Consumer<Set<EntityType<?>>> onChanged, Consumer<Setting<Set<EntityType<?>>>> onModuleActivated, Supplier<Boolean> visible, Predicate<EntityType<?>> filter) {

@@ -17,6 +17,10 @@ import java.util.function.Consumer;
 import java.util.function.Supplier;
 
 public class StatusEffectAmplifierMapSetting extends Setting<Object2IntMap<StatusEffect>> {
+    public static Builder builder() {
+        return new Builder();
+    }
+
     protected StatusEffectAmplifierMapSetting(String name, String description, Object defaultValue, Consumer<Object2IntMap<StatusEffect>> onChanged, Consumer<Setting<Object2IntMap<StatusEffect>>> onModuleActivated, Supplier<Boolean> visible) {
         super(name, description, defaultValue, onChanged, onModuleActivated, visible);
     }

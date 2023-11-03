@@ -35,18 +35,18 @@ private val colorCodes = arrayOf(
 )
 
 @JvmName("render")
-fun TextRenderer.renderLegacy(text: String, startX: Double, startY: Double, color: AwtColor, shadow: Boolean = false) {
+fun TextRenderer.renderLegacy(text: String, startX: Double, startY: Double, color: MeteorColor, shadow: Boolean = false) {
     var x = startX
     var y = startY
 
-    var currentColor = color.rgb
+    var currentColor = color
     val characters = text.toCharArray()
 
-    val parts = text.split(colorCodeRegex)
+    val parts = colorCodeRegex.split(text)
     var index = 0
     parts.forEach { p ->
         p.forEachLine { l ->
-            render(l, x, y, MeteorColor(currentColor), shadow)
+            render(l, x, y, currentColor, shadow)
             x += getWidth(l)
 
             index += l.length
@@ -63,9 +63,9 @@ fun TextRenderer.renderLegacy(text: String, startX: Double, startY: Double, colo
                 val colorIndex = "0123456789abcdef".indexOf(colorCode)
 
                 currentColor = when (colorCode) {
-                    'r' -> color.rgb
-                    'z' -> RainbowColors.GLOBAL.packed
-                    else -> colorCodes[colorIndex].toInt()
+                    'r' -> color
+                    'z' -> RainbowColors.GLOBAL
+                    else -> MeteorColor(colorCodes[colorIndex].toInt())
                 }
 
                 index += 2
@@ -81,5 +81,5 @@ fun String.onlyVisibleContent() =
 
 fun needsSpecialRenderer(content: String) = content.lineCount() > 1 || colorCodeRegex in content
 
-fun TextRenderer.getLegacyWidth(text: String) =
-    getWidth(text.onlyVisibleContent()) * Meteor.currentTheme().scalar()
+fun TextRenderer.getLegacyWidth(text: String) = Meteor.currentTheme()
+    .scale(getWidth(text.onlyVisibleContent()))

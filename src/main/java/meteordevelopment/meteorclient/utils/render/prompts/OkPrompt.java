@@ -30,6 +30,8 @@ public class OkPrompt {
     private final List<String> messages = new ArrayList<>();
     private String id = null;
 
+    private boolean requiredToDisplay = false;
+
     private Runnable onOk = () -> {};
 
     private OkPrompt() {
@@ -64,6 +66,11 @@ public class OkPrompt {
         return this;
     }
 
+    public OkPrompt displayRequired(boolean required) {
+        this.requiredToDisplay = required;
+        return this;
+    }
+
     public OkPrompt id(String from) {
         this.id = from;
         return this;
@@ -76,7 +83,7 @@ public class OkPrompt {
 
     public boolean show() {
         if (id == null) this.id(this.title);
-        if (Config.get().dontShowAgainPrompts.contains(id)) return false;
+        if (!requiredToDisplay && Config.get().dontShowAgainPrompts.contains(id)) return false;
 
         if (!RenderSystem.isOnRenderThread()) {
             RenderSystem.recordRenderCall(() -> mc.setScreen(new PromptScreen(theme)));
@@ -102,22 +109,27 @@ public class OkPrompt {
             this.parent = OkPrompt.this.parent;
         }
 
+        WCheckbox dontShowAgainCheckbox = null;
+
         @Override
         public void initWidgets() {
             for (String line : messages) add(theme.label(line)).expandX();
             add(theme.horizontalSeparator()).expandX();
 
-            WHorizontalList checkboxContainer = add(theme.horizontalList()).expandX().widget();
-            WCheckbox dontShowAgainCheckbox = checkboxContainer.add(theme.checkbox(false)).widget();
-            checkboxContainer.add(theme.label("Don't show this again.")).expandX();
+            if (!requiredToDisplay) {
+                WHorizontalList checkboxContainer = add(theme.horizontalList()).expandX().widget();
+                dontShowAgainCheckbox = checkboxContainer.add(theme.checkbox(false)).widget();
+                checkboxContainer.add(theme.label("Don't show this again.")).expandX();
+            }
 
             WHorizontalList list = add(theme.horizontalList()).expandX().widget();
-            WButton okButton = list.add(theme.button("Ok")).expandX().widget();
-            okButton.action = () -> {
-                if (dontShowAgainCheckbox.checked) Config.get().dontShowAgainPrompts.add(id);
+            list.add(theme.button("Ok", () -> {
+                if (!requiredToDisplay) {
+                    if (dontShowAgainCheckbox.checked) Config.get().dontShowAgainPrompts.add(id);
+                }
                 onOk.run();
                 close();
-            };
+            })).expandX();
         }
     }
 }

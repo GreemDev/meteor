@@ -71,13 +71,15 @@ public class WireframeEntityRenderer {
 
                 if (armPose.isTwoHanded()) armPose2 = livingEntity.getOffHandStack().isEmpty() ? BipedEntityModel.ArmPose.EMPTY : BipedEntityModel.ArmPose.ITEM;
 
-                if (livingEntity.getMainArm() == Arm.RIGHT) {
-                    playerModel.rightArmPose = armPose;
-                    playerModel.leftArmPose = armPose2;
-                } else {
-                    playerModel.rightArmPose = armPose2;
-                    playerModel.leftArmPose = armPose;
-                }
+                playerModel.rightArmPose =
+                    livingEntity.getMainArm() == Arm.RIGHT
+                        ? armPose
+                        : armPose2;
+
+                playerModel.leftArmPose =
+                    livingEntity.getMainArm() == Arm.RIGHT
+                        ? armPose2
+                        : armPose;
             }
 
             model.handSwingProgress = livingEntity.getHandSwingProgress(event.tickDelta);

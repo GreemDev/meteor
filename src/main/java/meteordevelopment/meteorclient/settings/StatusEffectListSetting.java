@@ -20,6 +20,10 @@ import java.util.function.Consumer;
 import java.util.function.Supplier;
 
 public class StatusEffectListSetting extends Setting<List<StatusEffect>> {
+    public static Builder builder() {
+        return new Builder();
+    }
+
     protected StatusEffectListSetting(String name, String description, Object defaultValue, Consumer<List<StatusEffect>> onChanged, Consumer<Setting<List<StatusEffect>>> onModuleActivated, Supplier<Boolean> visible) {
         super(name, description, defaultValue, onChanged, onModuleActivated, visible);
     }

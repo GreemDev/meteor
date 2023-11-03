@@ -20,6 +20,10 @@ import java.util.function.Consumer;
 import java.util.function.Supplier;
 
 public class ScreenHandlerListSetting extends Setting<List<ScreenHandlerType<?>>> {
+    public static Builder builder() {
+        return new Builder();
+    }
+
     protected ScreenHandlerListSetting(String name, String description, Object defaultValue, Consumer<List<ScreenHandlerType<?>>> onChanged, Consumer<Setting<List<ScreenHandlerType<?>>>> onModuleActivated, Supplier<Boolean> visible) {
         super(name, description, defaultValue, onChanged, onModuleActivated, visible);
     }

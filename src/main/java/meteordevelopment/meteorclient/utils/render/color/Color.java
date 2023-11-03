@@ -44,12 +44,45 @@ public class Color implements ICopyable<Color>, ISerializable<Color> {
     }
 
     public Color(int r, int g, int b) {
-        this.r = r;
-        this.g = g;
-        this.b = b;
-        this.a = 255;
+        this(r, g, b, 255);
+    }
 
-        validate();
+    public Color(float r, float g, float b, float a) {
+        this((int)(r*255), (int)(g*255), (int)(b*255), (int)(a*255));
+    }
+
+    public Color(int packed) {
+        this(toRGBAR(packed), toRGBAG(packed), toRGBAB(packed), toRGBAA(packed));
+    }
+
+    public Color(Color color) {
+        this(color.r, color.g, color.b, color.a);
+    }
+
+    public Color(java.awt.Color color) {
+        this(color.getRed(), color.getGreen(), color.getBlue(), color.getAlpha());
+    }
+
+    public Color(Formatting formatting) {
+        this(
+            formatting.isColor() ? toRGBAR(formatting.getColorValue()) : 255,
+            formatting.isColor() ? toRGBAG(formatting.getColorValue()) : 255,
+            formatting.isColor() ? toRGBAB(formatting.getColorValue()) : 255,
+            formatting.isColor() ? toRGBAA(formatting.getColorValue()) : 255
+        );
+    }
+
+    public Color(Style style) {
+        this(style.getColor());
+    }
+
+    public Color(TextColor textColor) {
+        this(
+            textColor != null ? toRGBAR(textColor.getRgb()) : 255,
+            textColor != null ? toRGBAG(textColor.getRgb()) : 255,
+            textColor != null ? toRGBAB(textColor.getRgb()) : 255,
+            textColor != null ? toRGBAA(textColor.getRgb()) : 255
+        );
     }
 
     public Color(int r, int g, int b, int a) {
@@ -59,72 +92,6 @@ public class Color implements ICopyable<Color>, ISerializable<Color> {
         this.a = a;
 
         validate();
-    }
-
-    public Color(float r, float g, float b, float a) {
-        this.r = (int)(r*255);
-        this.g = (int)(g*255);
-        this.b = (int)(b*255);
-        this.a = (int)(a*255);
-
-        validate();
-    }
-
-    public Color(int packed) {
-        this.r = toRGBAR(packed);
-        this.g = toRGBAG(packed);
-        this.b = toRGBAB(packed);
-        this.a = toRGBAA(packed);
-    }
-
-    public Color(Color color) {
-        this.r = color.r;
-        this.g = color.g;
-        this.b = color.b;
-        this.a = color.a;
-    }
-
-    public Color(java.awt.Color color) {
-        this.r = color.getRed();
-        this.g = color.getGreen();
-        this.b = color.getBlue();
-        this.a = color.getAlpha();
-    }
-
-    public Color(Formatting formatting) {
-        if (formatting.isColor()) {
-            this.r = toRGBAR(formatting.getColorValue());
-            this.g = toRGBAG(formatting.getColorValue());
-            this.b = toRGBAB(formatting.getColorValue());
-            this.a = toRGBAA(formatting.getColorValue());
-        } else {
-            this.r = 255;
-            this.g = 255;
-            this.b = 255;
-            this.a = 255;
-        }
-    }
-
-    public Color(TextColor textColor) {
-        this.r = toRGBAR(textColor.getRgb());
-        this.g = toRGBAG(textColor.getRgb());
-        this.b = toRGBAB(textColor.getRgb());
-        this.a = toRGBAA(textColor.getRgb());
-    }
-
-    public Color(Style style) {
-        TextColor textColor = style.getColor();
-        if (textColor == null) {
-            this.r = 255;
-            this.g = 255;
-            this.b = 255;
-            this.a = 255;
-        } else {
-            this.r = toRGBAR(textColor.getRgb());
-            this.g = toRGBAG(textColor.getRgb());
-            this.b = toRGBAB(textColor.getRgb());
-            this.a = toRGBAA(textColor.getRgb());
-        }
     }
 
     public static Color randomColor(boolean randomizeAlpha) {

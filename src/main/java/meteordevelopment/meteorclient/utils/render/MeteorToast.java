@@ -7,6 +7,7 @@ package meteordevelopment.meteorclient.utils.render;
 
 import com.mojang.blaze3d.systems.RenderSystem;
 import meteordevelopment.meteorclient.utils.render.color.Color;
+import net.greemdev.meteor.util.meteor.Meteor;
 import net.minecraft.client.gui.DrawContext;
 import net.minecraft.client.render.GameRenderer;
 import net.minecraft.client.sound.PositionedSoundInstance;
@@ -25,26 +26,38 @@ import org.jetbrains.annotations.Nullable;
 import static meteordevelopment.meteorclient.MeteorClient.mc;
 
 public class MeteorToast implements Toast {
-    public static final int TITLE_COLOR = Color.fromRGBA(145, 61, 226, 255);
-    public static final int TEXT_COLOR = Color.fromRGBA(220, 220, 220, 255);
+    public static SoundInstance DEFAULT_SOUND = PositionedSoundInstance.master(SoundEvents.BLOCK_NOTE_BLOCK_CHIME.value(), 1.2f, 1);
+    public static Color getTitleColor() {
+        return Meteor.currentTheme().titleTextColor();
+    }
+    public static Color getTextColor() {
+        return Meteor.currentTheme().textColor();
+    }
 
     private ItemStack icon;
     private Text title, text;
     private boolean justUpdated = true, playedSound;
+    private final SoundInstance sound;
     private long start, duration;
 
-    public MeteorToast(@Nullable Item item, @NotNull String title, @Nullable String text, long duration) {
+    public MeteorToast(@Nullable Item item, @NotNull String title, @Nullable String text, SoundInstance sound, long duration) {
         this.icon = item != null ? item.getDefaultStack() : null;
-        this.title = Text.literal(title).setStyle(Style.EMPTY.withColor(TextColor.fromRgb(TITLE_COLOR)));
-        this.text = text != null ? Text.literal(text).setStyle(Style.EMPTY.withColor(TextColor.fromRgb(TEXT_COLOR))) : null;
+        this.title = Text.literal(title).setStyle(Style.EMPTY.withColor(getTitleColor().toTextColor()));
+        this.text = text != null ? Text.literal(text).setStyle(Style.EMPTY.withColor(getTextColor().toTextColor())) : null;
         this.duration = duration;
+        this.sound = sound;
+    }
+
+    public MeteorToast(@Nullable Item item, @NotNull String title, @Nullable String text, long duration) {
+        this(item, title, text, DEFAULT_SOUND, duration);
     }
 
     public MeteorToast(@Nullable Item item, @NotNull String title, @Nullable String text) {
-        this.icon = item != null ? item.getDefaultStack() : null;
-        this.title = Text.literal(title).setStyle(Style.EMPTY.withColor(TextColor.fromRgb(TITLE_COLOR)));
-        this.text = text != null ? Text.literal(text).setStyle(Style.EMPTY.withColor(TextColor.fromRgb(TEXT_COLOR))) : null;
-        this.duration = 6000;
+        this(item, title, text, 6000);
+    }
+
+    public MeteorToast(@Nullable Item item, @NotNull String title, @Nullable String text, SoundInstance sound) {
+        this(item, title, text, sound, 6000);
     }
 
     @Override
@@ -63,11 +76,11 @@ public class MeteorToast implements Toast {
         int titleY = 12;
 
         if (text != null) {
-            context.drawText(mc.textRenderer, title, x, 18, TITLE_COLOR, false);
+            context.drawText(mc.textRenderer, text, x, 18, getTextColor().getPacked(), false);
             titleY = 7;
         }
 
-        context.drawText(mc.textRenderer, title, x, titleY, TITLE_COLOR, false);
+        context.drawText(mc.textRenderer, title, x, titleY, getTitleColor().getPacked(), false);
 
         if (icon != null) context.drawItem(icon, 8, 8);
 
@@ -85,12 +98,12 @@ public class MeteorToast implements Toast {
     }
 
     public void setTitle(@NotNull String title) {
-        this.title = Text.literal(title).setStyle(Style.EMPTY.withColor(TextColor.fromRgb(TITLE_COLOR)));
+        this.title = Text.literal(title).setStyle(Style.EMPTY.withColor(getTitleColor().toTextColor()));
         justUpdated = true;
     }
 
     public void setText(@Nullable String text) {
-        this.text = text != null ? Text.literal(text).setStyle(Style.EMPTY.withColor(TextColor.fromRgb(TEXT_COLOR))) : null;
+        this.text = text != null ? Text.literal(text).setStyle(Style.EMPTY.withColor(getTextColor().toTextColor())) : null;
         justUpdated = true;
     }
 
@@ -99,8 +112,7 @@ public class MeteorToast implements Toast {
         justUpdated = true;
     }
 
-    // Addons: @Override this method in a subclass if you want a different sound
-    public SoundInstance getSound() {
-        return PositionedSoundInstance.master(SoundEvents.BLOCK_NOTE_BLOCK_CHIME.value(), 1.2f, 1);
+    public final SoundInstance getSound() {
+        return sound;
     }
 }

@@ -56,23 +56,21 @@ public class HudTab extends Tab {
 
             add(theme.horizontalSeparator()).expandX();
 
-            WButton openEditor = add(theme.button("Edit")).expandX().widget();
-            openEditor.action = () -> mc.setScreen(new HudEditorScreen(theme));
+            add(theme.button("Edit", () -> mc.setScreen(new HudEditorScreen(theme)))).expandX();
 
-            WHorizontalList buttons = add(theme.horizontalList()).expandX().widget();
-            buttons.add(theme.button("Clear")).expandX().widget().action = hud::clear;
-            buttons.add(theme.button("Reset to default elements")).expandX().widget().action = hud::resetToDefaultElements;
+            within(add(theme.horizontalList()).expandX(), buttons -> {
+                buttons.add(theme.button("Clear", hud::clear)).expandX();
+                buttons.add(theme.button("Reset to default elements", hud::resetToDefaultElements)).expandX();
+            });
 
             add(theme.horizontalSeparator()).expandX();
 
-            WHorizontalList bottom = add(theme.horizontalList()).expandX().widget();
+            within(add(theme.horizontalList()).expandX(), bottom -> {
+                bottom.add(theme.label("Active: "));
+                bottom.add(theme.checkbox(hud.active, c -> hud.active = c)).expandCellX();
 
-            bottom.add(theme.label("Active: "));
-            WCheckbox active = bottom.add(theme.checkbox(hud.active)).expandCellX().widget();
-            active.action = () -> hud.active = active.checked;
-
-            WButton resetSettings = bottom.add(theme.button(GuiRenderer.RESET)).widget();
-            resetSettings.action = hud.settings::reset;
+                bottom.add(theme.resetButton(hud.settings::reset));
+            });
         }
 
         @Override

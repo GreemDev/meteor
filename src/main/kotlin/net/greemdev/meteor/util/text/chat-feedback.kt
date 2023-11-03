@@ -21,7 +21,7 @@ val feedbackPrefix by invoking {
     FormattedText.builder()
         .colored(bracketsColor)
         .addString(brackets.left)
-        .addString(prefix.name, textColor)
+        .addString(prefix.toString(), textColor)
         .addString("${brackets.right} ")
         .text()
 }

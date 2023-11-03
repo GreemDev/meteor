@@ -18,6 +18,10 @@ import java.util.function.Consumer;
 import java.util.function.Supplier;
 
 public class ModuleListSetting extends Setting<List<Module>> {
+    public static Builder builder() {
+        return new Builder();
+    }
+
     private static List<String> suggestions;
 
     protected ModuleListSetting(String name, String description, Object defaultValue, Consumer<List<Module>> onChanged, Consumer<Setting<List<Module>>> onModuleActivated, Supplier<Boolean> visible) {

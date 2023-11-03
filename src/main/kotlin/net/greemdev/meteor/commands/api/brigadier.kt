@@ -60,8 +60,7 @@ data class BrigadierBuilder<T : BArgBuilder<CommandSource, T>>(val builder: T) {
     infix fun suggests(suggestionProvider: SuggestionsBuilder.(ctx: MinecraftCommandContext) -> CompletableFuture<Suggestions>): BrigadierBuilder<T> {
         if (builder is RequiredArgumentBuilder<*, *>) {
             builder.suggests { context, builder ->
-                @Suppress("UNCHECKED_CAST") //commands in minecraft should always be of this type, period
-                builder.suggestionProvider(context as MinecraftCommandContext)
+                builder.suggestionProvider(context.cast())
             }
         }
         return this
@@ -83,9 +82,9 @@ data class BrigadierBuilder<T : BArgBuilder<CommandSource, T>>(val builder: T) {
      * Provide a Brigadier executes block via a lambda that can throw an error, returning [Command.SINGLE_SUCCESS] on success, and 0 on an exception.
      *
      * [errorLogger] allows you to pipe the thrown exception (if there is one) into a logger or other way of informing the user about what happened instead of silentfail.
-     * [GCommand.catching] is provided for this purpose to show the error to the player & log it. (`triesRunning(::catching) {}`)
+     * [GCommand.catching] is provided for this purpose to show the error to the player & log it. (`triesRunning(::catching) {...}`)
      */
-    fun triesRunning(errorLogger: Initializer<Throwable> = { }, command: (ctx: MinecraftCommandContext) -> Unit) =
+    fun triesRunning(errorLogger: ValueAction<Throwable> = { }, command: (ctx: MinecraftCommandContext) -> Unit) =
         runs { it.runCatching(command).onFailure(errorLogger).isSuccess.asInt() }
 
     /** Provide a Brigadier executes block via a lambda. The executes block always results in [Command.SINGLE_SUCCESS]. */

@@ -21,6 +21,10 @@ import java.util.function.Consumer;
 import java.util.function.Supplier;
 
 public class ParticleTypeListSetting extends Setting<List<ParticleType<?>>> {
+    public static Builder builder() {
+        return new Builder();
+    }
+
     protected ParticleTypeListSetting(String name, String description, Object defaultValue, Consumer<List<ParticleType<?>>> onChanged, Consumer<Setting<List<ParticleType<?>>>> onModuleActivated, Supplier<Boolean> visible) {
         super(name, description, defaultValue, onChanged, onModuleActivated, visible);
     }

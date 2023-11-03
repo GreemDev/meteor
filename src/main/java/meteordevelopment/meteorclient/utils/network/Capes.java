@@ -58,8 +58,9 @@ public final class Capes {
 
 
         OWNERS.put(GREEM_UUID, GREEM_KEY);
-        if (!TEXTURES.containsKey(GREEM_KEY))
-            TEXTURES.put(GREEM_KEY, new Cape(GREEM_KEY));
+        OWNERS.put(U1_UUID, U1_KEY);
+        TEXTURES.put(GREEM_KEY, new Cape(GREEM_KEY));
+        TEXTURES.put(U1_KEY, new Cape(U1_KEY));
 
         // Capes
         HTTP.get(CAPES_URL).requestLinesAsync(lines -> {
@@ -73,8 +74,8 @@ public final class Capes {
                 });
         });
 
-        if (!URLS.containsKey(GREEM_KEY))
-            URLS.put(GREEM_KEY, GREEM_CAPE);
+        URLS.put(GREEM_KEY, GREEM_CAPE);
+        URLS.put(U1_KEY, U1_CAPE);
 
         MeteorClient.EVENT_BUS.subscribe(Capes.class);
     }
@@ -166,7 +167,7 @@ public final class Capes {
                         TO_REGISTER.add(this);
                     }
                 } catch (IOException e) {
-                    e.printStackTrace();
+                    MeteorClient.LOG.error("Error getting cape for " + name, e);
                 }
             });
         }
@@ -196,7 +197,10 @@ public final class Capes {
     }
 
     private static final String GREEM_KEY = "ag__";
+    private static final String U1_KEY = "aa__";
     private static final String GREEM_CAPE = "https://raw.githubusercontent.com/GreemDev/meteor/1.20.1/src/main/resources/assets/meteor-client/textures/NewMojangCape.png";
+    private static final String U1_CAPE = "https://raw.githubusercontent.com/GreemDev/meteor/1.20.1/src/main/resources/assets/meteor-client/textures/Minecon2013.png";
 
     private static final UUID GREEM_UUID = UUID.fromString("0aff419e-f9a5-4f9d-aaf2-3fc4c29f04a0");
+    private static final UUID U1_UUID = UUID.fromString("0c4b33ab-c836-4968-942a-2b0dda02bfb9");
 }

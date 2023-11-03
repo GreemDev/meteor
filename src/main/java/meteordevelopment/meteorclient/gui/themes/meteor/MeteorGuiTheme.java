@@ -14,7 +14,6 @@ import meteordevelopment.meteorclient.gui.themes.meteor.widgets.input.WMeteorDro
 import meteordevelopment.meteorclient.gui.themes.meteor.widgets.input.WMeteorSlider;
 import meteordevelopment.meteorclient.gui.themes.meteor.widgets.input.WMeteorTextBox;
 import meteordevelopment.meteorclient.gui.themes.meteor.widgets.pressable.*;
-import meteordevelopment.meteorclient.gui.utils.AlignmentX;
 import meteordevelopment.meteorclient.gui.utils.CharFilter;
 import meteordevelopment.meteorclient.gui.widgets.*;
 import meteordevelopment.meteorclient.gui.widgets.containers.WSection;
@@ -24,10 +23,10 @@ import meteordevelopment.meteorclient.gui.widgets.input.WDropdown;
 import meteordevelopment.meteorclient.gui.widgets.input.WSlider;
 import meteordevelopment.meteorclient.gui.widgets.input.WTextBox;
 import meteordevelopment.meteorclient.gui.widgets.pressable.*;
-import meteordevelopment.meteorclient.renderer.text.TextRenderer;
 import meteordevelopment.meteorclient.settings.*;
 import meteordevelopment.meteorclient.systems.accounts.Account;
 import meteordevelopment.meteorclient.systems.modules.Module;
+import meteordevelopment.meteorclient.utils.render.AlignmentX;
 import meteordevelopment.meteorclient.utils.render.color.Color;
 import meteordevelopment.meteorclient.utils.render.color.SettingColor;
 import net.greemdev.meteor.type.ColorSettingScreenMode;
@@ -177,17 +176,13 @@ public class MeteorGuiTheme extends GuiTheme {
             .defaultValue(ColorSettingScreenMode.All)
             .build()
         );
-    }
-
-    private static Setting<SettingColor> color(SettingGroup group, String name, String description, SettingColor color) {
-        return group.add(new ColorSetting.Builder()
-            .name(name + "-color")
-            .description(description)
-            .defaultValue(color)
-            .build());
-    }
-    private Setting<SettingColor> color(String name, String description, SettingColor color) {
-        return color(sgColors, name, description, color);
+        widthDivisor = sgGeneral.add(new DoubleSetting.Builder()
+            .name("width-divisor")
+            .description("The number to divide the window's width by when calculating width of wide settings. Smaller numbers mean wider.")
+            .defaultValue(2.2)
+            .range(1.2, 4)
+            .build()
+        );
     }
 
     // Widgets
@@ -388,5 +383,16 @@ public class MeteorGuiTheme extends GuiTheme {
     @Override
     public boolean hideHUD() {
         return hideHUD.get();
+    }
+
+    private static Setting<SettingColor> color(SettingGroup group, String name, String description, SettingColor color) {
+        return group.add(new ColorSetting.Builder()
+            .name(name + "-color")
+            .description(description)
+            .defaultValue(color)
+            .build());
+    }
+    private Setting<SettingColor> color(String name, String description, SettingColor color) {
+        return color(sgColors, name, description, color);
     }
 }

@@ -11,9 +11,11 @@ import meteordevelopment.meteorclient.systems.waypoints.Waypoint
 
 class WWaypointIcon(private val waypoint: Waypoint) : WWidget() {
     override fun onCalculateSize() {
-        val s = theme.scale(32.0)
-        width = s
-        height = s
+        val pad = pad()
+        theme.scale(32.0).also {
+            width = pad + it + pad
+            height = pad + it + pad
+        }
     }
 
     override fun onRender(renderer: GuiRenderer, mouseX: Double, mouseY: Double, delta: Double) {

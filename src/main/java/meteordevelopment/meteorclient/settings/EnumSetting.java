@@ -5,6 +5,7 @@
 
 package meteordevelopment.meteorclient.settings;
 
+import meteordevelopment.meteorclient.MeteorClient;
 import net.minecraft.nbt.NbtCompound;
 
 import java.lang.reflect.InvocationTargetException;
@@ -14,6 +15,10 @@ import java.util.function.Consumer;
 import java.util.function.Supplier;
 
 public class EnumSetting<T extends Enum<?>> extends Setting<T> {
+    public static <T extends Enum<?>> Builder<T> builder() {
+        return new Builder<>();
+    }
+
     private T[] values;
 
     private final List<String> suggestions;
@@ -24,7 +29,7 @@ public class EnumSetting<T extends Enum<?>> extends Setting<T> {
         try {
             values = (T[]) defaultValue.getClass().getMethod("values").invoke(null);
         } catch (IllegalAccessException | InvocationTargetException | NoSuchMethodException e) {
-            e.printStackTrace();
+            MeteorClient.LOG.error("EnumSetting constructor encountered error", e);
         }
 
         suggestions = new ArrayList<>(values.length);

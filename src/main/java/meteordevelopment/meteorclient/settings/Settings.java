@@ -81,11 +81,11 @@ public class Settings implements ISerializable<Settings>, Iterable<SettingGroup>
             for (Setting<?> setting : group) {
                 setting.module = module;
 
-                if (setting instanceof ColorSetting) {
-                    RainbowColors.addSetting((Setting<SettingColor>) setting);
+                if (setting instanceof ColorSetting cs) {
+                    RainbowColors.addSetting(cs);
                 }
-                else if (setting instanceof ColorListSetting) {
-                    RainbowColors.addSettingList((Setting<List<SettingColor>>) setting);
+                else if (setting instanceof ColorListSetting cls) {
+                    RainbowColors.addSettingList(cls);
                 }
             }
         }

@@ -88,7 +88,7 @@ public class TextHud extends HudElement {
     public final Setting<String> condition = sgShown.add(new StringSetting.Builder()
         .name("condition")
         .description("Condition to check when shown is not Always.")
-        .visible(() -> shown.get().always())
+        .visible(() -> !shown.get().always())
         .defaultValue("")
         .onChanged(s -> recompile())
         .renderer(StarscriptTextBoxRenderer.class)
@@ -221,8 +221,8 @@ public class TextHud extends HudElement {
 
         if (!shown.get().always() && conditionScript != null) {
             String text = MeteorStarscript.run(conditionScript);
-            if (text == null) visible = false;
-            else visible = shown.get().whenTrue() ? text.equalsIgnoreCase("true") : text.equalsIgnoreCase("false");
+
+            visible = text != null && (shown.get().whenTrue() ? text.equalsIgnoreCase("true") : text.equalsIgnoreCase("false"));
         }
 
         firstTick = false;

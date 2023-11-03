@@ -12,6 +12,10 @@ import java.util.function.Consumer;
 import java.util.function.Supplier;
 
 public class Vector3dSetting extends Setting<Vector3d> {
+    public static Builder builder() {
+        return new Builder();
+    }
+
     public final double min, max;
     public final double sliderMin, sliderMax;
     public final boolean onSliderRelease;

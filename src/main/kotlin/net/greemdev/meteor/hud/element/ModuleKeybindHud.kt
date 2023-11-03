@@ -41,7 +41,7 @@ class ModuleKeybindHud : HudElement(info) {
         name("ascending-order")
         description("Sort the modules on the HUD in ascending order. Turn off for descending order.")
         defaultValue(false)
-        visible(sorted::get)
+        visible(sorted)
     }
 
     val textShadow by sg bool {

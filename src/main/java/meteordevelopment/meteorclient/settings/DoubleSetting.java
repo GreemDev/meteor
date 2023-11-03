@@ -11,6 +11,10 @@ import java.util.function.Consumer;
 import java.util.function.Supplier;
 
 public class DoubleSetting extends Setting<Double> {
+    public static Builder builder() {
+        return new Builder();
+    }
+
     public final double min, max;
     public final double sliderMin, sliderMax;
     public final boolean onSliderRelease;
@@ -27,6 +31,10 @@ public class DoubleSetting extends Setting<Double> {
         this.decimalPlaces = decimalPlaces;
         this.onSliderRelease = onSliderRelease;
         this.noSlider = noSlider;
+    }
+
+    public float getAsFloat() {
+        return get().floatValue();
     }
 
     @Override
@@ -75,37 +83,30 @@ public class DoubleSetting extends Setting<Double> {
 
         public Builder min(double min) {
             this.min = min;
-            this.sliderMin = min;
-            return this;
+            return sliderMin(min);
         }
 
         public Builder max(double max) {
             this.max = max;
-            this.sliderMax = max;
-            return this;
+            return sliderMax(max);
         }
 
         public Builder range(double min, double max) {
-            this.min = Math.min(min, max);
-            this.max = Math.max(min, max);
-            sliderRange(min, max);
-            return this;
+            return min(Math.min(min, max)).max(Math.max(min, max));
         }
 
         public Builder sliderMin(double min) {
-            sliderMin = Math.max(min, this.min);
+            sliderMin = min;
             return this;
         }
 
         public Builder sliderMax(double max) {
-            sliderMax = Math.min(max, this.max);
+            sliderMax = max;
             return this;
         }
 
         public Builder sliderRange(double min, double max) {
-            sliderMin = Math.max(min, this.min);
-            sliderMax = Math.min(max, this.max);
-            return this;
+            return sliderMin(Math.min(min, max)).sliderMax(Math.max(min, max));
         }
 
         public Builder onSliderRelease() {

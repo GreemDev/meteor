@@ -5,6 +5,7 @@
 
 package meteordevelopment.meteorclient.gui;
 
+import meteordevelopment.meteorclient.MeteorClient;
 import meteordevelopment.meteorclient.gui.renderer.GuiRenderer;
 import meteordevelopment.meteorclient.gui.renderer.packer.GuiTexture;
 import meteordevelopment.meteorclient.gui.screens.ModuleScreen;
@@ -27,6 +28,7 @@ import meteordevelopment.meteorclient.settings.Settings;
 import meteordevelopment.meteorclient.systems.accounts.Account;
 import meteordevelopment.meteorclient.systems.modules.Module;
 import meteordevelopment.meteorclient.systems.waypoints.Waypoint;
+import meteordevelopment.meteorclient.utils.Utils;
 import meteordevelopment.meteorclient.utils.misc.ISerializable;
 import meteordevelopment.meteorclient.utils.misc.Keybind;
 import meteordevelopment.meteorclient.utils.misc.Names;
@@ -49,6 +51,11 @@ import static meteordevelopment.meteorclient.MeteorClient.mc;
 import static net.minecraft.client.MinecraftClient.IS_SYSTEM_MAC;
 
 public abstract class GuiTheme implements ISerializable<GuiTheme> {
+
+    public static double getWideSettingWidth() {
+        return Utils.getWindowWidth() / GuiThemes.get().widthDivisor.get();
+    }
+
     public static final double TITLE_TEXT_SCALE = 1.25;
 
     public final String name;
@@ -57,6 +64,7 @@ public abstract class GuiTheme implements ISerializable<GuiTheme> {
     public boolean disableHoverColor;
 
     public Setting<ColorSettingScreenMode> colorScreenMode;
+    public Setting<Double> widthDivisor;
 
     protected SettingsWidgetFactory settingsFactory;
 
@@ -119,6 +127,10 @@ public abstract class GuiTheme implements ISerializable<GuiTheme> {
         return button(GuiRenderer.RESET).action(action);
     }
 
+    public WButton editButton(Runnable action) {
+        return button(GuiRenderer.EDIT).action(action);
+    }
+
     public abstract WMinus minus();
     public WMinus minus(Runnable action) {
         return minus().action(action);
@@ -169,12 +181,20 @@ public abstract class GuiTheme implements ISerializable<GuiTheme> {
         Class<?> klass = value.getClass();
         T[] values = null;
         try {
-            values = (T[]) klass.getDeclaredMethod("values").invoke(null);
+            values = Utils.cast(klass.getDeclaredMethod("values").invoke(null));
         } catch (IllegalAccessException | InvocationTargetException | NoSuchMethodException e) {
-            e.printStackTrace();
+            MeteorClient.LOG.error("Error getting enum values", e);
         }
 
         return dropdown(values, value);
+    }
+
+    public <T extends Enum<?>> WDropdown<T> dropdown(T value, Consumer<WDropdown<T>> action) {
+        return dropdown(value).action(action);
+    }
+
+    public <T> WDropdown<T> dropdown(T[] values, T value, Consumer<WDropdown<T>> action) {
+        return dropdown(values, value).action(action);
     }
 
     public abstract WTriangle triangle();
@@ -275,7 +295,11 @@ public abstract class GuiTheme implements ISerializable<GuiTheme> {
     }
 
     public WKeybind keybind(Keybind keybind, Keybind defaultValue) {
-        return w(new WKeybind(keybind, defaultValue));
+        return keybind(keybind, defaultValue, false);
+    }
+
+    public WKeybind keybind(Keybind keybind, Keybind defaultValue, boolean withResetButton) {
+        return w(new WKeybind(keybind, defaultValue, withResetButton));
     }
 
     public WWidget settings(Settings settings, String filter) {

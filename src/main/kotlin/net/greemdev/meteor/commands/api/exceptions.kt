@@ -9,6 +9,7 @@ import com.mojang.brigadier.ImmutableStringReader
 import com.mojang.brigadier.Message
 import com.mojang.brigadier.exceptions.*
 import net.greemdev.meteor.invoking
+import net.greemdev.meteor.util.className
 
 object CommandExceptions {
 
@@ -65,7 +66,7 @@ object CommandExceptions {
 inline fun<reified E> Any.argCast() =
     if (this::class.java.canonicalName == E::class.java.canonicalName)
         this as E
-    else error("Cannot create a typed command exception with argument of type ${E::class.simpleName} with provided value of type ${this::class.simpleName}")
+    else error("Cannot create a typed command exception with argument of type ${className<E>()} with provided value of type ${this::class.simpleName}")
 
 
 fun CommandExceptionType.isKnown() =
@@ -105,7 +106,7 @@ fun CommandExceptionType.isKnown() =
  * and due to how Brigadier works, it won't be caught automatically as it isn't a [CommandSyntaxException] and will thus be bubbled up.
  */
 fun CommandExceptionType.throwNew(vararg args: Any, readerContext: ImmutableStringReader? = null): Nothing {
-    require(isKnown()) { "Unknown CommandExceptionType." }
+    require(isKnown()) { "Unknown CommandExceptionType '${this::class.qualifiedName}'." }
     val exception = when (this) {
         is SimpleCommandExceptionType -> readerContext.new()
         is DynamicCommandExceptionType -> {

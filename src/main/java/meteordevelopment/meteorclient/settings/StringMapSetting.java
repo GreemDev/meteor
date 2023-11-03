@@ -21,6 +21,10 @@ import java.util.function.Consumer;
 import java.util.function.Supplier;
 
 public class StringMapSetting extends Setting<Map<String, String>> {
+    public static Builder builder() {
+        return new Builder();
+    }
+
     public final Class<? extends WTextBox.Renderer> keyRenderer;
     public final Class<? extends WTextBox.Renderer> valueRenderer;
     public final boolean wide;

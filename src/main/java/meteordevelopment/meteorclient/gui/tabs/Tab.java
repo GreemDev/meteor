@@ -7,6 +7,7 @@ package meteordevelopment.meteorclient.gui.tabs;
 
 import meteordevelopment.meteorclient.gui.GuiTheme;
 import meteordevelopment.meteorclient.gui.renderer.packer.GuiTexture;
+import meteordevelopment.meteorclient.systems.config.Config;
 import net.minecraft.client.gui.screen.Screen;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -42,7 +43,9 @@ public abstract class Tab {
 
     public void openScreen(GuiTheme theme) {
         TabScreen screen = this.createScreen(theme);
-        screen.addDirect(theme.topBar()).top().centerX();
+        screen.addDirect(theme.topBar())
+            .alignY(Config.getTopBarAlignmentY()) //custom alignment type used for vertical because i don't want to allow placing the top bar in the center
+            .alignX(Config.getTopBarAlignmentX());
         mc.setScreen(screen);
         Tabs.setLastTab(this);
     }

@@ -52,8 +52,7 @@ public class MacrosTab extends Tab {
 
             add(theme.horizontalSeparator()).expandX();
 
-            WButton create = add(theme.button("Create")).expandX().widget();
-            create.action = () -> mc.setScreen(new EditMacroScreen(theme, null, this::reload));
+            add(theme.button("Create", () -> mc.setScreen(new EditMacroScreen(theme, null, this::reload)))).expandX();
         }
 
         private void initTable(WTable table) {
@@ -63,14 +62,12 @@ public class MacrosTab extends Tab {
             for (Macro macro : Macros.get()) {
                 table.add(theme.label(macro.name.get() + " (" + macro.keybind.get() + ")"));
 
-                WButton edit = table.add(theme.button(GuiRenderer.EDIT)).expandCellX().right().widget();
-                edit.action = () -> mc.setScreen(new EditMacroScreen(theme, macro, this::reload));
+                table.add(theme.editButton(() -> mc.setScreen(new EditMacroScreen(theme, macro, this::reload)))).expandCellX().right();
 
-                WMinus remove = table.add(theme.minus()).widget();
-                remove.action = () -> {
+                table.add(theme.minus(() -> {
                     Macros.get().remove(macro);
                     reload();
-                };
+                }));
 
                 table.row();
             }

@@ -380,15 +380,16 @@ public class BetterChat extends Module {
     }
 
     public int modifyChatWidth(int width) {
-        if (isActive() && playerHeads.get()) return width + 10;
-        return width;
+        return isActive() && playerHeads.get()
+            ? width + 10
+            : width;
     }
 
     public void drawPlayerHead(DrawContext context, ChatHudLine.Visible line, int y, int color) {
         if (!isActive() || !playerHeads.get()) return;
 
-        // Only draw the first line of multi line messages
-        if (((IChatHudLineVisible) (Object) line).meteor$isStartOfEntry())  {
+        // Only draw head for the first line of multi line messages
+        if (((IChatHudLineVisible) (Object) line).meteor$isStartOfEntry()) {
             RenderSystem.enableBlend();
             RenderSystem.setShaderColor(1, 1, 1, Color.toRGBAA(color) / 255f);
 

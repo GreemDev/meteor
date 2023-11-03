@@ -13,6 +13,10 @@ import java.util.function.Consumer;
 import java.util.function.Supplier;
 
 public class BlockPosSetting extends Setting<BlockPos> {
+    public static Builder builder() {
+        return new Builder();
+    }
+
     protected BlockPosSetting(String name, String description, Object defaultValue, Consumer<BlockPos> onChanged, Consumer<Setting<BlockPos>> onModuleActivated, Supplier<Boolean> visible) {
         super(name, description, defaultValue, onChanged, onModuleActivated, visible);
     }

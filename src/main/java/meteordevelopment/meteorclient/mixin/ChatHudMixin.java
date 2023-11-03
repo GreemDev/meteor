@@ -70,11 +70,10 @@ public abstract class ChatHudMixin implements IChatHud {
 
     @Inject(method = "clear", at = @At("HEAD"), cancellable = true)
     private void clear$meteor(boolean clear, CallbackInfo info) {
-        if (!KMC.allowNextChatClear) {
+        if (!KMC.allowNextChatClear)
             info.cancel();
-        } else {
+        else
             KMC.allowNextChatClear = false;
-        }
     }
 
     @Inject(method = "addMessage(Lnet/minecraft/text/Text;Lnet/minecraft/network/message/MessageSignatureData;ILnet/minecraft/client/gui/hud/MessageIndicator;Z)V", at = @At(value = "INVOKE", target = "Ljava/util/List;add(ILjava/lang/Object;)V", ordinal = 1, shift = At.Shift.AFTER))
@@ -82,12 +81,12 @@ public abstract class ChatHudMixin implements IChatHud {
         ((IChatHudLine) (Object) messages.get(0)).meteor$setId(nextId);
     }
 
-    @SuppressWarnings("DataFlowIssue")
     @ModifyExpressionValue(method = "addMessage(Lnet/minecraft/text/Text;Lnet/minecraft/network/message/MessageSignatureData;ILnet/minecraft/client/gui/hud/MessageIndicator;Z)V", at = @At(value = "NEW", target = "(ILnet/minecraft/text/OrderedText;Lnet/minecraft/client/gui/hud/MessageIndicator;Z)Lnet/minecraft/client/gui/hud/ChatHudLine$Visible;"))
     private ChatHudLine.Visible onAddMessage_modifyChatHudLineVisible(ChatHudLine.Visible line, @Local(ordinal = 2) int j) {
         IMessageHandler handler = (IMessageHandler) client.getMessageHandler();
         IChatHudLineVisible meteorLine = (IChatHudLineVisible) (Object) line;
 
+        //noinspection DataFlowIssue
         meteorLine.meteor$setSender(handler.meteor$getSender());
         meteorLine.meteor$setStartOfEntry(j == 0);
 

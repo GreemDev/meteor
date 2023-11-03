@@ -23,7 +23,8 @@ fun showNotice(id: String, builder: Initializer<OkPrompt>) = notice(id, builder)
 object Prompts {
     @JvmStatic
     @JvmOverloads
-    fun factory(theme: GuiTheme = GuiThemes.get(), screen: Screen? = minecraft.currentScreen) = object : PromptFactory(theme, screen) {}
+    fun factory(theme: GuiTheme = GuiThemes.get(), screen: Screen? = minecraft.currentScreen) =
+        object : PromptFactory(theme, screen) {}
 
     abstract class PromptFactory(private val theme: GuiTheme, private val screen: Screen?) {
         fun showNotice(id: String, builder: Consumer<OkPrompt>) = notice(id, builder).show()

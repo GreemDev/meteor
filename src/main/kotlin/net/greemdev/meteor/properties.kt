@@ -10,14 +10,10 @@ import kotlin.properties.ReadOnlyProperty
 import kotlin.properties.ReadWriteProperty
 import kotlin.reflect.KProperty
 
-inline fun <T> invoking(noinline func: Getter<T>): FunctionProperty<T> = FunctionProperty(func)
-inline fun <T> invokingOrNull(noinline func: Getter<T>): FunctionProperty<T?> = FunctionProperty { getOrNull(func) }
+inline fun <T> invoking(noinline func: Getter<T>) = ReadOnlyProperty<Any?, T> { _, _ -> func() }
+inline fun <T> invokingOrNull(noinline func: Getter<T>) = ReadOnlyProperty<Any?, T?> { _, _ -> getOrNull(func) }
 
-class FunctionProperty<T>(private val getter: Getter<T>) : ReadOnlyProperty<Any?, T> {
-    override fun getValue(thisRef: Any?, property: KProperty<*>) = getter()
-}
-
-fun<T> observable(value: T, observer: ValueAction<T>, vararg otherObservers: ValueAction<T>) =
+fun <T> observable(value: T, observer: ValueAction<T>, vararg otherObservers: ValueAction<T>) =
     Observable(value, otherObservers.toMutableList()).apply { observers.add(observer) }
 
 class Observable<T>(private var value: T, val observers: MutableList<ValueAction<T>>) : ReadWriteProperty<Any?, T> {

@@ -19,6 +19,9 @@ import java.util.function.Consumer;
 import java.util.function.Supplier;
 
 public class BlockDataSetting<T extends ICopyable<T> & ISerializable<T> & IChangeable & IBlockData<T>> extends Setting<Map<Block, T>> {
+    public static <T extends ICopyable<T> & ISerializable<T> & IChangeable & IBlockData<T>> Builder<T> builder() {
+        return new Builder<>();
+    }
     public final Supplier<T> defaultData;
 
     protected BlockDataSetting(String name, String description, Object defaultValue, Consumer<Map<Block, T>> onChanged, Consumer<Setting<Map<Block, T>>> onModuleActivated, Supplier<T> defaultData, Supplier<Boolean> visible) {

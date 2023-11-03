@@ -13,6 +13,10 @@ import java.util.function.Consumer;
 import java.util.function.Supplier;
 
 public class BoolSetting extends Setting<Boolean> {
+    public static Builder builder() {
+        return new Builder();
+    }
+
     private static final List<String> SUGGESTIONS = ImmutableList.of("true", "false", "toggle");
 
     protected BoolSetting(String name, String description, Object defaultValue, Consumer<Boolean> onChanged, Consumer<Setting<Boolean>> onModuleActivated, Supplier<Boolean> visible) {

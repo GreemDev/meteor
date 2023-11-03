@@ -25,7 +25,9 @@ data class EntityState(val entity: LivingEntity) {
 
     fun tick() {
         health = entity.health.coerceAtMost(entity.maxHealth)
-        tickTimer()
+
+        if (lastDamageDelay > 0)
+            lastDamageDelay--
 
         if (lastHealth < 0.1)
             reset()
@@ -41,21 +43,17 @@ data class EntityState(val entity: LivingEntity) {
         lastDamageCumulative = 0f
     }
 
-    private fun tickTimer() {
-        if (lastDamageDelay > 0)
-            lastDamageDelay--
-    }
-
     private fun onHealthChange() {
         lastDamage = lastHealth - health
         lastDamageCumulative += lastDamage
 
         lastDamageDelay = healthIndicatorDelay * 2
         lastHealth = health
-        if (DamageNumbers.ignoreSelf() && minecraft.player?.uuid == entity.uuid)
-            return
 
-        DamageNumbers.add(DamageNumber(this, lastDamage))
+        if (!(DamageNumbers.ignoreSelf() && entity.uuid == minecraft.player?.uuid))
+            DamageNumbers.add(this, lastDamage)
+
+
     }
 
     // Manager of EntityState instances

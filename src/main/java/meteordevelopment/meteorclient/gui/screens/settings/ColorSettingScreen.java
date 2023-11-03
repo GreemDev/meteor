@@ -16,6 +16,7 @@ import meteordevelopment.meteorclient.gui.widgets.input.WIntEdit;
 import meteordevelopment.meteorclient.gui.widgets.input.WTextBox;
 import meteordevelopment.meteorclient.gui.widgets.pressable.WButton;
 import meteordevelopment.meteorclient.gui.widgets.pressable.WCheckbox;
+import meteordevelopment.meteorclient.settings.ColorSetting;
 import meteordevelopment.meteorclient.settings.Setting;
 import meteordevelopment.meteorclient.utils.render.color.Color;
 import meteordevelopment.meteorclient.utils.render.color.SettingColor;
@@ -30,7 +31,7 @@ public class ColorSettingScreen extends WindowScreen {
 
     public Runnable action;
 
-    private final Setting<SettingColor> setting;
+    private final ColorSetting setting;
 
     private WQuad displayQuad;
 
@@ -41,7 +42,7 @@ public class ColorSettingScreen extends WindowScreen {
     private WTextBox hexTb;
     private WCheckbox rainbow;
 
-    public ColorSettingScreen(GuiTheme theme, Setting<SettingColor> setting) {
+    public ColorSettingScreen(GuiTheme theme, ColorSetting setting) {
         super(theme, "Select Color");
 
         this.setting = setting;
@@ -175,13 +176,15 @@ public class ColorSettingScreen extends WindowScreen {
         });
 
         // Rainbow
-        within(add(theme.horizontalList()).expandX(), list -> {
-            list.add(theme.label("Rainbow: "));
-            rainbow = list.add(theme.checkbox(setting.get().rainbow, (checked) -> {
-                setting.get().rainbow = rainbow.checked;
-                setting.onChanged();
-            })).expandCellX().right().widget();
-        });
+        if (setting.canRainbow) {
+            within(add(theme.horizontalList()).expandX(), list -> {
+                list.add(theme.label("Rainbow: "));
+                rainbow = list.add(theme.checkbox(setting.get().rainbow, (checked) -> {
+                    setting.get().rainbow = rainbow.checked;
+                    setting.onChanged();
+                })).expandCellX().right().widget();
+            });
+        }
 
         // Bottom
         within(add(theme.horizontalList()).expandX(), list -> {
@@ -189,6 +192,8 @@ public class ColorSettingScreen extends WindowScreen {
 
             list.add(theme.resetButton(() -> {
                 setting.reset();
+                if (theme.colorScreenMode.get().isHexVisible())
+                    hexTb.set(setting.getDefaultValue().hexString());
                 setFromSetting();
                 callAction();
             }));
@@ -205,7 +210,8 @@ public class ColorSettingScreen extends WindowScreen {
         if (c.g != gItb.get()) gItb.set(c.g);
         if (c.b != bItb.get()) bItb.set(c.b);
         if (c.a != aItb.get()) aItb.set(c.a);
-        rainbow.checked = c.rainbow;
+        if (setting.canRainbow)
+            rainbow.checked = c.rainbow;
 
         displayQuad.color.set(setting.get());
         hueQuad.calculateFromSetting(true);
@@ -327,7 +333,7 @@ public class ColorSettingScreen extends WindowScreen {
         if (theme.colorScreenMode.get().isHexVisible() && !newColor.hexString().equals(hexTb.get()))
             hexTb.set(newColor.hexString());
 
-        if (newColor instanceof SettingColor sc)
+        if (newColor instanceof SettingColor sc && setting.canRainbow)
             rainbow.checked = sc.rainbow;
 
         displayQuad.color.set(newColor);

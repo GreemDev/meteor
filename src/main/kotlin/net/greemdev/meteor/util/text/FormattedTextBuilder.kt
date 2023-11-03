@@ -23,6 +23,7 @@ import java.util.function.Consumer
 
 class FormattedTextBuilder(private var internal: MutableText) {
     fun text(): Text = internal
+    fun mutableText() = internal
 
     operator fun MutableList<ChatColor>.plus(color: ChatColor): MutableList<ChatColor> = apply { add(color) }
     operator fun ChatColor.plus(color: ChatColor): MutableList<ChatColor> = mutableListOf(this, color)
@@ -107,7 +108,7 @@ class FormattedTextBuilder(private var internal: MutableText) {
     fun hoveredText(text: Text) =
         hovered(actions.showText, text)
     @JvmName("ktHoveredText")
-    fun hoveredText(initial: Text = emptyText(), block: context(ChatColor.Companion) FormattedTextBuilder.() -> Unit) =
+    fun hoveredText(initial: Text = emptyText(), block: FormattedTextBuilder.() -> Unit) =
         hoveredText(buildText(initial, block))
 
     @JvmName("hoveredText")

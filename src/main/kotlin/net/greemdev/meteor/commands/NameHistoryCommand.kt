@@ -52,32 +52,31 @@ object NameHistoryCommand : GCommand(
 
                         hoveredText {
                             addString("View on laby.net")
-                            colored(yellow).italicized()
+                            colored(ChatColor.yellow).italicized()
                         }
 
-                        addString(" Username History:", grey)
+                        addString(" Username History:", ChatColor.grey)
                     })
 
                     history.username_history.forEach { nameEntry ->
                         ChatUtils.sendMsg(buildText {
-                            addString(nameEntry.name, aqua)
+                            addString(nameEntry.name, ChatColor.aqua)
 
                             if (nameEntry.changed_at != null && nameEntry.changed_at.time != 0L) {
                                 hoveredText {
-                                    addString("Changed at: ", grey)
-                                    addString(nameEntry.changed_at.format("hh:mm:ss, dd/MM/yyyy"), white)
+                                    addString("Changed at: ", ChatColor.grey)
+                                    addString(nameEntry.changed_at.format("hh:mm:ss, dd/MM/yyyy"), ChatColor.white)
                                 }
                             }
 
                             addString(
                                 "*".takeIf { nameEntry.accurate }
                             ) {
-                                colored(yellow)
+                                colored(ChatColor.yellow)
                                 hoveredText(textOf("This name history entry is not accurate according to laby.net"))
                             }
                         })
                     }
-
                 }
             }
         }

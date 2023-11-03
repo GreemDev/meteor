@@ -26,11 +26,11 @@ public class Dir {
         };
     }
 
-    public static boolean is(int dir, byte idk) {
-        return (dir & idk) == idk;
+    public static boolean is(int dir, byte other) {
+        return (dir & other) == other;
     }
 
-    public static boolean isNot(int dir, byte idk) {
-        return (dir & idk) != idk;
+    public static boolean isNot(int dir, byte other) {
+        return (dir & other) != other;
     }
 }

@@ -56,6 +56,7 @@ fun Entity.editPos(x: Double = 0.0, y: Double = 0.0, z: Double = 0.0) {
 }
 
 fun MinecraftClient.getMeteorResource(path: String): Optional<Resource> = resourceManager.getResource(resource(path))
+fun getMeteorResource(path: String) = minecraft.getMeteorResource(path)
 
 operator fun Entity.plus(vec3d: Vec3d): Entity {
     addVelocity(vec3d.x, vec3d.y, vec3d.z)

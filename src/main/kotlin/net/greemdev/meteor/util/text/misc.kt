@@ -15,16 +15,16 @@ import java.util.function.Consumer
 
 fun textOf(content: String?) = textOf(content, null)
 fun emptyText() = textOf(null, null)
-fun textOf(content: String? = null, block: Initializer<MutableText>?): MutableText =
-    if (content == null)
-        Text.empty()
-    else
-        Text.literal(content).apply { block?.invoke(this) }
+fun textOf(content: String? = null, block: Initializer<MutableText>?): MutableText {
+    return Text.literal(content ?: return Text.empty())
+        .apply { block?.invoke(this) }
+}
 
-inline fun buildText(initial: Text = emptyText(), block: context(ChatColor.Companion) FormattedTextBuilder.() -> Unit) =
-    FormattedTextBuilder(initial.copy())
-        .apply { block(ChatColor, this@apply) }
-        .text()
+
+inline fun buildText(initial: Text = emptyText(), block: FormattedTextBuilder.() -> Unit): Text {
+    return FormattedTextBuilder(initial.copy()).apply(block).text()
+}
+
 
 object FormattedText {
     @JvmStatic

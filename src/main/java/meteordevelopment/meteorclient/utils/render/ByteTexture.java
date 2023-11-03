@@ -53,36 +53,36 @@ public class ByteTexture extends AbstractTexture {
 
         glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
         glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
-        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, filterMin.toOpenGL());
-        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, filterMag.toOpenGL());
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, filterMin.gl);
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, filterMag.gl);
 
         ((Buffer) buffer).rewind();
-        glTexImage2D(GL_TEXTURE_2D, 0, format.toOpenGL(), width, height, 0, format.toOpenGL(), GL_UNSIGNED_BYTE, buffer);
+        glTexImage2D(GL_TEXTURE_2D, 0, format.gl, width, height, 0, format.gl, GL_UNSIGNED_BYTE, buffer);
     }
 
     @Override
     public void load(ResourceManager manager) throws IOException {}
 
     public enum Format {
-        A,
-        RGB,
-        RGBA;
+        A(GL_RED),
+        RGB(GL_RGB),
+        RGBA(GL_RGBA);
 
-        public int toOpenGL() {
-            return switch (this) {
-                case A -> GL_RED;
-                case RGB -> GL_RGB;
-                case RGBA -> GL_RGBA;
-            };
+        Format(int glType) {
+            gl = glType;
         }
+
+        public final int gl;
     }
 
     public enum Filter {
-        Nearest,
-        Linear;
+        Nearest(GL_NEAREST),
+        Linear(GL_LINEAR);
 
-        public int toOpenGL() {
-            return this == Nearest ? GL_NEAREST : GL_LINEAR;
+        Filter(int glType) {
+            gl = glType;
         }
+
+        public final int gl;
     }
 }

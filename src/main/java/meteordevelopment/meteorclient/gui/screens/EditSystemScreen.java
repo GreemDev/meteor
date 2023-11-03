@@ -27,12 +27,9 @@ public abstract class EditSystemScreen<T> extends WindowScreen {
 
         add(theme.horizontalSeparator()).expandX();
 
-        WButton done = add(theme.button(isNew ? "Create" : "Save")).expandX().widget();
-        done.action = () -> {
+        enterAction = add(theme.button(isNew ? "Create" : "Save", () -> {
             if (save()) close();
-        };
-
-        enterAction = done.action;
+        })).expandX().widget().action;
     }
 
     @Override

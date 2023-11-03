@@ -20,6 +20,10 @@ import java.util.function.Consumer;
 import java.util.function.Supplier;
 
 public class SoundEventListSetting extends Setting<List<SoundEvent>> {
+    public static Builder builder() {
+        return new Builder();
+    }
+
     protected SoundEventListSetting(String name, String description, Object defaultValue, Consumer<List<SoundEvent>> onChanged, Consumer<Setting<List<SoundEvent>>> onModuleActivated, Supplier<Boolean> visible) {
         super(name, description, defaultValue, onChanged, onModuleActivated, visible);
     }

@@ -39,7 +39,7 @@ object TitleScreenInfo {
         updateChecker?.run {
             var x = minecraft.currentScreen!!.width - 3 - width
             sections.forEach {
-                RenderUtils.drawShadowed(drawContext, it.text, x, 3, it.color)
+                drawContext.drawText(minecraft.textRenderer, it.text, x, 3, it.color, true)
                 x += it.width()
             }
         }

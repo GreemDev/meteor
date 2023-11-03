@@ -23,6 +23,7 @@ import meteordevelopment.meteorclient.systems.profiles.Profiles
 import meteordevelopment.meteorclient.systems.proxies.Proxies
 import meteordevelopment.meteorclient.systems.waypoints.Waypoint
 import meteordevelopment.meteorclient.systems.waypoints.Waypoints
+import net.greemdev.meteor.cast
 import net.greemdev.meteor.invoke
 import net.greemdev.meteor.invoking
 import net.minecraft.entity.player.PlayerEntity
@@ -76,7 +77,7 @@ object Meteor {
     @JvmStatic
     fun <T : Module> module(moduleClass: Class<T>): T = modules().get(moduleClass)
 
-    inline fun <reified T : Command> command(): T = Commands.get(T::class.java) as T
+    inline fun <reified T : Command> command(): T = Commands.get(T::class.java).cast()
 
     @JvmStatic
     fun friend(name: String, ignoreCase: Boolean = false): Friend? = friends().get(name, ignoreCase)

@@ -10,6 +10,7 @@ import meteordevelopment.meteorclient.gui.utils.Cell;
 import meteordevelopment.meteorclient.gui.widgets.WTopBar;
 import meteordevelopment.meteorclient.gui.widgets.WWidget;
 import meteordevelopment.meteorclient.gui.widgets.containers.WWindow;
+import meteordevelopment.meteorclient.systems.config.Config;
 
 public abstract class WindowTabScreen extends TabScreen {
     protected final WWindow window;
@@ -32,7 +33,11 @@ public abstract class WindowTabScreen extends TabScreen {
         root.cells.stream()
             .filter(c -> c.widget() instanceof WTopBar)
             .findFirst()
-            .map(c -> (WTopBar)c.widget())
+            .map(c ->
+                (WTopBar)c
+                    .alignY(Config.getTopBarAlignmentY())
+                    .alignX(Config.getTopBarAlignmentX())
+                    .widget())
             .ifPresent(WTopBar::init);
     }
 

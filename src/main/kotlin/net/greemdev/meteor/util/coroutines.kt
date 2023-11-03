@@ -38,7 +38,7 @@ suspend infix fun <T> Deferred<T>.thenTake(block: SuspendingValueAction<T>) = th
 suspend infix fun <T> Deferred<T>.then(block: SuspendingVisitor<T>): T = block(await())
 
 infix fun <T, R> Deferred<T>.thenAsync(block: suspend T.() -> R): Deferred<R> =
-    scope.async { block(await()) }
+    scope.async { thenMap(block) }
 suspend infix fun <T, R> Deferred<T>.thenMap(block: SuspendingMapper<T, R>): R = block(await())
 
 inline fun CoroutineScope.jobBuilder(crossinline block: Initializer<AsyncJobBuilder>) = object : AsyncJobBuilder(this) {}.apply(block)
@@ -124,8 +124,6 @@ inline fun<T> coroutines(block: CoroutineScope.() -> T): T = scope.block()
  */
 fun<J : Job> launchJob(builder: AsyncJobBuilder.() -> J) = scope.jobBuilder {}.builder()
 
-fun Runnable.runInCoroutine(scope: CoroutineScope) =
-    scope.launch { run() }
+fun Runnable.runInCoroutine(scope: CoroutineScope) = scope.launch { run() }
 
-fun<T> Supplier<T>.getAsync(scope: CoroutineScope) =
-    scope.async { get() }
+fun<T> Supplier<T>.getAsync(scope: CoroutineScope) = scope.async { get() }

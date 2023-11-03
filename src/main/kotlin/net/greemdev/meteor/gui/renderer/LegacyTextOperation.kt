@@ -30,6 +30,6 @@ class LegacyTextOperation : GuiRenderOperation<LegacyTextOperation>() {
 
 
     override fun onRun() {
-        renderer.renderLegacy(text, x, y, color.awt(), shadow)
+        renderer.renderLegacy(text, x, y, color, shadow)
     }
 }

@@ -5,6 +5,7 @@
 
 package meteordevelopment.meteorclient.gui.widgets;
 
+import kotlin.PreconditionsKt;
 import meteordevelopment.meteorclient.gui.renderer.GuiRenderer;
 import meteordevelopment.meteorclient.gui.tabs.Tab;
 import meteordevelopment.meteorclient.gui.tabs.TabScreen;
@@ -14,6 +15,7 @@ import meteordevelopment.meteorclient.gui.widgets.pressable.WPressable;
 import meteordevelopment.meteorclient.utils.render.color.Color;
 import net.greemdev.meteor.util.meteor.MetaKt;
 import net.minecraft.client.gui.screen.Screen;
+import org.lwjgl.glfw.GLFW;
 
 import java.util.Objects;
 
@@ -53,10 +55,9 @@ public abstract class WTopBar extends WHorizontalList {
         protected void onCalculateSize() {
             double pad = pad();
 
-            if (tab.displayIcon.get())
-                width = pad + theme.textHeight() + pad;
-            else
-                width = pad + theme.textWidth(tab.name) + pad;
+            width = tab.displayIcon.get()
+                ? pad + theme.textHeight() + pad
+                : pad + theme.textWidth(tab.name) + pad;
 
             height = pad + theme.textHeight() + pad;
         }
@@ -87,7 +88,7 @@ public abstract class WTopBar extends WHorizontalList {
                     y + pad,
                     theme.textHeight(),
                     theme.textHeight(),
-                    Objects.requireNonNull(tab.icon), //tab.icon will always be present when displayIcon has even a possibility of being true due to design
+                    Objects.requireNonNull(tab.icon), //tab icon will always be present when displayIcon has even a possibility of being true due to design of Tab constructors
                     getNameColor()
                 );
             }

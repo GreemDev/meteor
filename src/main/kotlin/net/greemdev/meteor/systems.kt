@@ -46,7 +46,7 @@ abstract class GCommand(
 
     protected open fun CommandBuilder.inject() {
         kotlin.error("The base implementation of GCommand#inject should never be called! " +
-            "You forgot to override the method or provide the builder in the abstract class constructor for command $name.")
+            "You forgot to override the method or provide the builder function in the abstract class constructor for command $name.")
     }
 
     override fun build(builder: LiteralArgumentBuilder<CommandSource>) {
@@ -57,18 +57,20 @@ abstract class GCommand(
 
     /**
      * Show the exception to the user and log it.
-     * Useful for [BrigadierBuilder]'s `triesRunning` for simple command error display.
+     * Useful for [BrigadierBuilder.triesRunning]'s first parameter for simple command error display.
      */
     fun catching(t: Throwable) {
         ChatUtils.sendMsg(title, buildText {
             addString(t.message ?: "Uncaught exception without message. Check game logs for stacktrace information.") {
-                colored(red)
+                colored(ChatColor.red)
             }
             addString("Click here to open your game logs folder.") {
-                val path = (minecraft.runDirectory / "logs").path
-                clicked(actions.openFile, path)
-                hovered(actions.showText, textOf(path))
                 colored(MeteorColor.HYPERLINK_BLUE).underlined()
+
+                (minecraft.runDirectory / "logs").path.also {
+                    clicked(actions.openFile, it)
+                    hovered(actions.showText, textOf(it))
+                }
             }
         })
         Greteor.logger.catching(t)

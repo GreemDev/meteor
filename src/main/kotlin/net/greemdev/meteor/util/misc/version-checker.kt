@@ -11,6 +11,7 @@ import kotlinx.coroutines.launch
 import meteordevelopment.meteorclient.MeteorClient
 import meteordevelopment.meteorclient.utils.PostInit
 import meteordevelopment.meteorclient.utils.PreInit
+import net.greemdev.meteor.find
 import net.greemdev.meteor.findFirst
 import net.greemdev.meteor.invoking
 import net.greemdev.meteor.optionalOf
@@ -22,14 +23,17 @@ private const val upstreamGradleProperties = "https://raw.githubusercontent.com/
 
 object GVersioning {
     private var revisionChecker: Job? = null
+    private var initial = true
+
     @JvmStatic
     @PreInit
     fun init() {
-        scope.launch { reloadLatestRevision() }
         revisionChecker = scope.launch {
+            reloadLatestRevision()
+
             while (true) {
-                reloadLatestRevision()
                 delay(1.hours)
+                reloadLatestRevision()
             }
         }
     }
@@ -39,10 +43,8 @@ object GVersioning {
         latestRevision = (HTTP GET upstreamGradleProperties)
             .requestLinesAsync().await()
             .orEmpty()
-            .filter { it.startsWith("revision") }
-            .map { it.substringAfterLast('=') }
-            .findFirst()
-            .map(String::toInt)
+            .find { it.startsWith("revision") }
+            .map { it.substringAfterLast('=').toInt() }
             .orElseThrow()
     }
 

@@ -5,11 +5,15 @@
 
 package meteordevelopment.meteorclient.gui.widgets;
 
+import kotlin.text.StringsKt;
+import meteordevelopment.meteorclient.gui.WidgetScreen;
 import meteordevelopment.meteorclient.gui.widgets.containers.WHorizontalList;
 import meteordevelopment.meteorclient.gui.widgets.pressable.WButton;
 import meteordevelopment.meteorclient.gui.widgets.pressable.WCheckbox;
 import meteordevelopment.meteorclient.systems.modules.Modules;
 import meteordevelopment.meteorclient.utils.misc.Keybind;
+
+import static meteordevelopment.meteorclient.MeteorClient.mc;
 
 public class WKeybind extends WHorizontalList {
     public Runnable action;
@@ -26,25 +30,27 @@ public class WKeybind extends WHorizontalList {
     }
 
     private WLabel label;
-    private WCheckbox onRelease;
 
     private final Keybind keybind;
     private final Keybind defaultValue;
     private boolean listening;
 
+    private final boolean addResetButton;
+
     public boolean module = false;
 
-    public WKeybind(Keybind keybind, Keybind defaultValue) {
+    public WKeybind(Keybind keybind, Keybind defaultValue, boolean resetButton) {
         this.keybind = keybind;
         this.defaultValue = defaultValue;
+        this.addResetButton = resetButton;
     }
 
     @Override
     public void init() {
-        if (!module)
-            add(theme.label(" "));
+        if (module)
+            add(theme.label("Toggle: "));
 
-        label = add(theme.label(fixLabel(keybind.toString()))).widget();
+        label = add(theme.label(keybind.toString())).widget();
         add(theme.button("Set", () -> {
             listening = true;
             setLabel("...");
@@ -54,9 +60,11 @@ public class WKeybind extends WHorizontalList {
 
         add(theme.label("  Released: ", "Activate this keybind when the specified key/mouse button is &zreleased&r."));
 
-        onRelease = add(theme.checkbox(keybind.onRelease, (c) -> keybind.onRelease = c)).widget();
+        add(theme.checkbox(keybind.onRelease, (c) -> keybind.onRelease = c));
 
-        add(theme.resetButton(this::resetBind)).expandCellX().right();
+        if (addResetButton)
+            add(theme.resetButton(this::resetBind)).expandCellX().right();
+
         refreshLabel();
     }
 
@@ -85,16 +93,10 @@ public class WKeybind extends WHorizontalList {
     }
 
     private void refreshLabel() {
-        label.set(keybind.toString());
+        setLabel("  " + keybind.toString());
     }
 
     private void setLabel(String label) {
-        this.label.set(fixLabel(label));
-    }
-
-    private String fixLabel(String label) {
-        return module
-            ? "Toggle: " + label
-            : label;
+        this.label.set(StringsKt.padEnd(label, 10, ' '));
     }
 }

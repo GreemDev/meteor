@@ -299,10 +299,10 @@ public class DiscordPresence extends Module {
 
     @Override
     public WWidget getWidget(GuiTheme theme) {
-        WButton help = theme.button("Open documentation.");
-        help.action = () -> Util.getOperatingSystem().open("https://github.com/MeteorDevelopment/meteor-client/wiki/Starscript");
-
-        return help;
+        return theme.button("Starscript Info", () ->
+            Util.getOperatingSystem()
+                .open("https://github.com/GreemDev/meteor/wiki/Starscript")
+        );
     }
 
     private enum SmallImage {

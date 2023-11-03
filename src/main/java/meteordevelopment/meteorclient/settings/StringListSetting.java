@@ -13,6 +13,9 @@ import meteordevelopment.meteorclient.gui.widgets.containers.WTable;
 import meteordevelopment.meteorclient.gui.widgets.input.WTextBox;
 import meteordevelopment.meteorclient.gui.widgets.pressable.WButton;
 import meteordevelopment.meteorclient.gui.widgets.pressable.WMinus;
+import net.greemdev.meteor.util.misc.Nbt;
+import net.greemdev.meteor.util.misc.NbtDataType;
+import net.greemdev.meteor.util.misc.NbtUtil;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.nbt.NbtElement;
 import net.minecraft.nbt.NbtList;
@@ -24,7 +27,11 @@ import java.util.List;
 import java.util.function.Consumer;
 import java.util.function.Supplier;
 
-public class StringListSetting extends Setting<List<String>>{
+public class StringListSetting extends Setting<List<String>> {
+    public static Builder builder() {
+        return new Builder();
+    }
+
     public final Class<? extends WTextBox.Renderer> renderer;
     public final CharFilter filter;
     public final boolean wide;
@@ -62,7 +69,7 @@ public class StringListSetting extends Setting<List<String>>{
     public List<String> load(NbtCompound tag) {
         get().clear();
 
-        NbtList valueTag = tag.getList("value", 8);
+        NbtList valueTag = tag.getList("value", NbtElement.STRING_TYPE);
         for (NbtElement tagI : valueTag) {
             get().add(tagI.asString());
         }
@@ -89,13 +96,12 @@ public class StringListSetting extends Setting<List<String>>{
             textBox.action = () -> strings.set(msgI, textBox.get());
             textBox.actionOnUnfocused = () -> setting.set(strings);
 
-            WMinus delete = table.add(theme.minus()).widget();
-            delete.action = () -> {
+            table.add(theme.minus(() -> {
                 strings.remove(msgI);
                 setting.set(strings);
 
                 fillTable(theme, table, setting);
-            };
+            }));
 
             table.row();
         }
@@ -105,20 +111,18 @@ public class StringListSetting extends Setting<List<String>>{
             table.row();
         }
 
-        WButton add = table.add(theme.button("Add")).expandX().widget();
-        add.action = () -> {
+        table.add(theme.button("Add", () -> {
             strings.add("");
             setting.set(strings);
 
             fillTable(theme, table, setting);
-        };
+        })).expandX();
 
-        WButton reset = table.add(theme.button(GuiRenderer.RESET)).widget();
-        reset.action = () -> {
+        table.add(theme.resetButton(() -> {
             setting.reset();
 
             fillTable(theme, table, setting);
-        };
+        }));
     }
 
     public static class Builder extends SettingBuilder<Builder, List<String>, StringListSetting> {

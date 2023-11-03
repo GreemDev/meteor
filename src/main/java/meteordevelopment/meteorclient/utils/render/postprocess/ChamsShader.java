@@ -14,6 +14,7 @@ import meteordevelopment.meteorclient.systems.modules.render.Chams;
 import meteordevelopment.meteorclient.utils.PostInit;
 import meteordevelopment.meteorclient.utils.misc.MeteorIdentifier;
 import meteordevelopment.orbit.EventHandler;
+import net.greemdev.meteor.util.misc.KMC;
 import net.minecraft.entity.Entity;
 import net.minecraft.resource.Resource;
 import org.lwjgl.stb.STBImage;
@@ -41,7 +42,7 @@ public class ChamsShader extends EntityShader {
         try {
             ByteBuffer data = null;
             for (String fileFormat : FILE_FORMATS) {
-                Optional<Resource> optional = mc.getResourceManager().getResource(new MeteorIdentifier("textures/chams." + fileFormat));
+                Optional<Resource> optional = KMC.getMeteorResource(mc, "textures/chams." + fileFormat);
                 if (optional.isEmpty() || optional.get().getInputStream() == null) {
                     continue;
                 }

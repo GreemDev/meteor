@@ -15,6 +15,7 @@ import meteordevelopment.meteorclient.events.packets.PacketEvent;
 import meteordevelopment.meteorclient.events.world.TickEvent;
 import meteordevelopment.meteorclient.utils.world.TickRate;
 import meteordevelopment.orbit.EventHandler;
+import net.greemdev.meteor.utils;
 import net.minecraft.client.network.ServerAddress;
 import net.minecraft.client.network.ServerInfo;
 import net.minecraft.command.CommandSource;
@@ -98,11 +99,7 @@ public class ServerCommand extends Command {
             info("Please wait around 5 seconds...");
             (new Thread(() -> completionStarts.chars().forEach(i -> {
                 mc.player.networkHandler.sendPacket(new RequestCommandCompletionsC2SPacket(random.nextInt(200), Character.toString(i)));
-                try {
-                    Thread.sleep(100);
-                } catch (InterruptedException e) {
-                    e.printStackTrace();
-                }
+                utils.sleepCurrentThread(100);
             }))).start();
         }
     }

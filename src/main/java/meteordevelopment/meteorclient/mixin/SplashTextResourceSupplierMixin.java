@@ -7,6 +7,7 @@ package meteordevelopment.meteorclient.mixin;
 
 import kotlin.jvm.functions.Function1;
 import meteordevelopment.meteorclient.systems.config.Config;
+import net.greemdev.meteor.utils;
 import net.minecraft.client.gui.screen.SplashTextRenderer;
 import net.minecraft.client.resource.SplashTextResourceSupplier;
 import org.spongepowered.asm.mixin.Mixin;
@@ -29,10 +30,9 @@ public class SplashTextResourceSupplierMixin {
     private void onApply(CallbackInfoReturnable<SplashTextRenderer> cir) {
         if (Config.get() == null || !Config.get().useCustomSplashes.get()) return;
 
-        if (override) {
-            var splashes = Config.get().customSplashes.get();
-            cir.setReturnValue(new SplashTextRenderer(splashes.get(ThreadLocalRandom.current().nextInt(splashes.size())).replace('&', '§')));
-        }
+        if (override)
+            cir.setReturnValue(new SplashTextRenderer(utils.getRandomElement(Config.get().customSplashes.get()).replace('&', '§')));
+
         override = !override;
     }
 

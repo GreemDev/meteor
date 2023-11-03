@@ -22,6 +22,7 @@ import java.util.List;
 
 @Mixin(CrashReport.class)
 public class CrashReportMixin {
+
     @Inject(method = "addStackTrace", at = @At("TAIL"))
     private void onAddStackTrace(StringBuilder sb, CallbackInfo info) {
         sb.append("\n\n-- Meteor Client --\n\n");
@@ -51,9 +52,7 @@ public class CrashReportMixin {
 
                     sb.append(module.name).append("\n");
                 }
-
             }
-
         }
 
         if (Hud.get() != null && Hud.get().active) {
@@ -66,19 +65,21 @@ public class CrashReportMixin {
                     sb.append("\n[[ Active Hud Elements ]]\n");
                 }
 
-                if (!(element instanceof TextHud textHud)) sb.append(element.info.name).append("\n");
-                else {
+                if (element instanceof TextHud textHud) {
                     sb.append("Text\n{")
-                      .append(textHud.text.get())
-                      .append("}\n");
+                        .append(textHud.text.get())
+                        .append("}\n");
                     if (!textHud.shown.get().always()) {
                         sb.append("(")
-                          .append(textHud.shown.get())
-                          .append(textHud.condition.get())
-                          .append(")\n");
+                            .append(textHud.shown.get())
+                            .append(textHud.condition.get())
+                            .append(")\n");
                     }
                 }
+                else sb.append(element.info.name).append("\n");
             }
         }
+
+        sb.append("\n\n");
     }
 }

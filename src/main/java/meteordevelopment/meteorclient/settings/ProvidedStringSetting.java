@@ -11,6 +11,10 @@ import java.util.function.Consumer;
 import java.util.function.Supplier;
 
 public class ProvidedStringSetting extends StringSetting {
+    public static Builder builderProvided() {
+        return new Builder();
+    }
+
     public final Supplier<String[]> supplier;
 
     protected ProvidedStringSetting(String name, String description, Object defaultValue, Consumer<String> onChanged, Consumer<Setting<String>> onModuleActivated, Supplier<Boolean> visible, Class<? extends WTextBox.Renderer> renderer, boolean wide, Supplier<String[]> supplier) {

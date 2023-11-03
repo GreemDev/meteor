@@ -8,9 +8,12 @@ package meteordevelopment.meteorclient.gui.widgets.input;
 import meteordevelopment.meteorclient.gui.renderer.GuiRenderer;
 import meteordevelopment.meteorclient.gui.utils.Cell;
 import meteordevelopment.meteorclient.gui.widgets.WRoot;
+import meteordevelopment.meteorclient.gui.widgets.WWidget;
 import meteordevelopment.meteorclient.gui.widgets.containers.WVerticalList;
 import meteordevelopment.meteorclient.gui.widgets.pressable.WPressable;
 import net.minecraft.util.math.MathHelper;
+
+import java.util.function.Consumer;
 
 public abstract class WDropdown<T> extends WPressable {
     public Runnable action;
@@ -96,6 +99,10 @@ public abstract class WDropdown<T> extends WPressable {
         super.move(deltaX, deltaY);
 
         root.move(deltaX, deltaY);
+    }
+
+    public WDropdown<T> action(Consumer<WDropdown<T>> action) {
+        return action(() -> action.accept(this));
     }
 
     @Override

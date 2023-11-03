@@ -51,7 +51,7 @@ public class ModuleScreen extends WindowScreen {
             );
 
         // Settings
-        if (module.settings.groups.size() > 0) {
+        if (!module.settings.groups.isEmpty()) {
             settingsContainer = add(theme.verticalList()).expandX().widget();
             settingsContainer.add(theme.settings(module.settings)).expandX();
         }
@@ -67,10 +67,15 @@ public class ModuleScreen extends WindowScreen {
 
         // Bind
         within(add(theme.section("Bind", true)).expandX(), sec -> {
-            if (module.canBind && module.canActivate)
-                keybind = sec.add(theme.moduleKeybind(module.keybind, () ->
-                    Modules.get().setModuleToBind(module))
-                ).expandX().widget();
+            if (module.canBind && module.canActivate) {
+                within(sec.add(theme.table()).expandX(), t -> {
+                    keybind = t.add(theme.moduleKeybind(module.keybind, () ->
+                        Modules.get().setModuleToBind(module))
+                    ).expandX().widget();
+                    t.add(theme.resetButton(keybind::resetBind)).right();
+                });
+            }
+
 
             if (module.allowChatFeedback || module.forceDisplayChatFeedbackCheckbox) {
                 within(sec.add(theme.horizontalList()), list -> {

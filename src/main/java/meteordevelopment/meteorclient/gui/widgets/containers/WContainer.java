@@ -13,6 +13,7 @@ import net.minecraft.client.Mouse;
 import java.util.ArrayList;
 import java.util.ConcurrentModificationException;
 import java.util.List;
+import java.util.function.Consumer;
 
 import static meteordevelopment.meteorclient.MeteorClient.mc;
 import static meteordevelopment.meteorclient.utils.Utils.getWindowHeight;
@@ -49,6 +50,7 @@ public abstract class WContainer extends WWidget {
         super.move(deltaX, deltaY);
         for (Cell<?> cell : cells) cell.move(deltaX, deltaY);
     }
+
 
     public void moveCells(double deltaX, double deltaY) {
         for (Cell<?> cell : cells) {

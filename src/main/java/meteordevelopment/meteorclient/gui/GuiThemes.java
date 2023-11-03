@@ -9,6 +9,7 @@ import meteordevelopment.meteorclient.MeteorClient;
 import meteordevelopment.meteorclient.gui.themes.meteor.MeteorGuiTheme;
 import meteordevelopment.meteorclient.utils.PostInit;
 import meteordevelopment.meteorclient.utils.PreInit;
+import net.greemdev.meteor.util.misc.NbtUtil;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.nbt.NbtIo;
 
@@ -34,13 +35,9 @@ public class GuiThemes {
     @PostInit
     public static void postInit() {
         if (FILE.exists()) {
-            try {
-                NbtCompound tag = NbtIo.read(FILE);
+            NbtCompound tag = NbtUtil.read(FILE);
 
-                if (tag != null) select(tag.getString("currentTheme"));
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
+            select(tag.getString("currentTheme"));
         }
 
         if (theme == null) select("Meteor");
@@ -78,15 +75,10 @@ public class GuiThemes {
             GuiThemes.theme = theme;
 
             // Load new theme
-            try {
-                File file = new File(THEMES_FOLDER, get().name + ".nbt");
+            File file = new File(THEMES_FOLDER, get().name + ".nbt");
 
-                if (file.exists()) {
-                    NbtCompound tag = NbtIo.read(file);
-                    if (tag != null) get().fromTag(tag);
-                }
-            } catch (IOException e) {
-                e.printStackTrace();
+            if (file.exists()) {
+                get().fromTag(NbtUtil.read(file));
             }
 
             // Save global gui settings with the new theme
@@ -106,14 +98,12 @@ public class GuiThemes {
 
     private static void saveTheme() {
         if (get() != null) {
-            try {
-                NbtCompound tag = get().toTag();
+            NbtCompound tag = get().toTag();
 
-                THEMES_FOLDER.mkdirs();
-                NbtIo.write(tag, new File(THEMES_FOLDER, get().name + ".nbt"));
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
+            THEMES_FOLDER.mkdirs();
+            Throwable err = NbtUtil.write(new File(THEMES_FOLDER, get().name + ".nbt"), tag);
+            if (err != null)
+                MeteorClient.LOG.error("Error saving theme nbt", err);
         }
     }
 

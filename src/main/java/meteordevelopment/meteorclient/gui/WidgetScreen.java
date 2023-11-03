@@ -208,8 +208,8 @@ public abstract class WidgetScreen extends Screen {
             AtomicBoolean done = new AtomicBoolean(false);
             AtomicBoolean foundFocused = new AtomicBoolean(false);
 
-            loopWidgets(root, wWidget -> {
-                if (done.get() || !(wWidget instanceof WTextBox textBox)) return;
+            root.forEachWidget(widget -> {
+                if (done.get() || !(widget instanceof WTextBox textBox)) return;
 
                 if (foundFocused.get()) {
                     textBox.setFocused(true);
@@ -338,8 +338,9 @@ public abstract class WidgetScreen extends Screen {
 
             Input.setCursorStyle(CursorStyle.Default);
 
-            loopWidgets(root, widget -> {
-                if (widget instanceof WTextBox textBox && textBox.isFocused()) textBox.setFocused(false);
+            root.forEachWidget(widget -> {
+                if (widget instanceof WTextBox textBox && textBox.isFocused())
+                    textBox.setFocused(false);
             });
 
             MeteorClient.EVENT_BUS.unsubscribe(this);
@@ -355,14 +356,6 @@ public abstract class WidgetScreen extends Screen {
                     mc.setScreen(parent);
                 };
             }
-        }
-    }
-
-    private void loopWidgets(WWidget widget, Consumer<WWidget> action) {
-        action.accept(widget);
-
-        if (widget instanceof WContainer) {
-            for (Cell<?> cell : ((WContainer) widget).cells) loopWidgets(cell.widget(), action);
         }
     }
 

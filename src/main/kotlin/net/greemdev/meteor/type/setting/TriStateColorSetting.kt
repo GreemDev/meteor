@@ -9,6 +9,7 @@ import meteordevelopment.meteorclient.gui.GuiThemes
 import meteordevelopment.meteorclient.settings.ColorSetting
 import meteordevelopment.meteorclient.settings.SettingGroup
 import meteordevelopment.meteorclient.utils.render.color.SettingColor
+import net.greemdev.meteor.invoke
 import net.greemdev.meteor.util.meteor.color
 
 fun SettingGroup.triColorSetting(name: String, normal: SettingColor, hovered: SettingColor, pressed: SettingColor) =
@@ -30,19 +31,17 @@ class TriStateColorSetting(
     @JvmName("get")
     operator fun invoke(pressed: Boolean = false, hovered: Boolean = false, bypassDisableHoverColor: Boolean = false): SettingColor =
         if (pressed)
-            this.pressed.get()
+            this.pressed()
         else if (hovered and (bypassDisableHoverColor or !GuiThemes.get().disableHoverColor))
-            this.hovered.get()
+            this.hovered()
         else
-            this.normal.get()
+            this.normal()
 
 
-    private fun createColorSetting(name: String, description: String, color: SettingColor): ColorSetting =
+    private fun createColorSetting(name: String, description: String, color: SettingColor) =
         group.color {
             name("$name-color")
             description(description)
             defaultValue(color)
-        }.getValue(null, ::group)
-
-
+        }.setting
 }

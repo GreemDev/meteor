@@ -12,14 +12,18 @@ import meteordevelopment.meteorclient.renderer.text.FontFace;
 import meteordevelopment.meteorclient.settings.*;
 import meteordevelopment.meteorclient.systems.System;
 import meteordevelopment.meteorclient.systems.Systems;
+import meteordevelopment.meteorclient.utils.render.AlignmentX;
+import meteordevelopment.meteorclient.utils.render.AlignmentY;
 import meteordevelopment.meteorclient.utils.render.color.SettingColor;
 import net.greemdev.meteor.type.ChatPrefix;
 import net.greemdev.meteor.type.PrefixBrackets;
+import net.greemdev.meteor.type.VerticalAlignment;
 import net.greemdev.meteor.util.text.ChatColor;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.nbt.NbtElement;
 import net.minecraft.nbt.NbtList;
 import net.minecraft.nbt.NbtString;
+import org.jetbrains.annotations.NotNull;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -63,7 +67,7 @@ public class Config extends System<Config> {
 
     public final Setting<Boolean> titleScreenVersionInfo = sgVisual.add(new BoolSetting.Builder()
         .name("title-screen-version")
-        .description("Show Greteor version info on title screen")
+        .description("Show Greteor version info on title screen.")
         .defaultValue(true)
         .build()
     );
@@ -80,8 +84,9 @@ public class Config extends System<Config> {
     public final Setting<String> customWindowTitleText = sgVisual.add(new StringSetting.Builder()
         .name("window-title-text")
         .description("The text it displays in the window title.")
-        .visible(customWindowTitle::get)
-        .defaultValue("Minecraft {mc_version} - {meteor.name} {meteor.version}")
+        .visible(customWindowTitle)
+        .defaultValue("Minecraft {gameVersion} - {meteor.name} {meteor.version}")
+        .renderStarscript()
         .onChanged(value -> mc.updateWindowTitle())
         .build()
     );
@@ -173,7 +178,7 @@ public class Config extends System<Config> {
             "&4meteorclient.com",
             "&4Meteor on Crack!",
             "&6Meteor on Crack!")
-        .visible(useCustomSplashes::get)
+        .visible(useCustomSplashes)
         .build()
     );
 
@@ -196,6 +201,32 @@ public class Config extends System<Config> {
         .description("Amount of modules and settings to be shown in the module search bar.")
         .defaultValue(8)
         .min(1).sliderMax(12)
+        .build()
+    );
+
+    @NotNull
+    public static AlignmentX getTopBarAlignmentX() {
+        return Config.get().topBarHorizontalAlignment.get();
+    }
+
+    public static AlignmentY getTopBarAlignmentY() {
+        return Config.get().topBarVerticalAlignment.get().meteorAlignment();
+    }
+
+
+    public final Setting<AlignmentX> topBarHorizontalAlignment = sgTopBar.add(new EnumSetting.Builder<AlignmentX>()
+        .name("horizontal-alignment")
+        .description("Where the top bar should be placed horizontally.")
+        .defaultValue(AlignmentX.Center)
+        .onChanged(a -> WTopBar.NEEDS_REFRESH = true)
+        .build()
+    );
+
+    public final Setting<VerticalAlignment> topBarVerticalAlignment = sgTopBar.add(new EnumSetting.Builder<VerticalAlignment>()
+        .name("vertical-alignment")
+        .description("Where the top bar should be placed vertically.")
+        .defaultValue(VerticalAlignment.Top)
+        .onChanged(a -> WTopBar.NEEDS_REFRESH = true)
         .build()
     );
 

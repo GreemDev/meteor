@@ -9,6 +9,8 @@ import meteordevelopment.starscript.Starscript
 import meteordevelopment.starscript.utils.StarscriptError
 import meteordevelopment.starscript.value.Value
 import meteordevelopment.starscript.value.ValueMap
+import net.greemdev.meteor.Getter
+import net.greemdev.meteor.Mapper
 import net.greemdev.meteor.util.pluralize
 import net.greemdev.meteor.util.string
 
@@ -16,15 +18,15 @@ fun <T> Starscript.popArg(argPos: Int, functionName: String, type: ArgType<T>, c
     type.popper(this, customError ?: "Argument $argPos of $functionName() needs to be a ${type.friendly}.")
 
 sealed class ArgType<T>(
-    val friendly: kotlin.String,
-    val popper: Starscript.(kotlin.String) -> T
+    val friendly: String,
+    val popper: Starscript.(String) -> T
 ) {
-    data object Boolean : ArgType<kotlin.Boolean>(
+    data object Bool : ArgType<Boolean>(
         "boolean (true/false)",
         Starscript::popBool
     )
 
-    data object String : ArgType<kotlin.String>(
+    data object Str : ArgType<String>(
         "string",
         Starscript::popString
     )
@@ -47,14 +49,20 @@ class StarscriptFunctionContext(val name: String, val starscript: Starscript, va
     }
 
     fun<T> nextArg(type: ArgType<T>, customError: String? = null): T = starscript.popArg(argPos++, name, type, customError)
-    fun nextBoolean(customError: String? = null) = nextArg(ArgType.Boolean, customError)
-    fun nextString(customError: String? = null) = nextArg(ArgType.String, customError)
+    fun nextBoolean(customError: String? = null) = nextArg(ArgType.Bool, customError)
+    fun nextString(customError: String? = null) = nextArg(ArgType.Str, customError)
     fun nextNumber(customError: String? = null) = nextArg(ArgType.Number, customError)
+
+    inline fun<reified T> getVariadicArguments(customError: String? = null, popper: StarscriptFunctionContext.(String?) -> T) =
+        Array(argCount) { popper(customError) }
+
+    inline fun<reified T> getVariadicArguments(type: ArgType<T>, customError: String? = null) =
+        Array(argCount) { nextArg(type, customError) }
 }
 
 class Constraint private constructor(private val data: Pair<Int, Any>, val predicate: (Int) -> Boolean) {
     init {
-        if (data.first !in 0..3) error("Invalid Constraint type.")
+        require(data.first in 0..3) { "Invalid Constraint type." }
     }
 
     companion object {
@@ -79,7 +87,7 @@ class Constraint private constructor(private val data: Pair<Int, Any>, val predi
                 +" argument".pluralize(
                     comparerTo.sum()
                         .takeUnless { it == 1 && comparerTo.first == 0 }
-                        ?: 2, //account for the fact that 0-1 should still be considered plural
+                        ?: 2, //account for the fact that the range 0-1 should still be considered plural
                     prefixQuantity = false
                 )
             }

@@ -9,13 +9,19 @@ package net.greemdev.meteor.util.misc
 import net.greemdev.meteor.*
 import net.minecraft.nbt.*
 import net.minecraft.text.Text
+import net.minecraft.util.crash.CrashException
 import java.io.File
 import java.util.function.Consumer
 
 fun File.write(tag: NbtCompound) =
     runCatching { NbtIo.write(tag, this) }.exceptionOrNull()
 
-fun File.readNbt(): NbtCompound = NbtIo.read(this) ?: error("File at $absolutePath doesn't exist.")
+@JvmName("read")
+fun File.readNbt(): NbtCompound =
+    runCatching {
+        NbtIo.read(this)
+    }.onFailureOf(CrashException::class) { throw it.cause!! }
+        .getOrNull() ?: error("File at $absolutePath doesn't exist.")
 
 fun File.readNbtOrNull() = getOrNull(this::readNbt)
 
@@ -74,9 +80,9 @@ fun NbtCompound.collectList(name: String, type: NbtDataType) =
 fun NbtElement.asPrettyText(): Text = NbtHelper.toPrettyPrintedText(this)
 
 inline fun<reified T> Array<T>.toNBT(): NbtElement = when (T::class) {
-    Byte::class -> NbtByteArray(castFast<Array<Byte>>().toList())
-    Long::class -> NbtLongArray(castFast<Array<Long>>().toList())
-    Int::class -> NbtIntArray(castFast<Array<Int>>().toList())
+    Byte::class -> NbtByteArray(cast<Array<Byte>>().toList())
+    Long::class -> NbtLongArray(cast<Array<Long>>().toList())
+    Int::class -> NbtIntArray(cast<Array<Int>>().toList())
     else -> error("Unknown or unsupported array type Supported are Byte, Long, and Int.")
 }
 

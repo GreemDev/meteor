@@ -15,6 +15,10 @@ import java.util.function.Predicate;
 import java.util.function.Supplier;
 
 public class ItemSetting extends Setting<Item> {
+    public static Builder builder() {
+        return new Builder();
+    }
+
     public final Predicate<Item> filter;
 
     protected ItemSetting(String name, String description, Object defaultValue, Consumer<Item> onChanged, Consumer<Setting<Item>> onModuleActivated, Supplier<Boolean> visible, Predicate<Item> filter) {

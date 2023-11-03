@@ -17,18 +17,19 @@ import meteordevelopment.meteorclient.systems.waypoints.Waypoints
 import net.greemdev.meteor.util.meteor.*
 import net.greemdev.meteor.*
 import net.greemdev.meteor.util.minecraft
+import net.greemdev.meteor.util.misc.readNbt
+import net.greemdev.meteor.util.misc.write
 import net.minecraft.client.gui.screen.Screen
 import net.minecraft.nbt.NbtIo
 import java.io.File
 
-class WaypointsTab : Tab("Waypoints", GuiRenderer.WAYPOINTS, Meteor.config().waypointsIcon) {
+class WaypointsTab : Tab(NAME, GuiRenderer.WAYPOINTS, Meteor.config().waypointsIcon) {
     override fun createScreen(theme: GuiTheme): TabScreen = WorldListScreen(theme, this)
     override fun isScreen(screen: Screen) = screen is WorldListScreen
 
     companion object {
         const val NAME = "Waypoints"
     }
-
 }
 
 private class WorldListScreen(theme: GuiTheme, tab: Tab) : WindowTabScreen(theme, tab) {
@@ -41,7 +42,8 @@ private class WorldListScreen(theme: GuiTheme, tab: Tab) : WindowTabScreen(theme
                 it.isFile && it.name.endsWith(".nbt")
             }
 
-            if (folder.exists() && folder.isDirectory && !files.isNullOrEmpty()) {
+            //File#isDirectory() does an existence & directory check
+            if (folder.isDirectory && !files.isNullOrEmpty()) {
                 files.forEach {
                     if (it == Meteor.waypoints().file) return@forEach
                     val nameLabel = table.add(theme.label(it.name.removeSuffix(".nbt"))).expandX().widget()
@@ -49,16 +51,17 @@ private class WorldListScreen(theme: GuiTheme, tab: Tab) : WindowTabScreen(theme
                     table.add(theme.button("View") {
                         runCatching {
                             minecraft.setScreen(ListScreen(this, theme, it))
-                        }.onFailure {
+                        }.onFailure { err ->
                             nameLabel.color(MeteorColor.RED).append(" ERR")
+                            Greteor.logger.catching(err)
                         }
                     })
                     table.add(theme.verticalSeparator()).expandWidgetY()
-                    val minus = table.add(theme.minus {
+                    table.add(theme.minus {
                         it.delete()
                         reload()
                     }).widget()
-                    minus.tooltip = "Delete the waypoints file for this world."
+                        .tooltip = "Delete the waypoints file for this world."
                     table.row()
                 }
             } else
@@ -71,7 +74,7 @@ private class ListScreen(
     parent: WorldListScreen,
     theme: GuiTheme,
     private val file: File,
-    private val wp: Waypoints = Waypoints().fromTag(NbtIo.read(file))
+    private val wp: Waypoints = Waypoints().fromTag(file.readNbt())
 ) : WindowScreen(theme, file.name.removeSuffix(".nbt")) {
 
     init {
@@ -89,21 +92,17 @@ private class ListScreen(
             add(theme.horizontalList()) { cell, hl ->
                 cell.expandX()
                 hl.add(theme.button("Save") {
-                    NbtIo.write(wp.toTag(), file)
+                    file.write(wp.toTag())?.also(Greteor.logger::catching)
                 }).expandX()
                 hl.add(theme.button("Delete All") {
-                    val prompt = confirm("delete-all-waypoints") {
+                    showConfirm("delete-all-waypoints") {
                         title("Are you sure?")
                         message("This is a destructive and irreversible action. Are you sure you want to proceed?")
+                        displayRequired(true)
                         onYes {
                             file.delete()
                             close()
                         }
-                    }
-
-                    if (!prompt.show()) {
-                        file.delete()
-                        close()
                     }
                 }).expandX()
             }

@@ -6,6 +6,8 @@
 
 package net.greemdev.meteor.type
 
+import meteordevelopment.meteorclient.utils.render.AlignmentY
+
 enum class StringComparisonType {
     Equals,
     Contains,
@@ -32,8 +34,13 @@ enum class PrefixBrackets(pairing: Pair<String, String>) {
     Curly("{" to "}"),
     Parenthesis("(" to ")"),
     Angled("<" to ">"),
-    Hashtag("#" to "#"),
-    Separator("|" to "|");
+    Hashtag("#"),
+    Separator("|"),
+    Equals("="),
+    Colon(":"),
+    Hyphen("-");
+
+    constructor(str: String) : this(str to str)
 
     override fun toString() = "$left $right"
 
@@ -55,7 +62,7 @@ enum class DamageOperatorType(val friendly: String, val prefixFormat: String) {
     OperatorWithSpace("+/-, then space", "%s "),
     None("No +/-", "");
 
-    val supportsRainbow = prefixFormat.isNotEmpty()
+    val supportsRainbow = prefixFormat.isNotEmpty() //rainbow numbers shouldn't be allowed if there's no prefixing operator
     fun formatPrefix(operator: Char) = prefixFormat.format(operator)
     fun formatNumber(operator: Char, number: String) = formatPrefix(operator) + number
     override fun toString() = friendly
@@ -86,3 +93,18 @@ enum class ChatPrefix {
         Greteor -> "Greteor"
     }
 }
+
+
+enum class VerticalAlignment {
+    Top,
+    Bottom;
+
+    fun top() = this == Top
+    fun bottom() = this == Bottom
+
+    fun meteorAlignment() = when (this) {
+        Top -> AlignmentY.Top
+        Bottom -> AlignmentY.Bottom
+    }
+}
+

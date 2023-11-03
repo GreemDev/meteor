@@ -323,6 +323,10 @@ public class Utils {
     }
 
     public static String getWorldName() {
+        return getWorldName(true);
+    }
+
+    public static String getWorldName(boolean useAddress) {
         // Singleplayer
         if (mc.isInSingleplayer()) {
             if (mc.world == null) return "";
@@ -336,7 +340,11 @@ public class Utils {
 
         // Multiplayer
         if (mc.getCurrentServerEntry() != null) {
-            return mc.isConnectedToRealms() ? "realms" : mc.getCurrentServerEntry().address;
+            return mc.isConnectedToRealms()
+                ? "realms"
+                : useAddress
+                    ? mc.getCurrentServerEntry().address
+                    : mc.getCurrentServerEntry().name;
         }
 
         return "";

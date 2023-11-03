@@ -11,7 +11,6 @@ package net.greemdev.meteor
 import com.google.common.base.MoreObjects
 import kotlinx.datetime.Clock
 import meteordevelopment.meteorclient.gui.widgets.pressable.WPressable
-import meteordevelopment.meteorclient.settings.*
 import net.fabricmc.loader.api.FabricLoader
 import net.fabricmc.loader.api.MappingResolver
 import net.greemdev.meteor.util.modLoader
@@ -34,12 +33,8 @@ import java.util.function.Supplier
 import kotlin.contracts.ExperimentalContracts
 import kotlin.contracts.InvocationKind
 import kotlin.contracts.contract
-import kotlin.properties.ReadOnlyProperty
-import kotlin.properties.ReadWriteProperty
 import kotlin.reflect.KClass
 import kotlin.reflect.KMutableProperty
-import kotlin.reflect.KProperty
-import kotlin.reflect.KType
 import kotlin.reflect.full.declaredMemberProperties
 import kotlin.reflect.full.primaryConstructor
 import kotlin.reflect.full.safeCast
@@ -49,6 +44,7 @@ fun <T> supplyOrNull(func: Supplier<T>): T? = getOrNull(func.kotlin)
 
 inline fun tryOrIgnore(crossinline func: Action) = runCatching(func).getOrDefault(Unit)
 fun runOrIgnore(runnable: Runnable) = tryOrIgnore(runnable.kotlin)
+
 
 // Looks repetitive however each different type we check for has its own unique overload in LogManager
 fun log4j(value: Any) = lazy<Logger> {
@@ -269,10 +265,19 @@ fun <T> `apply-java`(value: T, consumer: Consumer<T>) = value.apply(consumer::ac
 @JvmName("let")
 fun <T, R> `let-java`(value: T, mapper: Mapper<T, R>) = value.let(mapper::invoke)
 
+@JvmName("sleepCurrentThread")
+fun grossSynchronousShit(millis: Long) {
+    try {
+        Thread.sleep(millis)
+    } catch (e: InterruptedException) {
+        e.printStackTrace()
+    }
+}
+
 @JvmName("currentTime")
 fun `Clock-System-now`() = Clock.System.now()
 
-fun File.filter(predicate: Predicate<File>) = listFiles(FileFilter(predicate))?.toList()
+fun File.filter(predicate: Predicate<File>): List<File>? = listFiles(FileFilter(predicate))?.toList()
 
 /**
  * Identical to [File.createNewFile],
@@ -295,7 +300,7 @@ fun parseHexColor(hex: String) = Color(
         .optionally { seq ->
             seq.all { it in '0'..'9' || it in 'A'..'F' }
         }
-        .map { getOrNull { it.toInt(16) } }
+        .flatMap { optionalOf(it.toIntOrNull(16)) }
         .orElseThrow { IllegalArgumentException("Illegal hexadecimal sequence.") }
 )
 
@@ -364,14 +369,14 @@ inline fun <T : Throwable> T.suppressAll(first: Throwable, vararg otherThrowable
     return this
 }
 
-inline fun<reified T> Any.cast() =
+inline fun<reified T> Any.castChecked() =
     if (this::class.java.canonicalName == T::class.java.canonicalName)
-        castFast<T>()
+        cast<T>()
     else error("Cannot cast an object of type '${E::class.qualifiedName}' to type '${this::class.qualifiedName}'.")
 
 
 @Suppress("UNCHECKED_CAST")
-fun<T> Any.castFast() = this as T
+fun<T> Any.cast() = this as T
 
 /**
  * Returns 1 for true, and 0 for false.

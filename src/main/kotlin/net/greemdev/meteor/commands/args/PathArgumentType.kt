@@ -102,22 +102,22 @@ class PathArgumentType private constructor(
 
 private val errorOccurred by CommandExceptions.dynamic<InvalidPathException> { ipe ->
     buildText {
-        colored(red)
+        colored(ChatColor.red)
         addString("The input path '")
         addString(ipe.input) {
-            colored(white).underlined()
+            colored(ChatColor.white).underlined()
         }
         addString("' produced an error at index ${ipe.index}, because: ")
-        addString(ipe.reason, gold)
+        addString(ipe.reason, ChatColor.gold)
     }
 }
 
 private val notFound by CommandExceptions dynamic { path ->
     buildText {
-        colored(red)
+        colored(ChatColor.red)
         addString("The file/directory at '")
         addString(path.toString()) {
-            colored(white).underlined()
+            colored(ChatColor.white).underlined()
         }
         addString("' cannot be found.")
     }
@@ -125,10 +125,10 @@ private val notFound by CommandExceptions dynamic { path ->
 
 private val disallowedDirectory by CommandExceptions dynamic { path ->
     buildText {
-        colored(red)
+        colored(ChatColor.red)
         addString("Cannot use the path '")
         addString(path.toString()) {
-            colored(white).underlined()
+            colored(ChatColor.white).underlined()
         }
         addString("' because it points to a directory, and that is disallowed by this argument.")
     }

@@ -20,15 +20,6 @@ object GameTweaks : GModule(
         defaultValue(false)
     }
 
-    private val developerMode by sg bool {
-        name("developer-mode")
-        description("Toggles debugging features via changing &znet.minecraft.SharedConstants::isDevelopment&r.")
-        defaultValue(SharedConstants.isDevelopment)
-        onChanged {
-            SharedConstants.isDevelopment = it
-        }
-    }
-
     private val showScore by sg bool {
         name("score")
         description("Whether or not to show the weird Score on the death screen.")
