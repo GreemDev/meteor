@@ -31,7 +31,7 @@ public class ItemHud extends HudElement {
 
     // General
 
-    private final BoolSetting currentItem = sgGeneral.addTyped(new BoolSetting.Builder()
+    private final BoolSetting currentItem = sgGeneral.add(new BoolSetting.Builder()
         .name("show-current-item")
         .description("Show a dynamic display of how many items you have for the type in your hand.")
         .defaultValue(true)

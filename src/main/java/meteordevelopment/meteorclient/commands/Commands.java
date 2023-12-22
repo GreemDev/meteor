@@ -33,7 +33,7 @@ public class Commands {
 
     @PostInit
     public static void init() {
-        Reflection.getSubtypesIn(Command.class, Command.class.getPackageName()).stream()
+        Reflection.streamSubtypes(Command.class, Command.class.getPackageName())
             .map(Reflection::callNoArgsConstructor)
             .filter(Objects::nonNull)
             .forEach(Commands::add);
