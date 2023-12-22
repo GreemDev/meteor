@@ -20,6 +20,7 @@ import meteordevelopment.meteorclient.utils.world.Dimension
 import meteordevelopment.orbit.EventHandler
 import meteordevelopment.starscript.Script
 import net.greemdev.meteor.GModule
+import net.greemdev.meteor.Greteor
 import net.greemdev.meteor.type.ItemSelectMode
 import net.greemdev.meteor.util.*
 import net.greemdev.meteor.util.meteor.*
@@ -34,9 +35,11 @@ import net.minecraft.client.gui.screen.world.*
 import net.minecraft.client.realms.gui.screen.RealmsScreen
 import net.minecraft.util.Util
 
-const val safeAppId = 1013634358927691846L
+import meteordevelopment.meteorclient.gui.utils.CharFilter.*
+import net.greemdev.meteor.eq
 
-var gameStart: Long = 0
+const val safeAppId = "1013634358927691846"
+
 private val rpc = RichPresence()
 
 object MinecraftPresence : GModule("minecraft-presence", "Displays Minecraft as your presence on Discord.") {
@@ -45,24 +48,28 @@ object MinecraftPresence : GModule("minecraft-presence", "Displays Minecraft as 
     private val sgL2 = settings group "Line 2"
     private val sgO = (settings group "Other").collapsed()
 
-    var lastInMainMenu = false
+    private var lastInMainMenu = false
 
-    var updatePresenceNextTick = false
+    private var updatePresenceNextTick = false
 
     init {
         runInMainMenu = true
     }
 
+    private fun isUsingDefaultApp() = safeAppId eq appId()
+
     val appId by sgO string {
         name("RPC-app-ID")
         description("The used Rich Presence app. Default is recommended and the only one supported.")
-        defaultValue(safeAppId.toString())
-        filter { id, c ->
-            c.isDigit() && id.length <= 21
-        }
+        defaultValue(safeAppId)
+        filter(noLongerThan(21).and(numeric()))
+        onChanged { appIdChanged() }
     }
 
-    fun isUsingDefaultApp() = appId().toLong() == safeAppId
+    private fun appIdChanged() {
+        smallMeteor.reset()
+        dimensionAware.reset()
+    }
 
     val l1Messages by sgL1 stringList {
         name("line-1-messages")
@@ -104,20 +111,20 @@ object MinecraftPresence : GModule("minecraft-presence", "Displays Minecraft as 
 
     val l2SelMode by sgL2.enum<ItemSelectMode> {
         name("line-2-select-mode")
-        description("How to select messages on the first line.")
+        description("How to select messages on the second line.")
         defaultValue(ItemSelectMode.Sequential)
     }
 
     val smallMeteor by sgO bool {
         name("small-meteor-logo")
         description("Display a small Meteor logo to the lower right of the main Presence image.")
-        defaultValue(MinecraftPresence::isUsingDefaultApp)
+        defaultValue(::isUsingDefaultApp)
     }
 
     val dimensionAware by sgO bool {
         name("dimension-aware")
         description("Whether or not to change the main Presence image to a dimension-specific image when in that dimension.")
-        defaultValue(MinecraftPresence::isUsingDefaultApp)
+        defaultValue(::isUsingDefaultApp)
     }
 
     val customStates by sgO stringMap {
@@ -151,7 +158,7 @@ object MinecraftPresence : GModule("minecraft-presence", "Displays Minecraft as 
         forceUpdate = true
     }
 
-    private var currentLargeImage = "" to ""
+    private var currentLargeImage = String.empty to String.empty
         set(value) {
             if (field.first != value.first) {
                 rpc.setLargeImage(value.first, value.second)
@@ -169,7 +176,7 @@ object MinecraftPresence : GModule("minecraft-presence", "Displays Minecraft as 
 
         currentLargeImage = "c418" to "Minecraft ${SharedConstants.getGameVersion().name}"
 
-        rpc.setStart(gameStart / 1000)
+        rpc.setStart(Greteor.gameStartTime / 1000)
 
         recompileLines(1, l1Messages.get())
         recompileLines(2, l2Messages.get())
@@ -293,7 +300,7 @@ object MinecraftPresence : GModule("minecraft-presence", "Displays Minecraft as 
                     is RealmsScreen -> rpc.setState("Finding a Realm")
                     else -> {
                         var stateChanged = false
-                        getStateOrNull(mc.currentScreen?.javaClass?.canonicalName ?: "")?.also {
+                        getStateOrNull(mc.currentScreen?.javaClass?.canonicalName)?.also {
                             rpc.setState(it)
                             stateChanged = true
                         }
@@ -316,9 +323,12 @@ object MinecraftPresence : GModule("minecraft-presence", "Displays Minecraft as 
 
 
     fun getStateOrNull(className: String?): String? {
-        val name = className ?: return null
-        return customStates().filter { name.startsWith(it.key) }
-            .firstNotNullOfOrNull(Map.Entry<String, String>::value)
+        return customStates()
+            .filter {
+                (className ?: return null)
+                    .startsWith(it.key)
+            }
+            .firstNotNullOfOrNull(CustomState::value)
     }
 
     fun registerCustomState(packageName: String, state: String) {
@@ -327,7 +337,7 @@ object MinecraftPresence : GModule("minecraft-presence", "Displays Minecraft as 
     }
 
     fun unregisterCustomState(packageName: String) = customStates().remove(packageName) != null
-
 }
 
 private typealias CustomStates = MutableMap<String, String>
+private typealias CustomState = Map.Entry<String, String>

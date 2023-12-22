@@ -5,32 +5,28 @@
 
 package net.greemdev.meteor.util.meteor.starscript
 
-import meteordevelopment.meteorclient.utils.misc.MeteorStarscript
 import meteordevelopment.starscript.Starscript
-import net.greemdev.meteor.Mapper
-import net.greemdev.meteor.Visitor
+import net.greemdev.meteor.Pipe
 import net.greemdev.meteor.util.*
+import net.greemdev.meteor.util.math.hasDecimal
 import net.greemdev.meteor.util.meteor.starscript.api.*
-import net.greemdev.meteor.util.math.clamp
 import net.greemdev.meteor.util.math.lerp
 import net.minecraft.util.math.MathHelper
 import kotlin.math.*
 
 internal fun initGStarscript() {
-    with(MeteorStarscript.ss) {
-        clientMods()
-        math()
-        utilities()
-    }
+    meteorStarscript.clientMods()
+    meteorStarscript.math()
+    meteorStarscript.utilities()
 }
 
 private fun Starscript.clientMods() {
     newObject("mods") {
-        raw(modLoader.allMods.size::toString)
+        defineToString { modLoader.allMods.size.toString() }
         defineString("list") { modLoader.allMods.joinToString(", ") { it.metadata.name } }
         modLoader.allMods.forEach { mod ->
-            newObject(mod.metadata.id.toCamelCase()) {
-                raw(mod.metadata::getName)
+            newObject(mod.metadata.id.toCamelCase("-", "_")) {
+                defineToString(mod.metadata::getName)
                 defineString("authors") { mod.metadata.authors.joinToString(", ") { it.name } }
                 defineString("version", mod.metadata.version::getFriendlyString)
                 defineString("description", mod.metadata::getDescription)
@@ -77,16 +73,27 @@ private fun Starscript.math() {
         getVariadicArguments(ArgType.Number, "All arguments to $functionName need to be a number.").average()
         //TODO: test getVariadicArguments
     }
+    numberFunc("xor", Constraint.exactCount(2)) {
+        val first = nextNumber()
+        val second = nextNumber()
+
+        if (first.hasDecimal or second.hasDecimal)
+            starscript.error("Only non-decimal values are accepted for %s.", functionName)
+
+        first.toLong() xor second.toLong()
+    }
 }
 
+
 private fun Starscript.utilities() {
-    stringFunc("camelCase", Constraint.within(1..2)) {
+    stringFunc("camelCase", Constraint.atLeast(1)) {
         when (argCount) {
             1 -> nextString().toCamelCase()
-            else -> nextString().toCamelCase(nextString())
+            2 -> nextString().toCamelCase(nextString())
+            else -> nextString().toCamelCase(*getVariadicArguments(ArgType.Str))
         }
     }
 }
 
-private inline fun Starscript.singleNumberFunc(name: String, crossinline mathFunc: Visitor<Double>) =
+private inline fun Starscript.singleNumberFunc(name: String, crossinline mathFunc: Pipe<Double>) =
     numberFunc(name, Constraint.exactCount(1)) { mathFunc(nextNumber()) }

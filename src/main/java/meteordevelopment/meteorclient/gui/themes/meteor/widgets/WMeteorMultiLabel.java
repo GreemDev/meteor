@@ -22,7 +22,7 @@ public class WMeteorMultiLabel extends WMultiLabel implements MeteorWidget {
         double h = theme.textHeight(title);
         Color c = getEffectiveColor(theme);
 
-        utils.indexedForEach(lines, (index, line) -> {
+        utils.forEachIndexed(lines, (index, line) -> {
             if (LegacyText.needsSpecialRenderer(line))
                 renderer.legacyText(line, x, y + h * index, c, title, false);
             else

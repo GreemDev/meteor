@@ -26,8 +26,8 @@ public class KeybindSetting extends Setting<Keybind> {
     private final Runnable action;
     public WKeybind widget;
 
-    protected KeybindSetting(String name, String description, Object defaultValue, Consumer<Keybind> onChanged, Consumer<Setting<Keybind>> onModuleActivated, Supplier<Boolean> visible, Runnable action) {
-        super(name, description, defaultValue, onChanged, onModuleActivated, visible);
+    protected KeybindSetting(String name, String description, Object defaultValue, Consumer<Keybind> onChanged, Consumer<Setting<Keybind>> onModuleActivated, Supplier<Boolean> visible, boolean serialize, Runnable action) {
+        super(name, description, defaultValue, onChanged, onModuleActivated, visible, serialize);
 
         this.action = action;
         MeteorClient.EVENT_BUS.subscribe(this);
@@ -35,26 +35,26 @@ public class KeybindSetting extends Setting<Keybind> {
 
     @EventHandler(priority = EventPriority.HIGHEST)
     private void onKeyBinding(KeyEvent event) {
-        if (event.action == KeyAction.Release && widget != null && widget.onAction(true, event.key)) event.cancel();
+        if (event.action == KeyAction.Release && widget != null && widget.onAction(true, event.key))
+            event.cancel();
     }
 
     @EventHandler(priority = EventPriority.HIGHEST)
     private void onMouseButtonBinding(MouseButtonEvent event) {
-        if (event.action == KeyAction.Release && widget != null && widget.onAction(false, event.button)) event.cancel();
+        if (event.action == KeyAction.Release && widget != null && widget.onAction(false, event.button))
+            event.cancel();
     }
 
     @EventHandler(priority = EventPriority.HIGH)
     private void onKey(KeyEvent event) {
-        if (event.action == KeyAction.Release && get().matches(true, event.key) && (module == null || module.isActive()) && action != null) {
+        if (event.action == KeyAction.Release && get().matches(true, event.key) && (module == null || module.isActive()) && action != null)
             action.run();
-        }
     }
 
     @EventHandler(priority = EventPriority.HIGH)
     private void onMouseButton(MouseButtonEvent event) {
-        if (event.action == KeyAction.Release && get().matches(false, event.button) && (module == null || module.isActive()) && action != null) {
+        if (event.action == KeyAction.Release && get().matches(false, event.button) && (module == null || module.isActive()) && action != null)
             action.run();
-        }
     }
 
     @Override
@@ -82,10 +82,8 @@ public class KeybindSetting extends Setting<Keybind> {
     }
 
     @Override
-    public NbtCompound save(NbtCompound tag) {
+    public void save(NbtCompound tag) {
         tag.put("value", get().toTag());
-
-        return tag;
     }
 
     @Override
@@ -109,7 +107,7 @@ public class KeybindSetting extends Setting<Keybind> {
 
         @Override
         public KeybindSetting build() {
-            return new KeybindSetting(name, description, defaultValue, onChanged, onModuleActivated, visible, action);
+            return new KeybindSetting(name, description, defaultValue, onChanged, onModuleActivated, visible, serialize, action);
         }
     }
 }

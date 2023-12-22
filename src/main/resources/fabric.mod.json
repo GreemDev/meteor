@@ -39,12 +39,7 @@
   "custom": {
     "meteor-client:revision": "${rev}",
     "meteor-client:color": "145,61,226",
-    "meteor-client:kotlin": "${kotlinVersion}",
-    "modmenu": {
-      "links": {
-        "modmenu.discord": "https://meteorclient.com/discord"
-      }
-    }
+    "meteor-client:kotlin": "${kotlinVersion}"
   },
   "depends": {
     "java": ">=17",

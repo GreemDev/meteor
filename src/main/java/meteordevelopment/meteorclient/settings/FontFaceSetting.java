@@ -20,8 +20,8 @@ public class FontFaceSetting extends Setting<FontFace> {
         return new Builder();
     }
 
-    protected FontFaceSetting(String name, String description, Object defaultValue, Consumer<FontFace> onChanged, Consumer<Setting<FontFace>> onModuleActivated, Supplier<Boolean> visible) {
-        super(name, description, defaultValue, onChanged, onModuleActivated, visible);
+    protected FontFaceSetting(String name, String description, Object defaultValue, Consumer<FontFace> onChanged, Consumer<Setting<FontFace>> onModuleActivated, Supplier<Boolean> visible, boolean serialize) {
+        super(name, description, defaultValue, onChanged, onModuleActivated, visible, serialize);
     }
 
     @Override
@@ -61,10 +61,9 @@ public class FontFaceSetting extends Setting<FontFace> {
     }
 
     @Override
-    protected NbtCompound save(NbtCompound tag) {
+    protected void save(NbtCompound tag) {
         tag.putString("family", get().info.family());
         tag.putString("type", get().info.type().toString());
-        return tag;
     }
 
     @Override
@@ -99,7 +98,7 @@ public class FontFaceSetting extends Setting<FontFace> {
 
         @Override
         public FontFaceSetting build() {
-            return new FontFaceSetting(name, description, defaultValue, onChanged, onModuleActivated, visible);
+            return new FontFaceSetting(name, description, defaultValue, onChanged, onModuleActivated, visible, serialize);
         }
     }
 }

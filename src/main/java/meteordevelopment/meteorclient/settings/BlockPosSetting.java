@@ -17,8 +17,8 @@ public class BlockPosSetting extends Setting<BlockPos> {
         return new Builder();
     }
 
-    protected BlockPosSetting(String name, String description, Object defaultValue, Consumer<BlockPos> onChanged, Consumer<Setting<BlockPos>> onModuleActivated, Supplier<Boolean> visible) {
-        super(name, description, defaultValue, onChanged, onModuleActivated, visible);
+    protected BlockPosSetting(String name, String description, Object defaultValue, Consumer<BlockPos> onChanged, Consumer<Setting<BlockPos>> onModuleActivated, Supplier<Boolean> visible, boolean serialize) {
+        super(name, description, defaultValue, onChanged, onModuleActivated, visible, serialize);
     }
 
     @Override
@@ -40,10 +40,8 @@ public class BlockPosSetting extends Setting<BlockPos> {
     }
 
     @Override
-    protected NbtCompound save(NbtCompound tag) {
+    protected void save(NbtCompound tag) {
         tag.putIntArray("value", new int[] {value.getX(), value.getY(), value.getZ()});
-
-        return tag;
     }
 
     @Override
@@ -61,7 +59,7 @@ public class BlockPosSetting extends Setting<BlockPos> {
 
         @Override
         public BlockPosSetting build() {
-            return new BlockPosSetting(name, description, defaultValue, onChanged, onModuleActivated, visible);
+            return new BlockPosSetting(name, description, defaultValue, onChanged, onModuleActivated, visible, serialize);
         }
     }
 }

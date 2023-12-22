@@ -21,8 +21,8 @@ public class ItemSetting extends Setting<Item> {
 
     public final Predicate<Item> filter;
 
-    protected ItemSetting(String name, String description, Object defaultValue, Consumer<Item> onChanged, Consumer<Setting<Item>> onModuleActivated, Supplier<Boolean> visible, Predicate<Item> filter) {
-        super(name, description, defaultValue, onChanged, onModuleActivated, visible);
+    protected ItemSetting(String name, String description, Object defaultValue, Consumer<Item> onChanged, Consumer<Setting<Item>> onModuleActivated, Supplier<Boolean> visible, boolean serialize, Predicate<Item> filter) {
+        super(name, description, defaultValue, onChanged, onModuleActivated, visible, serialize);
 
         this.filter = filter;
     }
@@ -43,10 +43,8 @@ public class ItemSetting extends Setting<Item> {
     }
 
     @Override
-    public NbtCompound save(NbtCompound tag) {
+    public void save(NbtCompound tag) {
         tag.putString("value", Registries.ITEM.getId(get()).toString());
-
-        return tag;
     }
 
     @Override
@@ -79,7 +77,7 @@ public class ItemSetting extends Setting<Item> {
 
         @Override
         public ItemSetting build() {
-            return new ItemSetting(name, description, defaultValue, onChanged, onModuleActivated, visible, filter);
+            return new ItemSetting(name, description, defaultValue, onChanged, onModuleActivated, visible, serialize, filter);
         }
     }
 }

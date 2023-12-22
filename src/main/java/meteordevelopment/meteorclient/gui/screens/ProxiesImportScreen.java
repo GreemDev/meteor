@@ -8,10 +8,8 @@ package meteordevelopment.meteorclient.gui.screens;
 import meteordevelopment.meteorclient.gui.GuiTheme;
 import meteordevelopment.meteorclient.gui.WindowScreen;
 import meteordevelopment.meteorclient.gui.widgets.containers.WVerticalList;
-import meteordevelopment.meteorclient.gui.widgets.pressable.WButton;
 import meteordevelopment.meteorclient.systems.proxies.Proxies;
 import meteordevelopment.meteorclient.systems.proxies.Proxy;
-import meteordevelopment.meteorclient.systems.proxies.ProxyType;
 import meteordevelopment.meteorclient.utils.Utils;
 import meteordevelopment.meteorclient.utils.render.color.Color;
 
@@ -52,7 +50,7 @@ public class ProxiesImportScreen extends WindowScreen {
                             .address(address)
                             .port(port)
                             .name(matcher.group(1) != null ? matcher.group(1) : address + ":" + port)
-                            .type(matcher.group(4) != null ? ProxyType.parse(matcher.group(4)) : ProxyType.Socks4)
+                            .type(matcher.group(4) != null ? Proxy.Type.parse(matcher.group(4)) : Proxy.Type.Socks4)
                             .build();
 
                         if (proxies.add(proxy)) {

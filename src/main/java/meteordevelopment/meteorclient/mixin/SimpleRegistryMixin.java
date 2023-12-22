@@ -13,7 +13,7 @@ import org.spongepowered.asm.mixin.injection.Redirect;
 import java.util.function.Supplier;
 
 @Mixin(SimpleRegistry.class)
-public class SimpleRegistryMixin<T> {
+public abstract class SimpleRegistryMixin<T> {
     @Redirect(method = "<init>(Lnet/minecraft/registry/RegistryKey;Lcom/mojang/serialization/Lifecycle;Z)V", at = @At(value = "INVOKE", target = "Lnet/minecraft/Bootstrap;ensureBootstrapped(Ljava/util/function/Supplier;)V"))
     private void idk(Supplier<String> callerGetter) {
         // TODO: Probably extremely retarded but seems to work

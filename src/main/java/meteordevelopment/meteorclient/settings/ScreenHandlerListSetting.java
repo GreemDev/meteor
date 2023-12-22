@@ -24,8 +24,8 @@ public class ScreenHandlerListSetting extends Setting<List<ScreenHandlerType<?>>
         return new Builder();
     }
 
-    protected ScreenHandlerListSetting(String name, String description, Object defaultValue, Consumer<List<ScreenHandlerType<?>>> onChanged, Consumer<Setting<List<ScreenHandlerType<?>>>> onModuleActivated, Supplier<Boolean> visible) {
-        super(name, description, defaultValue, onChanged, onModuleActivated, visible);
+    protected ScreenHandlerListSetting(String name, String description, Object defaultValue, Consumer<List<ScreenHandlerType<?>>> onChanged, Consumer<Setting<List<ScreenHandlerType<?>>>> onModuleActivated, Supplier<Boolean> visible, boolean serialize) {
+        super(name, description, defaultValue, onChanged, onModuleActivated, visible, serialize);
     }
 
     @Override
@@ -60,15 +60,13 @@ public class ScreenHandlerListSetting extends Setting<List<ScreenHandlerType<?>>
     }
 
     @Override
-    public NbtCompound save(NbtCompound tag) {
+    public void save(NbtCompound tag) {
         NbtList valueTag = new NbtList();
         for (ScreenHandlerType<?> type : get()) {
             Identifier id = Registries.SCREEN_HANDLER.getId(type);
             if (id != null) valueTag.add(NbtString.of(id.toString()));
         }
         tag.put("value", valueTag);
-
-        return tag;
     }
 
     @Override
@@ -95,7 +93,7 @@ public class ScreenHandlerListSetting extends Setting<List<ScreenHandlerType<?>>
 
         @Override
         public ScreenHandlerListSetting build() {
-            return new ScreenHandlerListSetting(name, description, defaultValue, onChanged, onModuleActivated, visible);
+            return new ScreenHandlerListSetting(name, description, defaultValue, onChanged, onModuleActivated, visible, serialize);
         }
     }
 }

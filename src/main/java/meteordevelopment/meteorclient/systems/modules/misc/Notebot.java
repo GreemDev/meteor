@@ -85,7 +85,7 @@ public class Notebot extends Module {
 
     public final Setting<NotebotUtils.NotebotMode> mode = sgGeneral.add(new EnumSetting.Builder<NotebotUtils.NotebotMode>()
         .name("mode")
-        .description("Select mode of notebot")
+        .description("Select mode of notebot.")
         .defaultValue(NotebotUtils.NotebotMode.ExactInstruments)
         .build()
     );

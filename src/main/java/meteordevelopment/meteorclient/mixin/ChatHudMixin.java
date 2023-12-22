@@ -72,8 +72,10 @@ public abstract class ChatHudMixin implements IChatHud {
     private void clear$meteor(boolean clear, CallbackInfo info) {
         if (!KMC.allowNextChatClear)
             info.cancel();
-        else
+        else {
+            getBetterChat().lines.clear();
             KMC.allowNextChatClear = false;
+        }
     }
 
     @Inject(method = "addMessage(Lnet/minecraft/text/Text;Lnet/minecraft/network/message/MessageSignatureData;ILnet/minecraft/client/gui/hud/MessageIndicator;Z)V", at = @At(value = "INVOKE", target = "Ljava/util/List;add(ILjava/lang/Object;)V", ordinal = 1, shift = At.Shift.AFTER))
@@ -106,30 +108,34 @@ public abstract class ChatHudMixin implements IChatHud {
 
         ReceiveMessageEvent event = MeteorClient.EVENT_BUS.post(ReceiveMessageEvent.get(message, indicator, nextId));
 
-        if (event.isCancelled()) info.cancel();
-        else {
-            visibleMessages.removeIf(msg -> ((IChatHudLine) (Object) msg).meteor$getId() == nextId && nextId != 0);
+        if (event.isCancelled()) {
+            info.cancel();
+            return;
+        }
 
-            for (int i = messages.size() - 1; i > -1 ; i--) {
-                if (((IChatHudLine) (Object) messages.get(i)).meteor$getId() == nextId && nextId != 0) {
-                    messages.remove(i);
-                    Modules.get().get(BetterChat.class).lines.removeInt(i);
-                }
+        visibleMessages.removeIf(msg -> ((IChatHudLine) (Object) msg).meteor$getId() == nextId && nextId != 0);
+
+        for (int i = messages.size() - 1; i > -1 ; i--) {
+            if (((IChatHudLine) (Object) messages.get(i)).meteor$getId() == nextId && nextId != 0) {
+                messages.remove(i);
+                Modules.get().get(BetterChat.class).lines.removeInt(i);
             }
+        }
 
-            if (event.isModified()) {
-                info.cancel();
+        if (event.isModified()) {
+            info.cancel();
 
-                skipOnAddMessage = true;
-                addMessage(event.getMessage(), signature, ticks, event.getIndicator(), refresh);
-                skipOnAddMessage = false;
-            }
+            skipOnAddMessage = true;
+            addMessage(event.getMessage(), signature, ticks, event.getIndicator(), refresh);
+            skipOnAddMessage = false;
         }
     }
 
     @ModifyExpressionValue(method = "addMessage(Lnet/minecraft/text/Text;Lnet/minecraft/network/message/MessageSignatureData;ILnet/minecraft/client/gui/hud/MessageIndicator;Z)V",
         slice = @Slice(from = @At(value = "FIELD", target = "Lnet/minecraft/client/gui/hud/ChatHud;visibleMessages:Ljava/util/List;")), at = @At(value = "INVOKE", target = "Ljava/util/List;size()I"))
     private int addMessageListSizeProxy(int size) {
+        if (Modules.get() == null) return size;
+
         BetterChat betterChat = getBetterChat();
         if (betterChat.isLongerChat() && betterChat.getChatLength() >= 100) return size - betterChat.getChatLength();
         return size;
@@ -160,12 +166,15 @@ public abstract class ChatHudMixin implements IChatHud {
     @Inject(method = "addMessage(Lnet/minecraft/text/Text;Lnet/minecraft/network/message/MessageSignatureData;ILnet/minecraft/client/gui/hud/MessageIndicator;Z)V",
         at = @At(value = "INVOKE", target = "Lnet/minecraft/client/gui/hud/ChatHud;isChatFocused()Z"), locals = LocalCapture.CAPTURE_FAILSOFT)
     private void onBreakChatMessageLines(Text message, MessageSignatureData signature, int ticks, MessageIndicator indicator, boolean refresh, CallbackInfo ci, int i, List<OrderedText> list) {
+        if (Modules.get() == null) return;
         getBetterChat().lines.add(0, list.size());
     }
 
     @Inject(method = "addMessage(Lnet/minecraft/text/Text;Lnet/minecraft/network/message/MessageSignatureData;ILnet/minecraft/client/gui/hud/MessageIndicator;Z)V",
         slice = @Slice(from = @At(value = "FIELD", target = "Lnet/minecraft/client/gui/hud/ChatHud;messages:Ljava/util/List;")), at = @At(value = "INVOKE", target = "Ljava/util/List;remove(I)Ljava/lang/Object;"))
     private void onRemoveMessage(Text message, MessageSignatureData signature, int ticks, MessageIndicator indicator, boolean refresh, CallbackInfo ci) {
+        if (Modules.get() == null) return;
+
         BetterChat betterChat = getBetterChat();
         int size = betterChat.lines.size() - (betterChat.isLongerChat() && betterChat.getChatLength() >= 100 ? betterChat.getChatLength() : 0);
 
@@ -173,11 +182,6 @@ public abstract class ChatHudMixin implements IChatHud {
             betterChat.lines.removeInt(size - 1);
             size--;
         }
-    }
-
-    @Inject(method = "clear", at = @At("HEAD"))
-    private void onClear(boolean clearHistory, CallbackInfo ci) {
-        getBetterChat().lines.clear();
     }
 
     @Inject(method = "refresh", at = @At("HEAD"))

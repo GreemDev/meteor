@@ -92,8 +92,7 @@ public abstract class EntityMixin {
     @ModifyReturnValue(method = "getJumpVelocityMultiplier", at = @At("RETURN"))
     private float onGetJumpVelocityMultiplier(float original) {
         if ((Object) this == mc.player) {
-            JumpVelocityMultiplierEvent event = MeteorClient.EVENT_BUS.post(JumpVelocityMultiplierEvent.get());
-            return (original * event.multiplier);
+            return (original * MeteorClient.EVENT_BUS.post(JumpVelocityMultiplierEvent.get()).multiplier);
         }
 
         return original;
@@ -105,7 +104,7 @@ public abstract class EntityMixin {
             MeteorClient.EVENT_BUS.post(PlayerMoveEvent.get(type, movement));
         }
         else if ((Object) this instanceof LivingEntity) {
-            MeteorClient.EVENT_BUS.post(LivingEntityMoveEvent.get((LivingEntity) (Object) this, movement));
+            MeteorClient.EVENT_BUS.post(LivingEntityMoveEvent.get((LivingEntity) (Object) this, type, movement));
         }
     }
 

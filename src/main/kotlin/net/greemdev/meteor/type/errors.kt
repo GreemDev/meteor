@@ -10,7 +10,7 @@ import net.greemdev.meteor.Getter
 import net.greemdev.meteor.getOrNull
 import java.lang.Exception
 
-class MeteorPromptException(cause: Throwable? = null, p: () -> OkPrompt) : Exception(null, cause) {
+class MeteorPromptException(cause: Throwable? = null, p: Getter<OkPrompt>) : Exception(null, cause) {
     val prompt by lazy(p)
     fun tryShow() = getOrNull(prompt::show) ?: false
 }

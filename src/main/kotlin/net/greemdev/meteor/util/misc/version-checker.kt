@@ -7,48 +7,47 @@ package net.greemdev.meteor.util.misc
 
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
+import kotlinx.coroutines.isActive
 import kotlinx.coroutines.launch
 import meteordevelopment.meteorclient.MeteorClient
-import meteordevelopment.meteorclient.utils.PostInit
 import meteordevelopment.meteorclient.utils.PreInit
-import net.greemdev.meteor.find
-import net.greemdev.meteor.findFirst
-import net.greemdev.meteor.invoking
-import net.greemdev.meteor.optionalOf
-import net.greemdev.meteor.util.HTTP
-import net.greemdev.meteor.util.scope
+import net.greemdev.meteor.*
+import net.greemdev.meteor.util.*
+import net.greemdev.meteor.util.text.ChatColor
+import java.util.Optional
 import kotlin.time.Duration.Companion.hours
 
-private const val upstreamGradleProperties = "https://raw.githubusercontent.com/GreemDev/meteor/1.20.1/gradle.properties"
+private const val UpstreamGradleProperties = "https://raw.githubusercontent.com/GreemDev/meteor/1.20.1/gradle.properties"
 
 object GVersioning {
-    private var revisionChecker: Job? = null
-    private var initial = true
+    private lateinit var revisionChecker: Job
 
     @JvmStatic
     @PreInit
     fun init() {
         revisionChecker = scope.launch {
-            reloadLatestRevision()
+            updateRevision()
 
-            while (true) {
+            while (isActive) {
                 delay(1.hours)
-                reloadLatestRevision()
+                updateRevision()
             }
         }
     }
 
 
-    suspend fun reloadLatestRevision() {
-        latestRevision = (HTTP GET upstreamGradleProperties)
-            .requestLinesAsync().await()
-            .orEmpty()
-            .find { it.startsWith("revision") }
-            .map { it.substringAfterLast('=').toInt() }
-            .orElseThrow()
+    private suspend fun updateRevision() {
+        latestRevision = (HTTP GET UpstreamGradleProperties)
+            .requestLinesAsync() thenMap { resp ->
+                resp.orEmpty()
+                    .find { it.startsWith("revision") }
+                    .mapNullable { it.substringAfterLast('=').toIntOrNull() }
+                    .orElse(-1)
+            }
     }
 
     @JvmStatic
+    @get:JvmName("latestRevision")
     var latestRevision: Int = -1
         private set
 
@@ -56,9 +55,20 @@ object GVersioning {
     @get:JvmName("revisionsBehind")
     val revisionsBehind by invoking {
         if (latestRevision == -1)
-            0
+            0 //if revision can't be determined, this will make the title screen info say "up to date"
         else
             latestRevision - MeteorClient.REVISION
+    }
+
+    fun getRevisionsBehindAndColor(): Pair<Int, MeteorColor> = revisionsBehind.let {
+        it to it.let {
+            when {
+                it >= 15 -> ChatColor.darkRed.meteor.darker().darker()
+                it >= 10 -> ChatColor.darkRed.meteor.darker()
+                it >=  5 -> ChatColor.darkRed.meteor
+                else     -> ChatColor.red.meteor
+            }
+        }
     }
 
 

@@ -30,12 +30,12 @@ import org.spongepowered.asm.mixin.injection.invoke.arg.Args;
 @Mixin(ClientWorld.class)
 public abstract class ClientWorldMixin {
     @Unique private final DimensionEffects endSky = new DimensionEffects.End();
-    @Unique private final DimensionEffects customSky = new Ambience.Custom();
+    @Unique private final DimensionEffects customSky = new Ambience.CustomDimensionEffects();
 
     @Shadow @Nullable public abstract Entity getEntityById(int id);
 
-    @Inject(method = "addEntityPrivate", at = @At("TAIL"))
-    private void onAddEntityPrivate(int id, Entity entity, CallbackInfo info) {
+    @Inject(method = "addEntity", at = @At("TAIL"))
+    private void onAddEntityPrivate(Entity entity, CallbackInfo info) {
         if (entity != null) MeteorClient.EVENT_BUS.post(EntityAddedEvent.get(entity));
     }
 

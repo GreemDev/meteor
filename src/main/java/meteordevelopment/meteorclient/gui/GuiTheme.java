@@ -28,6 +28,7 @@ import meteordevelopment.meteorclient.settings.Settings;
 import meteordevelopment.meteorclient.systems.accounts.Account;
 import meteordevelopment.meteorclient.systems.modules.Module;
 import meteordevelopment.meteorclient.systems.waypoints.Waypoint;
+import meteordevelopment.meteorclient.utils.java;
 import meteordevelopment.meteorclient.utils.Utils;
 import meteordevelopment.meteorclient.utils.misc.ISerializable;
 import meteordevelopment.meteorclient.utils.misc.Keybind;
@@ -36,6 +37,8 @@ import meteordevelopment.meteorclient.utils.render.color.Color;
 import net.greemdev.meteor.gui.widget.WGuiTexture;
 import net.greemdev.meteor.gui.widget.WWaypointIcon;
 import net.greemdev.meteor.type.ColorSettingScreenMode;
+import net.greemdev.meteor.util.meteor.Meteor;
+import net.greemdev.meteor.util.misc.Nbt;
 import net.greemdev.meteor.utils;
 import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.item.ItemStack;
@@ -53,7 +56,11 @@ import static net.minecraft.client.MinecraftClient.IS_SYSTEM_MAC;
 public abstract class GuiTheme implements ISerializable<GuiTheme> {
 
     public static double getWideSettingWidth() {
-        return Utils.getWindowWidth() / GuiThemes.get().widthDivisor.get();
+        return Utils.getWindowWidth() / getWidthDivisor();
+    }
+
+    public static double getWidthDivisor() {
+        return Meteor.currentTheme().widthDivisor.get();
     }
 
     public static final double TITLE_TEXT_SCALE = 1.25;
@@ -131,6 +138,10 @@ public abstract class GuiTheme implements ISerializable<GuiTheme> {
         return button(GuiRenderer.EDIT).action(action);
     }
 
+    public WButton cogButton(Runnable action) {
+        return button(GuiRenderer.COG).action(action);
+    }
+
     public abstract WMinus minus();
     public WMinus minus(Runnable action) {
         return minus().action(action);
@@ -141,6 +152,14 @@ public abstract class GuiTheme implements ISerializable<GuiTheme> {
     }
 
     public abstract WCheckbox checkbox(boolean checked);
+
+    public WCheckbox checkbox() {
+        return checkbox(false);
+    }
+
+    public WCheckbox checkbox(Consumer<Boolean> action) {
+        return checkbox().action(action);
+    }
 
     public WCheckbox checkbox(boolean checked, Consumer<Boolean> action) {
         return checkbox(checked).action(action);
@@ -181,7 +200,7 @@ public abstract class GuiTheme implements ISerializable<GuiTheme> {
         Class<?> klass = value.getClass();
         T[] values = null;
         try {
-            values = Utils.cast(klass.getDeclaredMethod("values").invoke(null));
+            values = java.cast(klass.getDeclaredMethod("values").invoke(null));
         } catch (IllegalAccessException | InvocationTargetException | NoSuchMethodException e) {
             MeteorClient.LOG.error("Error getting enum values", e);
         }
@@ -206,9 +225,17 @@ public abstract class GuiTheme implements ISerializable<GuiTheme> {
     public WVerticalList verticalList() {
         return w(new WVerticalList());
     }
+    public WVerticalList verticalList(Consumer<WVerticalList> listModifier) {
+        return utils.apply(verticalList(), listModifier);
+    }
+
     public WHorizontalList horizontalList() {
         return w(new WHorizontalList());
     }
+    public WHorizontalList horizontalList(Consumer<WHorizontalList> listModifier) {
+        return utils.apply(horizontalList(), listModifier);
+    }
+
     public WTable table() {
         return w(new WTable());
     }
@@ -431,11 +458,11 @@ public abstract class GuiTheme implements ISerializable<GuiTheme> {
         tag.putString("name", name);
         tag.put("settings", settings.toTag());
 
-        NbtCompound configs = new NbtCompound();
-        for (String id : windowConfigs.keySet()) {
-            configs.put(id, windowConfigs.get(id).toTag());
-        }
-        tag.put("windowConfigs", configs);
+        tag.put("windowConfigs", Nbt.newCompound(configs ->
+            windowConfigs.forEach((k, v) ->
+                configs.put(k, v.toTag())
+            )
+        ));
 
         return tag;
     }

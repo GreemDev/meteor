@@ -6,6 +6,7 @@
 package meteordevelopment.meteorclient;
 
 import meteordevelopment.discordipc.DiscordIPC;
+import meteordevelopment.meteorclient.commands.Commands;
 import meteordevelopment.meteorclient.events.game.OpenScreenEvent;
 import meteordevelopment.meteorclient.events.meteor.KeyEvent;
 import meteordevelopment.meteorclient.events.meteor.MouseButtonEvent;
@@ -15,14 +16,10 @@ import meteordevelopment.meteorclient.gui.WidgetScreen;
 import meteordevelopment.meteorclient.gui.tabs.TabScreen;
 import meteordevelopment.meteorclient.gui.tabs.Tabs;
 import meteordevelopment.meteorclient.systems.Systems;
-import meteordevelopment.meteorclient.systems.config.Config;
 import meteordevelopment.meteorclient.systems.modules.Categories;
 import meteordevelopment.meteorclient.systems.modules.Modules;
 import meteordevelopment.meteorclient.systems.modules.misc.DiscordPresence;
-import meteordevelopment.meteorclient.utils.PostInit;
-import meteordevelopment.meteorclient.utils.PreInit;
-import meteordevelopment.meteorclient.utils.ReflectInit;
-import meteordevelopment.meteorclient.utils.Utils;
+import meteordevelopment.meteorclient.utils.*;
 import meteordevelopment.meteorclient.utils.misc.Version;
 import meteordevelopment.meteorclient.utils.misc.input.KeyAction;
 import meteordevelopment.meteorclient.utils.misc.input.KeyBinds;
@@ -42,7 +39,6 @@ import net.greemdev.meteor.modules.MinecraftPresence;
 import net.greemdev.meteor.util.meteor.Meteor;
 import net.greemdev.meteor.util.misc.GVersioning;
 import net.greemdev.meteor.utils;
-import net.minecraft.SharedConstants;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.screen.ChatScreen;
 import org.slf4j.Logger;
@@ -50,7 +46,10 @@ import org.slf4j.LoggerFactory;
 
 import java.io.File;
 import java.lang.invoke.MethodHandles;
+import java.util.Arrays;
 import java.util.List;
+
+import static net.greemdev.meteor.util.accessors.modLoader;
 
 public class MeteorClient implements ClientModInitializer {
     public static final String MOD_ID = "meteor-client";
@@ -117,13 +116,11 @@ public class MeteorClient implements ClientModInitializer {
         mc = MinecraftClient.getInstance();
 
         // Pre-load
-        if (!FOLDER.exists()) {
-            FOLDER.getParentFile().mkdirs();
-            FOLDER.mkdir();
-        }
+        //noinspection ResultOfMethodCallIgnored
+        FOLDER.mkdirs();
 
         // Register event handlers
-        Greteor.lambdaFactoriesFor(MeteorClient.class.getPackageName(), Greteor.class.getPackageName());
+        registerLambdaFactoriesForPackages(MeteorClient.class.getPackageName(), Greteor.class.getPackageName());
 
         // Register init classes
         ReflectInit.registerPackages();
@@ -160,17 +157,14 @@ public class MeteorClient implements ClientModInitializer {
         }));
 
 
-        SharedConstants.isDevelopment = Boolean.parseBoolean(System.getProperty("meteor.minecraft.dev", "false"));
-        if (SharedConstants.isDevelopment)
-            LOG.warn("Property 'meteor.minecraft.dev' is 'true'; Now running in development mode.");
-        else if (GVersioning.isOutdated())
-            Greteor.logger().warn("Not currently on the latest revision! Running %d revisions behind. Latest is %s.".formatted(GVersioning.revisionsBehind(), GVersioning.getLatestRevision()));
+        if (GVersioning.isOutdated() && !modLoader().isDevelopmentEnvironment())
+            Greteor.logger().warn("Not currently on the latest revision! Running %d revisions behind. Latest is %s.".formatted(GVersioning.revisionsBehind(), GVersioning.latestRevision()));
     }
 
     @EventHandler
     private void onTick(TickEvent.Post event) {
         if (mc.currentScreen == null && mc.getOverlay() == null && KeyBinds.OPEN_COMMANDS.wasPressed()) {
-            mc.setScreen(new ChatScreen(Config.get().prefix.get()));
+            mc.setScreen(new ChatScreen(Commands.prefix()));
         }
     }
 
@@ -209,5 +203,13 @@ public class MeteorClient implements ClientModInitializer {
         }
 
         wasWidgetScreen = event.screen instanceof WidgetScreen;
+    }
+
+    public static void registerLambdaFactoriesForPackages(String... packages) {
+        Arrays.stream(packages).forEach(pkg ->
+            EVENT_BUS.registerLambdaFactory(pkg, (lookupInMethod, klass) ->
+                java.cast(lookupInMethod.invoke(null, klass, MethodHandles.lookup()))
+            )
+        );
     }
 }

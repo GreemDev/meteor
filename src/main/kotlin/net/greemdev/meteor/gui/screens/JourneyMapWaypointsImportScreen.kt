@@ -22,6 +22,8 @@ import net.greemdev.meteor.filter
 import net.greemdev.meteor.getOrNull
 import net.greemdev.meteor.invoke
 import net.greemdev.meteor.onFailureOf
+import net.greemdev.meteor.util.empty
+import net.greemdev.meteor.util.meteor.Meteor
 import net.greemdev.meteor.util.scope
 import java.nio.file.InvalidPathException
 import kotlin.io.path.Path
@@ -31,15 +33,20 @@ private val gson = GsonBuilder().setPrettyPrinting().create()
 
 private const val STATUS_LABEL_DEFAULT =
     "Input a file directory. Relative paths are relative to your .minecraft folder."
+private const val SCREEN_TITLE = "Import from JourneyMap"
+private const val IMPORT_BTN = "Import"
 
 private const val DIR_BOX_PLACEHOLDER = "Insert a directory"
 private const val NOT_DIRECTORY = "Path is a file, not a folder/directory"
 private const val INVALID_PATH_F = "Path resolution failed: %s"
+private const val DATA_FILE_EXTENSION = ".json"
 
 private const val WAYPOINTS_IMPORTED_F = "Successfully imported %s new waypoints from JourneyMap data."
 private const val NO_WAYPOINTS_FOUND = "No waypoints found or imported."
 
-class JourneyMapWaypointsImportScreen(theme: GuiTheme) : WindowScreen(theme, "Import from JourneyMap") {
+
+
+class JourneyMapWaypointsImportScreen(theme: GuiTheme) : WindowScreen(theme, SCREEN_TITLE) {
 
     private lateinit var statusLabel: WLabel
     private var labelResetJob: Job? = null
@@ -47,9 +54,9 @@ class JourneyMapWaypointsImportScreen(theme: GuiTheme) : WindowScreen(theme, "Im
     override fun initWidgets() {
         statusLabel = add(theme.label(STATUS_LABEL_DEFAULT)).expandX().widget()
         add(theme.horizontalSeparator()).expandX()
-        val textBox = add(theme.textBox("", DIR_BOX_PLACEHOLDER)).expandX().widget()
+        val textBox = add(theme.textBox(String.empty, DIR_BOX_PLACEHOLDER)).expandX().widget()
         add(theme.horizontalSeparator()).expandX()
-        add(theme.button("Import") {
+        add(theme.button(IMPORT_BTN) {
             val dir = runCatching {
                 Path(textBox.get()).toFile()
             }.onFailureOf(InvalidPathException::class) {
@@ -62,8 +69,8 @@ class JourneyMapWaypointsImportScreen(theme: GuiTheme) : WindowScreen(theme, "Im
                 return@button
             }
 
-            dir.filter {
-                it.name.endsWith(".json") && it.isFile
+            val newWaypoints = dir.filter {
+                it.isFile and it.name.endsWith(DATA_FILE_EXTENSION)
             }!!.mapNotNull map@{
                 val content = getOrNull { it.readText() } ?: return@map null
                 val jmWaypoint = getOrNull { gson.fromJson(content, JourneyMapWaypointData::class.java) }
@@ -85,19 +92,17 @@ class JourneyMapWaypointsImportScreen(theme: GuiTheme) : WindowScreen(theme, "Im
                         opposite.set(false)
                         color.set(SettingColor(jmWaypoint.r, jmWaypoint.g, jmWaypoint.b))
                     }
-            }.also {
-                statusLabel.apply {
-                    var imported: Int
-                    if (Waypoints.get().addAll(it).also { imported = it } != 0)
-                        set(Color.GREEN, WAYPOINTS_IMPORTED_F.format(imported))
-                    else
-                        set(Color.ORANGE, NO_WAYPOINTS_FOUND)
-                }
             }
 
+            Meteor.waypoints().addAll(newWaypoints).also { imported ->
+                if (imported != 0)
+                    statusLabel.set(Color.GREEN, WAYPOINTS_IMPORTED_F.format(imported))
+                else
+                    statusLabel.set(Color.ORANGE, NO_WAYPOINTS_FOUND)
+            }
 
             labelResetJob = scope.launch {
-                delay(5.seconds)
+                delay(6.5.seconds)
                 if (statusLabel() != STATUS_LABEL_DEFAULT)
                     statusLabel.set(theme.textColor(), STATUS_LABEL_DEFAULT)
                 labelResetJob = null
@@ -107,6 +112,7 @@ class JourneyMapWaypointsImportScreen(theme: GuiTheme) : WindowScreen(theme, "Im
 
     override fun onClosed() {
         labelResetJob?.cancel("Screen closed.")
+        labelResetJob = null
     }
 
     @Suppress("unused") //JSON object

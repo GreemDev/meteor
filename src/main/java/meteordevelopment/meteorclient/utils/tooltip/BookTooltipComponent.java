@@ -25,7 +25,7 @@ public class BookTooltipComponent implements TooltipComponent, MeteorTooltipData
     }
 
     @Override
-    public TooltipComponent getComponent() {
+    public TooltipComponent component() {
         return this;
     }
 

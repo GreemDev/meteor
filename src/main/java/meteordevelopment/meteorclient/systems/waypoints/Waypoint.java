@@ -14,6 +14,7 @@ import meteordevelopment.meteorclient.utils.misc.ISerializable;
 import meteordevelopment.meteorclient.utils.player.PlayerUtils;
 import meteordevelopment.meteorclient.utils.render.color.SettingColor;
 import meteordevelopment.meteorclient.utils.world.Dimension;
+import net.greemdev.meteor.util.misc.NbtUtil;
 import net.minecraft.client.texture.AbstractTexture;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.nbt.NbtElement;
@@ -195,9 +196,7 @@ public class Waypoint implements ISerializable<Waypoint> {
 
     @Override
     public Waypoint fromTag(NbtCompound tag) {
-        if (tag.contains("settings")) {
-            settings.fromTag(tag.getCompound("settings"));
-        }
+        NbtUtil.ifTagPresent(tag, "settings", settings::fromTag);
 
         return this;
     }
@@ -205,8 +204,7 @@ public class Waypoint implements ISerializable<Waypoint> {
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
-        Waypoint waypoint = (Waypoint) o;
+        if (!(o instanceof Waypoint waypoint)) return false;
         return Objects.equals(waypoint.name.get(), this.name.get());
     }
 }

@@ -24,8 +24,8 @@ public class BlockDataSetting<T extends ICopyable<T> & ISerializable<T> & IChang
     }
     public final Supplier<T> defaultData;
 
-    protected BlockDataSetting(String name, String description, Object defaultValue, Consumer<Map<Block, T>> onChanged, Consumer<Setting<Map<Block, T>>> onModuleActivated, Supplier<T> defaultData, Supplier<Boolean> visible) {
-        super(name, description, defaultValue, onChanged, onModuleActivated, visible);
+    protected BlockDataSetting(String name, String description, Object defaultValue, Consumer<Map<Block, T>> onChanged, Consumer<Setting<Map<Block, T>>> onModuleActivated, Supplier<T> defaultData, Supplier<Boolean> visible, boolean serialize) {
+        super(name, description, defaultValue, onChanged, onModuleActivated, visible, serialize);
 
         this.defaultData = defaultData;
     }
@@ -46,14 +46,12 @@ public class BlockDataSetting<T extends ICopyable<T> & ISerializable<T> & IChang
     }
 
     @Override
-    protected NbtCompound save(NbtCompound tag) {
+    protected void save(NbtCompound tag) {
         NbtCompound valueTag = new NbtCompound();
         for (Block block : get().keySet()) {
             valueTag.put(Registries.BLOCK.getId(block).toString(), get().get(block).toTag());
         }
         tag.put("value", valueTag);
-
-        return tag;
     }
 
     @Override
@@ -82,7 +80,7 @@ public class BlockDataSetting<T extends ICopyable<T> & ISerializable<T> & IChang
 
         @Override
         public BlockDataSetting<T> build() {
-            return new BlockDataSetting<>(name, description, defaultValue, onChanged, onModuleActivated, defaultData, visible);
+            return new BlockDataSetting<>(name, description, defaultValue, onChanged, onModuleActivated, defaultData, visible, serialize);
         }
     }
 }

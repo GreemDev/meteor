@@ -25,7 +25,6 @@ import static meteordevelopment.meteorclient.MeteorClient.mc;
 import static org.lwjgl.glfw.GLFW.*;
 
 public abstract class WTextBox extends WWidget {
-    private static final Renderer DEFAULT_RENDERER = (renderer, x, y, text, color) -> renderer.text(text, x, y, color, false);
 
     public Runnable action;
     public Runnable actionOnUnfocused;
@@ -60,7 +59,7 @@ public abstract class WTextBox extends WWidget {
         this.filter = filter;
 
         try {
-            this.renderer = renderer != null ? renderer.getDeclaredConstructor().newInstance() : DEFAULT_RENDERER;
+            this.renderer = renderer != null ? renderer.getDeclaredConstructor().newInstance() : Renderer.SIMPLE;
         } catch (InstantiationException | IllegalAccessException | InvocationTargetException | NoSuchMethodException e) {
             throw new RuntimeException(e);
         }
@@ -700,6 +699,8 @@ public abstract class WTextBox extends WWidget {
     }
 
     public interface Renderer {
+
+        Renderer SIMPLE = (renderer, x, y, text, color) -> renderer.text(text, x, y, color, false);
         void render(GuiRenderer renderer, double x, double y, String text, Color color);
 
         default List<String> getCompletions(String text, int position) {

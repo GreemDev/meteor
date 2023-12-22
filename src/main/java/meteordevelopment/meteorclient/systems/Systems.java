@@ -5,6 +5,8 @@
 
 package meteordevelopment.meteorclient.systems;
 
+import it.unimi.dsi.fastutil.objects.Reference2ReferenceOpenHashMap;
+import kotlin.system.TimingKt;
 import meteordevelopment.meteorclient.MeteorClient;
 import meteordevelopment.meteorclient.events.game.GameLeftEvent;
 import meteordevelopment.meteorclient.systems.accounts.Accounts;
@@ -17,16 +19,16 @@ import meteordevelopment.meteorclient.systems.profiles.Profiles;
 import meteordevelopment.meteorclient.systems.proxies.Proxies;
 import meteordevelopment.meteorclient.systems.waypoints.Waypoints;
 import meteordevelopment.orbit.EventHandler;
+import net.greemdev.meteor.utils;
 
 import java.io.File;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
 public class Systems {
     @SuppressWarnings("rawtypes")
-    private static final Map<Class<? extends System>, System<?>> systems = new HashMap<>();
+    private static final Map<Class<? extends System>, System<?>> systems = new Reference2ReferenceOpenHashMap<>();
     private static final List<Runnable> preLoadTasks = new ArrayList<>(1);
 
     public static void addPreLoadTask(Runnable task) {
@@ -70,12 +72,12 @@ public class Systems {
     }
 
     public static void save(File folder) {
-        long start = java.lang.System.currentTimeMillis();
-        MeteorClient.LOG.info("Saving");
+        long timeTaken = TimingKt.measureTimeMillis(utils.kotlin(() -> {
+            MeteorClient.LOG.info("Saving");
 
-        for (System<?> system : systems.values()) system.save(folder);
-
-        MeteorClient.LOG.info("Saved in {} milliseconds.", java.lang.System.currentTimeMillis() - start);
+            for (System<?> system : systems.values()) system.save(folder);
+        }));
+        MeteorClient.LOG.info("Saved in {} milliseconds.", timeTaken);
     }
 
     public static void save() {

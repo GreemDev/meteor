@@ -21,7 +21,7 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
 @Mixin(value = Screen.class, priority = 500) // needs to be before baritone
 public abstract class ScreenMixin {
-    @Inject(method = "renderBackground(Lnet/minecraft/client/gui/DrawContext;)V", at = @At("HEAD"), cancellable = true)
+    @Inject(method = "renderBackground", at = @At("HEAD"), cancellable = true)
     private void onRenderBackground(CallbackInfo info) {
         if (Utils.canUpdate() && Modules.get().get(NoRender.class).noGuiBackground())
             info.cancel();
@@ -29,9 +29,9 @@ public abstract class ScreenMixin {
 
     @Inject(method = "handleTextClick", at = @At(value = "INVOKE", target = "Lorg/slf4j/Logger;error(Ljava/lang/String;Ljava/lang/Object;)V", ordinal = 1, remap = false), cancellable = true)
     private void onRunCommand(Style style, CallbackInfoReturnable<Boolean> cir) {
-        if (style.getClickEvent().getValue().startsWith(Config.get().prefix.get())) {
+        if (style.getClickEvent().getValue().startsWith(Commands.prefix())) {
             try {
-                Commands.dispatch(style.getClickEvent().getValue().substring(Config.get().prefix.get().length()));
+                Commands.dispatch(style.getClickEvent().getValue().substring(Commands.prefix().length()));
                 cir.setReturnValue(true);
             } catch (CommandSyntaxException e) {
                 e.printStackTrace();

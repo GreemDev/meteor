@@ -114,7 +114,7 @@ public class AutoAnvil extends Module {
     private void onTick(TickEvent.Pre event) {
         // Head check
         if (toggleOnBreak.get() && target != null && target.getInventory().getArmorStack(3).isEmpty()) {
-            error("Target head slot is empty... disabling.");
+            error("Target head slot is empty; disabling.");
             toggle();
             return;
         }

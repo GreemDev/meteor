@@ -7,8 +7,10 @@ package meteordevelopment.meteorclient.commands;
 
 import com.mojang.brigadier.CommandDispatcher;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
-import meteordevelopment.meteorclient.commands.commands.*;
+import meteordevelopment.meteorclient.MeteorClient;
+import meteordevelopment.meteorclient.systems.config.Config;
 import meteordevelopment.meteorclient.utils.PostInit;
+import net.greemdev.meteor.util.Reflection;
 import net.minecraft.client.network.ClientCommandSource;
 import net.minecraft.command.CommandRegistryAccess;
 import net.minecraft.command.CommandSource;
@@ -17,21 +19,26 @@ import net.minecraft.server.command.CommandManager;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
-import java.util.ArrayList;
-import java.util.Comparator;
-import java.util.List;
-
-import static meteordevelopment.meteorclient.MeteorClient.mc;
+import java.util.*;
 
 public class Commands {
+    @NotNull
     public static final CommandRegistryAccess REGISTRY_ACCESS = CommandManager.createRegistryAccess(BuiltinRegistries.createWrapperLookup());
+    @NotNull
     public static final CommandDispatcher<CommandSource> DISPATCHER = new CommandDispatcher<>();
-    public static final CommandSource COMMAND_SOURCE = new ClientCommandSource(null, mc);
+    @NotNull
+    public static final CommandSource COMMAND_SOURCE = new ClientCommandSource(null, MeteorClient.mc);
+    @NotNull
     public static final List<Command> COMMANDS = new ArrayList<>();
 
     @PostInit
     public static void init() {
-        add(new VClipCommand());
+        Reflection.getSubtypesIn(Command.class, Command.class.getPackageName()).stream()
+            .map(Reflection::callNoArgsConstructor)
+            .filter(Objects::nonNull)
+            .forEach(Commands::add);
+
+        /*add(new VClipCommand());
         add(new HClipCommand());
         add(new DismountCommand());
         add(new DamageCommand());
@@ -65,7 +72,7 @@ public class Commands {
         add(new FovCommand());
         add(new RotationCommand());
         add(new WaypointCommand());
-        add(new InputCommand());
+        add(new InputCommand());*/
 
         COMMANDS.sort(Comparator.comparing(Command::getName));
     }
@@ -74,6 +81,10 @@ public class Commands {
         COMMANDS.removeIf(existing -> existing.getName().equals(command.getName()));
         command.registerTo(DISPATCHER);
         COMMANDS.add(command);
+    }
+
+    public static void addAll(Collection<Command> commands) {
+        commands.forEach(Commands::add);
     }
 
     public static void dispatch(String message) throws CommandSyntaxException {
@@ -88,5 +99,10 @@ public class Commands {
     @NotNull
     public static Command get(Class<? extends Command> commandClass) {
         return COMMANDS.stream().filter(c -> c.getClass().equals(commandClass)).findFirst().orElseThrow();
+    }
+
+    @NotNull
+    public static String prefix() {
+        return Config.get().prefix.get();
     }
 }

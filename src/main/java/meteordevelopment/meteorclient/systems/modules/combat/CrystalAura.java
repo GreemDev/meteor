@@ -1135,7 +1135,7 @@ public class CrystalAura extends Module {
             if (pauseOnUse.get().equals(process)) return true;
         }
 
-        if (pauseOnLag.get() && TickRate.INSTANCE.getTimeSinceLastTick() >= 1.0f) return true;
+        if (pauseOnLag.get() && TickRate.timeSinceLastTick() >= 1.0f) return true;
         for (Module module : pauseModules.get()) if (module.isActive()) return true;
         if (pauseOnMine.get().equals(process) && mc.interactionManager.isBreakingBlock()) return true;
         return (EntityUtils.getTotalHealth(mc.player) <= pauseHealth.get());

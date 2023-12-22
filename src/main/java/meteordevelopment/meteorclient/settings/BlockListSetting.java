@@ -27,8 +27,8 @@ public class BlockListSetting extends Setting<List<Block>> {
 
     public final Predicate<Block> filter;
 
-    protected BlockListSetting(String name, String description, Object defaultValue, Consumer<List<Block>> onChanged, Consumer<Setting<List<Block>>> onModuleActivated, Predicate<Block> filter, Supplier<Boolean> visible) {
-        super(name, description, defaultValue, onChanged, onModuleActivated, visible);
+    protected BlockListSetting(String name, String description, Object defaultValue, Consumer<List<Block>> onChanged, Consumer<Setting<List<Block>>> onModuleActivated, Predicate<Block> filter, Supplier<Boolean> visible, boolean serialize) {
+        super(name, description, defaultValue, onChanged, onModuleActivated, visible, serialize);
 
         this.filter = filter;
     }
@@ -64,14 +64,12 @@ public class BlockListSetting extends Setting<List<Block>> {
     }
 
     @Override
-    protected NbtCompound save(NbtCompound tag) {
+    protected void save(NbtCompound tag) {
         NbtList valueTag = new NbtList();
         for (Block block : get()) {
             valueTag.add(NbtString.of(Registries.BLOCK.getId(block).toString()));
         }
         tag.put("value", valueTag);
-
-        return tag;
     }
 
     @Override
@@ -106,7 +104,7 @@ public class BlockListSetting extends Setting<List<Block>> {
 
         @Override
         public BlockListSetting build() {
-            return new BlockListSetting(name, description, defaultValue, onChanged, onModuleActivated, filter, visible);
+            return new BlockListSetting(name, description, defaultValue, onChanged, onModuleActivated, filter, visible, serialize);
         }
     }
 }

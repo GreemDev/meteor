@@ -47,7 +47,7 @@ public class WTable extends WContainer {
         rowI++;
     }
 
-    public int rowI() {
+    public int rowIndex() {
         return rowI;
     }
 

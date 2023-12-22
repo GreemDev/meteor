@@ -21,8 +21,8 @@ public class DoubleSetting extends Setting<Double> {
     public final int decimalPlaces;
     public final boolean noSlider;
 
-    protected DoubleSetting(String name, String description, Object defaultValue, Consumer<Double> onChanged, Consumer<Setting<Double>> onModuleActivated, Supplier<Boolean> visible, double min, double max, double sliderMin, double sliderMax, boolean onSliderRelease, int decimalPlaces, boolean noSlider) {
-        super(name, description, defaultValue, onChanged, onModuleActivated, visible);
+    protected DoubleSetting(String name, String description, Object defaultValue, Consumer<Double> onChanged, Consumer<Setting<Double>> onModuleActivated, Supplier<Boolean> visible, boolean serialize, double min, double max, double sliderMin, double sliderMax, boolean onSliderRelease, int decimalPlaces, boolean noSlider) {
+        super(name, description, defaultValue, onChanged, onModuleActivated, visible, serialize);
 
         this.min = min;
         this.max = max;
@@ -33,7 +33,7 @@ public class DoubleSetting extends Setting<Double> {
         this.noSlider = noSlider;
     }
 
-    public float getAsFloat() {
+    public float getValueAsFloat() {
         return get().floatValue();
     }
 
@@ -52,10 +52,8 @@ public class DoubleSetting extends Setting<Double> {
     }
 
     @Override
-    protected NbtCompound save(NbtCompound tag) {
+    protected void save(NbtCompound tag) {
         tag.putDouble("value", get());
-
-        return tag;
     }
 
     @Override
@@ -125,7 +123,7 @@ public class DoubleSetting extends Setting<Double> {
         }
 
         public DoubleSetting build() {
-            return new DoubleSetting(name, description, defaultValue, onChanged, onModuleActivated, visible, min, max, Math.max(sliderMin, min), Math.min(sliderMax, max), onSliderRelease, decimalPlaces, noSlider);
+            return new DoubleSetting(name, description, defaultValue, onChanged, onModuleActivated, visible, serialize, min, max, Math.max(sliderMin, min), Math.min(sliderMax, max), onSliderRelease, decimalPlaces, noSlider);
         }
     }
 }

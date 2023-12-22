@@ -10,11 +10,17 @@ import meteordevelopment.meteorclient.utils.files.StreamUtils;
 import meteordevelopment.meteorclient.utils.misc.ISerializable;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.nbt.NbtIo;
+import net.minecraft.util.crash.CrashException;
+import org.apache.commons.io.FilenameUtils;
 
 import java.io.File;
 import java.io.IOException;
+import java.time.ZonedDateTime;
+import java.time.format.DateTimeFormatter;
+import java.util.Locale;
 
 public abstract class System<T> implements ISerializable<T> {
+    private static final DateTimeFormatter DATE_TIME_FORMATTER = DateTimeFormatter.ofPattern("yyyy-MM-dd_HH.mm.ss", Locale.ROOT);
     private final String name;
     private File file;
 
@@ -64,10 +70,17 @@ public abstract class System<T> implements ISerializable<T> {
             if (folder != null) file = new File(folder, file.getName());
 
             if (file.exists()) {
-                fromTag(NbtIo.read(file));
+                try {
+                    fromTag(NbtIo.read(file));
+                } catch (CrashException ce) { //fucking minecraft
+                    String backupName = FilenameUtils.removeExtension(file.getName()) + "-" + ZonedDateTime.now().format(DATE_TIME_FORMATTER) + ".backup.nbt";
+                    File backup = new File(file.getParentFile(), backupName);
+                    StreamUtils.copy(file, backup);
+                    MeteorClient.LOG.error("Error loading system " + this.name + "; possibly corrupted? Saved backup to '" + backup + "'.", ce);
+                }
             }
         } catch (IOException e) {
-            e.printStackTrace();
+            MeteorClient.LOG.error("Error loading system " + this.name + ".", e);
         }
     }
 

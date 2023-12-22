@@ -12,6 +12,7 @@ import meteordevelopment.meteorclient.systems.hud.screens.HudEditorScreen;
 import meteordevelopment.meteorclient.utils.Utils;
 import meteordevelopment.meteorclient.utils.misc.ISerializable;
 import meteordevelopment.meteorclient.utils.other.Snapper;
+import net.greemdev.meteor.type.MeteorPromptException;
 import net.minecraft.nbt.NbtCompound;
 
 public abstract class HudElement implements Snapper.Element, ISerializable<HudElement> {
@@ -141,5 +142,9 @@ public abstract class HudElement implements Snapper.Element, ISerializable<HudEl
         y = box.getRenderY();
 
         return this;
+    }
+
+    public interface Factory<T extends HudElement> {
+        T create() throws MeteorPromptException;
     }
 }

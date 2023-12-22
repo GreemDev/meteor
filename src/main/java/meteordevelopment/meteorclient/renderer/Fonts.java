@@ -20,6 +20,7 @@ import java.io.File;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
+import java.util.Objects;
 
 import static meteordevelopment.meteorclient.MeteorClient.mc;
 
@@ -33,7 +34,7 @@ public class Fonts {
     public static CustomTextRenderer RENDERER;
 
     @PreInit(dependencies = Shaders.class)
-    public static void refresh() {
+    public static void reload() {
         FONT_FAMILIES.clear();
 
         for (String builtinFont : BUILTIN_FONTS) {
@@ -48,8 +49,8 @@ public class Fonts {
 
         MeteorClient.LOG.info("Found {} font families.", FONT_FAMILIES.size());
 
-        DEFAULT_FONT_FAMILY = FontUtils.getBuiltinFontInfo(BUILTIN_FONTS[1]).family();
-        DEFAULT_FONT = getFamily(DEFAULT_FONT_FAMILY).get(FontInfo.Type.Regular);
+        DEFAULT_FONT_FAMILY = FontUtils.getBuiltinFontInfo(BUILTIN_FONTS[0]).family();
+        DEFAULT_FONT = Objects.requireNonNull(getFamily(DEFAULT_FONT_FAMILY)).get(FontInfo.Type.Regular);
 
         Config config = Config.get();
         load(config != null ? config.font.get() : DEFAULT_FONT);

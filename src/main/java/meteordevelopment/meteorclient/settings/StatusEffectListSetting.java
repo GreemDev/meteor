@@ -24,8 +24,8 @@ public class StatusEffectListSetting extends Setting<List<StatusEffect>> {
         return new Builder();
     }
 
-    protected StatusEffectListSetting(String name, String description, Object defaultValue, Consumer<List<StatusEffect>> onChanged, Consumer<Setting<List<StatusEffect>>> onModuleActivated, Supplier<Boolean> visible) {
-        super(name, description, defaultValue, onChanged, onModuleActivated, visible);
+    protected StatusEffectListSetting(String name, String description, Object defaultValue, Consumer<List<StatusEffect>> onChanged, Consumer<Setting<List<StatusEffect>>> onModuleActivated, Supplier<Boolean> visible, boolean serialize) {
+        super(name, description, defaultValue, onChanged, onModuleActivated, visible, serialize);
     }
 
     @Override
@@ -59,7 +59,7 @@ public class StatusEffectListSetting extends Setting<List<StatusEffect>> {
     }
 
     @Override
-    public NbtCompound save(NbtCompound tag) {
+    public void save(NbtCompound tag) {
         NbtList valueTag = new NbtList();
 
         for (StatusEffect effect : get()) {
@@ -67,8 +67,6 @@ public class StatusEffectListSetting extends Setting<List<StatusEffect>> {
             if (id != null) valueTag.add(NbtString.of(id.toString()));
         }
         tag.put("value", valueTag);
-
-        return tag;
     }
 
     @Override
@@ -95,7 +93,7 @@ public class StatusEffectListSetting extends Setting<List<StatusEffect>> {
 
         @Override
         public StatusEffectListSetting build() {
-            return new StatusEffectListSetting(name, description, defaultValue, onChanged, onModuleActivated, visible);
+            return new StatusEffectListSetting(name, description, defaultValue, onChanged, onModuleActivated, visible, serialize);
         }
     }
 }

@@ -14,6 +14,7 @@ import meteordevelopment.meteorclient.systems.hud.HudRenderer;
 import meteordevelopment.meteorclient.utils.player.InvUtils;
 import meteordevelopment.meteorclient.utils.render.color.Color;
 import meteordevelopment.meteorclient.utils.render.color.SettingColor;
+import net.greemdev.meteor.Lambdas;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
@@ -30,7 +31,7 @@ public class ItemHud extends HudElement {
 
     // General
 
-    private final Setting<Boolean> currentItem = sgGeneral.add(new BoolSetting.Builder()
+    private final BoolSetting currentItem = sgGeneral.addTyped(new BoolSetting.Builder()
         .name("show-current-item")
         .description("Show a dynamic display of how many items you have for the type in your hand.")
         .defaultValue(true)
@@ -57,6 +58,7 @@ public class ItemHud extends HudElement {
         .name("item")
         .description("Item to display")
         .defaultValue(Items.TOTEM_OF_UNDYING)
+        .visible(currentItem.inverse())
         .build()
     );
 
@@ -97,7 +99,7 @@ public class ItemHud extends HudElement {
     private final Setting<SettingColor> backgroundColor = sgBackground.add(new ColorSetting.Builder()
         .name("background-color")
         .description("Color used for the background.")
-        .visible(background::get)
+        .visible(background)
         .defaultValue(new SettingColor(25, 25, 25, 50))
         .build()
     );
@@ -136,24 +138,23 @@ public class ItemHud extends HudElement {
 
     @Override
     public void render(HudRenderer renderer) {
-        ItemStack itemStack = new ItemStack(item.get(), InvUtils.find(item.get()).count());
+        ItemStack itemStack = displayStack();
 
-        if (noneMode.get() == NoneMode.HideItem && itemStack.isEmpty())
-            if (isInEditor()) {
-                renderer.line(x, y, x + getWidth(), y + getHeight(), Color.GRAY);
-                renderer.line(x, y + getHeight(), x + getWidth(), y, Color.GRAY);
-            } else renderer.post(() -> {
-                MatrixStack matrices = RenderSystem.getModelViewStack();
-                matrices.push();
-                matrices.scale(scale.get().floatValue(), scale.get().floatValue(), 1);
+        if (noneMode.get() == NoneMode.HideItem && itemStack.isEmpty() && isInEditor()) {
+            renderer.line(x, y, x + getWidth(), y + getHeight(), Color.GRAY);
+            renderer.line(x, y + getHeight(), x + getWidth(), y, Color.GRAY);
+        } else renderer.post(() -> {
+            MatrixStack matrices = RenderSystem.getModelViewStack();
+            matrices.push();
+            matrices.scale(scale.get().floatValue(), scale.get().floatValue(), 1);
 
-                double x = this.x + border.get();
-                double y = this.y + border.get();
+            double x = this.x + border.get();
+            double y = this.y + border.get();
 
-                render(renderer, displayStack(), (int) (x / scale.get()), (int) (y / scale.get()));
+            render(renderer, itemStack, (int) (x / scale.get()), (int) (y / scale.get()));
 
-                matrices.pop();
-            });
+            matrices.pop();
+        });
 
         if (background.get()) renderer.quad(x, y, getWidth(), getHeight(), backgroundColor.get());
     }

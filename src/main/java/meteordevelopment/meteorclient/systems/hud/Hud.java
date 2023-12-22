@@ -20,7 +20,8 @@ import meteordevelopment.meteorclient.utils.misc.NbtUtils;
 import meteordevelopment.meteorclient.utils.render.color.SettingColor;
 import meteordevelopment.orbit.EventHandler;
 import net.greemdev.meteor.Greteor;
-import net.greemdev.meteor.hud.HudElementMetadata;
+import net.greemdev.meteor.hud.HudElementDescriptor;
+import net.greemdev.meteor.type.MeteorPromptException;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.nbt.NbtElement;
 import org.jetbrains.annotations.NotNull;
@@ -137,7 +138,7 @@ public class Hud extends System<Hud> implements Iterable<HudElement> {
         register(ModuleInfosHud.INFO);
         register(PotionTimersHud.INFO);
         register(CombatHud.INFO);
-        Greteor.hudElements().stream().map(HudElementMetadata::getInfo).forEach(this::register);
+        Greteor.hudElements().stream().map(HudElementDescriptor::getInfo).forEach(this::register);
 
         // Default config
         if (isFirstInit) resetToDefaultElements();
@@ -162,7 +163,11 @@ public class Hud extends System<Hud> implements Iterable<HudElement> {
     }
 
     public void add(HudElementInfo<?> info, int x, int y, XAnchor xAnchor, YAnchor yAnchor) {
-        add(info.create(), x, y, xAnchor, yAnchor);
+        try {
+            add(info.create(), x, y, xAnchor, yAnchor);
+        } catch (MeteorPromptException err) {
+            err.tryShow();
+        }
     }
 
     public void add(HudElementInfo<?> info, int x, int y) {
@@ -171,9 +176,13 @@ public class Hud extends System<Hud> implements Iterable<HudElement> {
 
     @SuppressWarnings({"unchecked", "rawtypes"})
     public void add(HudElementInfo.Preset preset, int x, int y, XAnchor xAnchor, YAnchor yAnchor) {
-        HudElement element = preset.info.create();
-        preset.callback.accept(element);
-        add(element, x, y, xAnchor, yAnchor);
+        try {
+            HudElement element = preset.info.create();
+            preset.callback.accept(element);
+            add(element, x, y, xAnchor, yAnchor);
+        } catch (MeteorPromptException err) {
+            err.tryShow();
+        }
     }
 
     public void add(HudElementInfo<?>.Preset preset, int x, int y) {
@@ -199,11 +208,10 @@ public class Hud extends System<Hud> implements Iterable<HudElement> {
         int h = (int) Math.ceil(HudRenderer.INSTANCE.textHeight(true));
 
         // Top Left
-        add(MeteorTextHud.WATERMARK, 4, 4, XAnchor.Left, YAnchor.Top);
-        add(MeteorTextHud.FPS, 4, 4 + h, XAnchor.Left, YAnchor.Top);
-        add(MeteorTextHud.TPS, 4, 4 + h * 2, XAnchor.Left, YAnchor.Top);
-        add(MeteorTextHud.PING, 4, 4 + h * 3, XAnchor.Left, YAnchor.Top);
-        add(MeteorTextHud.SPEED, 4, 4 + h * 4, XAnchor.Left, YAnchor.Top);
+        add(MeteorTextHud.FPS, 4, 4, XAnchor.Left, YAnchor.Top);
+        add(MeteorTextHud.TPS, 4, 4 + h, XAnchor.Left, YAnchor.Top);
+        add(MeteorTextHud.PING, 4, 4 + h * 2, XAnchor.Left, YAnchor.Top);
+        add(MeteorTextHud.SPEED, 4, 4 + h * 3, XAnchor.Left, YAnchor.Top);
 
         // Top Right
         add(ActiveModulesHud.INFO, -4, 4, XAnchor.Right, YAnchor.Top);
@@ -234,7 +242,7 @@ public class Hud extends System<Hud> implements Iterable<HudElement> {
         if (Utils.isLoading()) return;
 
         if (!active || shouldHideHud()) return;
-        if ((mc.options.hudHidden || mc.options.debugEnabled) && !HudEditorScreen.isOpen()) return;
+        if ((mc.options.hudHidden || mc.inGameHud.getDebugHud().shouldShowDebugHud()) && !HudEditorScreen.isOpen()) return;
 
         HudRenderer.INSTANCE.begin(event.drawContext);
 
@@ -306,9 +314,10 @@ public class Hud extends System<Hud> implements Iterable<HudElement> {
 
             HudElementInfo<?> info = infos.get(c.getString("name"));
             if (info != null) {
-                HudElement element = info.create();
-                element.fromTag(c);
-                elements.add(element);
+                info.tryCreate(false).ifPresent(element ->
+                    elements.add(element.fromTag(c))
+                );
+
             }
         }
 

@@ -22,8 +22,8 @@ public class StringSetting extends Setting<String> {
     public final CharFilter filter;
     public final boolean wide;
 
-    protected StringSetting(String name, String description, Object defaultValue, Consumer<String> onChanged, Consumer<Setting<String>> onModuleActivated, Supplier<Boolean> visible, Class<? extends WTextBox.Renderer> renderer, CharFilter filter, boolean wide) {
-        super(name, description, defaultValue, onChanged, onModuleActivated, visible);
+    protected StringSetting(String name, String description, Object defaultValue, Consumer<String> onChanged, Consumer<Setting<String>> onModuleActivated, Supplier<Boolean> visible, boolean serialize, Class<? extends WTextBox.Renderer> renderer, CharFilter filter, boolean wide) {
+        super(name, description, defaultValue, onChanged, onModuleActivated, visible, serialize);
 
         this.renderer = renderer;
         this.filter = filter;
@@ -41,10 +41,8 @@ public class StringSetting extends Setting<String> {
     }
 
     @Override
-    public NbtCompound save(NbtCompound tag) {
+    public void save(NbtCompound tag) {
         tag.putString("value", get());
-
-        return tag;
     }
 
     @Override
@@ -84,7 +82,7 @@ public class StringSetting extends Setting<String> {
 
         @Override
         public StringSetting build() {
-            return new StringSetting(name, description, defaultValue, onChanged, onModuleActivated, visible, renderer, filter, wide);
+            return new StringSetting(name, description, defaultValue, onChanged, onModuleActivated, visible, serialize, renderer, filter, wide);
         }
     }
 }

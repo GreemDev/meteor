@@ -11,7 +11,7 @@ import meteordevelopment.meteorclient.events.meteor.MouseScrollEvent;
 import meteordevelopment.meteorclient.mixininterface.ICamera;
 import meteordevelopment.meteorclient.systems.modules.Modules;
 import meteordevelopment.meteorclient.systems.modules.render.FreeLook;
-import meteordevelopment.meteorclient.systems.modules.render.Freecam;
+import meteordevelopment.meteorclient.systems.modules.movement.Freecam;
 import meteordevelopment.meteorclient.systems.modules.world.HighwayBuilder;
 import meteordevelopment.meteorclient.utils.misc.input.Input;
 import meteordevelopment.meteorclient.utils.misc.input.KeyAction;
@@ -30,7 +30,7 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 import static org.lwjgl.glfw.GLFW.GLFW_RELEASE;
 
 @Mixin(Mouse.class)
-public class MouseMixin {
+public abstract class MouseMixin {
     @Shadow @Final private MinecraftClient client;
 
     @Inject(method = "onMouseButton", at = @At("HEAD"), cancellable = true)

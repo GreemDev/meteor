@@ -270,6 +270,10 @@ public class GL {
         GlStateManager._disableDepthTest();
     }
 
+    public static void depthMask(boolean mask) {
+        GlStateManager._depthMask(mask);
+    }
+
     public static void enableBlend() {
         GlStateManager._enableBlend();
         GlStateManager._blendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);

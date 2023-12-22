@@ -5,57 +5,62 @@
 
 package net.greemdev.meteor
 
-import meteordevelopment.meteorclient.MeteorClient
 import meteordevelopment.meteorclient.commands.Commands
-import meteordevelopment.meteorclient.systems.hud.HudElement
-import meteordevelopment.meteorclient.systems.hud.HudElementInfo
 import meteordevelopment.meteorclient.systems.hud.HudGroup
 import meteordevelopment.meteorclient.systems.modules.Category
-import net.fabricmc.fabric.api.client.rendering.v1.WorldRenderContext
+import meteordevelopment.meteorclient.systems.modules.Modules
+import net.fabricmc.fabric.api.client.rendering.v1.HudRenderCallback
 import net.fabricmc.fabric.api.client.rendering.v1.WorldRenderEvents
-import net.greemdev.meteor.hud.HudElementMetadata
-import net.greemdev.meteor.hud.element.ModuleKeybindHud
+import net.greemdev.meteor.hud.HudElementDescriptor
+import net.greemdev.meteor.hud.element.*
 import net.greemdev.meteor.modules.damageNumbers.DamageNumbers
+import net.greemdev.meteor.modules.flightHud.ElytraFlightHud
 import net.greemdev.meteor.util.className
-//import net.greemdev.meteor.hud.element.*
 import net.greemdev.meteor.util.meteor.*
 import net.greemdev.meteor.util.meteor.starscript.initGStarscript
-import net.greemdev.meteor.util.misc.GVersioning
+import net.minecraft.block.Block
 import net.minecraft.item.Items
-import java.lang.invoke.MethodHandles
+import net.minecraft.registry.RegistryKeys
+import net.minecraft.registry.tag.TagKey
 
 private val category = Category(className<Greteor>(), Items.LIME_CONCRETE_POWDER.defaultStack)
 private val hudGroup = HudGroup(className<Greteor>())
 
 object Greteor {
+    @JvmStatic
+    var gameStartTime: Long = -1
+        set(value) {
+            if (field == -1L)
+                field = value
+            else
+                logger.warn("Game start timestamp may only be set once. Call ignored.")
+        }
 
     @JvmStatic
     @get:JvmName("logger")
     val logger by log4j("Greteor")
 
+    @JvmStatic
     fun category() = category
+    @JvmStatic
     fun hudGroup() = hudGroup
 
     @JvmStatic
     fun init() {
-        GModule.findAll().forEach(Meteor.modules()::add)
+        Modules.addAll(GModule.subtypeInstances)
+        Commands.addAll(GCommand.subtypeInstances)
 
-        GCommand.findAll().forEach(Commands::add)
+        HudRenderCallback.EVENT.register { drawContext, _ -> ElytraFlightHud.render(drawContext) }
+
+        WorldRenderEvents.END.register(DamageNumbers::render)
 
         initGStarscript()
-
-        WorldRenderEvents.AFTER_ENTITIES.register(DamageNumbers::render)
     }
 
     @JvmStatic
-    fun hudElements() = listOf<HudElementMetadata<*>>(ModuleKeybindHud)
+    fun hudElements() = listOf<HudElementDescriptor<*>>(ModuleKeybindHud)
 
-    @JvmStatic
-    fun lambdaFactoriesFor(vararg packages: String) =
-        packages.forEach {
-            MeteorClient.EVENT_BUS.registerLambdaFactory(it) { lookupInMethod, klass ->
-                lookupInMethod(null, klass, MethodHandles.lookup())
-                    as MethodHandles.Lookup
-            }
-        }
+    object Tags {
+        val nonStrippedLogs: TagKey<Block> = TagKey.of(RegistryKeys.BLOCK, resource("non-stripped-logs"))
+    }
 }

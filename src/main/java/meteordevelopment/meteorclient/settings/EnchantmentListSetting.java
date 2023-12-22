@@ -24,8 +24,8 @@ public class EnchantmentListSetting extends Setting<List<Enchantment>> {
         return new Builder();
     }
 
-    protected EnchantmentListSetting(String name, String description, Object defaultValue, Consumer<List<Enchantment>> onChanged, Consumer<Setting<List<Enchantment>>> onModuleActivated, Supplier<Boolean> visible) {
-        super(name, description, defaultValue, onChanged, onModuleActivated, visible);
+    protected EnchantmentListSetting(String name, String description, Object defaultValue, Consumer<List<Enchantment>> onChanged, Consumer<Setting<List<Enchantment>>> onModuleActivated, Supplier<Boolean> visible, boolean serialize) {
+        super(name, description, defaultValue, onChanged, onModuleActivated, visible, serialize);
     }
 
     @Override
@@ -59,15 +59,13 @@ public class EnchantmentListSetting extends Setting<List<Enchantment>> {
     }
 
     @Override
-    public NbtCompound save(NbtCompound tag) {
+    public void save(NbtCompound tag) {
         NbtList valueTag = new NbtList();
         for (Enchantment ench : get()) {
             Identifier id = Registries.ENCHANTMENT.getId(ench);
             if (id != null) valueTag.add(NbtString.of(id.toString()));
         }
         tag.put("value", valueTag);
-
-        return tag;
     }
 
     @Override
@@ -94,7 +92,7 @@ public class EnchantmentListSetting extends Setting<List<Enchantment>> {
 
         @Override
         public EnchantmentListSetting build() {
-            return new EnchantmentListSetting(name, description, defaultValue, onChanged, onModuleActivated, visible);
+            return new EnchantmentListSetting(name, description, defaultValue, onChanged, onModuleActivated, visible, serialize);
         }
     }
 }

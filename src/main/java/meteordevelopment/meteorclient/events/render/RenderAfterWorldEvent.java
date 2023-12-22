@@ -5,6 +5,7 @@
 
 package meteordevelopment.meteorclient.events.render;
 
+@SuppressWarnings("InstantiationOfUtilityClass") // its not a fucking utility class intellij
 public class RenderAfterWorldEvent {
     private static final RenderAfterWorldEvent INSTANCE = new RenderAfterWorldEvent();
 

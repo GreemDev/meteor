@@ -7,7 +7,6 @@ package net.greemdev.meteor.gui.renderer
 
 import meteordevelopment.meteorclient.gui.renderer.GuiRenderOperation
 import meteordevelopment.meteorclient.renderer.text.TextRenderer
-import net.greemdev.meteor.util.meteor.renderLegacy
 
 class LegacyTextOperation : GuiRenderOperation<LegacyTextOperation>() {
     lateinit var text: String

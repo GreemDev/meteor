@@ -21,7 +21,7 @@ public class WMeteorLabel extends WLabel implements MeteorWidget {
         if (text != null && !text.isEmpty()) {
             Color c = getEffectiveColor(theme);
 
-            if (LegacyText.needsSpecialRenderer(text))
+            if (legacyRenderer)
                 renderer.legacyText(text, x, y, c, title, false);
             else
                 renderer.text(text, x, y, c, title);

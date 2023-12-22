@@ -367,7 +367,7 @@ public class BetterChat extends Module {
         var prefixes = new String[brackets.size()];
 
         for (int i = 0; i < brackets.size(); i++) {
-            prefixes[i] = brackets.get(i).surround(prefix);
+            prefixes[i] = brackets.get(i).apply(prefix);
         }
 
         CUSTOM_HEAD_ENTRIES.add(new CustomHeadEntry(prefixes, texture));
@@ -429,7 +429,7 @@ public class BetterChat extends Module {
         PlayerListEntry entry = mc.getNetworkHandler().getPlayerListEntry(sender.getId());
         if (entry == null) return;
 
-        Identifier skin = entry.getSkinTexture();
+        Identifier skin = entry.getSkinTextures().texture();
 
         context.drawTexture(skin, 0, y, 8, 8, 8, 8, 8, 8, 64, 64);
         context.drawTexture(skin, 0, y, 8, 8, 40, 8, 8, 8, 64, 64);

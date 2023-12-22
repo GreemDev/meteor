@@ -24,6 +24,8 @@ import meteordevelopment.meteorclient.utils.render.color.Color;
 import meteordevelopment.meteorclient.utils.render.color.SettingColor;
 import meteordevelopment.meteorclient.utils.tooltip.*;
 import meteordevelopment.orbit.EventHandler;
+import net.greemdev.meteor.util.misc.NbtDataType;
+import net.greemdev.meteor.util.misc.NbtUtil;
 import net.greemdev.meteor.util.text.ChatColor;
 import net.greemdev.meteor.util.text.FormattedText;
 import net.minecraft.block.entity.BannerPattern;
@@ -97,7 +99,7 @@ public class BetterTooltips extends Module {
         .name("compact-shulker-tooltip")
         .description("Compacts the lines of the shulker tooltip.")
         .defaultValue(true)
-        .visible(shulkers::get)
+        .visible(shulkers)
         .build()
     );
 
@@ -240,14 +242,14 @@ public class BetterTooltips extends Module {
                 NbtCompound tag = event.itemStack.getNbt();
 
                 if (tag != null) {
-                    NbtList effects = tag.getList("Effects", 10);
+                    NbtList effects = tag.getList("Effects", NbtDataType.Compound.getInt());
 
                     if (effects != null) {
                         for (int i = 0; i < effects.size(); i++) {
                             NbtCompound effectTag = effects.getCompound(i);
                             byte effectId = effectTag.getByte("EffectId");
                             int effectDuration = effectTag.contains("EffectDuration") ? effectTag.getInt("EffectDuration") : 160;
-                            StatusEffect type = StatusEffect.byRawId(effectId);
+                            StatusEffect type = Registries.STATUS_EFFECT.get(effectId);
 
                             if (type != null) {
                                 StatusEffectInstance effect = new StatusEffectInstance(type, effectDuration, 0);
@@ -293,10 +295,7 @@ public class BetterTooltips extends Module {
         // Item size tooltip
         if (byteSize.get()) {
             try {
-                event.itemStack.writeNbt(new NbtCompound()).write(ByteCountDataOutput.INSTANCE);
-
-                int byteCount = ByteCountDataOutput.INSTANCE.getCount();
-                ByteCountDataOutput.INSTANCE.reset();
+                int byteCount = NbtUtil.countBytes(event.itemStack.writeNbt(new NbtCompound()));
 
                 String count = byteCount >= 1024 * 1024
                     ? "%.2f MB".formatted(byteCount / 1024 / (float) 1024)
@@ -304,7 +303,7 @@ public class BetterTooltips extends Module {
                         ? "%.2f KB".formatted(byteCount / (float) 1024)
                         : "%d bytes".formatted(byteCount);
 
-                event.list.add(FormattedText.colored(count, bytesColor.get()));
+                event.list.add(FormattedText.withColor(count, bytesColor.get()));
             } catch (IOException e) {
                 e.printStackTrace();
             }

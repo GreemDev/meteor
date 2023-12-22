@@ -2,16 +2,20 @@
  * This file is part of the Meteor Client distribution (https://github.com/MeteorDevelopment/meteor-client).
  * Copyright (c) Meteor Development.
  */
-
+@file:JvmName("Suggest")
 package net.greemdev.meteor.commands.api
 
 import com.mojang.brigadier.Message
+import com.mojang.brigadier.context.CommandContext
 import com.mojang.brigadier.suggestion.Suggestions
 import com.mojang.brigadier.suggestion.SuggestionsBuilder
 import net.greemdev.meteor.Mapper
 import net.greemdev.meteor.Predicate
+import net.minecraft.client.network.ClientCommandSource
 import net.minecraft.command.CommandSource
 import net.minecraft.command.CommandSource.RelativePosition
+import net.minecraft.registry.Registry
+import net.minecraft.registry.RegistryKey
 import net.minecraft.util.Identifier
 import java.util.concurrent.CompletableFuture
 import java.util.stream.Stream
@@ -80,3 +84,11 @@ fun<T> SuggestionsBuilder.matching(
     tooltip: Mapper<T, Message>
 ): CompletableFuture<Suggestions> =
     CommandSource.suggestMatching(candidates, this, suggestionText, tooltip)
+
+fun SuggestionsBuilder.listIds(
+    context: CommandContext<ClientCommandSource>,
+    registryRef: RegistryKey<out Registry<*>>,
+    idType: CommandSource.SuggestedIdType
+): CompletableFuture<Suggestions> =
+    context.source.listIdSuggestions(registryRef, idType, this, context)
+

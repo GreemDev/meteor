@@ -5,6 +5,7 @@
 
 package meteordevelopment.meteorclient.systems.profiles;
 
+import meteordevelopment.meteorclient.gui.utils.CharFilter;
 import meteordevelopment.meteorclient.settings.*;
 import meteordevelopment.meteorclient.systems.hud.Hud;
 import meteordevelopment.meteorclient.systems.macros.Macros;
@@ -31,14 +32,14 @@ public class Profile implements ISerializable<Profile> {
         .name("name")
         .description("The name of the profile.")
         .defaultValue("")
-        .filter(Utils::nameFilter)
+        .filter(CharFilter.alphanumericLenient())
         .build()
     );
 
     public Setting<List<String>> loadOnJoin = sgGeneral.add(new StringListSetting.Builder()
         .name("load-on-join")
         .description("Which servers to set this profile as active when joining.")
-        .filter(Utils::ipFilter)
+        .filter(CharFilter.ip())
         .build()
     );
 

@@ -21,7 +21,7 @@ import meteordevelopment.orbit.EventHandler;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.decoration.EndCrystalEntity;
 import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.network.packet.s2c.play.DisconnectS2CPacket;
+import net.minecraft.network.packet.s2c.common.DisconnectS2CPacket;
 import net.minecraft.text.Text;
 
 public class AutoLog extends Module {
@@ -70,7 +70,7 @@ public class AutoLog extends Module {
         .defaultValue(4)
         .range(1, 10)
         .sliderMax(5)
-        .visible(crystalLog::get)
+        .visible(crystalLog)
         .build()
     );
 
@@ -100,37 +100,47 @@ public class AutoLog extends Module {
             return;
         }
         if (playerHealth <= health.get()) {
-            mc.player.networkHandler.onDisconnect(new DisconnectS2CPacket(Text.literal("[AutoLog] Health was lower than " + health.get() + ".")));
+            disconnect("Health was lower than " + health.get() + ".");
             if(smartToggle.get()) {
                 this.toggle();
                 enableHealthListener();
             }
         }
 
-        if(smart.get() && playerHealth + mc.player.getAbsorptionAmount() - PlayerUtils.possibleHealthReductions() < health.get()){
-            mc.player.networkHandler.onDisconnect(new DisconnectS2CPacket(Text.literal("[AutoLog] Health was going to be lower than " + health.get() + ".")));
+        if (smart.get() && playerHealth + mc.player.getAbsorptionAmount() - PlayerUtils.possibleHealthReductions() < health.get()){
+            disconnect("Health was going to be lower than " + health.get() + ".");
             if (toggleOff.get()) this.toggle();
         }
+
+
+        if (!onlyTrusted.get() && !instantDeath.get() && !crystalLog.get()) return; // only check all entities if needed
 
         for (Entity entity : mc.world.getEntities()) {
             if (entity instanceof PlayerEntity && entity.getUuid() != mc.player.getUuid()) {
                 if (onlyTrusted.get() && entity != mc.player && !Friends.get().isFriend((PlayerEntity) entity)) {
-                        mc.player.networkHandler.onDisconnect(new DisconnectS2CPacket(Text.literal("[AutoLog] A non-trusted player appeared in your render distance.")));
-                        if (toggleOff.get()) this.toggle();
-                        break;
+                    disconnect("A non-trusted player appeared in your render distance.");
+                    if (toggleOff.get()) this.toggle();
+                    break;
                 }
-                if (PlayerUtils.isWithin(entity, 8) && instantDeath.get() && DamageUtils.getSwordDamage((PlayerEntity) entity, true)
-                        > playerHealth + mc.player.getAbsorptionAmount()) {
-                    mc.player.networkHandler.onDisconnect(new DisconnectS2CPacket(Text.literal("[AutoLog] Anti-32k measures.")));
+                if (
+                    instantDeath.get() &&
+                        PlayerUtils.isWithin(entity, 8) &&
+                        DamageUtils.getSwordDamage((PlayerEntity) entity, true) > playerHealth + mc.player.getAbsorptionAmount()
+                ) {
+                    disconnect("Anti-32k measures.");
                     if (toggleOff.get()) this.toggle();
                     break;
                 }
             }
-            if (entity instanceof EndCrystalEntity && PlayerUtils.isWithin(entity, range.get()) && crystalLog.get()) {
-                mc.player.networkHandler.onDisconnect(new DisconnectS2CPacket(Text.literal("[AutoLog] End Crystal appeared within specified range.")));
+            if (crystalLog.get() && entity instanceof EndCrystalEntity && PlayerUtils.isWithin(entity, range.get())) {
+                disconnect("End Crystal appeared within specified range.");
                 if (toggleOff.get()) this.toggle();
             }
         }
+    }
+
+    private void disconnect(String reason) {
+        mc.player.networkHandler.onDisconnect(new DisconnectS2CPacket(Text.literal("[AutoLog] " + reason)));
     }
 
     private class StaticListener {
@@ -139,20 +149,21 @@ public class AutoLog extends Module {
             if (isActive()) disableHealthListener();
 
             else if (Utils.canUpdate()
-                    && !mc.player.isDead()
-                    && mc.player.getHealth() > health.get()) {
+                && !mc.player.isDead()
+                && mc.player.getHealth() > health.get()) {
                 toggle();
                 disableHealthListener();
-           }
+            }
         }
     }
 
     private final StaticListener staticListener = new StaticListener();
 
-    private void enableHealthListener(){
+    private void enableHealthListener() {
         MeteorClient.EVENT_BUS.subscribe(staticListener);
     }
-    private void disableHealthListener(){
+
+    private void disableHealthListener() {
         MeteorClient.EVENT_BUS.unsubscribe(staticListener);
     }
 }

@@ -15,13 +15,15 @@ class WGuiTexture @JvmOverloads constructor(val tex: GuiTexture, val color: Mete
     val h by lazy { h ?: theme.textHeight() }
 
     override fun onCalculateSize() {
-        val pad = pad()
-        width = pad + theme.scale(w) + pad
-        height = pad + theme.scale(h) + pad
+        pad().also {
+            width = it + theme.scale(w) + it
+            height = it + theme.scale(h) + it
+        }
     }
 
     override fun onRender(renderer: GuiRenderer, mouseX: Double, mouseY: Double, delta: Double) {
-        val pad = pad()
-        renderer.quad(x + pad, y + pad, theme.scale(w), theme.scale(h), tex, color)
+        pad().also {
+            renderer.quad(x + it, y + it, theme.scale(w), theme.scale(h), tex, color)
+        }
     }
 }

@@ -6,6 +6,7 @@
 package meteordevelopment.meteorclient.gui.themes.meteor.widgets;
 
 import meteordevelopment.meteorclient.gui.renderer.GuiRenderer;
+import meteordevelopment.meteorclient.gui.tabs.Tabs;
 import meteordevelopment.meteorclient.gui.themes.meteor.MeteorGuiTheme;
 import meteordevelopment.meteorclient.gui.themes.meteor.MeteorWidget;
 import meteordevelopment.meteorclient.gui.widgets.pressable.WPressable;
@@ -13,8 +14,7 @@ import meteordevelopment.meteorclient.systems.modules.Module;
 import net.minecraft.util.math.MathHelper;
 
 import static meteordevelopment.meteorclient.MeteorClient.mc;
-import static org.lwjgl.glfw.GLFW.GLFW_MOUSE_BUTTON_LEFT;
-import static org.lwjgl.glfw.GLFW.GLFW_MOUSE_BUTTON_RIGHT;
+import static org.lwjgl.glfw.GLFW.*;
 
 public class WMeteorModule extends WPressable implements MeteorWidget {
     private final Module module;
@@ -51,6 +51,13 @@ public class WMeteorModule extends WPressable implements MeteorWidget {
     protected void onPressed(int button) {
         if (button == GLFW_MOUSE_BUTTON_LEFT) module.toggle();
         else if (button == GLFW_MOUSE_BUTTON_RIGHT) mc.setScreen(theme.moduleScreen(module));
+        else if (button == GLFW_KEY_H) {
+            if (module.isActive())
+                module.toggle();
+
+            module.setHidden(true);
+            Tabs.modules().openScreen(theme);
+        }
     }
 
     @Override

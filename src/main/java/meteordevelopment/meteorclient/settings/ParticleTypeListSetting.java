@@ -25,8 +25,8 @@ public class ParticleTypeListSetting extends Setting<List<ParticleType<?>>> {
         return new Builder();
     }
 
-    protected ParticleTypeListSetting(String name, String description, Object defaultValue, Consumer<List<ParticleType<?>>> onChanged, Consumer<Setting<List<ParticleType<?>>>> onModuleActivated, Supplier<Boolean> visible) {
-        super(name, description, defaultValue, onChanged, onModuleActivated, visible);
+    protected ParticleTypeListSetting(String name, String description, Object defaultValue, Consumer<List<ParticleType<?>>> onChanged, Consumer<Setting<List<ParticleType<?>>>> onModuleActivated, Supplier<Boolean> visible, boolean serialize) {
+        super(name, description, defaultValue, onChanged, onModuleActivated, visible, serialize);
     }
 
     @Override
@@ -60,15 +60,13 @@ public class ParticleTypeListSetting extends Setting<List<ParticleType<?>>> {
     }
 
     @Override
-    public NbtCompound save(NbtCompound tag) {
+    public void save(NbtCompound tag) {
         NbtList valueTag = new NbtList();
         for (ParticleType<?> particleType : get()) {
             Identifier id = Registries.PARTICLE_TYPE.getId(particleType);
             if (id != null) valueTag.add(NbtString.of(id.toString()));
         }
         tag.put("value", valueTag);
-
-        return tag;
     }
 
     @Override
@@ -95,7 +93,7 @@ public class ParticleTypeListSetting extends Setting<List<ParticleType<?>>> {
 
         @Override
         public ParticleTypeListSetting build() {
-            return new ParticleTypeListSetting(name, description, defaultValue, onChanged, onModuleActivated, visible);
+            return new ParticleTypeListSetting(name, description, defaultValue, onChanged, onModuleActivated, visible, serialize);
         }
     }
 }

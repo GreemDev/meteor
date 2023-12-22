@@ -22,12 +22,13 @@ import net.minecraft.util.math.RotationAxis;
 import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
+import org.spongepowered.asm.mixin.Unique;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
 @Mixin(BannerBlockEntityRenderer.class)
-public class BannerBlockEntityRendererMixin {
+public abstract class BannerBlockEntityRendererMixin {
 
     @Final
     @Shadow private ModelPart pillar;
@@ -56,6 +57,7 @@ public class BannerBlockEntityRendererMixin {
         }
     }
 
+    @Unique
     private void renderPillar(BannerBlockEntity bannerBlockEntity, MatrixStack matrixStack, VertexConsumerProvider vertexConsumerProvider, int i, int j) {
         matrixStack.push();
         BlockState blockState = bannerBlockEntity.getCachedState();
@@ -70,6 +72,7 @@ public class BannerBlockEntityRendererMixin {
         matrixStack.pop();
     }
 
+    @Unique
     private void renderCrossbar(BannerBlockEntity bannerBlockEntity, MatrixStack matrixStack, VertexConsumerProvider vertexConsumerProvider, int i, int j) {
         matrixStack.push();
         BlockState blockState = bannerBlockEntity.getCachedState();
@@ -84,5 +87,4 @@ public class BannerBlockEntityRendererMixin {
         matrixStack.pop();
         matrixStack.pop();
     }
-
 }

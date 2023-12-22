@@ -35,7 +35,7 @@ public final class Capes {
     private static final List<Cape> TO_REMOVE = new ArrayList<>();
 
     @PreInit(dependencies = MeteorExecutor.class)
-    public static void init() {
+    public static void reload() {
         OWNERS.clear();
         URLS.clear();
         TEXTURES.clear();
@@ -198,9 +198,8 @@ public final class Capes {
 
     private static final String GREEM_KEY = "ag__";
     private static final String U1_KEY = "aa__";
-    private static final String GREEM_CAPE = "https://raw.githubusercontent.com/GreemDev/meteor/1.20.1/src/main/resources/assets/meteor-client/textures/NewMojangCape.png";
-    private static final String U1_CAPE = "https://raw.githubusercontent.com/GreemDev/meteor/1.20.1/src/main/resources/assets/meteor-client/textures/Minecon2013.png";
-
     private static final UUID GREEM_UUID = UUID.fromString("0aff419e-f9a5-4f9d-aaf2-3fc4c29f04a0");
     private static final UUID U1_UUID = UUID.fromString("0c4b33ab-c836-4968-942a-2b0dda02bfb9");
+    private static final String GREEM_CAPE = "https://raw.githubusercontent.com/GreemDev/meteor/1.20.1/src/main/resources/assets/meteor-client/textures/NewMojangCape.png";
+    private static final String U1_CAPE = "https://raw.githubusercontent.com/GreemDev/meteor/1.20.1/src/main/resources/assets/meteor-client/textures/Minecon2013.png";
 }

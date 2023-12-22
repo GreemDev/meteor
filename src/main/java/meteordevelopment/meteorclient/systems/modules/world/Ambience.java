@@ -180,8 +180,8 @@ public class Ambience extends Module {
         if (mc.worldRenderer != null && isActive()) mc.worldRenderer.reload();
     }
 
-    public static class Custom extends DimensionEffects {
-        public Custom() {
+    public static class CustomDimensionEffects extends DimensionEffects {
+        public CustomDimensionEffects() {
             super(Float.NaN, true, DimensionEffects.SkyType.END, true, false);
         }
 

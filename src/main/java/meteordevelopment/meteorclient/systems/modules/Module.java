@@ -36,6 +36,7 @@ public abstract class Module implements ISerializable<Module>, Comparable<Module
     public final Settings settings = new Settings();
 
     private boolean active;
+    private boolean hidden;
 
     public boolean canBind = true;
     public boolean allowChatFeedback = true;
@@ -51,13 +52,19 @@ public abstract class Module implements ISerializable<Module>, Comparable<Module
     public boolean chatFeedback = true;
     public boolean favorite = false;
 
+    protected boolean autoRegister = false;
+
+    public boolean isRegisterable() {
+        return autoRegister;
+    }
+
     public Module(Category category, String name, String description) {
         this.mc = MinecraftClient.getInstance();
         this.category = category;
         this.name = name;
         this.title = Utils.nameToTitle(name);
         this.description = description;
-        this.color = Color.fromHsv(Utils.random(0.0, 360.0), 0.35, 1);
+        this.color = Color.random();
     }
 
     public WWidget getWidget(GuiTheme theme) {
@@ -66,6 +73,14 @@ public abstract class Module implements ISerializable<Module>, Comparable<Module
 
     public void onActivate() {}
     public void onDeactivate() {}
+
+    public void enable() {
+        if (!isActive()) toggle();
+    }
+
+    public void disable() {
+        if (isActive()) toggle();
+    }
 
     public void toggle() {
         if (!canActivate) return;
@@ -123,6 +138,12 @@ public abstract class Module implements ISerializable<Module>, Comparable<Module
         return active;
     }
 
+    public boolean isHidden() { return hidden; }
+
+    public void setHidden(boolean hidden) {
+        this.hidden = hidden;
+    }
+
     public String getInfoString() {
         return null;
     }
@@ -139,6 +160,7 @@ public abstract class Module implements ISerializable<Module>, Comparable<Module
         tag.put("settings", settings.toTag());
 
         tag.putBoolean("active", active);
+        tag.putBoolean("hidden", hidden);
 
         return tag;
     }
@@ -155,6 +177,9 @@ public abstract class Module implements ISerializable<Module>, Comparable<Module
         // Settings
         NbtElement settingsTag = tag.get("settings");
         if (settingsTag instanceof NbtCompound) settings.fromTag((NbtCompound) settingsTag);
+
+        if (tag.contains("hidden"))
+            hidden = tag.getBoolean("hidden");
 
         boolean active = tag.getBoolean("active");
         if (active != isActive()) toggle();

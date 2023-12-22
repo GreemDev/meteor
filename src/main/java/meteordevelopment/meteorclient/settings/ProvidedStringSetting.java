@@ -17,8 +17,8 @@ public class ProvidedStringSetting extends StringSetting {
 
     public final Supplier<String[]> supplier;
 
-    protected ProvidedStringSetting(String name, String description, Object defaultValue, Consumer<String> onChanged, Consumer<Setting<String>> onModuleActivated, Supplier<Boolean> visible, Class<? extends WTextBox.Renderer> renderer, boolean wide, Supplier<String[]> supplier) {
-        super(name, description, defaultValue, onChanged, onModuleActivated, visible, renderer, null, wide);
+    protected ProvidedStringSetting(String name, String description, Object defaultValue, Consumer<String> onChanged, Consumer<Setting<String>> onModuleActivated, Supplier<Boolean> visible, boolean serialize, Class<? extends WTextBox.Renderer> renderer, boolean wide, Supplier<String[]> supplier) {
+        super(name, description, defaultValue, onChanged, onModuleActivated, visible, serialize, renderer, null, wide);
 
         this.supplier = supplier;
     }
@@ -49,7 +49,7 @@ public class ProvidedStringSetting extends StringSetting {
 
         @Override
         public ProvidedStringSetting build() {
-            return new ProvidedStringSetting(name, description, defaultValue, onChanged, onModuleActivated, visible, renderer, wide, supplier);
+            return new ProvidedStringSetting(name, description, defaultValue, onChanged, onModuleActivated, visible, serialize, renderer, wide, supplier);
         }
     }
 }

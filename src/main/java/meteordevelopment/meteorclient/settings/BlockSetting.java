@@ -21,8 +21,8 @@ public class BlockSetting extends Setting<Block> {
 
     public final Predicate<Block> filter;
 
-    protected BlockSetting(String name, String description, Object defaultValue, Consumer<Block> onChanged, Consumer<Setting<Block>> onModuleActivated, Supplier<Boolean> visible, Predicate<Block> filter) {
-        super(name, description, defaultValue, onChanged, onModuleActivated, visible);
+    protected BlockSetting(String name, String description, Object defaultValue, Consumer<Block> onChanged, Consumer<Setting<Block>> onModuleActivated, Supplier<Boolean> visible, Predicate<Block> filter, boolean serialize) {
+        super(name, description, defaultValue, onChanged, onModuleActivated, visible, serialize);
 
         this.filter = filter;
     }
@@ -43,10 +43,8 @@ public class BlockSetting extends Setting<Block> {
     }
 
     @Override
-    protected NbtCompound save(NbtCompound tag) {
+    protected void save(NbtCompound tag) {
         tag.putString("value", Registries.BLOCK.getId(get()).toString());
-
-        return tag;
     }
 
     @Override
@@ -79,7 +77,7 @@ public class BlockSetting extends Setting<Block> {
 
         @Override
         public BlockSetting build() {
-            return new BlockSetting(name, description, defaultValue, onChanged, onModuleActivated, visible, filter);
+            return new BlockSetting(name, description, defaultValue, onChanged, onModuleActivated, visible, filter, serialize);
         }
     }
 }

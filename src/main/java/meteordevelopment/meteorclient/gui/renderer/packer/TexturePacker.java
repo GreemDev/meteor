@@ -6,6 +6,7 @@
 package meteordevelopment.meteorclient.gui.renderer.packer;
 
 import com.mojang.blaze3d.platform.TextureUtil;
+import meteordevelopment.meteorclient.MeteorClient;
 import meteordevelopment.meteorclient.utils.render.ByteTexture;
 import net.minecraft.util.Identifier;
 import org.lwjgl.BufferUtils;
@@ -59,7 +60,7 @@ public class TexturePacker {
                     if (width > 32) addResized(texture, imageBuffer, width, height, 32);
                     if (width > 48) addResized(texture, imageBuffer, width, height, 48);
                 } catch (IOException e) {
-                    e.printStackTrace();
+                    MeteorClient.LOG.error("Error reading texture via resource identifier", e);
                 } finally {
                     MemoryUtil.memFree(rawImageBuffer);
                 }
@@ -67,7 +68,7 @@ public class TexturePacker {
 
             return texture;
         } catch (IOException e) {
-            e.printStackTrace();
+            MeteorClient.LOG.error("Error adding texture via resource identifier", e);
         }
 
         return null;

@@ -10,77 +10,83 @@ import com.mojang.brigadier.Message
 import com.mojang.brigadier.exceptions.*
 import net.greemdev.meteor.invoking
 import net.greemdev.meteor.util.className
+import net.greemdev.meteor.util.text.FormattedText
+import net.greemdev.meteor.util.text.buildText
+import net.greemdev.meteor.util.text.textOf
 
-object CommandExceptions {
+object CommandExceptions : BuiltInExceptionProvider by CommandSyntaxException.BUILT_IN_EXCEPTIONS {
 
-    val builtIn: BuiltInExceptionProvider = CommandSyntaxException.BUILT_IN_EXCEPTIONS
+    infix fun simple(message: String) =
+        lazy { SimpleCommandExceptionType(textOf(message)) }
 
     infix fun simple(message: Message) =
         lazy { SimpleCommandExceptionType(message) }
 
-    infix fun dynamic(func: (Any) -> Message) =
-        invoking { DynamicCommandExceptionType(func) }
+    infix fun dynamic(func: FormattedText.(Any) -> Unit) =
+        invoking { DynamicCommandExceptionType { buildText { func(it) } } }
 
-    infix fun dynamic2(func: (Any, Any) -> Message) =
-        invoking { Dynamic2CommandExceptionType(func) }
+    infix fun dynamic2(func: FormattedText.(Any, Any) -> Unit) =
+        invoking { Dynamic2CommandExceptionType { it1, it2 -> buildText { func(it1, it2) } } }
 
-    infix fun dynamic3(func: (Any, Any, Any) -> Message) =
-        invoking { Dynamic3CommandExceptionType(func) }
+    infix fun dynamic3(func: FormattedText.(Any, Any, Any) -> Unit) =
+        invoking { Dynamic3CommandExceptionType { it1, it2, it3 -> buildText { func(it1, it2, it3) } } }
 
-    infix fun dynamic4(func: (Any, Any, Any, Any) -> Message) =
-        invoking { Dynamic4CommandExceptionType(func) }
+    infix fun dynamic4(func: FormattedText.(Any, Any, Any, Any) -> Unit) =
+        invoking { Dynamic4CommandExceptionType { it1, it2, it3, it4 -> buildText { func(it1, it2, it3, it4) } } }
 
-    infix fun dynamicN(func: (Array<Any>) -> Message) =
-        invoking { DynamicNCommandExceptionType(func) }
+    infix fun dynamicN(func: FormattedText.(Array<Any>) -> Unit) =
+        invoking { DynamicNCommandExceptionType { buildText { func(it) } } }
 
 
     @JvmName("dynamicTyped")
-    inline fun<reified T : Any> dynamic(crossinline func: (T) -> Message) =
-        dynamic { func(it.argCast()) }
+    inline fun<reified T : Any> dynamic(crossinline func: FormattedText.(T) -> Unit) =
+        dynamic { func(__castarg__(it)) }
 
     @JvmName("dynamic2Typed")
-    inline fun<reified T1 : Any, reified T2 : Any> dynamic2(crossinline func: (T1, T2) -> Message) =
+    inline fun<reified T1 : Any, reified T2 : Any> dynamic2(crossinline func: FormattedText.(T1, T2) -> Unit) =
         dynamic2 { it1, it2 ->
-            func(it1.argCast(), it2.argCast())
+            func(__castarg__(it1), __castarg__(it2))
         }
 
     @JvmName("dynamic3Typed")
-    inline fun<reified T1 : Any, reified T2 : Any, reified T3 : Any> dynamic3(crossinline func: (T1, T2, T3) -> Message) =
+    inline fun<reified T1 : Any, reified T2 : Any, reified T3 : Any> dynamic3(crossinline func: FormattedText.(T1, T2, T3) -> Unit) =
         dynamic3 { it1, it2, it3 ->
-            func(it1.argCast(), it2.argCast(), it3.argCast())
+            func(__castarg__(it1), __castarg__(it2), __castarg__(it3))
         }
 
     @JvmName("dynamic4Typed")
-    inline fun<reified T1 : Any, reified T2 : Any, reified T3 : Any, reified T4 : Any> dynamic4(crossinline func: (T1, T2, T3, T4) -> Message) =
+    inline fun<reified T1 : Any, reified T2 : Any, reified T3 : Any, reified T4 : Any> dynamic4(crossinline func: FormattedText.(T1, T2, T3, T4) -> Unit) =
         dynamic4 { it1, it2, it3, it4 ->
-            func(it1.argCast(), it2.argCast(), it3.argCast(), it4.argCast())
+            func(__castarg__(it1), __castarg__(it2), __castarg__(it3), __castarg__(it4))
         }
 
     @JvmName("dynamicNTyped")
-    inline fun<reified T : Any> dynamicN(crossinline func: (Array<T>) -> Message) =
+    inline fun<reified T : Any> dynamicN(crossinline func: FormattedText.(Array<T>) -> Unit) =
         dynamicN {
-            func(it.map<Any, T>(Any::argCast).toTypedArray())
+            func(it.map<Any, T>(::__castarg__).toTypedArray())
         }
 }
 
-inline fun<reified E> Any.argCast() =
-    if (this::class.java.canonicalName == E::class.java.canonicalName)
-        this as E
-    else error("Cannot create a typed command exception with argument of type ${className<E>()} with provided value of type ${this::class.simpleName}")
+@Suppress("FunctionName", "SpellCheckingInspection") //i want this function to be undesirable to call
+// it's only intended for the above functions, but NEEDS to be public due to those functions being inline, and they NEED to be an inline function due to typearg reification
+inline fun<reified E> __castarg__(arg: Any) =
+    if (arg::class.java.canonicalName == E::class.java.canonicalName)
+        arg as E
+    else error("Cannot create a typed command exception with argument of type ${className<E>()} with provided value of type ${arg::class.simpleName}")
 
 
 fun CommandExceptionType.isKnown() =
-    this is SimpleCommandExceptionType ||
-        this is DynamicCommandExceptionType ||
-        this is Dynamic2CommandExceptionType ||
-        this is Dynamic3CommandExceptionType ||
-        this is Dynamic4CommandExceptionType ||
-        this is DynamicNCommandExceptionType
+    this is SimpleCommandExceptionType
+        || this is DynamicCommandExceptionType
+        || this is Dynamic2CommandExceptionType
+        || this is Dynamic3CommandExceptionType
+        || this is Dynamic4CommandExceptionType
+        || this is DynamicNCommandExceptionType
 
 /**
  * When receiver is [SimpleCommandExceptionType]:
  *
- * -> [args] doesn't *need* to be empty, but it's unused.
+ * -> it is [require]d that [args] contains exactly 0 elements.
  *
  * When receiver is [DynamicCommandExceptionType]:
  *
@@ -105,40 +111,47 @@ fun CommandExceptionType.isKnown() =
  * It is [require]d that the receiver be one of the 6 types described above, otherwise your CommandExceptionType isn't thrown and instead an [IllegalArgumentException] from [require] is thrown,
  * and due to how Brigadier works, it won't be caught automatically as it isn't a [CommandSyntaxException] and will thus be bubbled up.
  */
-fun CommandExceptionType.throwNew(vararg args: Any, readerContext: ImmutableStringReader? = null): Nothing {
-    require(isKnown()) { "Unknown CommandExceptionType '${this::class.qualifiedName}'." }
+fun CommandExceptionType.throwNew(vararg args: Any, readerCtx: ImmutableStringReader? = null): Nothing {
+    require(isKnown()) { "Unknown CommandExceptionType '${this::class.qualifiedName}'. Use a different type or add a when branch for that type in throwNew." }
     val exception = when (this) {
-        is SimpleCommandExceptionType -> readerContext.new()
+        is SimpleCommandExceptionType -> {
+            require(args.isEmpty()) { "SimpleCommandExceptionType takes no arguments." }
+
+            readerCtx.new()
+        }
         is DynamicCommandExceptionType -> {
             require(args.size == 1) { "DynamicCommandExceptionType requires one argument." }
 
-            readerContext.new(args.first())
+            readerCtx.new(args.first())
         }
         is Dynamic2CommandExceptionType -> {
             require(args.size == 2) { "Dynamic2CommandExceptionType requires two arguments." }
 
-            readerContext.new(args.first(), args.last())
+            readerCtx.new(args.first(), args.last())
         }
         is Dynamic3CommandExceptionType -> {
             require(args.size == 3) { "Dynamic3CommandExceptionType requires three arguments." }
 
-            readerContext.new(args.first(), args[1], args.last())
+            readerCtx.new(args.first(), args.second(), args.last())
         }
         is Dynamic4CommandExceptionType -> {
             require(args.size == 4) { "Dynamic4CommandExceptionType requires four arguments." }
 
-            readerContext.new(args.first(), args[1], args[2], args.last())
+            readerCtx.new(args.first(), args.second(), args.third(), args.last())
         }
         is DynamicNCommandExceptionType -> {
             require(args.isNotEmpty()) { "DynamicNCommandExceptionType at least one argument." }
 
-            readerContext.new(*args)
+            readerCtx.new(*args)
         }
         else -> null
     }
 
     throw exception!!
 }
+
+private fun<T> Array<T>.second() = this[1]
+private fun<T> Array<T>.third() = this[2]
 
 context(SimpleCommandExceptionType)
 private fun ImmutableStringReader?.new() = this?.let { createWithContext(it) } ?: create()

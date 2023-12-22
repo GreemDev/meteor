@@ -12,23 +12,19 @@ public abstract class EntityShader extends PostProcessShader {
 
     @Override
     protected void preDraw() {
-        WorldRenderer worldRenderer = mc.worldRenderer;
-        WorldRendererAccessor wra = (WorldRendererAccessor) worldRenderer;
-        prevBuffer = worldRenderer.getEntityOutlinesFramebuffer();
-        wra.setEntityOutlinesFramebuffer(framebuffer);
+        prevBuffer = mc.worldRenderer.getEntityOutlinesFramebuffer();
+        ((WorldRendererAccessor) mc.worldRenderer).setEntityOutlinesFramebuffer(framebuffer);
     }
 
     @Override
     protected void postDraw() {
         if (prevBuffer == null) return;
 
-        WorldRenderer worldRenderer = mc.worldRenderer;
-        WorldRendererAccessor wra = (WorldRendererAccessor) worldRenderer;
-        wra.setEntityOutlinesFramebuffer(prevBuffer);
+        ((WorldRendererAccessor) mc.worldRenderer).setEntityOutlinesFramebuffer(prevBuffer);
         prevBuffer = null;
     }
 
     public void endRender() {
-        endRender(() -> ((OutlineVertexConsumerProvider) vertexConsumerProvider).draw());
+        endRender(() -> vertexConsumerProvider.draw());
     }
 }

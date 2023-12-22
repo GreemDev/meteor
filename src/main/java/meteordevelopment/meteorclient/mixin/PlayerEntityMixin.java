@@ -9,6 +9,7 @@ import com.llamalad7.mixinextras.injector.ModifyReturnValue;
 import meteordevelopment.meteorclient.MeteorClient;
 import meteordevelopment.meteorclient.events.entity.DropItemsEvent;
 import meteordevelopment.meteorclient.events.entity.player.ClipAtLedgeEvent;
+import meteordevelopment.meteorclient.events.entity.player.OffGroundSpeedEvent;
 import meteordevelopment.meteorclient.systems.modules.Modules;
 import meteordevelopment.meteorclient.systems.modules.movement.Anchor;
 import meteordevelopment.meteorclient.systems.modules.movement.Flight;
@@ -51,6 +52,7 @@ public abstract class PlayerEntityMixin extends LivingEntity {
         if (event.isSet()) info.setReturnValue(event.isClip());
     }
 
+    @SuppressWarnings("CancellableInjectionUsage") // it literally is fucking potentially cancelled shut up
     @Inject(method = "dropItem(Lnet/minecraft/item/ItemStack;ZZ)Lnet/minecraft/entity/ItemEntity;", at = @At("HEAD"), cancellable = true)
     private void onDropItem(ItemStack stack, boolean bl, boolean bl2, CallbackInfoReturnable<ItemEntity> info) {
         if (getWorld().isClient && !stack.isEmpty()) {
@@ -69,11 +71,10 @@ public abstract class PlayerEntityMixin extends LivingEntity {
 
         if (mc.crosshairTarget instanceof BlockHitResult bhr) {
             BlockPos pos = bhr.getBlockPos();
-            if (speedMine.modifier.get() < 1 || (BlockUtils.canInstaBreak(pos, breakSpeed) == BlockUtils.canInstaBreak(pos, breakSpeedMod))) {
-                return breakSpeedMod;
-            } else {
-                return 0.9f / BlockUtils.calcBlockBreakingDelta2(pos, 1);
-            }
+
+            return speedMine.modifier.get() < 1 || (BlockUtils.canInstaBreak(pos, breakSpeed) == BlockUtils.canInstaBreak(pos, breakSpeedMod))
+                ? breakSpeedMod
+                : 0.9f / BlockUtils.calcBlockBreakingDelta2(pos, 1);
         }
 
         return breakSpeed;
@@ -104,6 +105,12 @@ public abstract class PlayerEntityMixin extends LivingEntity {
 
     @Inject(method = "getOffGroundSpeed", at = @At("HEAD"), cancellable = true)
     private void onGetOffGroundSpeed(CallbackInfoReturnable<Float> info) {
+        OffGroundSpeedEvent event = MeteorClient.EVENT_BUS.post(OffGroundSpeedEvent.get(info.getReturnValueF()));
+        if (event.wasSpeedChanged()) {
+            info.setReturnValue(event.getSpeed());
+            return;
+        }
+
         if (!getWorld().isClient) return;
 
         float speed = Modules.get().get(Flight.class).getOffGroundSpeed();

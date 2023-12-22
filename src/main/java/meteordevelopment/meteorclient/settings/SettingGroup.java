@@ -6,6 +6,7 @@
 package meteordevelopment.meteorclient.settings;
 
 import meteordevelopment.meteorclient.utils.misc.ISerializable;
+import net.greemdev.meteor.util.misc.Nbt;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.nbt.NbtElement;
 import net.minecraft.nbt.NbtList;
@@ -38,17 +39,14 @@ public class SettingGroup implements ISerializable<SettingGroup>, Iterable<Setti
         return this;
     }
 
-    public <T> Setting<T> add(Setting<T> setting) {
+    public <V, S extends Setting<V>> S add(S setting) {
         settings.add(setting);
 
         return setting;
     }
 
     public <B extends Setting.SettingBuilder<B, V, S>, V, S extends Setting<V>> S add(B settingBuilder) {
-        var setting = settingBuilder.build();
-        settings.add(setting);
-
-        return setting;
+        return add(settingBuilder.build());
     }
 
     public Setting<?> getByIndex(int index) {
@@ -67,9 +65,13 @@ public class SettingGroup implements ISerializable<SettingGroup>, Iterable<Setti
         tag.putString("name", name);
         tag.putBoolean("sectionExpanded", sectionExpanded);
 
-        NbtList settingsTag = new NbtList();
-        for (Setting<?> setting : this) if (setting.wasChanged()) settingsTag.add(setting.toTag());
-        tag.put("settings", settingsTag);
+        tag.put("settings", Nbt.newList(list ->
+            settings.stream()
+                .filter(Setting::serialize)
+                .forEach(setting -> {
+                    if (setting.wasChanged()) list.add(setting.toTag());
+                })
+        ));
 
         return tag;
     }

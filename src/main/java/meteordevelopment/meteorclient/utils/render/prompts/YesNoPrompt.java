@@ -5,16 +5,17 @@
 
 package meteordevelopment.meteorclient.utils.render.prompts;
 
-import com.mojang.blaze3d.systems.RenderSystem;
 import meteordevelopment.meteorclient.gui.GuiTheme;
 import meteordevelopment.meteorclient.gui.GuiThemes;
 import meteordevelopment.meteorclient.gui.WindowScreen;
 import meteordevelopment.meteorclient.gui.widgets.containers.WHorizontalList;
 import meteordevelopment.meteorclient.gui.widgets.pressable.WCheckbox;
 import meteordevelopment.meteorclient.systems.config.Config;
+import meteordevelopment.meteorclient.utils.render.RenderUtils;
 import net.minecraft.client.gui.screen.Screen;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 import static meteordevelopment.meteorclient.MeteorClient.mc;
@@ -60,7 +61,13 @@ public class YesNoPrompt {
     }
 
     public YesNoPrompt message(String message, Object... args) {
-        this.messages.add(String.format(message, args));
+        this.messages.add(message.formatted(args));
+        return this;
+    }
+
+    public YesNoPrompt messageLines(String... lines) {
+        this.messages.clear();
+        this.messages.addAll(Arrays.stream(lines).toList());
         return this;
     }
 
@@ -85,55 +92,49 @@ public class YesNoPrompt {
     }
 
     public boolean show() {
-        if (id == null) this.id(this.title);
+        if (id == null) id(this.title);
         if (!requiredToDisplay && Config.get().dontShowAgainPrompts.contains(id)) return false;
 
-        if (!RenderSystem.isOnRenderThread()) {
-            RenderSystem.recordRenderCall(() -> mc.setScreen(new PromptScreen(theme)));
-        }
-        else {
-            mc.setScreen(new PromptScreen(theme));
-        }
+        RenderUtils.executeOnRenderThread(() -> mc.setScreen(createScreen()));
         return true;
     }
 
-    private class PromptScreen extends WindowScreen {
-        public PromptScreen(GuiTheme theme) {
-            super(theme, YesNoPrompt.this.title);
+    public WindowScreen createScreen() {
+        WindowScreen screen = new WindowScreen(theme, title) {
 
-            this.parent = YesNoPrompt.this.parent;
-        }
+            WCheckbox dontShowAgainCheckbox = null;
 
-        WCheckbox dontShowAgainCheckbox = null;
+            @Override
+            public void initWidgets() {
+                for (String line : messages) add(theme.label(line)).expandX();
+                add(theme.horizontalSeparator()).expandX();
 
-        @Override
-        public void initWidgets() {
-            for (String line : messages) add(theme.label(line)).expandX();
-            add(theme.horizontalSeparator()).expandX();
+                if (!requiredToDisplay) {
+                    WHorizontalList checkboxContainer = add(theme.horizontalList()).expandX().widget();
+                    dontShowAgainCheckbox = checkboxContainer.add(theme.checkbox()).widget();
+                    checkboxContainer.add(theme.label("Don't show this again.")).expandX();
+                }
 
-            if (!requiredToDisplay) {
-                WHorizontalList checkboxContainer = add(theme.horizontalList()).expandX().widget();
-                dontShowAgainCheckbox = checkboxContainer.add(theme.checkbox(false)).widget();
-                checkboxContainer.add(theme.label("Don't show this again.")).expandX();
+                WHorizontalList list = add(theme.horizontalList()).expandX().widget();
+
+                list.add(theme.button("Yes", () -> {
+                    if (!requiredToDisplay) {
+                        if (dontShowAgainCheckbox.checked) Config.get().dontShowAgainPrompts.add(id);
+                    }
+                    onYes.run();
+                    close();
+                })).expandX();
+
+                list.add(theme.button("No", () -> {
+                    if (!requiredToDisplay) {
+                        if (dontShowAgainCheckbox.checked) Config.get().dontShowAgainPrompts.add(id);
+                    }
+                    onNo.run();
+                    close();
+                })).expandX();
             }
-
-            WHorizontalList list = add(theme.horizontalList()).expandX().widget();
-
-            list.add(theme.button("Yes", () -> {
-                if (!requiredToDisplay) {
-                    if (dontShowAgainCheckbox.checked) Config.get().dontShowAgainPrompts.add(id);
-                }
-                onYes.run();
-                close();
-            })).expandX();
-
-            list.add(theme.button("No", () -> {
-                if (!requiredToDisplay) {
-                    if (dontShowAgainCheckbox.checked) Config.get().dontShowAgainPrompts.add(id);
-                }
-                onNo.run();
-                close();
-            })).expandX();
-        }
+        };
+        screen.parent = parent;
+        return screen;
     }
 }

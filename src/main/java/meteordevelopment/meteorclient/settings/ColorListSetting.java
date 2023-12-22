@@ -20,8 +20,8 @@ public class ColorListSetting extends Setting<List<SettingColor>> {
         return new Builder();
     }
 
-    protected ColorListSetting(String name, String description, Object defaultValue, Consumer<List<SettingColor>> onChanged, Consumer<Setting<List<SettingColor>>> onModuleActivated, Supplier<Boolean> visible) {
-        super(name, description, defaultValue, onChanged, onModuleActivated, visible);
+    protected ColorListSetting(String name, String description, Object defaultValue, Consumer<List<SettingColor>> onChanged, Consumer<Setting<List<SettingColor>>> onModuleActivated, Supplier<Boolean> visible, boolean serialize) {
+        super(name, description, defaultValue, onChanged, onModuleActivated, visible, serialize);
     }
 
     @Override
@@ -47,10 +47,8 @@ public class ColorListSetting extends Setting<List<SettingColor>> {
     }
 
     @Override
-    protected NbtCompound save(NbtCompound tag) {
+    protected void save(NbtCompound tag) {
         tag.put("value", NbtUtils.listToTag(get()));
-
-        return tag;
     }
 
     @Override
@@ -71,7 +69,7 @@ public class ColorListSetting extends Setting<List<SettingColor>> {
 
         @Override
         public ColorListSetting build() {
-            return new ColorListSetting(name, description, defaultValue, onChanged, onModuleActivated, visible);
+            return new ColorListSetting(name, description, defaultValue, onChanged, onModuleActivated, visible, serialize);
         }
     }
 }

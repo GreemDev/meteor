@@ -7,7 +7,6 @@ package net.greemdev.meteor.commands
 
 import meteordevelopment.meteorclient.utils.player.PlayerUtils
 import net.greemdev.meteor.GCommand
-import net.greemdev.meteor.cast
 import net.greemdev.meteor.util.minecraft
 import net.greemdev.meteor.util.misc.asPrettyText
 import net.greemdev.meteor.util.misc.currentWorld
@@ -20,19 +19,19 @@ import net.minecraft.util.hit.HitResult
 
 object TargetNBTCommand : GCommand("target-nbt", "Gets NBT data of the entity you are looking at.", {
     then("show") {
-        alwaysRuns {
+        runs {
             getTargetNbt()?.also {
-                info(buildText {
+                info {
                     addString("Target NBT: ")
                     addText(it.asPrettyText()) {
                         clicked(actions.clipboardCopy, it.asString())
                     }
-                })
+                }
             }
         }
     }
     then("copy") {
-        alwaysRuns {
+        runs {
             getTargetNbt()?.also {
                 minecraft.keyboard.clipboard = it.asString()
                 info("NBT copied successfully copied to clipboard.")
@@ -42,18 +41,23 @@ object TargetNBTCommand : GCommand("target-nbt", "Gets NBT data of the entity yo
 })
 
 private fun getTargetNbt(): NbtCompound? {
-    val hitResult = PlayerUtils.getCrosshairTarget(minecraft.player, 512.0, false) { !it.isSpectator }
-    if (hitResult == null || hitResult.type == null) return null
+    val hitResult = PlayerUtils.getCrosshairTarget(minecraft.player, 512.0, false)
+    if (hitResult?.type == null) return null
 
-    when (hitResult.type!!) {
-        HitResult.Type.ENTITY -> return hitResult.cast<EntityHitResult>().entity.writeNbt(NbtCompound())
-        HitResult.Type.BLOCK -> {
-            minecraft.currentWorld().getBlockEntity(hitResult.cast<BlockHitResult>().blockPos)
-                ?.also {
-                    return it.createNbt()
-                } ?: TargetNBTCommand.warning("The block you are looking at does not have NBT.")
+    when (hitResult) {
+        is EntityHitResult -> return hitResult.entity.writeNbt(NbtCompound())
+        is BlockHitResult -> {
+            minecraft.currentWorld().getBlockEntity(
+                hitResult.takeUnless {
+                    it.type == HitResult.Type.MISS
+                }?.blockPos ?: run {
+                    TargetNBTCommand.warning("You are not looking at anything.")
+                    return null
+                }
+            )?.also {
+                return it.createNbt()
+            } ?: TargetNBTCommand.warning("The block you are looking at does not have NBT.")
         }
-        HitResult.Type.MISS -> TargetNBTCommand.warning("You are not looking at an entity.")
     }
 
     return null

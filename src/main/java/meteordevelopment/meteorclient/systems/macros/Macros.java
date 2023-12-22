@@ -15,6 +15,7 @@ import meteordevelopment.meteorclient.utils.misc.input.KeyAction;
 import meteordevelopment.orbit.EventHandler;
 import meteordevelopment.orbit.EventPriority;
 import net.minecraft.nbt.NbtCompound;
+import org.jetbrains.annotations.NotNull;
 
 import java.util.ArrayList;
 import java.util.Iterator;
@@ -38,11 +39,9 @@ public class Macros extends System<Macros> implements Iterable<Macro> {
     }
 
     public Macro get(String name) {
-        for (Macro macro : macros) {
-            if (macro.name.get().equalsIgnoreCase(name)) return macro;
-        }
-
-        return null;
+        return macros.stream()
+            .filter(m -> m.name.get().equalsIgnoreCase(name))
+            .findFirst().orElse(null);
     }
 
     public List<Macro> getAll() {
@@ -79,6 +78,7 @@ public class Macros extends System<Macros> implements Iterable<Macro> {
     }
 
     @Override
+    @NotNull
     public Iterator<Macro> iterator() {
         return macros.iterator();
     }

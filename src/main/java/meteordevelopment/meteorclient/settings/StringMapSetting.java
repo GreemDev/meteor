@@ -29,8 +29,8 @@ public class StringMapSetting extends Setting<Map<String, String>> {
     public final Class<? extends WTextBox.Renderer> valueRenderer;
     public final boolean wide;
 
-    protected StringMapSetting(String name, String description, Object defaultValue, Consumer<Map<String, String>> onChanged, Consumer<Setting<Map<String, String>>> onModuleActivated, Supplier<Boolean> visible, Class<? extends WTextBox.Renderer> keyRenderer, Class<? extends WTextBox.Renderer> valueRenderer, boolean wide) {
-        super(name, description, defaultValue, onChanged, onModuleActivated, visible);
+    protected StringMapSetting(String name, String description, Object defaultValue, Consumer<Map<String, String>> onChanged, Consumer<Setting<Map<String, String>>> onModuleActivated, Supplier<Boolean> visible, boolean serialize, Class<? extends WTextBox.Renderer> keyRenderer, Class<? extends WTextBox.Renderer> valueRenderer, boolean wide) {
+        super(name, description, defaultValue, onChanged, onModuleActivated, visible, serialize);
 
         this.keyRenderer = keyRenderer;
         this.valueRenderer = valueRenderer;
@@ -69,14 +69,12 @@ public class StringMapSetting extends Setting<Map<String, String>> {
     }
 
     @Override
-    protected NbtCompound save(NbtCompound tag) {
+    protected void save(NbtCompound tag) {
         NbtCompound valueTag = new NbtCompound();
         for (String key : get().keySet()) {
             valueTag.put(key, NbtString.of(get().get(key)));
         }
         tag.put("map", valueTag);
-
-        return tag;
     }
 
     @Override
@@ -99,11 +97,11 @@ public class StringMapSetting extends Setting<Map<String, String>> {
         for (String key : map.keySet()) {
             AtomicReference<String> key2 = new AtomicReference<>(key);
 
-            WTextBox textBoxK = table.add(theme.textBox(key2.get(), setting.keyRenderer)).minWidth(150).expandX().widget();
-            textBoxK.actionOnUnfocused = () -> {
-                String text = textBoxK.get();
+            WTextBox kTextBox = table.add(theme.textBox(key2.get(), setting.keyRenderer)).minWidth(150).expandX().widget();
+            kTextBox.actionOnUnfocused = () -> {
+                String text = kTextBox.get();
                 if (map.containsKey(text)) {
-                    textBoxK.set(key2.get());
+                    kTextBox.set(key2.get());
                     return;
                 }
                 String value = map.remove(key2.get());
@@ -111,11 +109,11 @@ public class StringMapSetting extends Setting<Map<String, String>> {
                 map.put(text, value);
             };
 
-            WTextBox textBoxV = table.add(theme.textBox(map.get(key2.get()), setting.valueRenderer))
+            WTextBox vTextBox = table.add(theme.textBox(map.get(key2.get()), setting.valueRenderer))
                 .minWidth(150)
                 .expandX()
                 .widget();
-            textBoxV.actionOnUnfocused = () -> map.replace(key2.get(), textBoxV.get());
+            vTextBox.actionOnUnfocused = () -> map.replace(key2.get(), vTextBox.get());
 
             table.add(theme.minus(() -> {
                 map.remove(key2.get());
@@ -181,7 +179,7 @@ public class StringMapSetting extends Setting<Map<String, String>> {
         }
 
         public Builder renderStarscript() {
-            return renderStarscriptKey().renderStarscriptValue();
+            return renderer(StarscriptTextBoxRenderer.class);
         }
 
         public Builder renderStarscriptKey() {
@@ -194,7 +192,7 @@ public class StringMapSetting extends Setting<Map<String, String>> {
 
         @Override
         public StringMapSetting build() {
-            return new StringMapSetting(name, description, defaultValue, onChanged, onModuleActivated, visible, keyRenderer, valueRenderer, wide);
+            return new StringMapSetting(name, description, defaultValue, onChanged, onModuleActivated, visible, serialize, keyRenderer, valueRenderer, wide);
         }
     }
 }

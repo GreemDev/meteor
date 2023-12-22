@@ -33,7 +33,7 @@ import java.util.Base64;
 import static meteordevelopment.meteorclient.MeteorClient.mc;
 
 @Mixin(BookScreen.class)
-public class BookScreenMixin extends Screen {
+public abstract class BookScreenMixin extends Screen {
     @Shadow
     private BookScreen.Contents contents;
 

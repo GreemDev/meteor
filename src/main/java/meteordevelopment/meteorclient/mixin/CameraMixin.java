@@ -9,7 +9,7 @@ import meteordevelopment.meteorclient.mixininterface.ICamera;
 import meteordevelopment.meteorclient.systems.modules.Modules;
 import meteordevelopment.meteorclient.systems.modules.render.CameraTweaks;
 import meteordevelopment.meteorclient.systems.modules.render.FreeLook;
-import meteordevelopment.meteorclient.systems.modules.render.Freecam;
+import meteordevelopment.meteorclient.systems.modules.movement.Freecam;
 import meteordevelopment.meteorclient.systems.modules.render.NoRender;
 import meteordevelopment.meteorclient.systems.modules.world.HighwayBuilder;
 import net.minecraft.client.render.Camera;

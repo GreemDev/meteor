@@ -63,6 +63,7 @@ public class MixinPlugin implements IMixinConfigPlugin {
             mixinTransformerField.set(delegate, mixinTransformer);
         }
         catch (NoSuchFieldException | IllegalAccessException | InstantiationException e) {
+            //noinspection CallToPrintStackTrace
             e.printStackTrace();
         }
 

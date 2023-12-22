@@ -34,6 +34,7 @@ import net.minecraft.util.hit.HitResult;
 import net.minecraft.util.math.*;
 import net.minecraft.world.GameMode;
 import net.minecraft.world.RaycastContext;
+import org.jetbrains.annotations.Nullable;
 
 import java.util.function.Predicate;
 
@@ -47,6 +48,8 @@ public class PlayerUtils {
     private static final Color color = new Color();
 
     public static Color getPlayerColor(PlayerEntity entity, Color defaultColor) {
+        if (entity == null) return defaultColor;
+
         if (Friends.get().isFriend(entity)) {
             return color.set(Config.get().friendColor.get()).a(defaultColor.a);
         }
@@ -122,7 +125,7 @@ public class PlayerUtils {
      *
      * @author Zgoly, from Meteorist
      */
-    public static HitResult getCrosshairTarget(Entity entity, double range, boolean ignoreBlocks, Predicate<Entity> filter) {
+    public static HitResult getCrosshairTarget(Entity entity, double range, boolean ignoreBlocks, @Nullable Predicate<Entity> filter) {
         if (entity == null || mc.world == null) return null;
 
         Vec3d vec3d = entity.getCameraPosVec(1);
@@ -136,7 +139,11 @@ public class PlayerUtils {
         double e = range * range;
         if (hitResult != null && !ignoreBlocks) e = hitResult.getPos().squaredDistanceTo(vec3d);
 
-        EntityHitResult entityHitResult = ProjectileUtil.raycast(entity, vec3d, vec3d3, box, filter.and(targetEntity -> !targetEntity.isSpectator()), e);
+        Predicate<Entity> effectiveFilter = filter == null
+            ? Predicate.not(Entity::isSpectator)
+            : filter.and(Predicate.not(Entity::isSpectator));
+
+        EntityHitResult entityHitResult = ProjectileUtil.raycast(entity, vec3d, vec3d3, box, effectiveFilter, e);
         if (entityHitResult != null) {
             return entityHitResult;
         } else if (!ignoreBlocks) {
@@ -144,6 +151,10 @@ public class PlayerUtils {
         }
 
         return null;
+    }
+
+    public static HitResult getCrosshairTarget(Entity entity, double range, boolean ignoreBlocks) {
+        return getCrosshairTarget(entity, range, ignoreBlocks, null);
     }
 
 

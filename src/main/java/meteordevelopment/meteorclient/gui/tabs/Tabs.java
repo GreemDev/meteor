@@ -5,26 +5,24 @@
 
 package meteordevelopment.meteorclient.gui.tabs;
 
-import com.google.common.collect.ImmutableList;
 import it.unimi.dsi.fastutil.objects.ObjectImmutableList;
 import meteordevelopment.meteorclient.gui.tabs.builtin.*;
 import meteordevelopment.meteorclient.systems.config.Config;
-import meteordevelopment.meteorclient.utils.PreInit;
-import meteordevelopment.meteorclient.utils.Utils;
+import meteordevelopment.meteorclient.utils.java;
 import net.greemdev.meteor.gui.tab.WaypointsTab;
+import net.greemdev.meteor.utils;
+import net.minecraft.util.Pair;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 public class Tabs {
     private static Tab _lastTab;
 
-    public static void setLastTab(Tab tab) {
+    public static void setLastTab(@NotNull Tab tab) {
         if (Config.get().lastTabMemory.get()) {
-            if (_lastTab != tab)
+            if (tab.equals(_lastTab))
                 _lastTab = tab;
         } else if (_lastTab != null) {
             _lastTab = null;
@@ -38,12 +36,23 @@ public class Tabs {
     }
     private static final List<Tab> tabs = new ArrayList<>();
 
+    public static Pair<List<Tab>, List<Tab>> renderSections() {
+        List<Tab> left = get().stream().filter(tab -> !tab.displayIcon.get()).toList();
+        List<Tab> right = utils.apply(new ArrayList<>(get().stream().filter(tab -> tab.displayIcon.get()).toList()), l -> {
+            //Config is added at the end to ensure it's always at the very right of the top bar
+            l.removeIf(t -> t instanceof ConfigTab);
+            l.add(config());
+        });
+
+        return new Pair<>(left, right);
+    }
+
     public static <T extends Tab> T get(String name) {
-        return Utils.cast(
+        return java.cast(
             tabs.stream()
-            .filter(t -> t.name.equals(name))
-            .findFirst()
-            .orElse(null)
+                .filter(t -> t.name.equals(name))
+                .findFirst()
+                .orElse(null)
         );
     }
 

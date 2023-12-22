@@ -18,19 +18,15 @@ import static org.lwjgl.opengl.GL30C.*;
 
 public class ByteTexture extends AbstractTexture {
     public ByteTexture(int width, int height, byte[] data, Format format, Filter filterMin, Filter filterMag) {
-        if (!RenderSystem.isOnRenderThread()) {
-            RenderSystem.recordRenderCall(() -> upload(width, height, data, format, filterMin, filterMag));
-        } else {
-            upload(width, height, data, format, filterMin, filterMag);
-        }
+        RenderUtils.executeOnRenderThread(() ->
+            upload(width, height, data, format, filterMin, filterMag)
+        );
     }
 
     public ByteTexture(int width, int height, ByteBuffer buffer, Format format, Filter filterMin, Filter filterMag) {
-        if (!RenderSystem.isOnRenderThread()) {
-            RenderSystem.recordRenderCall(() -> upload(width, height, buffer, format, filterMin, filterMag));
-        } else {
-            upload(width, height, buffer, format, filterMin, filterMag);
-        }
+        RenderUtils.executeOnRenderThread(() ->
+            upload(width, height, buffer, format, filterMin, filterMag)
+        );
     }
 
     private void upload(int width, int height, byte[] data, Format format, Filter filterMin, Filter filterMag) {

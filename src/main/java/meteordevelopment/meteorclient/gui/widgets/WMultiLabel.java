@@ -22,11 +22,6 @@ public abstract class WMultiLabel extends WLabel {
     }
 
     @Override
-    public String get() {
-        return text;
-    }
-
-    @Override
     protected void onCalculateSize() {
         lines.clear();
 

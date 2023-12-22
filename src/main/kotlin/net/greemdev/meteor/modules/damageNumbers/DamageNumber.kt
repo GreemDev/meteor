@@ -6,7 +6,8 @@
 package net.greemdev.meteor.modules.damageNumbers
 
 import net.greemdev.meteor.invoke
-import net.greemdev.meteor.util.math.change
+import net.greemdev.meteor.invoking
+import net.greemdev.meteor.util.math.edit
 import net.greemdev.meteor.util.math.minecraftRandom
 import net.greemdev.meteor.util.math.nextGaussian
 import net.greemdev.meteor.util.minecraft
@@ -31,7 +32,7 @@ class DamageNumber(val entityState: EntityState, val damage: Float) {
     var vz = 0.0f
 
     init {
-        val entityLoc = entityState.entity.pos.change(y = (entityState.entity.height / 2).toDouble())
+        val entityLoc = entityState.entity.pos.edit(y = (entityState.entity.height / 2).toDouble())
         val cameraLoc = minecraft.gameRenderer.camera.pos
         val offsetBy = entityState.entity.width.toDouble()
         val offset = cameraLoc.subtract(entityLoc).normalize() * offsetBy
@@ -50,7 +51,7 @@ class DamageNumber(val entityState: EntityState, val damage: Float) {
         prevZ = z
     }
 
-    fun getDisplayDamageNumber() = if (DamageNumbers.cumulative()) entityState.lastDamageCumulative else damage
+    val displayNumber by invoking { if (DamageNumbers.cumulative()) entityState.lastDamageCumulative else damage }
 
     fun tick() {
         prevX = x

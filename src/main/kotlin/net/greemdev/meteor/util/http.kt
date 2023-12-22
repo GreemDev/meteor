@@ -3,12 +3,16 @@
  * Copyright (c) Meteor Development.
  */
 
+@file:Suppress("MemberVisibilityCanBePrivate", "unused") // API
+
 package net.greemdev.meteor.util
 
 import com.google.gson.GsonBuilder
 import com.google.gson.JsonObject
 import kotlinx.coroutines.async
+import kotlinx.coroutines.future.asCompletableFuture
 import kotlinx.coroutines.launch
+import meteordevelopment.meteorclient.systems.config.Config
 import meteordevelopment.meteorclient.utils.other.JsonDateDeserializer
 import net.greemdev.meteor.*
 import java.io.InputStream
@@ -17,22 +21,20 @@ import java.net.http.HttpClient
 import java.net.http.HttpRequest
 import java.net.http.HttpResponse
 import java.nio.file.Path
-import java.util.Date
+import java.time.Duration
 import java.util.function.Consumer
 import java.util.stream.Stream
-import kotlin.time.Duration
-import kotlin.time.Duration.Companion.seconds
 import kotlin.time.toJavaDuration
 
 private val httpClient by lazy {
     HttpClient.newBuilder()
-        .connectTimeout(10.seconds.toJavaDuration())
+        .connectTimeout(Duration.ofSeconds(25))
         .build()
 }
 
-private val gson = GsonBuilder()
-    .registerTypeAdapter(Date::class.java, JsonDateDeserializer())
-    .create()
+private val gson = GsonBuilder().apply {
+    registerTypeAdapter(JsonDateDeserializer())
+}.create()
 
 @Suppress("FunctionName")
 // formatted for interoperability, discouraging usage of java-specific functions from Kotlin because the names are ugly and vice versa for kotlin functions from java
@@ -40,31 +42,20 @@ private val gson = GsonBuilder()
 // the functions have identical names because of how they're defined here via the @Jvm annotations,
 // and yet they both have method signatures that are different, and best used from the respective language.
 // (example, no Unit-returning lambdas for java functions, instead preferring standard java functional interfaces.)
+
 object HTTP {
-    @JvmStatic
-    fun get(url: String) = Request.Method.GET(url)
+    @JvmStatic infix fun get(url: String) = GET(url)
+    @JvmStatic infix fun post(url: String) = POST(url)
+    @JvmStatic infix fun delete(url: String) = DELETE(url)
+    @JvmStatic infix fun patch(url: String) = PATCH(url)
+    @JvmStatic infix fun put(url: String) = PUT(url)
 
-    @JvmStatic
-    fun post(url: String) = Request.Method.POST(url)
+    @JvmStatic infix fun GET(url: String) = Request.Method.GET(url)
+    @JvmStatic infix fun POST(url: String) = Request.Method.POST(url)
+    @JvmStatic infix fun DELETE(url: String) = Request.Method.DELETE(url)
+    @JvmStatic infix fun PATCH(url: String) = Request.Method.PATCH(url)
+    @JvmStatic infix fun PUT(url: String) = Request.Method.PUT(url)
 
-    @JvmStatic
-    fun delete(url: String) = Request.Method.DELETE(url)
-
-    @JvmStatic
-    fun patch(url: String) = Request.Method.PATCH(url)
-
-    @JvmStatic
-    fun put(url: String) = Request.Method.PUT(url)
-
-    infix fun GET(url: String) = Request.Method.GET(url)
-
-    infix fun POST(url: String) = Request.Method.POST(url)
-
-    infix fun DELETE(url: String) = Request.Method.DELETE(url)
-
-    infix fun PATCH(url: String) = Request.Method.PATCH(url)
-
-    infix fun PUT(url: String) = Request.Method.PUT(url)
 
     class Request private constructor(
         private val builder: HttpRequest.Builder,
@@ -93,8 +84,8 @@ object HTTP {
             return this
         }
 
-        fun timeout(duration: Duration) = timeout(duration.toJavaDuration())
-        fun timeout(duration: java.time.Duration): Request {
+        fun timeout(duration: kotlin.time.Duration) = timeout(duration.toJavaDuration())
+        fun timeout(duration: Duration): Request {
             builder.timeout(duration)
             return this
         }
@@ -124,10 +115,14 @@ object HTTP {
         /**
          * Used for requests where the response is pointless, such as DELETE
          */
-        @JvmOverloads
+        @JvmName("ktSend")
         fun send(beforeValidation: Initializer<StatusCodeHandler<*>> = {}) {
             sendInternal("*/*", HttpResponse.BodyHandlers.discarding(), beforeValidation)
         }
+
+        @JvmName("send")
+        @JvmOverloads
+        fun `java-send`(beforeValidation: Consumer<StatusCodeHandler<*>> = Consumer {}) = send(beforeValidation.kotlin)
 
 
 
@@ -187,20 +182,40 @@ object HTTP {
         fun requestInputStreamAsync(beforeValidation: Initializer<StatusCodeHandler<InputStream>> = {}) =
             scope.async { requestInputStream(beforeValidation) }
 
+        @JvmName("ktRequestFutureInputStream")
+        fun requestFutureInputStream(beforeValidation: Initializer<StatusCodeHandler<InputStream>> = {}) =
+            requestInputStreamAsync(beforeValidation).asCompletableFuture()
+
         @JvmName("ktRequestStringAsync")
         fun requestStringAsync(beforeValidation: Initializer<StatusCodeHandler<String>> = {}) =
             scope.async { requestString(beforeValidation) }
+
+        @JvmName("ktRequestFutureString")
+        fun requestFutureString(beforeValidation: Initializer<StatusCodeHandler<String>> = {}) =
+            requestStringAsync(beforeValidation).asCompletableFuture()
 
         @JvmName("ktRequestLinesAsync")
         fun requestLinesAsync(beforeValidation: Initializer<StatusCodeHandler<Stream<String>>> = {}) =
             scope.async { requestLines(beforeValidation) }
 
+        @JvmName("ktRequestFutureLines")
+        fun requestFutureLines(beforeValidation: Initializer<StatusCodeHandler<Stream<String>>> = {}) =
+            requestLinesAsync(beforeValidation).asCompletableFuture()
+
         @JvmName("ktRequestJsonAsync")
         fun requestJsonAsync(beforeValidation: Initializer<StatusCodeHandler<InputStream>> = {}) =
             scope.async { requestJson(beforeValidation) }
 
+        @JvmName("ktRequestFutureJson")
+        fun requestFutureJson(beforeValidation: Initializer<StatusCodeHandler<InputStream>> = {}) =
+            requestJsonAsync(beforeValidation).asCompletableFuture()
+
+
         inline fun<reified T> requestJsonAsync(noinline beforeValidation: Initializer<StatusCodeHandler<InputStream>> = {}) =
             scope.async { requestJson<T>(beforeValidation) }
+
+        inline fun<reified T> requestFutureJson(noinline beforeValidation: Initializer<StatusCodeHandler<InputStream>> = {}) =
+            requestJsonAsync<T>(beforeValidation).asCompletableFuture()
 
 
 
@@ -208,25 +223,25 @@ object HTTP {
         @JvmOverloads
         @JvmName("requestInputStreamAsync")
         fun `java-requestInputStreamAsync`(callback: Consumer<InputStream?>, beforeValidation: Consumer<StatusCodeHandler<InputStream>> = Consumer {}) {
-            scope.launch { requestInputStreamAsync(beforeValidation.kotlin) thenTake callback.kotlin }
+            scope.launch { requestInputStreamAsync(beforeValidation.kotlin) thenAccept callback.kotlin }
         }
 
         @JvmOverloads
         @JvmName("requestStringAsync")
         fun `java-requestStringAsync`(callback: Consumer<String?>, beforeValidation: Consumer<StatusCodeHandler<String>> = Consumer {}) {
-            scope.launch { requestStringAsync(beforeValidation.kotlin) thenTake callback.kotlin }
+            scope.launch { requestStringAsync(beforeValidation.kotlin) thenAccept callback.kotlin }
         }
 
         @JvmOverloads
         @JvmName("requestLinesAsync")
         fun `java-requestLinesAsync`(callback: Consumer<List<String>?>, beforeValidation: Consumer<StatusCodeHandler<Stream<String>>> = Consumer { }) {
-            scope.launch { requestLinesAsync(beforeValidation.kotlin) thenTake callback.kotlin }
+            scope.launch { requestLinesAsync(beforeValidation.kotlin) thenAccept callback.kotlin }
         }
 
         @JvmOverloads
         @JvmName("requestJsonAsync")
         fun `java-requestJsonAsync`(callback: Consumer<JsonObject?>, beforeValidation: Consumer<StatusCodeHandler<InputStream>> = Consumer { }) {
-            scope.launch { requestJsonAsync(beforeValidation.kotlin) thenTake callback.kotlin }
+            scope.launch { requestJsonAsync(beforeValidation.kotlin) thenAccept callback.kotlin }
         }
 
         @JvmOverloads
@@ -235,7 +250,7 @@ object HTTP {
             scope.launch {
                 async {
                     `java-requestJson`(cls, beforeValidation.kotlin)
-                } thenTake callback.kotlin
+                } thenAccept callback.kotlin
             }
         }
 
@@ -260,7 +275,9 @@ object HTTP {
                     }
                     ?.body()
             }
-                .onFailure(Throwable::printStackTrace)
+                .onFailure {
+                    Greteor.logger.error("Error when sending an HTTP request", it)
+                }
                 .getOrNull()
         }
 
@@ -294,7 +311,7 @@ object HTTP {
             }
 
             fun handle(code: Int, handler: Initializer<HttpResponse<T?>>) {
-                if (code == OK) return //200 is the desired outcome and as such it's not a code you need to handle
+                if (code == 200) return //200 is the desired outcome and as such it's not a code you need to handle
                 handlers[code] = handler
             }
 
@@ -311,7 +328,7 @@ object HTTP {
             val Processing = 102
             val EarlyHints = 103
 
-            val OK = 200
+            //OK is not defined as you shouldn't be handling it
             val Created = 201
             val Accepted = 202
             val NonAuthoritativeInformation = 203
@@ -382,5 +399,5 @@ private fun newRequestBuilder(url: String): HttpRequest.Builder =
         .onFailure(Greteor.logger::catching)
         .mapTo {
             HttpRequest.newBuilder(it)
-                .header("User-Agent", "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/112.0.0.0 Safari/537.36")
+                .header("User-Agent", Config.getUserAgent())
         }

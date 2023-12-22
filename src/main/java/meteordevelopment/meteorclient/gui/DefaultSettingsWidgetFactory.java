@@ -18,11 +18,9 @@ import meteordevelopment.meteorclient.gui.widgets.containers.*;
 import meteordevelopment.meteorclient.gui.widgets.input.*;
 import meteordevelopment.meteorclient.gui.widgets.pressable.WButton;
 import meteordevelopment.meteorclient.gui.widgets.pressable.WCheckbox;
-import meteordevelopment.meteorclient.gui.widgets.pressable.WMinus;
 import meteordevelopment.meteorclient.gui.widgets.pressable.WPlus;
 import meteordevelopment.meteorclient.renderer.Fonts;
 import meteordevelopment.meteorclient.settings.*;
-import meteordevelopment.meteorclient.utils.Utils;
 import meteordevelopment.meteorclient.utils.render.color.SettingColor;
 import org.apache.commons.lang3.StringUtils;
 
@@ -142,7 +140,7 @@ public class DefaultSettingsWidgetFactory extends SettingsWidgetFactory {
         }
 
         public void markRowForRemoval() {
-            rowIds.add(table.rowI());
+            rowIds.add(table.rowIndex());
         }
 
         public void remove(WVerticalList list) {
@@ -157,8 +155,7 @@ public class DefaultSettingsWidgetFactory extends SettingsWidgetFactory {
     // Settings
 
     private void boolW(WTable table, BoolSetting setting) {
-        WCheckbox checkbox = table.add(theme.checkbox(setting.get())).expandCellX().widget();
-        checkbox.action = () -> setting.set(checkbox.checked);
+        WCheckbox checkbox = table.add(theme.checkbox(setting.get(), setting::set)).expandCellX().widget();
 
         reset(table, setting, () -> checkbox.checked = setting.get());
     }
@@ -216,17 +213,15 @@ public class DefaultSettingsWidgetFactory extends SettingsWidgetFactory {
     }
 
     private <T extends Enum<?>> void enumW(WTable table, EnumSetting<T> setting) {
-        WDropdown<T> dropdown = table.add(
-            theme.dropdown(setting.get(), dd -> setting.set(dd.get()))
-        ).expandCellX().widget();
+        WDropdown<T> dropdown = table.add(theme.dropdown(setting.get())).expandCellX().widget();
+        dropdown.action = () -> setting.set(dropdown.get());
 
         reset(table, setting, () -> dropdown.set(setting.get()));
     }
 
     private void providedStringW(WTable table, ProvidedStringSetting setting) {
-        WDropdown<String> dropdown = table.add(
-            theme.dropdown(setting.supplier.get(), setting.get(), dd -> setting.set(dd.get()))
-        ).expandCellX().widget();
+        WDropdown<String> dropdown = table.add(theme.dropdown(setting.supplier.get(), setting.get())).expandCellX().widget();
+        dropdown.action = () -> setting.set(dropdown.get());
 
         reset(table, setting, () -> dropdown.set(setting.get()));
     }
@@ -262,13 +257,12 @@ public class DefaultSettingsWidgetFactory extends SettingsWidgetFactory {
 
         WItem item = list.add(theme.item(setting.get().asItem().getDefaultStack())).widget();
 
-        WButton select = list.add(theme.button("Select")).widget();
-        select.action = () -> {
+        list.add(theme.button("Select", () -> {
             BlockSettingScreen screen = new BlockSettingScreen(theme, setting);
             screen.onClosed(() -> item.set(setting.get().asItem().getDefaultStack()));
 
             mc.setScreen(screen);
-        };
+        }));
 
         reset(table, setting, () -> item.set(setting.get().asItem().getDefaultStack()));
     }

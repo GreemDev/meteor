@@ -6,16 +6,10 @@
 package meteordevelopment.meteorclient.settings;
 
 import meteordevelopment.meteorclient.gui.GuiTheme;
-import meteordevelopment.meteorclient.gui.renderer.GuiRenderer;
 import meteordevelopment.meteorclient.gui.utils.CharFilter;
 import meteordevelopment.meteorclient.gui.utils.StarscriptTextBoxRenderer;
 import meteordevelopment.meteorclient.gui.widgets.containers.WTable;
 import meteordevelopment.meteorclient.gui.widgets.input.WTextBox;
-import meteordevelopment.meteorclient.gui.widgets.pressable.WButton;
-import meteordevelopment.meteorclient.gui.widgets.pressable.WMinus;
-import net.greemdev.meteor.util.misc.Nbt;
-import net.greemdev.meteor.util.misc.NbtDataType;
-import net.greemdev.meteor.util.misc.NbtUtil;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.nbt.NbtElement;
 import net.minecraft.nbt.NbtList;
@@ -36,8 +30,8 @@ public class StringListSetting extends Setting<List<String>> {
     public final CharFilter filter;
     public final boolean wide;
 
-    protected StringListSetting(String name, String description, Object defaultValue, Consumer<List<String>> onChanged, Consumer<Setting<List<String>>> onModuleActivated, Supplier<Boolean> visible, Class<? extends WTextBox.Renderer> renderer, boolean wide, CharFilter filter) {
-        super(name, description, defaultValue, onChanged, onModuleActivated, visible);
+    protected StringListSetting(String name, String description, Object defaultValue, Consumer<List<String>> onChanged, Consumer<Setting<List<String>>> onModuleActivated, Supplier<Boolean> visible, boolean serialize, Class<? extends WTextBox.Renderer> renderer, boolean wide, CharFilter filter) {
+        super(name, description, defaultValue, onChanged, onModuleActivated, visible, serialize);
 
         this.renderer = renderer;
         this.filter = filter;
@@ -55,14 +49,12 @@ public class StringListSetting extends Setting<List<String>> {
     }
 
     @Override
-    public NbtCompound save(NbtCompound tag) {
+    public void save(NbtCompound tag) {
         NbtList valueTag = new NbtList();
         for (int i = 0; i < this.value.size(); i++) {
             valueTag.add(i, NbtString.of(get().get(i)));
         }
         tag.put("value", valueTag);
-
-        return tag;
     }
 
     @Override
@@ -160,7 +152,7 @@ public class StringListSetting extends Setting<List<String>> {
 
         @Override
         public StringListSetting build() {
-            return new StringListSetting(name, description, defaultValue, onChanged, onModuleActivated, visible, renderer, wide, filter);
+            return new StringListSetting(name, description, defaultValue, onChanged, onModuleActivated, visible, serialize, renderer, wide, filter);
         }
     }
 }

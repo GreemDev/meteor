@@ -32,7 +32,7 @@ public class BannerTooltipComponent implements MeteorTooltipData, TooltipCompone
     }
 
     @Override
-    public TooltipComponent getComponent() {
+    public TooltipComponent component() {
         return this;
     }
 

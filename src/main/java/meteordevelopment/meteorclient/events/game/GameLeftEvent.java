@@ -5,6 +5,7 @@
 
 package meteordevelopment.meteorclient.events.game;
 
+@SuppressWarnings("InstantiationOfUtilityClass")
 public class GameLeftEvent {
     private static final GameLeftEvent INSTANCE = new GameLeftEvent();
 

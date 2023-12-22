@@ -5,6 +5,7 @@
 
 package meteordevelopment.meteorclient.utils.misc;
 
+import it.unimi.dsi.fastutil.objects.Reference2ReferenceOpenHashMap;
 import meteordevelopment.meteorclient.MeteorClient;
 import meteordevelopment.meteorclient.events.game.ResourcePacksReloadedEvent;
 import meteordevelopment.meteorclient.utils.PreInit;
@@ -28,13 +29,13 @@ import java.util.Map;
 import static meteordevelopment.meteorclient.MeteorClient.mc;
 
 public class Names {
-    private static final Map<StatusEffect, String> statusEffectNames = new HashMap<>(16);
-    private static final Map<Item, String> itemNames = new HashMap<>(128);
-    private static final Map<Block, String> blockNames = new HashMap<>(128);
-    private static final Map<Enchantment, String> enchantmentNames = new HashMap<>(16);
-    private static final Map<EntityType<?>, String> entityTypeNames = new HashMap<>(64);
-    private static final Map<ParticleType<?>, String> particleTypesNames = new HashMap<>(64);
-    private static final Map<Identifier, String> soundNames = new HashMap<>(64);
+    private static final Map<StatusEffect, String> statusEffectNames = new Reference2ReferenceOpenHashMap<>(16);
+    private static final Map<Item, String> itemNames = new Reference2ReferenceOpenHashMap<>(128);
+    private static final Map<Block, String> blockNames = new Reference2ReferenceOpenHashMap<>(128);
+    private static final Map<Enchantment, String> enchantmentNames = new Reference2ReferenceOpenHashMap<>(16);
+    private static final Map<EntityType<?>, String> entityTypeNames = new Reference2ReferenceOpenHashMap<>(64);
+    private static final Map<ParticleType<?>, String> particleTypesNames = new Reference2ReferenceOpenHashMap<>(64);
+    private static final Map<Identifier, String> soundNames = new Reference2ReferenceOpenHashMap<>(64);
 
     @PreInit
     public static void init() {

@@ -18,24 +18,23 @@ object AntiChatSpam : GModule(
     val filters by sg stringList {
         name("filters")
         description("The contents to check if a message matches.")
+        defaultValue("[Server: Saved the game]")
     }
 
     val comparisonType by sg.enum<StringComparisonType> {
         name("comparison")
         description("How to determine if the message should be hidden.")
         defaultValue(StringComparisonType.Contains)
-        visible { filters().isNotEmpty() }
     }
 
     val ignoreCase by sg bool {
         name("ignore-case")
-        description("Whether the checking should ignore character casing.")
+        description("Whether the comparison should ignore character casing.")
         defaultValue(true)
-        visible(comparisonType::isVisible)
     }
 
     @EventHandler
-    fun receivedMessage(e: ReceiveMessageEvent) {
+    private fun receivedMessage(e: ReceiveMessageEvent) {
         filters().forEach {
             if (comparisonType().compare(e.message.string, it, ignoreCase())) {
                 e.cancel()

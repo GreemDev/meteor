@@ -12,6 +12,7 @@ import it.unimi.dsi.fastutil.objects.Object2IntMap;
 import meteordevelopment.meteorclient.MeteorClient;
 import meteordevelopment.meteorclient.events.world.TickEvent;
 import meteordevelopment.meteorclient.gui.tabs.TabScreen;
+import meteordevelopment.meteorclient.gui.utils.CharFilter;
 import meteordevelopment.meteorclient.mixin.*;
 import meteordevelopment.meteorclient.mixininterface.IMinecraftClient;
 import meteordevelopment.meteorclient.systems.modules.Modules;
@@ -340,7 +341,7 @@ public class Utils {
 
         // Multiplayer
         if (mc.getCurrentServerEntry() != null) {
-            return mc.isConnectedToRealms()
+            return mc.getCurrentServerEntry().isRealm()
                 ? "realms"
                 : useAddress
                     ? mc.getCurrentServerEntry().address
@@ -612,21 +613,5 @@ public class Utils {
         vec.z = MathHelper.lerp(tickDelta, entity.lastRenderZ, entity.getZ());
 
         return vec;
-    }
-
-    // Filters
-
-    public static boolean nameFilter(String text, char character) {
-        return (character >= 'a' && character <= 'z') || (character >= 'A' && character <= 'Z') || (character >= '0' && character <= '9') || character == '_' || character == '-' || character == '.' || character == ' ';
-    }
-
-    public static boolean ipFilter(String text, char character) {
-        if (text.contains(":") && character == ':') return false;
-        return (character >= 'a' && character <= 'z') || (character >= 'A' && character <= 'Z') || (character >= '0' && character <= '9') || character == '.';
-    }
-
-    @SuppressWarnings("unchecked")
-    public static <T> T cast(Object value) {
-        return (T)value;
     }
 }

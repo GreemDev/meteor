@@ -20,12 +20,32 @@ object GameTweaks : GModule(
         defaultValue(false)
     }
 
+    private val specialLogo by sg bool {
+        name("special-logo")
+        description("Subtly changes the Minecraft logo on the title screen.")
+        defaultValue(false)
+    }
+
+    private val saveScreenshotFileToo by sg bool {
+        name("save-screenshots")
+        description("Save screenshots into their normal folder as well as copying the file to the clipboard.")
+        visible(clipboardScreenshots)
+        defaultValue(false)
+    }
+
     private val showScore by sg bool {
         name("score")
         description("Whether or not to show the weird Score on the death screen.")
         defaultValue(true)
     }
 
+    @JvmStatic
     fun screenshots() = isActive and clipboardScreenshots()
+    @JvmStatic
+    fun screenshotFile() = screenshots() and saveScreenshotFileToo()
+    @JvmStatic
     fun noScore() = isActive and !showScore()
+
+    @JvmStatic
+    fun minceraft() = isActive and specialLogo()
 }

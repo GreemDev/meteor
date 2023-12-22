@@ -23,10 +23,10 @@ fun showNotice(id: String, builder: Initializer<OkPrompt>) = notice(id, builder)
 object Prompts {
     @JvmStatic
     @JvmOverloads
-    fun factory(theme: GuiTheme = GuiThemes.get(), screen: Screen? = minecraft.currentScreen) =
-        object : PromptFactory(theme, screen) {}
+    fun factory(theme: GuiTheme = Meteor.currentTheme(), screen: Screen? = minecraft.currentScreen) =
+        object : Factory(theme, screen) {}
 
-    abstract class PromptFactory(private val theme: GuiTheme, private val screen: Screen?) {
+    abstract class Factory(private val theme: GuiTheme, private val screen: Screen?) {
         fun showNotice(id: String, builder: Consumer<OkPrompt>) = notice(id, builder).show()
         fun showConfirm(id: String, builder: Consumer<YesNoPrompt>) = confirm(id, builder).show()
         fun notice(id: String, builder: Consumer<OkPrompt>): OkPrompt = OkPrompt.create(theme, screen).id(id).apply(builder.kotlin)

@@ -64,12 +64,11 @@ object Dash : GModule("dash", "Boosts you forward in the direction you're lookin
         if (timer < 1) {
             dash()
             timer = autoDashInterval()
-        } else {
+        } else
             timer--
-        }
     }
 
     private fun dash() {
-        mc.player() + mc.clientRotationVec() * power()
+        mc.player().addVelocity(mc.clientRotationVec().multiply(power()))
     }
 }

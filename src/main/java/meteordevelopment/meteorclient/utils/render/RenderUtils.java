@@ -5,6 +5,8 @@
 
 package meteordevelopment.meteorclient.utils.render;
 
+import com.mojang.blaze3d.systems.RenderCall;
+import com.mojang.blaze3d.systems.RenderSystem;
 import meteordevelopment.meteorclient.MeteorClient;
 import meteordevelopment.meteorclient.events.render.Render3DEvent;
 import meteordevelopment.meteorclient.events.world.TickEvent;
@@ -40,6 +42,13 @@ public class RenderUtils {
     @PostInit
     public static void init() {
         MeteorClient.EVENT_BUS.subscribe(RenderUtils.class);
+    }
+
+    public static void executeOnRenderThread(RenderCall renderCall) {
+        if (RenderSystem.isOnRenderThread())
+            renderCall.execute();
+        else
+            RenderSystem.recordRenderCall(renderCall);
     }
 
     // Items

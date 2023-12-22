@@ -143,14 +143,14 @@ public class AutoCity extends Module {
     public void onActivate() {
         target = TargetUtils.getPlayerTarget(targetRange.get(), SortPriority.ClosestAngle);
         if (TargetUtils.isBadTarget(target, targetRange.get())) {
-            if (chatInfo.get()) error("Couldn't find a target, disabling.");
+            if (chatInfo.get()) error("Couldn't find a target; disabling.");
             toggle();
             return;
         }
 
         targetPos = EntityUtils.getCityBlock(target);
         if (targetPos == null || PlayerUtils.distanceTo(targetPos) > breakRange.get()) {
-            if (chatInfo.get()) error("Couldn't find a good block, disabling.");
+            if (chatInfo.get()) error("Couldn't find a good block; disabling.");
             toggle();
             return;
         }
@@ -164,7 +164,7 @@ public class AutoCity extends Module {
 
         pick = InvUtils.find(itemStack -> itemStack.getItem() == Items.DIAMOND_PICKAXE || itemStack.getItem() == Items.NETHERITE_PICKAXE);
         if (!pick.isHotbar()) {
-            error("No pickaxe found... disabling.");
+            error("No pickaxe found; disabling.");
             toggle();
             return;
         }
@@ -187,7 +187,7 @@ public class AutoCity extends Module {
         }
 
         if (PlayerUtils.distanceTo(targetPos) > breakRange.get()) {
-            if (chatInfo.get()) error("Couldn't find a target, disabling.");
+            if (chatInfo.get()) error("Couldn't find a target; disabling.");
             toggle();
             return;
         }
@@ -195,7 +195,7 @@ public class AutoCity extends Module {
         if (progress < 1.0f) {
             pick = InvUtils.find(itemStack -> itemStack.getItem() == Items.DIAMOND_PICKAXE || itemStack.getItem() == Items.NETHERITE_PICKAXE);
             if (!pick.isHotbar()) {
-                error("No pickaxe found... disabling.");
+                error("No pickaxe found; disabling.");
                 toggle();
                 return;
             }

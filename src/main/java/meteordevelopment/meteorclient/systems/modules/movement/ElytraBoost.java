@@ -40,7 +40,6 @@ public class ElytraBoost extends Module {
         .description("The duration of the firework.")
         .defaultValue(0)
         .range(0, 255)
-        .sliderMax(255)
         .build()
     );
 
@@ -51,6 +50,7 @@ public class ElytraBoost extends Module {
         .build()
     );
 
+    @SuppressWarnings("unused")
     private final Setting<Keybind> keybind = sgGeneral.add(new KeybindSetting.Builder()
         .name("keybind")
         .description("The keybind to boost.")
@@ -94,8 +94,8 @@ public class ElytraBoost extends Module {
 
             FireworkRocketEntity entity = new FireworkRocketEntity(mc.world, itemStack, mc.player);
             fireworks.add(entity);
-            if (playSound.get()) mc.world.playSoundFromEntity(mc.player, entity, SoundEvents.ENTITY_FIREWORK_ROCKET_LAUNCH, SoundCategory.AMBIENT, 3.0F, 1.0F);
-            mc.world.addEntity(entity.getId(), entity);
+            if (playSound.get()) mc.world.playSoundFromEntity(mc.player, entity, SoundEvents.ENTITY_FIREWORK_ROCKET_LAUNCH, SoundCategory.PLAYERS, 3.0F, 1.0F);
+            mc.world.addEntity(entity);
         }
     }
 

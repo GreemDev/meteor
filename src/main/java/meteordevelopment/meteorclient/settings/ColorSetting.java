@@ -8,6 +8,7 @@ package meteordevelopment.meteorclient.settings;
 import com.google.common.collect.ImmutableList;
 import meteordevelopment.meteorclient.utils.render.color.Color;
 import meteordevelopment.meteorclient.utils.render.color.SettingColor;
+import net.greemdev.meteor.util.text.ChatColor;
 import net.minecraft.nbt.NbtCompound;
 
 import java.util.List;
@@ -23,8 +24,8 @@ public class ColorSetting extends Setting<SettingColor> {
 
     public final boolean canRainbow;
 
-    protected ColorSetting(String name, String description, Object defaultValue, Consumer<SettingColor> onChanged, Consumer<Setting<SettingColor>> onModuleActivated, Supplier<Boolean> visible, boolean canRainbow) {
-        super(name, description, defaultValue, onChanged, onModuleActivated, visible);
+    protected ColorSetting(String name, String description, Object defaultValue, Consumer<SettingColor> onChanged, Consumer<Setting<SettingColor>> onModuleActivated, Supplier<Boolean> visible, boolean serialize, boolean canRainbow) {
+        super(name, description, defaultValue, onChanged, onModuleActivated, visible, serialize);
         this.canRainbow = canRainbow;
     }
 
@@ -57,10 +58,8 @@ public class ColorSetting extends Setting<SettingColor> {
     }
 
     @Override
-    protected NbtCompound save(NbtCompound tag) {
+    protected void save(NbtCompound tag) {
         tag.put("value", get().toTag());
-
-        return tag;
     }
 
     @Override
@@ -88,9 +87,13 @@ public class ColorSetting extends Setting<SettingColor> {
             return this;
         }
 
+        public Builder defaultValue(ChatColor defaultValue) {
+            return defaultValue(defaultValue.asMeteor());
+        }
+
         @Override
         public ColorSetting build() {
-            return new ColorSetting(name, description, defaultValue, onChanged, onModuleActivated, visible, canRainbow);
+            return new ColorSetting(name, description, defaultValue, onChanged, onModuleActivated, visible, serialize, canRainbow);
         }
     }
 }

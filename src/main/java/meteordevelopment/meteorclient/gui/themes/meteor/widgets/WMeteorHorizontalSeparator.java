@@ -9,20 +9,22 @@ import meteordevelopment.meteorclient.gui.renderer.GuiRenderer;
 import meteordevelopment.meteorclient.gui.themes.meteor.MeteorGuiTheme;
 import meteordevelopment.meteorclient.gui.themes.meteor.MeteorWidget;
 import meteordevelopment.meteorclient.gui.widgets.WHorizontalSeparator;
+import org.jetbrains.annotations.Nullable;
 
 public class WMeteorHorizontalSeparator extends WHorizontalSeparator implements MeteorWidget {
-    public WMeteorHorizontalSeparator(String text) {
+    public WMeteorHorizontalSeparator(@Nullable String text) {
         super(text);
     }
 
     @Override
     protected void onRender(GuiRenderer renderer, double mouseX, double mouseY, double delta) {
-        if (text == null) renderWithoutText(renderer);
-        else renderWithText(renderer);
+        if (text != null)
+            renderWithText(renderer, meteorTheme());
+        else
+            renderWithoutText(renderer, meteorTheme());
     }
 
-    private void renderWithoutText(GuiRenderer renderer) {
-        MeteorGuiTheme theme = meteorTheme();
+    private void renderWithoutText(GuiRenderer renderer, MeteorGuiTheme theme) {
         double s = theme.scalar();
         double w = width / 2;
 
@@ -30,8 +32,7 @@ public class WMeteorHorizontalSeparator extends WHorizontalSeparator implements 
         renderer.quad(x + w, y + s, w, s, theme.separatorCenter.get(), theme.separatorEdges.get());
     }
 
-    private void renderWithText(GuiRenderer renderer) {
-        MeteorGuiTheme theme = meteorTheme();
+    private void renderWithText(GuiRenderer renderer, MeteorGuiTheme theme) {
         double s = theme.scale(2);
         double h = theme.scalar();
 

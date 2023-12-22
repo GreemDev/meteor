@@ -240,7 +240,7 @@ public class AnchorAura extends Module {
     @EventHandler
     private void onTick(TickEvent.Post event) {
         if (mc.world.getDimension().respawnAnchorWorks()) {
-            error("You are in the Nether... disabling.");
+            error("You are in the Nether; disabling.");
             toggle();
             return;
         }

@@ -6,16 +6,17 @@
 package net.greemdev.meteor.commands
 
 import net.greemdev.meteor.GCommand
-import net.greemdev.meteor.commands.api.argument
+import net.greemdev.meteor.commands.api.contextArg
 import net.greemdev.meteor.util.*
+import net.greemdev.meteor.util.misc.player
 
 object UuidCommand : GCommand("uuid", "Get the UUID of a player or yourself.", {
-    alwaysRuns {
-        info("Your UUID is '${minecraft.player?.uuid}'")
+    runs {
+        info("Your UUID is '${minecraft.player().uuid}'")
     }
-    then(arg.player()) {
-        alwaysRuns {
-            val player by it.argument(arg.player())
+    then(ArgType.player()) {
+        runs {
+            val player by contextArg(ArgType.player())
             info("${player.gameProfile.name}'s UUID is '${player.uuid}'")
         }
     }

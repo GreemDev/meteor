@@ -120,8 +120,10 @@ public abstract class LeftRightListSettingScreen<T> extends WindowScreen {
 
             table.add(getValueWidget(t));
 
-            WPressable button = table.add(isLeft ? theme.plus() : theme.minus()).expandCellX().right().widget();
-            button.action = () -> buttonAction.accept(t);
+            table.add(isLeft
+                ? theme.plus(() -> buttonAction.accept(t))
+                : theme.minus(() -> buttonAction.accept(t))
+            ).expandCellX().right();
 
             table.row();
         };
@@ -132,7 +134,7 @@ public abstract class LeftRightListSettingScreen<T> extends WindowScreen {
         if (!filterText.isEmpty()) values.sort(Comparator.comparingInt(value -> -value.getRight()));
         for (Pair<T, Integer> pair : values) forEach.accept(pair.getLeft());
 
-        if (table.cells.size() > 0) cell.expandX();
+        if (!table.cells.isEmpty()) cell.expandX();
 
         return table;
     }

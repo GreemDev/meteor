@@ -122,13 +122,13 @@ public class EChestFarmer extends Module {
     private void onTick(TickEvent.Pre event) {
         // Finding target pos
         if (target == null) {
-            if (mc.crosshairTarget == null || mc.crosshairTarget.getType() != HitResult.Type.BLOCK) return;
+            if (mc.crosshairTarget == null || !(mc.crosshairTarget instanceof BlockHitResult bhr)) return;
 
-            BlockPos pos = ((BlockHitResult) mc.crosshairTarget).getBlockPos().up();
+            BlockPos pos = bhr.getBlockPos().up();
             BlockState state = mc.world.getBlockState(pos);
 
             if (state.isReplaceable() || state.getBlock() == Blocks.ENDER_CHEST) {
-                target = ((BlockHitResult) mc.crosshairTarget).getBlockPos().up();
+                target = bhr.getBlockPos().up();
             } else return;
         }
 
@@ -174,7 +174,7 @@ public class EChestFarmer extends Module {
             FindItemResult echest = InvUtils.findInHotbar(Items.ENDER_CHEST);
 
             if (!echest.found()) {
-                error("No Echests in hotbar, disabling");
+                error("No ender chests in hotbar; disabling.");
                 toggle();
                 return;
             }

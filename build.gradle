@@ -1,8 +1,8 @@
 plugins {
-    id "fabric-loom" version "1.3-SNAPSHOT"
-    id "org.jetbrains.kotlin.jvm" version "1.9.10"
+    id "fabric-loom" version "1.4-SNAPSHOT"
+    id "org.jetbrains.kotlin.jvm" version "1.9.21"
     id "maven-publish"
-    id "com.github.johnrengelman.shadow" version "7.1.2"
+    id "com.github.johnrengelman.shadow" version "8.1.1"
 }
 
 sourceCompatibility = targetCompatibility = JavaVersion.VERSION_17
@@ -27,10 +27,6 @@ repositories {
         content {
             includeGroup "maven.modrinth"
         }
-    }
-    maven {
-        name = "enderzombi"
-        url = "https://repo.repsy.io/mvn/enderzombi102/mc/"
     }
     maven {
         name = "vram"
@@ -77,8 +73,9 @@ dependencies {
     library "org.reflections:reflections:${project.reflections_version}"
     library("io.netty:netty-handler-proxy:${project.netty_version}") { transitive = false }
     library("io.netty:netty-codec-socks:${project.netty_version}") { transitive = false }
-    library "com.github.LlamaLad7.MixinExtras:mixinextras-fabric:${project.mixin_extras_version}"
-    annotationProcessor "com.github.LlamaLad7.MixinExtras:mixinextras-fabric:${project.mixin_extras_version}"
+    library "io.github.llamalad7:mixinextras-fabric:${project.mixin_extras_version}"
+    annotationProcessor "io.github.llamalad7:mixinextras-fabric:${project.mixin_extras_version}"
+    library "de.florianmichael:WaybackAuthLib:1.0.0"
 }
 
 compileKotlin {

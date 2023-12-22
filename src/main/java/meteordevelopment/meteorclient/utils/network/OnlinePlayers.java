@@ -14,13 +14,13 @@ public final class OnlinePlayers {
         long time = System.currentTimeMillis();
 
         if (time - lastPingTime > 5 * 60 * 1000) {
-            MeteorExecutor.execute(() -> HTTP.post("https://meteorclient.com/api/online/ping").send());
+            HTTP.POST("https://meteorclient.com/api/online/ping").sendAsync();
 
             lastPingTime = time;
         }
     }
 
     public static void leave() {
-        MeteorExecutor.execute(() -> HTTP.post("https://meteorclient.com/api/online/leave").send());
+        HTTP.POST("https://meteorclient.com/api/online/leave").sendAsync();
     }
 }

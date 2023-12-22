@@ -27,10 +27,15 @@ import org.jetbrains.annotations.NotNull;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
+import java.util.function.Function;
 
 import static meteordevelopment.meteorclient.MeteorClient.mc;
 
 public class Config extends System<Config> {
+
+    private static final String DEFAULT_USER_AGENT = "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/112.0.0.0 Safari/537.36";
+
     public final Settings settings = new Settings();
 
     private final SettingGroup sgVisual = settings.createGroup("Visual");
@@ -51,7 +56,7 @@ public class Config extends System<Config> {
     public final Setting<FontFace> font = sgVisual.add(new FontFaceSetting.Builder()
         .name("font")
         .description("Custom font to use.")
-        .visible(customFont::get)
+        .visible(customFont)
         .onChanged(Fonts::load)
         .build()
     );
@@ -155,7 +160,7 @@ public class Config extends System<Config> {
 
     public final Setting<Boolean> lastTabMemory = sgMisc.add(new BoolSetting.Builder()
         .name("remember-last-tab")
-        .description("Reopen the last tab you were using in Meteor's GUI.")
+        .description("Reopen the last tab you were using in Meteor's GUI when pressing the Open GUI key, instead of opening modules.")
         .defaultValue(false)
         .build()
     );
@@ -170,14 +175,13 @@ public class Config extends System<Config> {
     public final Setting<List<String>> customSplashes = sgMisc.add(new StringListSetting.Builder()
         .name("custom-splashes")
         .description("Custom splash texts to use on the title screen.\nAmpersands are automatically replaced with section symbols so you can use styling.")
-        .defaultValue("Meteor on Crack!",
+        .defaultValue(
             "github.com/GreemDev/meteor",
-            "Star Meteor Client on GitHub!",
+            "Star Greteor Client on GitHub!",
             "Based utility mod.",
-            "&6MineGame159 &fbased god",
-            "&4meteorclient.com",
-            "&4Meteor on Crack!",
-            "&6Meteor on Crack!")
+            "&6%s &fbased god".formatted(MeteorClient.randomAuthor().getName()),
+            "&6Greteor on Crack!"
+        )
         .visible(useCustomSplashes)
         .build()
     );
@@ -200,19 +204,16 @@ public class Config extends System<Config> {
         .name("module-search-count")
         .description("Amount of modules and settings to be shown in the module search bar.")
         .defaultValue(8)
-        .min(1).sliderMax(12)
+        .range(1, 12)
         .build()
     );
 
-    @NotNull
-    public static AlignmentX getTopBarAlignmentX() {
-        return Config.get().topBarHorizontalAlignment.get();
-    }
-
-    public static AlignmentY getTopBarAlignmentY() {
-        return Config.get().topBarVerticalAlignment.get().meteorAlignment();
-    }
-
+    private final Setting<String> httpUserAgent = sgMisc.add(new StringSetting.Builder()
+        .name("HTTP-user-agent")
+        .description("The User Agent applied to all outgoing HTTP requests.")
+        .defaultValue(DEFAULT_USER_AGENT)
+        .build()
+    );
 
     public final Setting<AlignmentX> topBarHorizontalAlignment = sgTopBar.add(new EnumSetting.Builder<AlignmentX>()
         .name("horizontal-alignment")
@@ -225,14 +226,36 @@ public class Config extends System<Config> {
     public final Setting<VerticalAlignment> topBarVerticalAlignment = sgTopBar.add(new EnumSetting.Builder<VerticalAlignment>()
         .name("vertical-alignment")
         .description("Where the top bar should be placed vertically.")
-        .defaultValue(VerticalAlignment.Top)
+        .defaultValue(VerticalAlignment.Top) //not using AlignmentY because you shouldn't be able to put the top bar on the vertical center of your screen
         .onChanged(a -> WTopBar.NEEDS_REFRESH = true)
         .build()
     );
 
+    @NotNull
+    public static String getUserAgent() {
+        return orDefault(DEFAULT_USER_AGENT, c -> c.httpUserAgent.get());
+    }
+
+    @NotNull
+    public static AlignmentX getTopBarAlignmentX() {
+        return orDefault(AlignmentX.Center, c -> c.topBarHorizontalAlignment.get());
+    }
+
+    @NotNull
+    public static AlignmentY getTopBarAlignmentY() {
+        return orDefault(AlignmentY.Top, c -> c.topBarVerticalAlignment.get().asMeteor());
+    }
+
+
+    @NotNull
+    private static <T> T orDefault(@NotNull T defaultValue, Function<@NotNull Config, T> valueGetter) {
+        return Optional.of(get()).map(valueGetter).orElse(defaultValue);
+    }
+
+
     public final Setting<Boolean> baritoneIcon = sgTopBar.add(new BoolSetting.Builder()
         .name("baritone-icon")
-        .description("Replace Baritone in top bar with the Baritone bass clef icon.")
+        .description("Replace Baritone in top bar with the bass clef icon.")
         .defaultValue(true)
         .onChanged(b -> WTopBar.NEEDS_REFRESH = true)
         .build()
@@ -272,7 +295,7 @@ public class Config extends System<Config> {
 
     public final Setting<Boolean> macrosIcon = sgTopBar.add(new BoolSetting.Builder()
         .name("macros-icon")
-        .description("Replace Macros in top bar with an M icon.")
+        .description("Replace Macros in top bar with a generic M icon.")
         .defaultValue(true)
         .onChanged(b -> WTopBar.NEEDS_REFRESH = true)
         .build()

@@ -28,8 +28,8 @@ public class ItemListSetting extends Setting<List<Item>> {
     public final Predicate<Item> filter;
     private final boolean bypassFilterWhenSavingAndLoading;
 
-    protected ItemListSetting(String name, String description, Object defaultValue, Consumer<List<Item>> onChanged, Consumer<Setting<List<Item>>> onModuleActivated, Supplier<Boolean> visible, Predicate<Item> filter, boolean bypassFilterWhenSavingAndLoading) {
-        super(name, description, defaultValue, onChanged, onModuleActivated, visible);
+    protected ItemListSetting(String name, String description, Object defaultValue, Consumer<List<Item>> onChanged, Consumer<Setting<List<Item>>> onModuleActivated, Supplier<Boolean> visible, boolean serialize, Predicate<Item> filter, boolean bypassFilterWhenSavingAndLoading) {
+        super(name, description, defaultValue, onChanged, onModuleActivated, visible, serialize);
 
         this.filter = filter;
         this.bypassFilterWhenSavingAndLoading = bypassFilterWhenSavingAndLoading;
@@ -66,14 +66,12 @@ public class ItemListSetting extends Setting<List<Item>> {
     }
 
     @Override
-    public NbtCompound save(NbtCompound tag) {
+    public void save(NbtCompound tag) {
         NbtList valueTag = new NbtList();
         for (Item item : get()) {
             if (bypassFilterWhenSavingAndLoading || (filter == null || filter.test(item))) valueTag.add(NbtString.of(Registries.ITEM.getId(item).toString()));
         }
         tag.put("value", valueTag);
-
-        return tag;
     }
 
     @Override
@@ -114,7 +112,7 @@ public class ItemListSetting extends Setting<List<Item>> {
 
         @Override
         public ItemListSetting build() {
-            return new ItemListSetting(name, description, defaultValue, onChanged, onModuleActivated, visible, filter, bypassFilterWhenSavingAndLoading);
+            return new ItemListSetting(name, description, defaultValue, onChanged, onModuleActivated, visible, serialize, filter, bypassFilterWhenSavingAndLoading);
         }
     }
 }

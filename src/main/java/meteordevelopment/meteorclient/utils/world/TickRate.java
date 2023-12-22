@@ -41,6 +41,14 @@ public class TickRate {
         }
     }
 
+    public static float get() {
+        return INSTANCE.getTickRate();
+    }
+
+    public static float timeSinceLastTick() {
+        return INSTANCE.getTimeSinceLastTick();
+    }
+
     @EventHandler
     private void onGameJoined(GameJoinedEvent event) {
         Arrays.fill(tickRates, 0);

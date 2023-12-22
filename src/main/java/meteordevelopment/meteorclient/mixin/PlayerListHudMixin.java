@@ -20,7 +20,7 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
 @Mixin(PlayerListHud.class)
-public class PlayerListHudMixin {
+public abstract class PlayerListHudMixin {
     @ModifyConstant(constant = @Constant(longValue = 80L), method = "collectPlayerEntries")
     private long modifyCount(long count) {
         BetterTab module = Modules.get().get(BetterTab.class);

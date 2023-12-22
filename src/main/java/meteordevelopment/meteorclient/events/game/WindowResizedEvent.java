@@ -5,6 +5,7 @@
 
 package meteordevelopment.meteorclient.events.game;
 
+@SuppressWarnings("InstantiationOfUtilityClass")
 public class WindowResizedEvent {
     private static final WindowResizedEvent INSTANCE = new WindowResizedEvent();
 

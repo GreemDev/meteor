@@ -15,14 +15,14 @@ public class PotionSetting extends EnumSetting<PotionTypes> {
         return new Builder();
     }
 
-    protected PotionSetting(String name, String description, Object defaultValue, Consumer<PotionTypes> onChanged, Consumer<Setting<PotionTypes>> onModuleActivated, Supplier<Boolean> visible) {
-        super(name, description, defaultValue, onChanged, onModuleActivated, visible);
+    protected PotionSetting(String name, String description, Object defaultValue, Consumer<PotionTypes> onChanged, Consumer<Setting<PotionTypes>> onModuleActivated, Supplier<Boolean> visible, boolean serialize) {
+        super(name, description, defaultValue, onChanged, onModuleActivated, visible, serialize);
     }
 
     public static class Builder extends EnumSetting.Builder<PotionTypes> {
         @Override
         public EnumSetting<PotionTypes> build() {
-            return new PotionSetting(name, description, defaultValue, onChanged, onModuleActivated, visible);
+            return new PotionSetting(name, description, defaultValue, onChanged, onModuleActivated, visible, serialize);
         }
     }
 }

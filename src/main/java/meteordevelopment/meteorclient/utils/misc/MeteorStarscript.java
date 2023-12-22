@@ -9,6 +9,7 @@ import baritone.api.BaritoneAPI;
 import baritone.api.pathing.goals.Goal;
 import baritone.api.process.IBaritoneProcess;
 import meteordevelopment.meteorclient.MeteorClient;
+import meteordevelopment.meteorclient.commands.Commands;
 import meteordevelopment.meteorclient.mixin.ClientPlayerInteractionManagerAccessor;
 import meteordevelopment.meteorclient.mixin.MinecraftClientAccessor;
 import meteordevelopment.meteorclient.systems.config.Config;
@@ -30,6 +31,8 @@ import meteordevelopment.starscript.utils.Error;
 import meteordevelopment.starscript.utils.StarscriptError;
 import meteordevelopment.starscript.value.Value;
 import meteordevelopment.starscript.value.ValueMap;
+import net.greemdev.meteor.util.Strings;
+import net.greemdev.meteor.util.misc.KMC;
 import net.minecraft.SharedConstants;
 import net.minecraft.block.BlockState;
 import net.minecraft.client.network.PlayerListEntry;
@@ -72,11 +75,12 @@ public class MeteorStarscript {
     @PreInit
     public static void init() {
         StandardLib.init(ss);
+        ss.set("E", Math.E);
 
         // General
         ss.set("kotlin", MeteorClient.KOTLIN_VERSION);
         ss.set("gameVersion", SharedConstants.getGameVersion().getName());
-        ss.set("fps", () -> Value.number(MinecraftClientAccessor.getFps()));
+        ss.set("fps", () -> Value.number(KMC.fps()));
         ss.set("ping", MeteorStarscript::ping);
         ss.set("time", () -> Value.string(LocalTime.now().format(DateTimeFormatter.ofLocalizedTime(FormatStyle.SHORT))));
         ss.set("cps", () -> Value.number(CPSUtils.getCpsAverage()));
@@ -187,10 +191,10 @@ public class MeteorStarscript {
         ss.set("server", new ValueMap()
             .set("_toString", () -> Value.string(Utils.getWorldName(false)))
             .set("ip", () -> Value.string(Utils.getWorldName()))
-            .set("tps", () -> Value.number(TickRate.INSTANCE.getTickRate()))
+            .set("tps", () -> Value.number(TickRate.get()))
             .set("time", () -> Value.string(Utils.getWorldTime()))
             .set("playerCount", () -> Value.number(mc.getNetworkHandler() != null ? mc.getNetworkHandler().getPlayerList().size() : 0))
-            .set("difficulty", () -> Value.string(mc.world != null ? mc.world.getDifficulty().getName() : ""))
+            .set("difficulty", () -> Value.string(mc.world != null ? mc.world.getDifficulty().getName() : Strings.empty()))
         );
     }
 
@@ -369,8 +373,7 @@ public class MeteorStarscript {
     private static Value handOrOffhand() {
         if (mc.player == null) return Value.null_();
 
-        ItemStack itemStack = mc.player.getMainHandStack();
-        if (itemStack.isEmpty()) itemStack = mc.player.getOffHandStack();
+        ItemStack itemStack = KMC.getUsableItemStack(mc.player);
 
         return itemStack != null ? wrap(itemStack) : Value.null_();
     }
@@ -403,7 +406,7 @@ public class MeteorStarscript {
 
     private static Value getMeteorPrefix() {
         if (Config.get() == null) return Value.null_();
-        return Value.string(Config.get().prefix.get());
+        return Value.string(Commands.prefix());
     }
 
     // Other
@@ -582,15 +585,12 @@ public class MeteorStarscript {
     public static Value wrap(ItemStack itemStack) {
         String name = itemStack.isEmpty() ? "" : Names.get(itemStack.getItem());
 
-        int durability = 0;
-        if (!itemStack.isEmpty() && itemStack.isDamageable()) durability = itemStack.getMaxDamage() - itemStack.getDamage();
-
         return Value.map(new ValueMap()
             .set("_toString", Value.string(itemStack.getCount() <= 1 ? name : String.format("%s %dx", name, itemStack.getCount())))
             .set("name", Value.string(name))
             .set("id", Value.string(Registries.ITEM.getId(itemStack.getItem()).toString()))
             .set("count", Value.number(itemStack.getCount()))
-            .set("durability", Value.number(durability))
+            .set("durability", Value.number(KMC.getCurrentDurability(itemStack)))
             .set("durabilityMax", Value.number(itemStack.getMaxDamage()))
         );
     }

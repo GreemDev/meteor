@@ -21,8 +21,8 @@ public class StatusEffectAmplifierMapSetting extends Setting<Object2IntMap<Statu
         return new Builder();
     }
 
-    protected StatusEffectAmplifierMapSetting(String name, String description, Object defaultValue, Consumer<Object2IntMap<StatusEffect>> onChanged, Consumer<Setting<Object2IntMap<StatusEffect>>> onModuleActivated, Supplier<Boolean> visible) {
-        super(name, description, defaultValue, onChanged, onModuleActivated, visible);
+    protected StatusEffectAmplifierMapSetting(String name, String description, Object defaultValue, Consumer<Object2IntMap<StatusEffect>> onChanged, Consumer<Setting<Object2IntMap<StatusEffect>>> onModuleActivated, Supplier<Boolean> visible, boolean serialize) {
+        super(name, description, defaultValue, onChanged, onModuleActivated, visible, serialize);
     }
 
     @Override
@@ -55,15 +55,13 @@ public class StatusEffectAmplifierMapSetting extends Setting<Object2IntMap<Statu
     }
 
     @Override
-    public NbtCompound save(NbtCompound tag) {
+    public void save(NbtCompound tag) {
         NbtCompound valueTag = new NbtCompound();
         for (StatusEffect statusEffect : get().keySet()) {
             Identifier id = Registries.STATUS_EFFECT.getId(statusEffect);
             if (id != null) valueTag.putInt(id.toString(), get().getInt(statusEffect));
         }
         tag.put("value", valueTag);
-
-        return tag;
     }
 
     @Override
@@ -86,7 +84,7 @@ public class StatusEffectAmplifierMapSetting extends Setting<Object2IntMap<Statu
 
         @Override
         public StatusEffectAmplifierMapSetting build() {
-            return new StatusEffectAmplifierMapSetting(name, description, defaultValue, onChanged, onModuleActivated, visible);
+            return new StatusEffectAmplifierMapSetting(name, description, defaultValue, onChanged, onModuleActivated, visible, serialize);
         }
     }
 }

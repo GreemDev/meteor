@@ -211,15 +211,18 @@ public class CombatHud extends HudElement {
             try {
                 InventoryScreen.drawEntity(
                     renderer.drawContext,
+                    (int)x,
+                    (int)y,
                     (int) (x + (25 * scale.get())),
                     (int) (y + (66 * scale.get())),
                     (int) (30 * scale.get()),
+                    0,
                     -MathHelper.wrapDegrees(playerEntity.prevYaw + (playerEntity.getYaw() - playerEntity.prevYaw) * mc.getTickDelta()),
-                    -playerEntity.getPitch(), playerEntity
+                    -playerEntity.getPitch(),
+                    playerEntity
                 );
             } catch (Exception e) {
-                Greteor.logger().error("could not render player in CombatHud");
-                Greteor.logger().catching(e);
+                Greteor.logger().error("could not render player entity in CombatHud", e);
             }
 
             // Moving pos to past player model

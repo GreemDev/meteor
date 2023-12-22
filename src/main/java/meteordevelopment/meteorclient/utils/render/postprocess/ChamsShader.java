@@ -42,7 +42,7 @@ public class ChamsShader extends EntityShader {
         try {
             ByteBuffer data = null;
             for (String fileFormat : FILE_FORMATS) {
-                Optional<Resource> optional = KMC.getMeteorResource(mc, "textures/chams." + fileFormat);
+                Optional<Resource> optional = KMC.getMeteorResource("textures/chams." + fileFormat);
                 if (optional.isEmpty() || optional.get().getInputStream() == null) {
                     continue;
                 }

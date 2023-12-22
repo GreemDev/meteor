@@ -18,8 +18,8 @@ public class GenericSetting<T extends ICopyable<T> & ISerializable<T> & IScreenF
         return new Builder<>();
     }
 
-    protected GenericSetting(String name, String description, Object defaultValue, Consumer<T> onChanged, Consumer<Setting<T>> onModuleActivated, Supplier<Boolean> visible) {
-        super(name, description, defaultValue, onChanged, onModuleActivated, visible);
+    protected GenericSetting(String name, String description, Object defaultValue, Consumer<T> onChanged, Consumer<Setting<T>> onModuleActivated, Supplier<Boolean> visible, boolean serialize) {
+        super(name, description, defaultValue, onChanged, onModuleActivated, visible, serialize);
     }
 
     @Override
@@ -41,10 +41,8 @@ public class GenericSetting<T extends ICopyable<T> & ISerializable<T> & IScreenF
     }
 
     @Override
-    public NbtCompound save(NbtCompound tag) {
+    public void save(NbtCompound tag) {
         tag.put("value", get().toTag());
-
-        return tag;
     }
 
     @Override
@@ -61,7 +59,7 @@ public class GenericSetting<T extends ICopyable<T> & ISerializable<T> & IScreenF
 
         @Override
         public GenericSetting<T> build() {
-            return new GenericSetting<>(name, description, defaultValue, onChanged, onModuleActivated, visible);
+            return new GenericSetting<>(name, description, defaultValue, onChanged, onModuleActivated, visible, serialize);
         }
     }
 }

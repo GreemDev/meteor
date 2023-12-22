@@ -31,16 +31,14 @@ public abstract class BlockMixin extends AbstractBlock implements ItemConvertibl
     private static boolean onShouldDrawSide(boolean original, BlockState state, BlockView world, BlockPos pos, Direction side, BlockPos blockPos) {
         Xray xray = Modules.get().get(Xray.class);
 
-        if (xray.isActive()) {
-            return xray.modifyDrawSide(state, world, pos, side, original);
-        }
-
-        return original;
+        return xray.isActive()
+            ? xray.modifyDrawSide(state, world, pos, side, original)
+            : original;
     }
 
     @ModifyReturnValue(method = "getSlipperiness", at = @At("RETURN"))
     public float getSlipperiness(float original) {
-        // For some retarded reason Tweakeroo calls this method before meteor is initialized
+        // Tweakeroo calls this method before meteor is initialized
         if (Modules.get() == null) return original;
 
         Slippy slippy = Modules.get().get(Slippy.class);

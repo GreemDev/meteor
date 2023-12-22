@@ -34,12 +34,14 @@ public abstract class ChatInputSuggestorMixin {
     @Shadow
     protected abstract void showCommandSuggestions();
 
-    @Inject(method = "refresh",
+    @Inject(
+        method = "refresh",
         at = @At(value = "INVOKE", target = "Lcom/mojang/brigadier/StringReader;canRead()Z", remap = false),
         cancellable = true,
-        locals = LocalCapture.CAPTURE_FAILHARD)
+        locals = LocalCapture.CAPTURE_FAILHARD
+    )
     public void onRefresh(CallbackInfo ci, String string, StringReader reader) {
-        String prefix = Config.get().prefix.get();
+        String prefix = Commands.prefix();
         int length = prefix.length();
 
         if (reader.canRead(length) && reader.getString().startsWith(prefix, reader.getCursor())) {

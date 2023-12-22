@@ -5,7 +5,6 @@
 
 package meteordevelopment.meteorclient.gui.widgets;
 
-import kotlin.PreconditionsKt;
 import meteordevelopment.meteorclient.gui.renderer.GuiRenderer;
 import meteordevelopment.meteorclient.gui.tabs.Tab;
 import meteordevelopment.meteorclient.gui.tabs.TabScreen;
@@ -13,9 +12,6 @@ import meteordevelopment.meteorclient.gui.tabs.Tabs;
 import meteordevelopment.meteorclient.gui.widgets.containers.WHorizontalList;
 import meteordevelopment.meteorclient.gui.widgets.pressable.WPressable;
 import meteordevelopment.meteorclient.utils.render.color.Color;
-import net.greemdev.meteor.util.meteor.MetaKt;
-import net.minecraft.client.gui.screen.Screen;
-import org.lwjgl.glfw.GLFW;
 
 import java.util.Objects;
 
@@ -37,11 +33,13 @@ public abstract class WTopBar extends WHorizontalList {
     @Override
     public void init() {
         clear();
-        var tabs = MetaKt.renderOrder(Tabs.get());
+        var tabs = Tabs.renderSections();
 
-        tabs.getFirst().forEach(t -> add(new WTopBarButton(t)));
+        tabs.getLeft().forEach(t -> add(new WTopBarButton(t)));
 
-        tabs.getSecond().forEach(t -> add(new WTopBarButton(t)));
+        add(theme.verticalSeparator(true)).expandWidgetY();
+
+        tabs.getRight().forEach(t -> add(new WTopBarButton(t)));
     }
 
     protected class WTopBarButton extends WPressable {
@@ -64,14 +62,9 @@ public abstract class WTopBar extends WHorizontalList {
 
         @Override
         protected void onPressed(int button) {
-            Screen screen = mc.currentScreen;
-
-            if (!(screen instanceof TabScreen ts) || !ts.tab.equals(tab)) {
-                double mouseX = mc.mouse.getX();
-                double mouseY = mc.mouse.getY();
-
+            if (!(mc.currentScreen instanceof TabScreen ts) || !ts.tab.equals(tab)) {
                 tab.openScreen(theme);
-                glfwSetCursorPos(mc.getWindow().getHandle(), mouseX, mouseY);
+                glfwSetCursorPos(mc.getWindow().getHandle(), mc.mouse.getX(), mc.mouse.getY());
             }
         }
 

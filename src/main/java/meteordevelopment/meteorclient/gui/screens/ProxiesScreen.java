@@ -7,13 +7,11 @@ package meteordevelopment.meteorclient.gui.screens;
 
 import meteordevelopment.meteorclient.gui.GuiTheme;
 import meteordevelopment.meteorclient.gui.WindowScreen;
-import meteordevelopment.meteorclient.gui.renderer.GuiRenderer;
 import meteordevelopment.meteorclient.gui.widgets.WLabel;
 import meteordevelopment.meteorclient.gui.widgets.containers.WHorizontalList;
 import meteordevelopment.meteorclient.gui.widgets.containers.WTable;
 import meteordevelopment.meteorclient.gui.widgets.pressable.WButton;
 import meteordevelopment.meteorclient.gui.widgets.pressable.WCheckbox;
-import meteordevelopment.meteorclient.gui.widgets.pressable.WMinus;
 import meteordevelopment.meteorclient.settings.Settings;
 import meteordevelopment.meteorclient.systems.proxies.Proxies;
 import meteordevelopment.meteorclient.systems.proxies.Proxy;

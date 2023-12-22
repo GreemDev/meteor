@@ -5,7 +5,6 @@
 
 package meteordevelopment.meteorclient.mixin;
 
-import kotlin.jvm.functions.Function1;
 import meteordevelopment.meteorclient.systems.config.Config;
 import net.greemdev.meteor.utils;
 import net.minecraft.client.gui.screen.SplashTextRenderer;
@@ -16,13 +15,8 @@ import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
-import java.util.Arrays;
-import java.util.List;
-import java.util.Random;
-import java.util.concurrent.ThreadLocalRandom;
-
 @Mixin(SplashTextResourceSupplier.class)
-public class SplashTextResourceSupplierMixin {
+public abstract class SplashTextResourceSupplierMixin {
     @Unique
     private boolean override = true;
 

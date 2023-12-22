@@ -45,7 +45,7 @@ public class HudRenderer {
         .maximumSize(4)
         .expireAfterAccess(Duration.ofMinutes(10))
         .removalListener(notification -> {
-            if (notification.wasEvicted()) //noinspection ConstantConditions
+            if (notification.wasEvicted())
                 ((FontHolder) notification.getValue()).destroy();
         })
         .build(CacheLoader.from(HudRenderer::loadFont));
@@ -125,7 +125,7 @@ public class HudRenderer {
     }
 
     public double text(String text, double x, double y, Color color, boolean shadow, double scale) {
-        if (scale == -1) scale = hud.getTextScale();
+        scale = getScale(scale);
 
         if (!hud.hasCustomFont()) {
             VanillaTextRenderer.INSTANCE.scale = scale * 2;
@@ -160,13 +160,14 @@ public class HudRenderer {
 
     public double textWidth(String text, boolean shadow, double scale) {
         if (text.isEmpty()) return 0;
+        scale = getScale(scale);
 
         if (hud.hasCustomFont()) {
             double width = getFont(scale).getWidth(text, text.length());
-            return (width + (shadow ? 1 : 0)) * (scale == -1 ? hud.getTextScale() : scale) + (shadow ? 1 : 0);
+            return (width + (shadow ? 1 : 0)) * scale + (shadow ? 1 : 0);
         }
 
-        VanillaTextRenderer.INSTANCE.scale = (scale == -1 ? hud.getTextScale() : scale) * 2;
+        VanillaTextRenderer.INSTANCE.scale = scale * 2;
         return VanillaTextRenderer.INSTANCE.getWidth(text, shadow);
     }
     public double textWidth(String text, boolean shadow) {
@@ -180,12 +181,14 @@ public class HudRenderer {
     }
 
     public double textHeight(boolean shadow, double scale) {
+        scale = getScale(scale);
+
         if (hud.hasCustomFont()) {
             double height = getFont(scale).getHeight() + 1;
-            return (height + (shadow ? 1 : 0)) * (scale == -1 ? hud.getTextScale() : scale);
+            return (height + (shadow ? 1 : 0)) * scale;
         }
 
-        VanillaTextRenderer.INSTANCE.scale = (scale == -1 ? hud.getTextScale() : scale) * 2;
+        VanillaTextRenderer.INSTANCE.scale = scale * 2;
         return VanillaTextRenderer.INSTANCE.getHeight(shadow);
     }
     public double textHeight(boolean shadow) {
@@ -205,6 +208,10 @@ public class HudRenderer {
 
     public void item(ItemStack itemStack, int x, int y, float scale, boolean overlay) {
         RenderUtils.drawItem(drawContext, itemStack, x, y, scale, overlay);
+    }
+
+    public double getScale(double scale) {
+        return scale == -1 ? hud.getTextScale() : scale;
     }
 
     private FontHolder getFontHolder(double scale, boolean render) {

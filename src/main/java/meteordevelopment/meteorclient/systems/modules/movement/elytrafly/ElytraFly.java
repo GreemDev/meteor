@@ -20,7 +20,7 @@ import meteordevelopment.meteorclient.systems.modules.movement.elytrafly.modes.B
 import meteordevelopment.meteorclient.systems.modules.movement.elytrafly.modes.Vanilla;
 import meteordevelopment.meteorclient.systems.modules.player.ChestSwap;
 import meteordevelopment.meteorclient.systems.modules.player.Rotation;
-import meteordevelopment.meteorclient.systems.modules.render.Freecam;
+import meteordevelopment.meteorclient.systems.modules.movement.Freecam;
 import meteordevelopment.orbit.EventHandler;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;

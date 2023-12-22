@@ -15,6 +15,7 @@ import meteordevelopment.meteorclient.utils.render.color.SettingColor;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.nbt.NbtElement;
 import net.minecraft.nbt.NbtList;
+import org.jetbrains.annotations.NotNull;
 
 import java.util.ArrayList;
 import java.util.Iterator;
@@ -94,11 +95,11 @@ public class Settings implements ISerializable<Settings>, Iterable<SettingGroup>
     public void unregisterColorSettings() {
         for (SettingGroup group : this) {
             for (Setting<?> setting : group) {
-                if (setting instanceof ColorSetting) {
-                    RainbowColors.removeSetting((Setting<SettingColor>) setting);
+                if (setting instanceof ColorSetting cs) {
+                    RainbowColors.removeSetting(cs);
                 }
-                else if (setting instanceof ColorListSetting) {
-                    RainbowColors.removeSettingList((Setting<List<SettingColor>>) setting);
+                else if (setting instanceof ColorListSetting cls) {
+                    RainbowColors.removeSettingList(cls);
                 }
             }
         }
@@ -120,6 +121,7 @@ public class Settings implements ISerializable<Settings>, Iterable<SettingGroup>
     }
 
     @Override
+    @NotNull
     public Iterator<SettingGroup> iterator() {
         return groups.iterator();
     }

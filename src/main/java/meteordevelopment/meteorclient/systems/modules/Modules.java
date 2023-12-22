@@ -8,6 +8,7 @@ package meteordevelopment.meteorclient.systems.modules;
 import com.google.common.collect.Ordering;
 import com.mojang.datafixers.util.Pair;
 import com.mojang.serialization.Lifecycle;
+import it.unimi.dsi.fastutil.objects.Reference2ReferenceOpenHashMap;
 import meteordevelopment.meteorclient.MeteorClient;
 import meteordevelopment.meteorclient.events.game.GameJoinedEvent;
 import meteordevelopment.meteorclient.events.game.GameLeftEvent;
@@ -20,18 +21,6 @@ import meteordevelopment.meteorclient.settings.Setting;
 import meteordevelopment.meteorclient.settings.SettingGroup;
 import meteordevelopment.meteorclient.systems.System;
 import meteordevelopment.meteorclient.systems.Systems;
-import meteordevelopment.meteorclient.systems.modules.combat.*;
-import meteordevelopment.meteorclient.systems.modules.misc.*;
-import meteordevelopment.meteorclient.systems.modules.misc.swarm.Swarm;
-import meteordevelopment.meteorclient.systems.modules.movement.*;
-import meteordevelopment.meteorclient.systems.modules.movement.elytrafly.ElytraFly;
-import meteordevelopment.meteorclient.systems.modules.movement.speed.Speed;
-import meteordevelopment.meteorclient.systems.modules.player.*;
-import meteordevelopment.meteorclient.systems.modules.render.*;
-import meteordevelopment.meteorclient.systems.modules.render.blockesp.BlockESP;
-import meteordevelopment.meteorclient.systems.modules.render.marker.Marker;
-import meteordevelopment.meteorclient.systems.modules.world.Timer;
-import meteordevelopment.meteorclient.systems.modules.world.*;
 import meteordevelopment.meteorclient.utils.Utils;
 import meteordevelopment.meteorclient.utils.misc.Keybind;
 import meteordevelopment.meteorclient.utils.misc.MeteorIdentifier;
@@ -40,6 +29,9 @@ import meteordevelopment.meteorclient.utils.misc.input.Input;
 import meteordevelopment.meteorclient.utils.misc.input.KeyAction;
 import meteordevelopment.orbit.EventHandler;
 import meteordevelopment.orbit.EventPriority;
+import net.greemdev.meteor.util.Reflection;
+import net.greemdev.meteor.util.misc.Nbt;
+import net.greemdev.meteor.utils;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.nbt.NbtElement;
 import net.minecraft.nbt.NbtList;
@@ -51,6 +43,7 @@ import net.minecraft.registry.entry.RegistryEntryList;
 import net.minecraft.registry.tag.TagKey;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.math.random.Random;
+import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.lwjgl.glfw.GLFW;
 
@@ -58,7 +51,6 @@ import java.io.File;
 import java.util.*;
 import java.util.concurrent.atomic.AtomicReference;
 import java.util.function.Predicate;
-import java.util.function.Supplier;
 import java.util.stream.Stream;
 
 import static meteordevelopment.meteorclient.MeteorClient.mc;
@@ -69,8 +61,8 @@ public class Modules extends System<Modules> {
     private static final List<Category> CATEGORIES = new ArrayList<>();
 
     private final List<Module> modules = new ArrayList<>();
-    private final Map<Class<? extends Module>, Module> moduleInstances = new HashMap<>();
-    private final Map<Category, List<Module>> groups = new HashMap<>();
+    private final Map<Class<? extends Module>, Module> moduleInstances = new Reference2ReferenceOpenHashMap<>();
+    private final Map<Category, List<Module>> groups = new Reference2ReferenceOpenHashMap<>();
 
     private final List<Module> active = new ArrayList<>();
     private Module moduleToBind;
@@ -85,12 +77,15 @@ public class Modules extends System<Modules> {
 
     @Override
     public void init() {
-        initCombat();
-        initPlayer();
-        initMovement();
-        initRender();
-        initWorld();
-        initMisc();
+        MeteorClient.LOG.info("Modules loaded in {}ms", utils.measureTime(() -> {
+            Reflection.streamSubtypes(Module.class, Modules.class.getPackageName())
+                .map(Reflection::callNoArgsConstructor)
+                .filter(Objects::nonNull)
+                .filter(Module::isRegisterable)
+                .forEach(this::register);
+
+            sortModules();
+        }));
     }
 
     @Override
@@ -117,7 +112,7 @@ public class Modules extends System<Modules> {
         CATEGORIES.add(category);
     }
 
-    public static Iterable<Category> loopCategories() {
+    public static Iterable<Category> categories() {
         return CATEGORIES;
     }
 
@@ -142,17 +137,46 @@ public class Modules extends System<Modules> {
         return null;
     }
 
+    public Module getByTitle(String name) {
+        for (Module module : moduleInstances.values()) {
+            if (module.title.equalsIgnoreCase(name)) return module;
+        }
+
+        return null;
+    }
+
     public boolean isActive(Class<? extends Module> klass) {
         Module module = get(klass);
         return module != null && module.isActive();
     }
 
+    public boolean isHidden(Class<? extends Module> klass) {
+        Module module = get(klass);
+        return module != null && module.isHidden();
+    }
+
     public List<Module> getGroup(Category category) {
-        return groups.computeIfAbsent(category, category1 -> new ArrayList<>());
+        return groups.computeIfAbsent(category, xX_69_Xx -> new ArrayList<>());
     }
 
     public Collection<Module> getAll() {
         return moduleInstances.values();
+    }
+
+    public Stream<Module> stream() {
+        return moduleInstances.values().stream();
+    }
+
+    public Collection<Module> getAllHidden() {
+        return stream()
+            .filter(Module::isHidden)
+            .toList();
+    }
+
+    public Collection<Module> getAllVisible() {
+        return stream()
+            .filter(Predicate.not(Module::isHidden))
+            .toList();
     }
 
     public List<Module> getList() {
@@ -272,7 +296,7 @@ public class Modules extends System<Modules> {
             for (Module module : moduleInstances.values()) {
                 if (matches.test(module.keybind)) {
                     module.toggle();
-                    module.sendToggledMsg();;
+                    module.sendToggledMsg();
                 }
             }
         }
@@ -326,23 +350,21 @@ public class Modules extends System<Modules> {
 
     @Override
     public NbtCompound toTag() {
-        NbtCompound tag = new NbtCompound();
-
-        NbtList modulesTag = new NbtList();
-        for (Module module : getAll()) {
-            NbtCompound moduleTag = module.toTag();
-            if (moduleTag != null) modulesTag.add(moduleTag);
-        }
-        tag.put("modules", modulesTag);
-
-        return tag;
+        return Nbt.newCompound(tag ->
+            tag.put("modules", Nbt.newList(list ->
+                stream().forEach(module -> {
+                    NbtCompound moduleTag = module.toTag();
+                    if (moduleTag != null) list.add(moduleTag);
+                })
+            ))
+        );
     }
 
     @Override
     public Modules fromTag(NbtCompound tag) {
         disableAll();
 
-        NbtList modulesTag = tag.getList("modules", 10);
+        NbtList modulesTag = tag.getList("modules", NbtElement.COMPOUND_TYPE);
         for (NbtElement moduleTagI : modulesTag) {
             NbtCompound moduleTag = (NbtCompound) moduleTagI;
             Module module = get(moduleTag.getString("name"));
@@ -354,7 +376,23 @@ public class Modules extends System<Modules> {
 
     // INIT MODULES
 
-    public void add(Module module) {
+    public static void add(Module module) {
+        Modules modules = get();
+        if (modules != null)
+            modules.register(module);
+    }
+
+    public static void addAll(Collection<Module> modules) {
+        Modules mdls = get();
+        if (mdls != null)
+            mdls.registerAll(modules);
+    }
+
+    public void registerAll(Collection<Module> modules) {
+        modules.forEach(this::register);
+    }
+
+    public void register(Module module) {
         // Check if the module's category is registered
         if (!CATEGORIES.contains(module.category)) {
             throw new RuntimeException("Modules.addModule - Module's category was not registered.");
@@ -384,191 +422,6 @@ public class Modules extends System<Modules> {
         module.settings.registerColorSettings(module);
     }
 
-    private void initCombat() {
-        add(new AnchorAura());
-        add(new AntiAnvil());
-        add(new AntiBed());
-        add(new ArrowDodge());
-        add(new AutoAnvil());
-        add(new AutoArmor());
-        add(new AutoCity());
-        add(new AutoEXP());
-        add(new AutoTotem());
-        add(new AutoTrap());
-        add(new AutoWeapon());
-        add(new AutoWeb());
-        add(new BedAura());
-        add(new BowAimbot());
-        add(new BowSpam());
-        add(new Burrow());
-        add(new Criticals());
-        add(new CrystalAura());
-        add(new Hitboxes());
-        add(new HoleFiller());
-        add(new KillAura());
-        add(new Offhand());
-        add(new Quiver());
-        add(new SelfAnvil());
-        add(new SelfTrap());
-        add(new SelfWeb());
-        add(new Surround());
-    }
-
-    private void initPlayer() {
-        add(new AntiHunger());
-        add(new AutoEat());
-        add(new AutoFish());
-        add(new AutoGap());
-        add(new AutoMend());
-        add(new AutoReplenish());
-        add(new AutoTool());
-        add(new ChestSwap());
-        add(new EXPThrower());
-        add(new FakePlayer());
-        add(new FastUse());
-        add(new GhostHand());
-        add(new LiquidInteract());
-        add(new MiddleClickExtra());
-        add(new BreakDelay());
-        add(new NoInteract());
-        add(new NoMiningTrace());
-        add(new NoRotate());
-        add(new PacketMine());
-        add(new Portals());
-        add(new PotionSaver());
-        add(new PotionSpoof());
-        add(new Reach());
-        add(new Rotation());
-        add(new SpeedMine());
-    }
-
-    private void initMovement() {
-        add(new AirJump());
-        add(new Anchor());
-        add(new AntiAFK());
-        add(new AntiVoid());
-        add(new AutoJump());
-        add(new AutoWalk());
-        add(new Blink());
-        add(new BoatFly());
-        add(new ClickTP());
-        add(new ElytraBoost());
-        add(new ElytraFly());
-        add(new EntityControl());
-        add(new EntitySpeed());
-        add(new FastClimb());
-        add(new Flight());
-        add(new GUIMove());
-        add(new HighJump());
-        add(new Jesus());
-        add(new LongJump());
-        add(new NoFall());
-        add(new NoSlow());
-        add(new Parkour());
-        add(new ReverseStep());
-        add(new SafeWalk());
-        add(new Scaffold());
-        add(new Slippy());
-        add(new Sneak());
-        add(new Speed());
-        add(new Spider());
-        add(new Sprint());
-        add(new Step());
-        add(new TridentBoost());
-        add(new Velocity());
-    }
-
-    private void initRender() {
-        add(new BetterTooltips());
-        add(new BlockSelection());
-        add(new BossStack());
-        add(new Breadcrumbs());
-        add(new BreakIndicators());
-        add(new CameraTweaks());
-        add(new Chams());
-        add(new CityESP());
-        add(new EntityOwner());
-        add(new ESP());
-        add(new Freecam());
-        add(new FreeLook());
-        add(new Fullbright());
-        add(new HandView());
-        add(new HoleESP());
-        add(new ItemPhysics());
-        add(new ItemHighlight());
-        add(new LightOverlay());
-        add(new LogoutSpots());
-        add(new Marker());
-        add(new Nametags());
-        add(new NoRender());
-        add(new BlockESP());
-        add(new StorageESP());
-        add(new TimeChanger());
-        add(new Tracers());
-        add(new Trail());
-        add(new Trajectories());
-        add(new UnfocusedCPU());
-        add(new VoidESP());
-        add(new WallHack());
-        add(new WaypointsModule());
-        add(new Xray());
-        add(new Zoom());
-        add(new Blur());
-        add(new PopChams());
-        add(new TunnelESP());
-    }
-
-    private void initWorld() {
-        add(new AirPlace());
-        add(new Ambience());
-        add(new Collisions());
-        add(new AutoBreed());
-        add(new AutoBrewer());
-        add(new AutoMount());
-        add(new AutoNametag());
-        add(new AutoShearer());
-        add(new AutoSign());
-        add(new AutoSmelter());
-        add(new BuildHeight());
-        add(new EChestFarmer());
-        add(new EndermanLook());
-        add(new Excavator());
-        add(new Flamethrower());
-        add(new InfinityMiner());
-        add(new LiquidFiller());
-        add(new MountBypass());
-        add(new NoGhostBlocks());
-        add(new Nuker());
-        add(new StashFinder());
-        add(new SpawnProofer());
-        add(new Timer());
-        add(new VeinMiner());
-        add(new HighwayBuilder());
-    }
-
-    private void initMisc() {
-        add(new Swarm());
-        add(new AntiPacketKick());
-        add(new AutoClicker());
-        add(new AutoLog());
-        add(new AutoReconnect());
-        add(new AutoRespawn());
-        add(new BetterBeacons());
-        add(new BetterChat());
-        add(new BetterTab());
-        add(new BookBot());
-        add(new DiscordPresence());
-        add(new MessageAura());
-        add(new NameProtect());
-        add(new Notebot());
-        add(new Notifier());
-        add(new PacketCanceller());
-        add(new SoundBlocker());
-        add(new Spam());
-        add(new ServerSpoof());
-        add(new InventoryTweaks());
-    }
-
     public static class ModuleRegistry extends SimpleRegistry<Module> {
         public ModuleRegistry() {
             super(RegistryKey.ofRegistry(new MeteorIdentifier("modules")), Lifecycle.stable());
@@ -577,6 +430,25 @@ public class Modules extends System<Modules> {
         @Override
         public int size() {
             return Modules.get().getAll().size();
+        }
+
+        @NotNull
+        @Override
+        public Iterator<Module> iterator() {
+            return Modules.get().getAll().iterator();
+            /*return new Iterator<>() {
+                private final Iterator<Module> iterator = Modules.get().getAll().iterator();
+
+                @Override
+                public boolean hasNext() {
+                    return iterator.hasNext();
+                }
+
+                @Override
+                public Module next() {
+                    return iterator.next();
+                }
+            };*/
         }
 
         @Override
@@ -627,11 +499,6 @@ public class Modules extends System<Modules> {
         @Override
         public Module get(int index) {
             return null;
-        }
-
-        @Override
-        public Iterator<Module> iterator() {
-            return new ModuleIterator();
         }
 
         @Override
@@ -704,19 +571,5 @@ public class Modules extends System<Modules> {
 
         @Override
         public void populateTags(Map<TagKey<Module>, List<RegistryEntry<Module>>> tagEntries) {}
-
-        private static class ModuleIterator implements Iterator<Module> {
-            private final Iterator<Module> iterator = Modules.get().getAll().iterator();
-
-            @Override
-            public boolean hasNext() {
-                return iterator.hasNext();
-            }
-
-            @Override
-            public Module next() {
-                return iterator.next();
-            }
-        }
     }
 }

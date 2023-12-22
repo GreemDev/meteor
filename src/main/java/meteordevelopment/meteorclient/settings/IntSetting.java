@@ -19,8 +19,8 @@ public class IntSetting extends Setting<Integer> {
     public final int sliderMin, sliderMax;
     public final boolean noSlider;
 
-    protected IntSetting(String name, String description, Object defaultValue, Consumer<Integer> onChanged, Consumer<Setting<Integer>> onModuleActivated, Supplier<Boolean> visible, int min, int max, int sliderMin, int sliderMax, boolean noSlider) {
-        super(name, description, defaultValue, onChanged, onModuleActivated, visible);
+    protected IntSetting(String name, String description, Object defaultValue, Consumer<Integer> onChanged, Consumer<Setting<Integer>> onModuleActivated, Supplier<Boolean> visible, boolean serialize, int min, int max, int sliderMin, int sliderMax, boolean noSlider) {
+        super(name, description, defaultValue, onChanged, onModuleActivated, visible, serialize);
 
         this.min = min;
         this.max = max;
@@ -44,10 +44,8 @@ public class IntSetting extends Setting<Integer> {
     }
 
     @Override
-    public NbtCompound save(NbtCompound tag) {
+    public void save(NbtCompound tag) {
         tag.putInt("value", get());
-
-        return tag;
     }
 
     @Override
@@ -101,7 +99,7 @@ public class IntSetting extends Setting<Integer> {
 
         @Override
         public IntSetting build() {
-            return new IntSetting(name, description, defaultValue, onChanged, onModuleActivated, visible, min, max, Math.max(sliderMin, min), Math.min(sliderMax, max), noSlider);
+            return new IntSetting(name, description, defaultValue, onChanged, onModuleActivated, visible, serialize, min, max, Math.max(sliderMin, min), Math.min(sliderMax, max), noSlider);
         }
     }
 }

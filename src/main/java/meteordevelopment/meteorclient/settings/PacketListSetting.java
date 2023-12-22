@@ -28,8 +28,8 @@ public class PacketListSetting extends Setting<Set<Class<? extends Packet<?>>>> 
     public final Predicate<Class<? extends Packet<?>>> filter;
     private static List<String> suggestions;
 
-    protected PacketListSetting(String name, String description, Object defaultValue, Consumer<Set<Class<? extends Packet<?>>>> onChanged, Consumer<Setting<Set<Class<? extends Packet<?>>>>> onModuleActivated, Predicate<Class<? extends Packet<?>>> filter, Supplier<Boolean> visible) {
-        super(name, description, defaultValue, onChanged, onModuleActivated, visible);
+    protected PacketListSetting(String name, String description, Object defaultValue, Consumer<Set<Class<? extends Packet<?>>>> onChanged, Consumer<Setting<Set<Class<? extends Packet<?>>>>> onModuleActivated, Predicate<Class<? extends Packet<?>>> filter, Supplier<Boolean> visible, boolean serialize) {
+        super(name, description, defaultValue, onChanged, onModuleActivated, visible, serialize);
 
         this.filter = filter;
     }
@@ -62,7 +62,7 @@ public class PacketListSetting extends Setting<Set<Class<? extends Packet<?>>>> 
     @Override
     public List<String> getSuggestions() {
         if (suggestions == null) {
-            suggestions = new ArrayList<>(PacketUtils.getC2SPackets().size() + PacketUtils.getS2CPackets().size());
+            suggestions = new ArrayList<>(PacketUtils.REGISTRY.size());
 
             for (Class<? extends Packet<?>> packet : PacketUtils.getC2SPackets()) {
                 suggestions.add(PacketUtils.getName(packet));
@@ -77,14 +77,12 @@ public class PacketListSetting extends Setting<Set<Class<? extends Packet<?>>>> 
     }
 
     @Override
-    public NbtCompound save(NbtCompound tag) {
+    public void save(NbtCompound tag) {
         NbtList valueTag = new NbtList();
         for (Class<? extends Packet<?>> packet : get()) {
             valueTag.add(NbtString.of(PacketUtils.getName(packet)));
         }
         tag.put("value", valueTag);
-
-        return tag;
     }
 
     @Override
@@ -116,7 +114,7 @@ public class PacketListSetting extends Setting<Set<Class<? extends Packet<?>>>> 
 
         @Override
         public PacketListSetting build() {
-            return new PacketListSetting(name, description, defaultValue, onChanged, onModuleActivated, filter, visible);
+            return new PacketListSetting(name, description, defaultValue, onChanged, onModuleActivated, filter, visible, serialize);
         }
     }
 }

@@ -23,7 +23,7 @@ object PrivateChat : GModule("private-chat", "Turns your chat into a private con
 
     val commandFormat by sg string {
         name("command-format")
-        description("The format of the message command on the server.\n2 placeholders, player and message, NOT Starscript.")
+        description("The format of the message command on the server.\n2 placeholders, player and message, &4NOT Starscript&r.")
         defaultValue("msg {player} {message}")
     }
 

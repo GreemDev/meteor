@@ -121,17 +121,16 @@ public class LagNotifierHud extends HudElement {
             return;
         }
 
-        float timeSinceLastTick = TickRate.INSTANCE.getTimeSinceLastTick();
+        float timeSinceLastTick = TickRate.timeSinceLastTick();
 
         if (timeSinceLastTick >= 1f) {
-            Color color =
+            render(renderer, "%.1f".formatted(timeSinceLastTick),
                 timeSinceLastTick > 10
                     ? color3.get()
                     : timeSinceLastTick > 3
                         ? color2.get()
-                        : color1.get();
-
-            render(renderer, String.format("%.1f", timeSinceLastTick), color);
+                        : color1.get()
+            );
         }
     }
 

@@ -170,12 +170,12 @@ public abstract class WidgetScreen extends Screen {
     }
 
     @Override
-    public boolean mouseScrolled(double mouseX, double mouseY, double amount) {
+    public boolean mouseScrolled(double mouseX, double mouseY, double horizontalAmount, double verticalAmount) {
         if (locked) return false;
 
-        root.mouseScrolled(amount);
+        root.mouseScrolled(verticalAmount);
 
-        return super.mouseScrolled(mouseX, mouseY, amount);
+        return super.mouseScrolled(mouseX, mouseY, horizontalAmount, verticalAmount);
     }
 
     @Override
@@ -265,7 +265,7 @@ public abstract class WidgetScreen extends Screen {
 
     @Override
     public void render(DrawContext context, int mouseX, int mouseY, float delta) {
-        if (!Utils.canUpdate()) renderBackground(context);
+        if (!Utils.canUpdate()) renderBackground(context, mouseX, mouseY, delta);
 
         double s = mc.getWindow().getScaleFactor();
         mouseX *= (int) mc.getWindow().getScaleFactor();

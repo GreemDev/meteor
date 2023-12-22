@@ -17,7 +17,7 @@ import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
 @Mixin(ConnectScreen.class)
-public class ConnectScreenMixin {
+public abstract class ConnectScreenMixin {
     @Inject(method = "connect(Lnet/minecraft/client/MinecraftClient;Lnet/minecraft/client/network/ServerAddress;Lnet/minecraft/client/network/ServerInfo;)V", at = @At("HEAD"))
     private void tryConnectEvent(MinecraftClient client, ServerAddress address, ServerInfo info, CallbackInfo ci) {
         MeteorClient.EVENT_BUS.post(ServerConnectBeginEvent.get(address, info));

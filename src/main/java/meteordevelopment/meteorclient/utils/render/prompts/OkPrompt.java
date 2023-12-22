@@ -13,6 +13,7 @@ import meteordevelopment.meteorclient.gui.widgets.containers.WHorizontalList;
 import meteordevelopment.meteorclient.gui.widgets.pressable.WButton;
 import meteordevelopment.meteorclient.gui.widgets.pressable.WCheckbox;
 import meteordevelopment.meteorclient.systems.config.Config;
+import meteordevelopment.meteorclient.utils.render.RenderUtils;
 import net.greemdev.meteor.type.MeteorPromptException;
 import net.minecraft.client.gui.screen.Screen;
 import org.jetbrains.annotations.Nullable;
@@ -85,12 +86,7 @@ public class OkPrompt {
         if (id == null) this.id(this.title);
         if (!requiredToDisplay && Config.get().dontShowAgainPrompts.contains(id)) return false;
 
-        if (!RenderSystem.isOnRenderThread()) {
-            RenderSystem.recordRenderCall(() -> mc.setScreen(new PromptScreen(theme)));
-        }
-        else {
-            mc.setScreen(new PromptScreen(theme));
-        }
+        RenderUtils.executeOnRenderThread(() -> mc.setScreen(createScreen()));
         return true;
     }
 
@@ -102,34 +98,34 @@ public class OkPrompt {
         throw new MeteorPromptException(cause, () -> this);
     }
 
-    private class PromptScreen extends WindowScreen {
-        public PromptScreen(GuiTheme theme) {
-            super(theme, OkPrompt.this.title);
+    public WindowScreen createScreen() {
+        WindowScreen screen = new WindowScreen(theme, title) {
 
-            this.parent = OkPrompt.this.parent;
-        }
+            WCheckbox dontShowAgainCheckbox = null;
 
-        WCheckbox dontShowAgainCheckbox = null;
+            @Override
+            public void initWidgets() {
+                for (String line : messages) add(theme.label(line)).expandX();
+                add(theme.horizontalSeparator()).expandX();
 
-        @Override
-        public void initWidgets() {
-            for (String line : messages) add(theme.label(line)).expandX();
-            add(theme.horizontalSeparator()).expandX();
-
-            if (!requiredToDisplay) {
-                WHorizontalList checkboxContainer = add(theme.horizontalList()).expandX().widget();
-                dontShowAgainCheckbox = checkboxContainer.add(theme.checkbox(false)).widget();
-                checkboxContainer.add(theme.label("Don't show this again.")).expandX();
-            }
-
-            WHorizontalList list = add(theme.horizontalList()).expandX().widget();
-            list.add(theme.button("Ok", () -> {
                 if (!requiredToDisplay) {
-                    if (dontShowAgainCheckbox.checked) Config.get().dontShowAgainPrompts.add(id);
+                    WHorizontalList checkboxContainer = add(theme.horizontalList()).expandX().widget();
+                    dontShowAgainCheckbox = checkboxContainer.add(theme.checkbox()).widget();
+                    checkboxContainer.add(theme.label("Don't show this again.")).expandX();
                 }
-                onOk.run();
-                close();
-            })).expandX();
-        }
+
+                within(add(theme.horizontalList()).expandX(), l ->
+                    l.add(theme.button("Ok", () -> {
+                        if (!requiredToDisplay) {
+                            if (dontShowAgainCheckbox.checked) Config.get().dontShowAgainPrompts.add(id);
+                        }
+                        onOk.run();
+                        close();
+                    })).expandX()
+                );
+            }
+        };
+        screen.parent = parent;
+        return screen;
     }
 }

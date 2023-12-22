@@ -7,7 +7,11 @@ package meteordevelopment.meteorclient.utils.network;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
+import meteordevelopment.meteorclient.MeteorClient;
+import meteordevelopment.meteorclient.systems.config.Config;
 import meteordevelopment.meteorclient.utils.other.JsonDateDeserializer;
+import net.greemdev.meteor.util.meteor.Meteor;
+import net.greemdev.meteor.utils;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -37,12 +41,12 @@ public class Http {
         private HttpRequest.Builder builder;
         private Method method;
 
-        public Request(Method method, String url) {
+        Request(Method method, String url) {
             try {
-                this.builder = HttpRequest.newBuilder().uri(new URI(url)).header("User-Agent", "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/112.0.0.0 Safari/537.36");
+                this.builder = HttpRequest.newBuilder().uri(new URI(url)).header("User-Agent", Config.getUserAgent());
                 this.method = method;
             } catch (URISyntaxException e) {
-                e.printStackTrace();
+                MeteorClient.LOG.error("Invalid URI passed to an HTTP request", e);
             }
         }
 
@@ -92,7 +96,7 @@ public class Http {
                 var res = CLIENT.send(builder.build(), responseBodyHandler);
                 return res.statusCode() == 200 ? res.body() : null;
             } catch (IOException | InterruptedException e) {
-                e.printStackTrace();
+                MeteorClient.LOG.error("Error sending HTTP request", e);
                 return null;
             }
         }
@@ -114,8 +118,11 @@ public class Http {
         }
 
         public <T> T sendJson(Type type) {
-            InputStream in = _send("application/json", HttpResponse.BodyHandlers.ofInputStream());
-            return in == null ? null : GSON.fromJson(new InputStreamReader(in), type);
+            return utils.let(_send("application/json", HttpResponse.BodyHandlers.ofInputStream()), in ->
+                in != null
+                    ? GSON.fromJson(new InputStreamReader(in), type)
+                    : null
+            );
         }
     }
 

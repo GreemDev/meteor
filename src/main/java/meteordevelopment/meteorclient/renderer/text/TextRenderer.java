@@ -8,6 +8,7 @@ package meteordevelopment.meteorclient.renderer.text;
 import meteordevelopment.meteorclient.renderer.Fonts;
 import meteordevelopment.meteorclient.systems.config.Config;
 import meteordevelopment.meteorclient.utils.render.color.Color;
+import net.greemdev.meteor.util.meteor.LegacyText;
 import net.minecraft.client.util.math.MatrixStack;
 
 public interface TextRenderer {
@@ -32,6 +33,18 @@ public interface TextRenderer {
 
     double render(String text, double x, double y, Color color, boolean shadow);
     default double render(String text, double x, double y, Color color) { return render(text, x, y, color, false); }
+
+    default void renderLegacy(String text, double x, double y, Color color, boolean shadow) {
+        LegacyText.render(this, text, x, y, color, shadow);
+    }
+
+    default void renderLegacy(String text, double x, double y, Color color) {
+        renderLegacy(text, x, y, color, false);
+    }
+
+    default void renderLegacy(String text, double x, double y) {
+        renderLegacy(text, x, y, Color.WHITE, false);
+    }
 
     boolean isBuilding();
 

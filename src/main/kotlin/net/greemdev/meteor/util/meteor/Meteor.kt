@@ -23,6 +23,8 @@ import meteordevelopment.meteorclient.systems.profiles.Profiles
 import meteordevelopment.meteorclient.systems.proxies.Proxies
 import meteordevelopment.meteorclient.systems.waypoints.Waypoint
 import meteordevelopment.meteorclient.systems.waypoints.Waypoints
+import meteordevelopment.meteorclient.utils.misc.MeteorIdentifier
+import net.greemdev.meteor.Initializer
 import net.greemdev.meteor.cast
 import net.greemdev.meteor.invoke
 import net.greemdev.meteor.invoking
@@ -31,10 +33,11 @@ import java.util.*
 import java.util.function.Consumer
 import kotlin.reflect.KClass
 
+fun resource(path: String) = MeteorIdentifier(path)
+
 object Meteor {
 
-    @JvmStatic
-    @get:JvmName("get")
+    @JvmField
     val client: MeteorClient = MeteorClient.INSTANCE
 
     @JvmStatic
@@ -69,13 +72,15 @@ object Meteor {
 
     @JvmStatic
     fun module(name: String): Module = modules().get(name)
-    inline fun <reified T : Module> module(): T = modules().get(T::class.java)
-    inline fun <reified T : Module> module(func: T.() -> Unit) = modules().get(T::class.java).func()
+    inline fun <reified T : Module> module(): T = module(T::class.java)
+    inline fun <reified T : Module> module(func: Initializer<T>) = module(T::class.java).func()
 
     @JvmStatic
     fun <T : Module> module(moduleClass: Class<T>, func: Consumer<T>) = func(module(moduleClass))
     @JvmStatic
     fun <T : Module> module(moduleClass: Class<T>): T = modules().get(moduleClass)
+    @JvmStatic
+    fun <T : Module> isModuleActive(moduleClass: Class<T>) = modules().isActive(moduleClass)
 
     inline fun <reified T : Command> command(): T = Commands.get(T::class.java).cast()
 

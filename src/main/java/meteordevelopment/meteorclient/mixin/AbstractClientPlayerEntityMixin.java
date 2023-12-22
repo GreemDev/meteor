@@ -19,12 +19,7 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 import static meteordevelopment.meteorclient.MeteorClient.mc;
 
 @Mixin(AbstractClientPlayerEntity.class)
-public class AbstractClientPlayerEntityMixin {
-    @Inject(method = "getCapeTexture", at = @At("HEAD"), cancellable = true)
-    private void onGetCapeTexture(CallbackInfoReturnable<Identifier> info) {
-        Identifier id = Capes.get((PlayerEntity) (Object) this);
-        if (id != null) info.setReturnValue(id);
-    }
+public abstract class AbstractClientPlayerEntityMixin {
 
     // Player model rendering in main menu
 

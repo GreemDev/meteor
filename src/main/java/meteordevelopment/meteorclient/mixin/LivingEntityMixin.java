@@ -32,6 +32,7 @@ import net.minecraft.world.World;
 import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
+import org.spongepowered.asm.mixin.Unique;
 import org.spongepowered.asm.mixin.injection.*;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
@@ -65,7 +66,7 @@ public abstract class LivingEntityMixin extends Entity {
     }
 
     @Redirect(method = "travel", at = @At(value = "INVOKE", target = "Lnet/minecraft/entity/LivingEntity;hasNoGravity()Z"))
-    private boolean travelHasNoGravityProxy(LivingEntity self) {
+    private boolean proxy$travel$hasNoGravity(LivingEntity self) {
         if (activeStatusEffects.containsKey(StatusEffects.LEVITATION) && Modules.get().get(PotionSpoof.class).shouldBlock(StatusEffects.LEVITATION)) {
             return !Modules.get().get(PotionSpoof.class).applyGravity.get();
         }
@@ -103,6 +104,7 @@ public abstract class LivingEntityMixin extends Entity {
         return original;
     }
 
+    @Unique
     private boolean previousElytra = false;
 
     @Inject(method = "isFallFlying", at = @At("TAIL"), cancellable = true)

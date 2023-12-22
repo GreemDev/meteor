@@ -76,10 +76,14 @@ public class MeteorTextHud {
     }
 
     public static HudElementInfo<TextHud>.Preset addPreset(String title, String text, String condition) {
-        return addPreset(title, text, -1, TextHud.Shown.WhenTrue, condition);
+        return addPreset(title, text, condition, -1);
+    }
+
+    public static HudElementInfo<TextHud>.Preset addPreset(String title, String text, String condition, int updateDelay) {
+        return addPreset(title, text, updateDelay, TextHud.Shown.WhenTrue, condition);
     }
 
     public static HudElementInfo<TextHud>.Preset addPreset(String title, String text) {
-        return addPreset(title, text, -1, TextHud.Shown.Always, null);
+        return addPreset(title, text, -1);
     }
 }

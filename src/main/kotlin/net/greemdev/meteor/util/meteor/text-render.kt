@@ -7,6 +7,7 @@
 package net.greemdev.meteor.util.meteor
 
 import meteordevelopment.meteorclient.renderer.text.TextRenderer
+import meteordevelopment.meteorclient.utils.render.color.RainbowColor
 import meteordevelopment.meteorclient.utils.render.color.RainbowColors
 import net.greemdev.meteor.*
 import net.greemdev.meteor.util.*
@@ -34,8 +35,9 @@ private val colorCodes = arrayOf(
     0xFFFFFFFF
 )
 
+@JvmOverloads
 @JvmName("render")
-fun TextRenderer.renderLegacy(text: String, startX: Double, startY: Double, color: MeteorColor, shadow: Boolean = false) {
+fun TextRenderer.lr(text: String, startX: Double, startY: Double, color: MeteorColor = MeteorColor.WHITE, shadow: Boolean = false) {
     var x = startX
     var y = startY
 
@@ -64,7 +66,7 @@ fun TextRenderer.renderLegacy(text: String, startX: Double, startY: Double, colo
 
                 currentColor = when (colorCode) {
                     'r' -> color
-                    'z' -> RainbowColors.GLOBAL
+                    'z' -> RainbowColor.current()
                     else -> MeteorColor(colorCodes[colorIndex].toInt())
                 }
 
@@ -75,9 +77,9 @@ fun TextRenderer.renderLegacy(text: String, startX: Double, startY: Double, colo
 }
 
 fun String.onlyVisibleContent() =
-    replace(colorCodeRegex, "")
-    .replace("\n", "")
-    .replace("\r", "")
+    replace(colorCodeRegex, String.empty)
+    .replace("\n", String.empty)
+    .replace("\r", String.empty)
 
 fun needsSpecialRenderer(content: String) = content.lineCount() > 1 || colorCodeRegex in content
 

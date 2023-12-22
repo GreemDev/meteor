@@ -6,6 +6,7 @@
 package meteordevelopment.meteorclient.settings;
 
 import meteordevelopment.meteorclient.systems.modules.Module;
+import meteordevelopment.meteorclient.utils.java;
 import meteordevelopment.meteorclient.utils.Utils;
 import meteordevelopment.meteorclient.utils.misc.ISerializable;
 import net.minecraft.nbt.NbtCompound;
@@ -24,6 +25,8 @@ public abstract class Setting<T> implements ISerializable<T>, Supplier<T> {
     public final String name, title, description;
     private final Supplier<Boolean> visible;
 
+    private final boolean serialize;
+
     protected final Object defaultValue;
     protected T value;
 
@@ -33,7 +36,7 @@ public abstract class Setting<T> implements ISerializable<T>, Supplier<T> {
     public Module module;
     public boolean lastWasVisible;
 
-    public Setting(String name, String description, Object defaultValue, Consumer<T> onChanged, Consumer<Setting<T>> onModuleActivated, Supplier<Boolean> visible) {
+    public Setting(String name, String description, Object defaultValue, Consumer<T> onChanged, Consumer<Setting<T>> onModuleActivated, Supplier<Boolean> visible, boolean serialize) {
         this.name = name;
         this.title = Utils.nameToTitle(name);
         this.description = description;
@@ -41,6 +44,7 @@ public abstract class Setting<T> implements ISerializable<T>, Supplier<T> {
         this.onChanged = onChanged;
         this.onModuleActivated = onModuleActivated;
         this.visible = visible;
+        this.serialize = serialize;
 
         resetImpl();
     }
@@ -67,7 +71,7 @@ public abstract class Setting<T> implements ISerializable<T>, Supplier<T> {
     }
 
     public T getDefaultValue() {
-        return Utils.cast(
+        return java.cast(
             defaultValue instanceof Supplier<?> s
                 ? s.get()
                 : defaultValue
@@ -89,6 +93,10 @@ public abstract class Setting<T> implements ISerializable<T>, Supplier<T> {
 
     public boolean wasChanged() {
         return !Objects.equals(value, defaultValue);
+    }
+
+    public boolean serialize() {
+        return this.serialize;
     }
 
     public void onChanged() {
@@ -115,7 +123,7 @@ public abstract class Setting<T> implements ISerializable<T>, Supplier<T> {
         return NO_SUGGESTIONS;
     }
 
-    protected abstract NbtCompound save(NbtCompound tag);
+    protected abstract void save(NbtCompound tag);
 
     @Override
     public NbtCompound toTag() {
@@ -170,6 +178,7 @@ public abstract class Setting<T> implements ISerializable<T>, Supplier<T> {
         protected String name = "undefined", description = "";
         protected Object defaultValue;
         protected Supplier<Boolean> visible;
+        protected boolean serialize;
         protected Consumer<V> onChanged;
         protected Consumer<Setting<V>> onModuleActivated;
 
@@ -204,6 +213,11 @@ public abstract class Setting<T> implements ISerializable<T>, Supplier<T> {
 
         public B onChanged(Consumer<V> onChanged) {
             this.onChanged = onChanged;
+            return (B) this;
+        }
+
+        public B serialize(boolean serialize) {
+            this.serialize = serialize;
             return (B) this;
         }
 

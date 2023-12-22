@@ -20,45 +20,35 @@ object VanillaFeatures : GModule(
     val hideHud by sg bool {
         name("hide-HUD")
         description("Hide the player's HUD.")
-        defaultValue(mc.options.hudHidden)
-        onChanged {
-            mc.options.hudHidden = it
-        }
+        defaultValue { mc.options.hudHidden }
+        onChanged { mc.options.hudHidden = it }
     }
 
     val pauseOnLostFocus by sg bool {
         name("pause-on-lost-focus")
         description("Whether or not to pause the game when you're tabbed out.")
-        defaultValue(mc.options.pauseOnLostFocus)
-        onChanged {
-            mc.options.pauseOnLostFocus = it
-        }
+        defaultValue { mc.options.pauseOnLostFocus }
+        onChanged { mc.options.pauseOnLostFocus = it }
     }
 
     val skipMultiplayerWarning by sg bool {
         name("skip-multiplayer-warning")
         description("Skip the Multiplayer warning.")
-        defaultValue(mc.options.skipMultiplayerWarning)
-        onChanged {
-            mc.options.skipMultiplayerWarning = it
-        }
+        defaultValue { mc.options.skipMultiplayerWarning }
+        onChanged { mc.options.skipMultiplayerWarning = it }
     }
 
     val smoothCamera by sg bool {
         name("cinematic-camera")
         description("Smoothen your camera movements.")
-        defaultValue(mc.options.smoothCameraEnabled)
-        onChanged {
-            mc.options.smoothCameraEnabled = it
-        }
+        defaultValue { mc.options.smoothCameraEnabled }
+        onChanged { mc.options.smoothCameraEnabled = it }
     }
 
     val advancedTooltips by sg bool {
         name("advanced-tooltips")
         description("Advanced item tooltips in your inventory, showing durability, item ID, etc.")
-        defaultValue(mc.options.advancedItemTooltips)
-        onChanged {
-            mc.options.advancedItemTooltips = it
-        }
+        defaultValue { mc.options.advancedItemTooltips }
+        onChanged { mc.options.advancedItemTooltips = it }
     }
 }

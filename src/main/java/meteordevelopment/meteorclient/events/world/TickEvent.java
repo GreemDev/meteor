@@ -5,7 +5,8 @@
 
 package meteordevelopment.meteorclient.events.world;
 
-public class TickEvent {
+
+public abstract class TickEvent {
     public static class Pre extends TickEvent {
         private static final Pre INSTANCE = new Pre();
 

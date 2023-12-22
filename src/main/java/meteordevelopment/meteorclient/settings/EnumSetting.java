@@ -23,8 +23,8 @@ public class EnumSetting<T extends Enum<?>> extends Setting<T> {
 
     private final List<String> suggestions;
 
-    protected EnumSetting(String name, String description, Object defaultValue, Consumer<T> onChanged, Consumer<Setting<T>> onModuleActivated, Supplier<Boolean> visible) {
-        super(name, description, defaultValue, onChanged, onModuleActivated, visible);
+    protected EnumSetting(String name, String description, Object defaultValue, Consumer<T> onChanged, Consumer<Setting<T>> onModuleActivated, Supplier<Boolean> visible, boolean serialize) {
+        super(name, description, defaultValue, onChanged, onModuleActivated, visible, serialize);
 
         try {
             values = (T[]) defaultValue.getClass().getMethod("values").invoke(null);
@@ -56,10 +56,8 @@ public class EnumSetting<T extends Enum<?>> extends Setting<T> {
     }
 
     @Override
-    public NbtCompound save(NbtCompound tag) {
+    public void save(NbtCompound tag) {
         tag.putString("value", get().toString());
-
-        return tag;
     }
 
     @Override
@@ -76,7 +74,7 @@ public class EnumSetting<T extends Enum<?>> extends Setting<T> {
 
         @Override
         public EnumSetting<T> build() {
-            return new EnumSetting<>(name, description, defaultValue, onChanged, onModuleActivated, visible);
+            return new EnumSetting<>(name, description, defaultValue, onChanged, onModuleActivated, visible, serialize);
         }
     }
 }

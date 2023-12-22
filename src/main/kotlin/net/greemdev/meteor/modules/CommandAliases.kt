@@ -32,7 +32,7 @@ object CommandAliases : GModule(
 
     val commands by sg stringMap {
         name("aliases")
-        description("The command aliases.")
+        description("The command aliases. You can use &z%s &ras a placeholder for arguments you pass to the Command Aliases command.")
         defaultValue(
             "sp" to "gamemode {player.name} spectator",
             "cr" to "gamemode {player.name} creative"
@@ -54,10 +54,8 @@ object CommandAliases : GModule(
             aliases = compiledCommands.mapNotNull { (name, script) ->
                 runCatching {
                     name to MeteorStarscript.run(script)
-                }.apply {
-                    onFailureOf(StarscriptError::class) {
-                        error("Command script for alias '$name' failed: ${it.message}")
-                    }
+                }.onFailureOf(StarscriptError::class) {
+                    error("Command script for alias '$name' failed: ${it.message}")
                 }.getOrNull()
             }.toMap()
         }

@@ -10,13 +10,19 @@ import meteordevelopment.meteorclient.systems.modules.misc.AntiPacketKick;
 import net.minecraft.nbt.NbtTagSizeTracker;
 import net.minecraft.network.PacketByteBuf;
 import org.spongepowered.asm.mixin.Mixin;
+import org.spongepowered.asm.mixin.Unique;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.ModifyArg;
 
 @Mixin(PacketByteBuf.class)
-public class PacketByteBufMixin {
-    @ModifyArg(method = "readNbt()Lnet/minecraft/nbt/NbtCompound;", at = @At(value = "INVOKE", target = "Lnet/minecraft/network/PacketByteBuf;readNbt(Lnet/minecraft/nbt/NbtTagSizeTracker;)Lnet/minecraft/nbt/NbtCompound;"))
+public abstract class PacketByteBufMixin {
+    @Unique
+    private static final NbtTagSizeTracker MASSIVE = new NbtTagSizeTracker(Long.MAX_VALUE, 1024);
+
+    @ModifyArg(method = "readNbt()Lnet/minecraft/nbt/NbtCompound;", at = @At(value = "INVOKE", target = "Lnet/minecraft/network/PacketByteBuf;readNbt(Lnet/minecraft/nbt/NbtTagSizeTracker;)Lnet/minecraft/nbt/NbtElement;"))
     private NbtTagSizeTracker xlPackets(NbtTagSizeTracker sizeTracker) {
-        return Modules.get().isActive(AntiPacketKick.class) ? new NbtTagSizeTracker((1024 * 1024) * 100) : sizeTracker;
+        return Modules.get().isActive(AntiPacketKick.class)
+            ? MASSIVE
+            : sizeTracker;
     }
 }

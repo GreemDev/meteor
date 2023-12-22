@@ -35,9 +35,13 @@ public class GuiThemes {
     @PostInit
     public static void postInit() {
         if (FILE.exists()) {
-            NbtCompound tag = NbtUtil.read(FILE);
+            try {
+                NbtCompound tag = NbtIo.read(FILE);
 
-            select(tag.getString("currentTheme"));
+                if (tag != null) select(tag.getString("currentTheme"));
+            } catch (IOException e) {
+                MeteorClient.LOG.error("Error loading themes NBT", e);
+            }
         }
 
         if (theme == null) select("Meteor");
@@ -115,7 +119,7 @@ public class GuiThemes {
             FOLDER.mkdirs();
             NbtIo.write(tag, FILE);
         } catch (IOException e) {
-            e.printStackTrace();
+            MeteorClient.LOG.error("Error writing NBT to themes file at %s".formatted(FILE.getAbsolutePath()), e);
         }
     }
 

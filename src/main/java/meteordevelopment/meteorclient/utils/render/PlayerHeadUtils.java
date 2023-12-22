@@ -26,7 +26,7 @@ public class PlayerHeadUtils {
     }
 
     public static String getSkinUrl(UUID id) {
-        UuidToProfileResponse res2 = HTTP.get("https://sessionserver.mojang.com/session/minecraft/profile/" + UUIDTypeAdapter.fromUUID(id)).requestJson(UuidToProfileResponse.class);
+        UuidToProfileResponse res2 = HTTP.get("https://sessionserver.mojang.com/session/minecraft/profile/" + id).requestJson(UuidToProfileResponse.class);
         if (res2 == null) return null;
 
         String base64Textures = res2.getPropertyValue("textures");

@@ -7,6 +7,8 @@
 package net.greemdev.meteor.type
 
 import meteordevelopment.meteorclient.utils.render.AlignmentY
+import net.greemdev.meteor.util.empty
+import java.util.function.Function
 
 enum class StringComparisonType {
     Equals,
@@ -29,26 +31,33 @@ enum class StringComparisonType {
     }
 }
 
-enum class PrefixBrackets(pairing: Pair<String, String>) {
+enum class PrefixBrackets(pairing: Pair<String, String>) : Function<String, String> {
     Square("[" to "]"),
     Curly("{" to "}"),
     Parenthesis("(" to ")"),
     Angled("<" to ">"),
+    InwardsSlashes("/" to "\\"),
+    OutwardsSlashes("\\" to "/"),
     Hashtag("#"),
     Separator("|"),
     Equals("="),
     Colon(":"),
-    Hyphen("-");
+    Hyphen("-"),
+    Dollar("$"),
+    Percent("%"),
+    Bang("!"),
+    Asterisk("*"),
+    Caret("^");
 
     constructor(str: String) : this(str to str)
 
     override fun toString() = "$left $right"
 
-    fun surround(text: String) = left + text + right
+    override fun apply(text: String) = left + text + right
 
-    @get:JvmName("left")
+    @JvmField
     val left = pairing.first
-    @get:JvmName("right")
+    @JvmField
     val right = pairing.second
 }
 
@@ -57,10 +66,10 @@ enum class ItemSelectMode {
     Random
 }
 
-enum class DamageOperatorType(val friendly: String, val prefixFormat: String) {
+enum class DamageOperatorType(private val friendly: String, private val prefixFormat: String) {
     OperatorOnly("+/- only", "%s"),
     OperatorWithSpace("+/-, then space", "%s "),
-    None("No +/-", "");
+    None("No +/-", String.empty);
 
     val supportsRainbow = prefixFormat.isNotEmpty() //rainbow numbers shouldn't be allowed if there's no prefixing operator
     fun formatPrefix(operator: Char) = prefixFormat.format(operator)
@@ -88,10 +97,7 @@ enum class ChatPrefix {
     Meteor,
     Greteor;
 
-    override fun toString() = when (this) {
-        Meteor -> "Meteor"
-        Greteor -> "Greteor"
-    }
+    override fun toString() = this.name
 }
 
 
@@ -102,7 +108,7 @@ enum class VerticalAlignment {
     fun top() = this == Top
     fun bottom() = this == Bottom
 
-    fun meteorAlignment() = when (this) {
+    fun asMeteor() = when (this) {
         Top -> AlignmentY.Top
         Bottom -> AlignmentY.Bottom
     }

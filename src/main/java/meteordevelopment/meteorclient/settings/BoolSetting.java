@@ -6,6 +6,7 @@
 package meteordevelopment.meteorclient.settings;
 
 import com.google.common.collect.ImmutableList;
+import net.greemdev.meteor.Lambdas;
 import net.minecraft.nbt.NbtCompound;
 
 import java.util.List;
@@ -19,8 +20,8 @@ public class BoolSetting extends Setting<Boolean> {
 
     private static final List<String> SUGGESTIONS = ImmutableList.of("true", "false", "toggle");
 
-    protected BoolSetting(String name, String description, Object defaultValue, Consumer<Boolean> onChanged, Consumer<Setting<Boolean>> onModuleActivated, Supplier<Boolean> visible) {
-        super(name, description, defaultValue, onChanged, onModuleActivated, visible);
+    protected BoolSetting(String name, String description, Object defaultValue, Consumer<Boolean> onChanged, Consumer<Setting<Boolean>> onModuleActivated, Supplier<Boolean> visible, boolean serialize) {
+        super(name, description, defaultValue, onChanged, onModuleActivated, visible, serialize);
     }
 
     @Override
@@ -29,6 +30,10 @@ public class BoolSetting extends Setting<Boolean> {
         else if (str.equalsIgnoreCase("false") || str.equalsIgnoreCase("0")) return false;
         else if (str.equalsIgnoreCase("toggle")) return !get();
         return null;
+    }
+
+    public Supplier<Boolean> inverse() {
+        return Lambdas.invert(this);
     }
 
     @Override
@@ -42,10 +47,8 @@ public class BoolSetting extends Setting<Boolean> {
     }
 
     @Override
-    public NbtCompound save(NbtCompound tag) {
+    public void save(NbtCompound tag) {
         tag.putBoolean("value", get());
-
-        return tag;
     }
 
     @Override
@@ -62,7 +65,7 @@ public class BoolSetting extends Setting<Boolean> {
 
         @Override
         public BoolSetting build() {
-            return new BoolSetting(name, description, defaultValue, onChanged, onModuleActivated, visible);
+            return new BoolSetting(name, description, defaultValue, onChanged, onModuleActivated, visible, serialize);
         }
     }
 }

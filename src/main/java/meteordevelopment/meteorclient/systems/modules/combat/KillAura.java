@@ -106,11 +106,23 @@ public class KillAura extends Module {
 
     // Targeting
 
+    private final Setting<Boolean> targetPlayers = sgTargeting.add(new BoolSetting.Builder()
+        .name("players")
+        .description("Shortcut for adding/removing Player in the targeted entities list.")
+        .onChanged(this::playerTargeting)
+        .build()
+    );
+
     private final Setting<Set<EntityType<?>>> entities = sgTargeting.add(new EntityTypeListSetting.Builder()
         .name("entities")
         .description("Entities to attack.")
         .onlyAttackable()
-        .defaultValue(EntityType.PLAYER)
+        .onChanged(set -> {
+            if (targetPlayers.get() && !set.contains(EntityType.PLAYER))
+                targetPlayers.set(false);
+            else if (!targetPlayers.get() && set.contains(EntityType.PLAYER))
+                targetPlayers.set(true);
+        })
         .build()
     );
 
@@ -125,8 +137,7 @@ public class KillAura extends Module {
         .name("max-targets")
         .description("How many entities to target at once.")
         .defaultValue(1)
-        .min(1)
-        .sliderRange(1, 5)
+        .range(1, 5)
         .visible(() -> !onlyOnLook.get())
         .build()
     );
@@ -135,8 +146,7 @@ public class KillAura extends Module {
         .name("range")
         .description("The maximum range the entity can be to attack it.")
         .defaultValue(4.5)
-        .min(0)
-        .sliderMax(6)
+        .range(0, 6)
         .build()
     );
 
@@ -144,8 +154,7 @@ public class KillAura extends Module {
         .name("walls-range")
         .description("The maximum range the entity can be attacked through walls.")
         .defaultValue(3.5)
-        .min(0)
-        .sliderMax(6)
+        .range(0, 6)
         .build()
     );
 
@@ -220,7 +229,7 @@ public class KillAura extends Module {
         .defaultValue(11)
         .min(0)
         .sliderMax(60)
-        .visible(customDelay::get)
+        .visible(customDelay)
         .build()
     );
 
@@ -247,13 +256,25 @@ public class KillAura extends Module {
         targets.clear();
     }
 
+    public Entity getTarget() {
+        if (!targets.isEmpty()) return targets.get(0);
+        return null;
+    }
+
+    @Override
+    public String getInfoString() {
+        if (!targets.isEmpty()) return EntityUtils.getName(getTarget());
+        return null;
+    }
+
     @EventHandler
     private void onTick(TickEvent.Pre event) {
         if (!mc.player.isAlive() || PlayerUtils.getGameMode() == GameMode.SPECTATOR) return;
         if (pauseOnUse.get() && (mc.interactionManager.isBreakingBlock() || mc.player.isUsingItem())) return;
         if (onlyOnClick.get() && !mc.options.attackKey.isPressed()) return;
-        if (TickRate.INSTANCE.getTimeSinceLastTick() >= 1f && pauseOnLag.get()) return;
-        if (pauseOnCA.get() && ca.isActive() && ca.kaTimer > 0) return;
+        if (TickRate.timeSinceLastTick() >= 1f && pauseOnLag.get()) return;
+        if (ca != null)
+            if (pauseOnCA.get() && ca.isActive() && ca.kaTimer > 0) return;
 
         if (onlyOnLook.get()) {
             Entity targeted = mc.targetedEntity;
@@ -367,7 +388,7 @@ public class KillAura extends Module {
         }
 
         float delay = (customDelay.get()) ? hitDelay.get() : 0.5f;
-        if (tpsSync.get()) delay /= (TickRate.INSTANCE.getTickRate() / 20);
+        if (tpsSync.get()) delay /= (TickRate.get() / 20);
 
         if (customDelay.get()) {
             if (hitTimer < delay) {
@@ -397,16 +418,12 @@ public class KillAura extends Module {
         };
     }
 
-    public Entity getTarget() {
-        if (!targets.isEmpty()) return targets.get(0);
-        return null;
+    private boolean playerTargeting(boolean enabled) {
+        return enabled
+            ? entities.get().add(EntityType.PLAYER)
+            : entities.get().remove(EntityType.PLAYER);
     }
 
-    @Override
-    public String getInfoString() {
-        if (!targets.isEmpty()) return EntityUtils.getName(getTarget());
-        return null;
-    }
 
     public enum Weapon {
         Sword,

@@ -2,6 +2,7 @@ package meteordevelopment.meteorclient.utils.render;
 
 import com.mojang.blaze3d.platform.TextureUtil;
 import com.mojang.blaze3d.systems.RenderSystem;
+import kotlin.reflect.jvm.internal.impl.renderer.RenderingUtilsKt;
 import meteordevelopment.meteorclient.renderer.Texture;
 import meteordevelopment.meteorclient.utils.misc.MeteorIdentifier;
 import net.greemdev.meteor.util.HTTP;
@@ -79,7 +80,7 @@ public class PlayerHeadTexture extends Texture {
 
                 ByteBuffer image = STBImage.stbi_load_from_memory(data, width, height, comp, 3);
                 upload(image);
-                RenderSystem.recordRenderCall(() -> STBImage.stbi_image_free(image));
+                RenderUtils.executeOnRenderThread(() -> STBImage.stbi_image_free(image));
             }
             MemoryUtil.memFree(data);
         }
@@ -89,9 +90,9 @@ public class PlayerHeadTexture extends Texture {
     }
 
     private void upload(ByteBuffer data) {
-        Runnable action = () -> upload(8, 8, data, Texture.Format.RGB, Texture.Filter.Nearest, Texture.Filter.Nearest, false);
-        if (RenderSystem.isOnRenderThread()) action.run();
-        else RenderSystem.recordRenderCall(action::run);
+        RenderUtils.executeOnRenderThread(() ->
+            upload(8, 8, data, Texture.Format.RGB, Texture.Filter.Nearest, Texture.Filter.Nearest, false)
+        );
     }
 
     public boolean needsRotate() {

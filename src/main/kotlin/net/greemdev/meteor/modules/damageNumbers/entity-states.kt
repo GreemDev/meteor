@@ -6,6 +6,7 @@
 package net.greemdev.meteor.modules.damageNumbers
 
 import net.greemdev.meteor.*
+import net.greemdev.meteor.util.meteor.Meteor
 import net.greemdev.meteor.util.minecraft
 import net.greemdev.meteor.util.misc.currentWorld
 import net.greemdev.meteor.util.misc.player
@@ -47,32 +48,39 @@ data class EntityState(val entity: LivingEntity) {
         lastDamage = lastHealth - health
         lastDamageCumulative += lastDamage
 
-        lastDamageDelay = healthIndicatorDelay * 2
+        lastDamageDelay = HealthIndicatorDelay * 2
         lastHealth = health
 
-        if (!(DamageNumbers.ignoreSelf() && entity.uuid == minecraft.player?.uuid))
-            DamageNumbers.add(this, lastDamage)
+        if (DamageNumbers.ignoreSelf() && entity.uuid == minecraft.player?.uuid)
+            return
 
-
+        DamageNumbers.add(this, lastDamage)
     }
 
     // Manager of EntityState instances
     companion object : HashMap<Int, EntityState>() {
-        const val healthIndicatorDelay = 10f
-        private var ticked = 0
 
-        fun clean() = entries.removeIf { (id, state) ->
-            val entity = minecraft.currentWorld().getEntityById(id)
-            if (entity !is LivingEntity)
-                true
-            else if (!minecraft.currentWorld().chunkManager.isChunkLoaded(entity.blockPos.x, entity.blockPos.z))
-                true
-            else if (DamageNumbers.ignoreSelf() && minecraft.player().uuid == state.entity.uuid)
-                true
-            else !entity.isAlive
+        private val cleaner = ticker {
+            tickLimit(200)
+            action(::clean)
+        }
+
+        private fun clean() {
+            entries.removeIf { (id, state) ->
+                val entity = minecraft.currentWorld().getEntityById(id) ?: return@removeIf true
+                if (entity !is LivingEntity)
+                    true
+                else if (!minecraft.currentWorld().chunkManager.isChunkLoaded(entity.blockPos.x, entity.blockPos.z))
+                    true
+                else if (DamageNumbers.ignoreSelf() && minecraft.player().uuid == state.entity.uuid)
+                    true
+                else !entity.isAlive
+            }
         }
         @JvmStatic
         fun track(entity: LivingEntity) {
+            if (!DamageNumbers.isActive) return
+
             if (DamageNumbers.ignoreSelf() && minecraft.player().uuid == entity.uuid) return
 
             computeIfAbsent(entity.id) {
@@ -80,11 +88,13 @@ data class EntityState(val entity: LivingEntity) {
             }
         }
         fun tick() {
-            forEach { _, state -> state.tick() }
-            if (ticked >= 200) {
-                clean()
-                ticked = 0
-            } else ticked++
+            if (Meteor.isModuleActive(DamageNumbers::class.java)) {
+                cleaner.tick()
+                values.forEach(EntityState::tick)
+            } else
+                clear()
         }
     }
 }
+
+private const val HealthIndicatorDelay = 10f

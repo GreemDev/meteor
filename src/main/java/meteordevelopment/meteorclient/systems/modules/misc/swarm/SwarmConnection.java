@@ -5,6 +5,7 @@
 
 package meteordevelopment.meteorclient.systems.modules.misc.swarm;
 
+import meteordevelopment.meteorclient.MeteorClient;
 import meteordevelopment.meteorclient.utils.player.ChatUtils;
 
 import java.io.DataOutputStream;
@@ -22,7 +23,7 @@ public class SwarmConnection extends Thread {
 
     @Override
     public void run() {
-        ChatUtils.infoPrefix("Swarm", "New worker connected on %s.", getIp(socket.getInetAddress().getHostAddress()));
+        ChatUtils.infoPrefix("Swarm", "New worker connected on %s.", connectionString());
 
         try {
             DataOutputStream out = new DataOutputStream(socket.getOutputStream());
@@ -33,8 +34,8 @@ public class SwarmConnection extends Thread {
                         out.writeUTF(messageToSend);
                         out.flush();
                     } catch (Exception e) {
-                        ChatUtils.errorPrefix("Swarm", "Encountered error when sending command.");
-                        e.printStackTrace();
+                        ChatUtils.errorPrefix("Swarm", "Encountered error when sending command to %s.", connectionString());
+                        MeteorClient.LOG.error("[Swarm] Error when sending command to %s.".formatted(connectionString()), e);
                     }
 
                     messageToSend = null;
@@ -43,8 +44,8 @@ public class SwarmConnection extends Thread {
 
             out.close();
         } catch (IOException e) {
-            ChatUtils.infoPrefix("Swarm", "Error creating a connection with %s on port %s.", getIp(socket.getInetAddress().getHostAddress()), socket.getPort());
-            e.printStackTrace();
+            ChatUtils.infoPrefix("Swarm", "Error creating a connection with %s.", connectionString());
+            MeteorClient.LOG.error("[Swarm] Error creating a connection with %s.".formatted(connectionString()), e);
         }
     }
 
@@ -52,19 +53,19 @@ public class SwarmConnection extends Thread {
         try {
             socket.close();
         } catch (IOException e) {
-            e.printStackTrace();
+            MeteorClient.LOG.error("[Swarm] Error closing a connection at %s.".formatted(connectionString()), e);
         }
 
-        ChatUtils.infoPrefix("Swarm", "Worker disconnected on ip: %s.", socket.getInetAddress().getHostAddress());
+        ChatUtils.infoPrefix("Swarm", "Worker disconnected from %s.", connectionString());
 
         interrupt();
     }
 
-    public String getConnection() {
-        return getIp(socket.getInetAddress().getHostAddress()) + ":" + socket.getPort();
+    public String connectionString() {
+        return formatIp(socket.getInetAddress().getHostAddress()) + ":" + socket.getPort();
     }
 
-    private String getIp(String ip) {
+    private String formatIp(String ip) {
         return ip.equals("127.0.0.1") ? "localhost" : ip;
     }
 }

@@ -16,10 +16,11 @@ public class MethodInfo {
     public MethodInfo(String owner, String name, Descriptor descriptor, boolean map) {
         if (map) {
             MappingResolver mappings = FabricLoader.getInstance().getMappingResolver();
-            String ownerDot = owner.replace('/', '.');
+            owner = owner.replace('/', '.');
 
-            if (owner != null) this.owner = mappings.mapClassName("intermediary", ownerDot).replace('.', '/');
-            if (name != null && descriptor != null) this.name = mappings.mapMethodName("intermediary", ownerDot, name, descriptor.toString(true, false));
+            this.owner = mappings.mapClassName("intermediary", owner).replace('.', '/');
+
+            if (name != null && descriptor != null) this.name = mappings.mapMethodName("intermediary", owner, name, descriptor.toString(true, false));
         }
         else {
             this.owner = owner;

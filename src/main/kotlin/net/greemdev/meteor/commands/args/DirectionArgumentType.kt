@@ -8,8 +8,4 @@ package net.greemdev.meteor.commands.args
 import net.minecraft.command.argument.EnumArgumentType
 import net.minecraft.util.math.Direction
 
-class DirectionArgumentType private constructor() : EnumArgumentType<Direction>(Direction.CODEC, ::enumValues) {
-    companion object {
-        @JvmStatic fun create() = DirectionArgumentType()
-    }
-}
+class DirectionArgumentType : EnumArgumentType<Direction>(Direction.CODEC, ::enumValues)

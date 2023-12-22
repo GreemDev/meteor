@@ -5,6 +5,7 @@
 
 package meteordevelopment.meteorclient.events.game;
 
+@SuppressWarnings("InstantiationOfUtilityClass")
 public class GameJoinedEvent {
     private static final GameJoinedEvent INSTANCE = new GameJoinedEvent();
 

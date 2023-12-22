@@ -28,8 +28,8 @@ public class EntityTypeListSetting extends Setting<Set<EntityType<?>>> {
 
     public final Predicate<EntityType<?>> filter;
 
-    protected EntityTypeListSetting(String name, String description, Object defaultValue, Consumer<Set<EntityType<?>>> onChanged, Consumer<Setting<Set<EntityType<?>>>> onModuleActivated, Supplier<Boolean> visible, Predicate<EntityType<?>> filter) {
-        super(name, description, defaultValue, onChanged, onModuleActivated, visible);
+    protected EntityTypeListSetting(String name, String description, Object defaultValue, Consumer<Set<EntityType<?>>> onChanged, Consumer<Setting<Set<EntityType<?>>>> onModuleActivated, Supplier<Boolean> visible, boolean serialize, Predicate<EntityType<?>> filter) {
+        super(name, description, defaultValue, onChanged, onModuleActivated, visible, serialize);
 
         this.filter = filter;
     }
@@ -65,14 +65,12 @@ public class EntityTypeListSetting extends Setting<Set<EntityType<?>>> {
     }
 
     @Override
-    public NbtCompound save(NbtCompound tag) {
+    public void save(NbtCompound tag) {
         NbtList valueTag = new NbtList();
         for (EntityType<?> entityType : get()) {
             valueTag.add(NbtString.of(Registries.ENTITY_TYPE.getId(entityType).toString()));
         }
         tag.put("value", valueTag);
-
-        return tag;
     }
 
     @Override
@@ -111,7 +109,7 @@ public class EntityTypeListSetting extends Setting<Set<EntityType<?>>> {
 
         @Override
         public EntityTypeListSetting build() {
-            return new EntityTypeListSetting(name, description, defaultValue, onChanged, onModuleActivated, visible, filter);
+            return new EntityTypeListSetting(name, description, defaultValue, onChanged, onModuleActivated, visible, serialize, filter);
         }
     }
 }

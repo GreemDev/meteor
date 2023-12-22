@@ -24,8 +24,8 @@ public class ModuleListSetting extends Setting<List<Module>> {
 
     private static List<String> suggestions;
 
-    protected ModuleListSetting(String name, String description, Object defaultValue, Consumer<List<Module>> onChanged, Consumer<Setting<List<Module>>> onModuleActivated, Supplier<Boolean> visible) {
-        super(name, description, defaultValue, onChanged, onModuleActivated, visible);
+    protected ModuleListSetting(String name, String description, Object defaultValue, Consumer<List<Module>> onChanged, Consumer<Setting<List<Module>>> onModuleActivated, Supplier<Boolean> visible, boolean serialize) {
+        super(name, description, defaultValue, onChanged, onModuleActivated, visible, serialize);
     }
 
     @Override
@@ -64,12 +64,10 @@ public class ModuleListSetting extends Setting<List<Module>> {
     }
 
     @Override
-    public NbtCompound save(NbtCompound tag) {
+    public void save(NbtCompound tag) {
         NbtList modulesTag = new NbtList();
         for (Module module : get()) modulesTag.add(NbtString.of(module.name));
         tag.put("modules", modulesTag);
-
-        return tag;
     }
 
     @Override
@@ -103,7 +101,7 @@ public class ModuleListSetting extends Setting<List<Module>> {
 
         @Override
         public ModuleListSetting build() {
-            return new ModuleListSetting(name, description, defaultValue, onChanged, onModuleActivated, visible);
+            return new ModuleListSetting(name, description, defaultValue, onChanged, onModuleActivated, visible, serialize);
         }
     }
 }

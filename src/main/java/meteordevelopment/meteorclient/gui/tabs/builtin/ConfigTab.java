@@ -5,6 +5,7 @@
 
 package meteordevelopment.meteorclient.gui.tabs.builtin;
 
+import meteordevelopment.meteorclient.commands.Commands;
 import meteordevelopment.meteorclient.gui.GuiTheme;
 import meteordevelopment.meteorclient.gui.renderer.GuiRenderer;
 import meteordevelopment.meteorclient.gui.tabs.Tab;
@@ -43,38 +44,41 @@ public class ConfigTab extends Tab {
             settings.onActivated();
 
             onClosed(() -> {
-                String prefix = Config.get().prefix.get();
+                String prefix = Commands.prefix();
 
-                if (prefix.isBlank()) {
+                if (prefix.isBlank())
                     YesNoPrompt.create(theme, this.parent)
+                        .displayRequired(true)
                         .title("Empty command prefix")
-                        .message("You have set your command prefix to nothing.")
-                        .message("This WILL prevent you from sending chat messages.")
-                        .message("Do you want to reset your prefix back to '.'?")
-                        .onYes(() -> Config.get().prefix.set("."))
-                        .id("empty-command-prefix")
+                        .messageLines(
+                            "You have set your command prefix to nothing.",
+                            "This WILL prevent you from sending chat messages.",
+                            "Do you want to reset your prefix back to '%s'?".formatted(Config.get().prefix.getDefaultValue())
+                        )
+                        .onYes(() -> Config.get().prefix.reset())
                         .show();
-                }
-                else if (prefix.equals("/")) {
+                else if (prefix.equals("/"))
                     YesNoPrompt.create(theme, this.parent)
+                        .displayRequired(true)
                         .title("Potential prefix conflict")
-                        .message("You have set your command prefix to '/', which is used by minecraft.")
-                        .message("This can cause conflict issues between meteor and minecraft commands.")
-                        .message("Do you want to reset your prefix to '.'?")
-                        .onYes(() -> Config.get().prefix.set("."))
-                        .id("minecraft-prefix-conflict")
+                        .messageLines(
+                            "You have set your command prefix to '/', which is used by Minecraft.",
+                            "This can cause conflict issues between Meteor and Minecraft commands.",
+                            "Do you want to reset your prefix back to '%s'?".formatted(Config.get().prefix.getDefaultValue())
+                        )
+                        .onYes(() -> Config.get().prefix.reset())
                         .show();
-                }
-                else if (prefix.length() > 7) {
+                else if (prefix.length() > 7)
                     YesNoPrompt.create(theme, this.parent)
+                        .displayRequired(true)
                         .title("Long command prefix")
-                        .message("You have set your command prefix to a very long string.")
-                        .message("This means that in order to execute any command, you will need to type %s followed by the command you want to run.", prefix)
-                        .message("Do you want to reset your prefix back to '.'?")
-                        .onYes(() -> Config.get().prefix.set("."))
-                        .id("long-command-prefix")
+                        .messageLines(
+                            "You have set your command prefix to a very long string.",
+                            "This means that in order to execute any command, you will need to type '%s' followed by the command you want to run.".formatted(prefix),
+                            "Do you want to reset your prefix back to '%s'?".formatted(Config.get().prefix.getDefaultValue())
+                        )
+                        .onYes(() -> Config.get().prefix.reset())
                         .show();
-                }
             });
         }
 
@@ -85,14 +89,22 @@ public class ConfigTab extends Tab {
 
         @Override
         public void tick() {
-            super.tick();
             settings.tick(window, theme);
 
+            // This is done here because top bar placement/icon settings can only be changed from the config screen
             if (WTopBar.NEEDS_REFRESH) {
-                reloadTopBar();
+                root.cells.stream()
+                    .filter(c -> c.widget() instanceof WTopBar)
+                    .findFirst()
+                    .map(c ->
+                        (WTopBar)c
+                            .alignY(Config.getTopBarAlignmentY())
+                            .alignX(Config.getTopBarAlignmentX())
+                            .widget())
+                    .ifPresent(WTopBar::init);
+
                 WTopBar.NEEDS_REFRESH = false;
             }
-
         }
 
         @Override

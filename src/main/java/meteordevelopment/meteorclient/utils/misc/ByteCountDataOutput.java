@@ -11,8 +11,6 @@ import java.io.DataOutput;
 import java.io.IOException;
 
 public class ByteCountDataOutput implements DataOutput {
-    public static final ByteCountDataOutput INSTANCE = new ByteCountDataOutput();
-
     private int count;
 
     public int getCount() {

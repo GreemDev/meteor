@@ -5,6 +5,7 @@
 
 package meteordevelopment.meteorclient.systems.modules.movement;
 
+import meteordevelopment.meteorclient.MeteorClient;
 import meteordevelopment.meteorclient.events.world.TickEvent;
 import meteordevelopment.meteorclient.settings.*;
 import meteordevelopment.meteorclient.systems.modules.Categories;
@@ -157,7 +158,7 @@ public class AntiAFK extends Module {
     @Override
     public void onActivate() {
         if (sendMessages.get() && messages.get().isEmpty()) {
-            warning("Message list is empty, disabling messages...");
+            warning("Message list is empty; disabling message sending.");
             sendMessages.set(false);
         }
 
@@ -207,10 +208,7 @@ public class AntiAFK extends Module {
         // Spin
         if (spin.get()) {
             prevYaw += spinSpeed.get();
-            switch (spinMode.get()) {
-                case Client -> mc.player.setYaw(prevYaw);
-                case Server -> Rotations.rotate(prevYaw, pitch.get(), -15);
-            }
+            spinMode.get().spin(prevYaw, this);
         }
 
         // Messages
@@ -225,6 +223,13 @@ public class AntiAFK extends Module {
 
     public enum SpinMode {
         Server,
-        Client
+        Client;
+
+        public void spin(float yaw, AntiAFK antiAfk) {
+            switch (this) {
+                case Client -> antiAfk.mc.player.setYaw(yaw);
+                case Server -> Rotations.rotate(yaw, antiAfk.pitch.get(), -15);
+            }
+        }
     }
 }

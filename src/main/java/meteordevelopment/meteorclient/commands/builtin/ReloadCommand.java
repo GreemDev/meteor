@@ -1,0 +1,43 @@
+/*
+ * This file is part of the Meteor Client distribution (https://github.com/MeteorDevelopment/meteor-client).
+ * Copyright (c) Meteor Development.
+ */
+
+package meteordevelopment.meteorclient.commands.builtin;
+
+import com.mojang.brigadier.builder.LiteralArgumentBuilder;
+import meteordevelopment.meteorclient.commands.Command;
+import meteordevelopment.meteorclient.renderer.Fonts;
+import meteordevelopment.meteorclient.systems.Systems;
+import meteordevelopment.meteorclient.systems.friends.Friend;
+import meteordevelopment.meteorclient.systems.friends.Friends;
+import meteordevelopment.meteorclient.utils.network.Capes;
+import meteordevelopment.meteorclient.utils.network.MeteorExecutor;
+import net.greemdev.meteor.util.Reflection;
+import net.minecraft.client.network.ClientCommandSource;
+
+import static com.mojang.brigadier.Command.SINGLE_SUCCESS;
+
+public class ReloadCommand extends Command {
+    public ReloadCommand() {
+        super("reload", "Reloads many systems.");
+    }
+
+    @Override
+    public void build(LiteralArgumentBuilder<ClientCommandSource> builder) {
+        builder.executes(context -> {
+            warning("Reloading systems, this may take a while.");
+
+            Systems.load();
+            Capes.reload();
+            Fonts.reload();
+            Reflection.cache().clear();
+            MeteorExecutor.execute(() -> {
+                Friends.get().forEach(Friend::updateInfo);
+                info("Reload complete.");
+            });
+
+            return SINGLE_SUCCESS;
+        });
+    }
+}

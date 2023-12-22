@@ -6,13 +6,15 @@
 package meteordevelopment.meteorclient.mixin;
 
 import meteordevelopment.meteorclient.systems.modules.Modules;
+import meteordevelopment.meteorclient.systems.modules.movement.Freecam;
 import meteordevelopment.meteorclient.systems.modules.render.*;
 import meteordevelopment.meteorclient.systems.modules.world.Ambience;
 import meteordevelopment.meteorclient.utils.render.color.Color;
 import meteordevelopment.meteorclient.utils.render.postprocess.EntityShader;
 import meteordevelopment.meteorclient.utils.render.postprocess.PostProcessShaders;
-//import net.greemdev.meteor.modules.damageNumbers.DamageNumbers;
+import net.greemdev.meteor.modules.damageNumbers.DamageNumbers;
 import net.greemdev.meteor.modules.damageNumbers.EntityState;
+import net.greemdev.meteor.util.meteor.Meteor;
 import net.minecraft.block.BlockState;
 import net.minecraft.client.gl.Framebuffer;
 import net.minecraft.client.render.*;
@@ -21,6 +23,7 @@ import net.minecraft.entity.Entity;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.util.math.BlockPos;
 import org.joml.Matrix4f;
+import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.Unique;
@@ -38,6 +41,10 @@ public abstract class WorldRendererMixin {
 
     @Shadow
     protected abstract void renderEntity(Entity entity, double cameraX, double cameraY, double cameraZ, float tickDelta, MatrixStack matrices, VertexConsumerProvider vertexConsumers);
+
+    @Shadow
+    @Final
+    private BufferBuilderStorage bufferBuilders;
 
     @Inject(method = "checkEmpty", at = @At("HEAD"), cancellable = true)
     private void onCheckEmpty(MatrixStack matrixStack, CallbackInfo info) {
@@ -69,7 +76,7 @@ public abstract class WorldRendererMixin {
     // Damage numbers
     @Inject(method = "renderEntity", at = @At("RETURN"))
     private void onRenderEntityReturn(Entity entity, double cameraX, double cameraY, double cameraZ, float tickDelta, MatrixStack matrices, VertexConsumerProvider vertexConsumers, CallbackInfo ci) {
-        if (entity instanceof LivingEntity le)
+        if (Meteor.isModuleActive(DamageNumbers.class) && entity instanceof LivingEntity le)
             EntityState.track(le);
     }
 

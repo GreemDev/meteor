@@ -13,6 +13,6 @@ import java.io.File;
 
 @Mixin(PlayerSkinProvider.class)
 public interface PlayerSkinProviderAccessor {
-    @Accessor("skinCacheDir")
-    File getSkinCacheDir();
+    @Accessor("skinCache")
+    PlayerSkinProvider.FileCache getSkinCache();
 }

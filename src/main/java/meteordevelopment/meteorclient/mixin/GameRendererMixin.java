@@ -16,7 +16,7 @@ import meteordevelopment.meteorclient.systems.modules.Modules;
 import meteordevelopment.meteorclient.systems.modules.player.LiquidInteract;
 import meteordevelopment.meteorclient.systems.modules.player.NoMiningTrace;
 import meteordevelopment.meteorclient.systems.modules.player.Reach;
-import meteordevelopment.meteorclient.systems.modules.render.Freecam;
+import meteordevelopment.meteorclient.systems.modules.movement.Freecam;
 import meteordevelopment.meteorclient.systems.modules.render.NoRender;
 import meteordevelopment.meteorclient.systems.modules.render.Zoom;
 import meteordevelopment.meteorclient.systems.modules.world.HighwayBuilder;

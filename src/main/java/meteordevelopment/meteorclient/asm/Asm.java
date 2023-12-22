@@ -76,6 +76,7 @@ public class Asm {
                 new File(path.toUri()).getParentFile().mkdirs();
                 Files.write(path, bytes);
             } catch (IOException e) {
+                //noinspection CallToPrintStackTrace
                 e.printStackTrace();
             }
         }

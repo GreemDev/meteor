@@ -20,6 +20,7 @@ import net.minecraft.client.render.BufferBuilder;
 import net.minecraft.client.render.VertexConsumerProvider;
 import net.minecraft.text.Text;
 import org.spongepowered.asm.mixin.Mixin;
+import org.spongepowered.asm.mixin.Unique;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
@@ -27,12 +28,12 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 import static meteordevelopment.meteorclient.MeteorClient.mc;
 
 @Mixin(MultiplayerScreen.class)
-public class MultiplayerScreenMixin extends Screen {
-    private int textColor1;
-    private int textColor2;
+public abstract class MultiplayerScreenMixin extends Screen {
+    @Unique private int textColor1;
+    @Unique private int textColor2;
 
-    private String loggedInAs;
-    private int loggedInAsLength;
+    @Unique private String loggedInAs;
+    @Unique private int loggedInAsLength;
 
     public MultiplayerScreenMixin(Text title) {
         super(title);

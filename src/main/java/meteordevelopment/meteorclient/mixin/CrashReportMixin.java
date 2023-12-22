@@ -21,17 +21,17 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 import java.util.List;
 
 @Mixin(CrashReport.class)
-public class CrashReportMixin {
+public abstract class CrashReportMixin {
 
     @Inject(method = "addStackTrace", at = @At("TAIL"))
-    private void onAddStackTrace(StringBuilder sb, CallbackInfo info) {
-        sb.append("\n\n-- Meteor Client --\n\n");
-        sb.append("Do NOT report this to the original Meteor Client developers. Report only to GreemDev.\n");
-        sb.append("Version: ").append(MeteorClient.fullVersion()).append("\n");
+    private void onAddStackTrace(StringBuilder crashReportBuilder, CallbackInfo info) {
+        crashReportBuilder.append("\n\n-- Meteor Client --\n\n");
+        crashReportBuilder.append("Do NOT report this to the original Meteor Client developers. Report only to GreemDev.\n");
+        crashReportBuilder.append("Version: ").append(MeteorClient.fullVersion()).append("\n");
 
         if (Modules.get() != null) {
             boolean modulesActive = false;
-            for (Category category : Modules.loopCategories()) {
+            for (Category category : Modules.categories()) {
                 List<Module> modules = Modules.get().getGroup(category);
                 boolean categoryActive = false;
 
@@ -40,17 +40,17 @@ public class CrashReportMixin {
 
                     if (!modulesActive) {
                         modulesActive = true;
-                        sb.append("\n[[ Active Modules ]]\n");
+                        crashReportBuilder.append("\n[[ Active Modules ]]\n");
                     }
 
                     if (!categoryActive) {
                         categoryActive = true;
-                        sb.append("\n[")
+                        crashReportBuilder.append("\n[")
                           .append(category)
                           .append("]:\n");
                     }
 
-                    sb.append(module.name).append("\n");
+                    crashReportBuilder.append(module.name).append("\n");
                 }
             }
         }
@@ -62,24 +62,27 @@ public class CrashReportMixin {
 
                 if (!hudActive) {
                     hudActive = true;
-                    sb.append("\n[[ Active Hud Elements ]]\n");
+                    crashReportBuilder.append("\n[[ Active Hud Elements ]]\n");
                 }
 
                 if (element instanceof TextHud textHud) {
-                    sb.append("Text\n{")
+                    crashReportBuilder.append("Text\n{")
                         .append(textHud.text.get())
                         .append("}\n");
                     if (!textHud.shown.get().always()) {
-                        sb.append("(")
+                        crashReportBuilder.append("(")
                             .append(textHud.shown.get())
                             .append(textHud.condition.get())
                             .append(")\n");
                     }
                 }
-                else sb.append(element.info.name).append("\n");
+                else crashReportBuilder.append(element.info.name).append("\n");
             }
         }
 
-        sb.append("\n\n");
+        if (Modules.get() == null && Hud.get() == null && !Hud.get().active) {
+            crashReportBuilder.append("\nThis crash happened too early for Modules or Hud to be available.");
+        } else
+            crashReportBuilder.append("\n\n");
     }
 }

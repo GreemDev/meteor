@@ -195,31 +195,31 @@ public class Quiver extends Module {
 
     private boolean shouldQuiver() {
         if (!bow.found() || !bow.isHotbar() && !silentBow.get()) {
-            if (chatInfo.get()) error("Couldn't find a usable bow, disabling.");
+            if (chatInfo.get()) error("Couldn't find a usable bow; disabling.");
             toggle();
             return false;
         }
 
         if (!headIsOpen()) {
-            if (chatInfo.get()) error("Not enough space to quiver, disabling.");
+            if (chatInfo.get()) error("Not enough space to quiver; disabling.");
             toggle();
             return false;
         }
 
         if (EntityUtils.getTotalHealth(mc.player) < minHealth.get()) {
-            if (chatInfo.get()) error("Not enough health to quiver, disabling.");
+            if (chatInfo.get()) error("Not enough health to quiver; disabling.");
             toggle();
             return false;
         }
 
         if (onlyOnGround.get() && !mc.player.isOnGround()) {
-            if (chatInfo.get()) error("You are not on the ground, disabling.");
+            if (chatInfo.get()) error("You are not on the ground; disabling.");
             toggle();
             return false;
         }
 
         if (onlyInHoles.get() && !isSurrounded(mc.player)) {
-            if (chatInfo.get()) error("You are not in a hole, disabling.");
+            if (chatInfo.get()) error("You are not in a hole; disabling.");
             toggle();
             return false;
         }

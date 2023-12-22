@@ -6,6 +6,8 @@
 package meteordevelopment.meteorclient.utils.network;
 
 import meteordevelopment.meteorclient.utils.PreInit;
+import net.minecraft.util.Util;
+
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.atomic.AtomicInteger;
@@ -27,5 +29,9 @@ public class MeteorExecutor {
 
     public static void execute(Runnable task) {
         executor.execute(task);
+    }
+
+    public static void executeOnIoExecutor(Runnable task) {
+        Util.getIoWorkerExecutor().execute(task);
     }
 }

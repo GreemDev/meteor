@@ -5,7 +5,6 @@
 
 package meteordevelopment.meteorclient.systems.modules;
 
-import net.greemdev.meteor.Greteor;
 import net.minecraft.item.Items;
 
 public class Categories {
@@ -15,6 +14,7 @@ public class Categories {
     public static final Category Render = new Category("Render", Items.GLASS.getDefaultStack());
     public static final Category World = new Category("World", Items.GRASS_BLOCK.getDefaultStack());
     public static final Category Misc = new Category("Misc", Items.LAVA_BUCKET.getDefaultStack());
+    public static final Category Greteor = net.greemdev.meteor.Greteor.category();
 
     public static boolean REGISTERING;
 
@@ -28,7 +28,8 @@ public class Categories {
         Modules.registerCategory(Render);
         Modules.registerCategory(World);
         Modules.registerCategory(Misc);
-        Modules.registerCategory(Greteor.INSTANCE.category());
+
+        Modules.registerCategory(Greteor);
 
         REGISTERING = false;
     }

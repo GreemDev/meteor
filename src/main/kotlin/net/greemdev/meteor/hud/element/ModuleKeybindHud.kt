@@ -8,18 +8,16 @@ package net.greemdev.meteor.hud.element
 import meteordevelopment.meteorclient.systems.hud.Alignment
 import meteordevelopment.meteorclient.systems.hud.HudElement
 import meteordevelopment.meteorclient.systems.hud.HudRenderer
-import meteordevelopment.meteorclient.systems.modules.Modules
 import meteordevelopment.meteorclient.utils.render.color.SettingColor
-import net.greemdev.meteor.Greteor
-import net.greemdev.meteor.hud.HudElementMetadata
+import net.greemdev.meteor.hud.HudElementDescriptor
 import net.greemdev.meteor.*
 import net.greemdev.meteor.util.meteor.*
 import kotlin.math.max
 
 class ModuleKeybindHud : HudElement(info) {
-    companion object : HudElementMetadata<ModuleKeybindHud>(
-        Greteor.hudGroup(),
-        "module-keybinds", "Displays selected modules with valid keybinds.",
+    companion object : HudElementDescriptor<ModuleKeybindHud>(
+        "module-keybinds",
+        "Displays selected modules with valid keybinds.",
         ::ModuleKeybindHud
     )
 
@@ -31,17 +29,17 @@ class ModuleKeybindHud : HudElement(info) {
         defaultValue(emptyList())
     }
 
-    val sorted by sg bool {
+    val sortModules by sg bool {
         name("sort-modules")
         description("Sort the modules on the HUD.")
         defaultValue(true)
     }
 
-    val sortOrder by sg bool {
+    val ascendingOrder by sg bool {
         name("ascending-order")
         description("Sort the modules on the HUD in ascending order. Turn off for descending order.")
         defaultValue(false)
-        visible(sorted)
+        visible(sortModules)
     }
 
     val textShadow by sg bool {
@@ -53,7 +51,7 @@ class ModuleKeybindHud : HudElement(info) {
     val moduleColor by sg color {
         name("module-color")
         description("The module name color to display.")
-        defaultValue(SettingColor())
+        defaultValue(MeteorColor.WHITE)
     }
 
     val keybindColor by sg color {
@@ -69,7 +67,7 @@ class ModuleKeybindHud : HudElement(info) {
     }
 
     override fun render(renderer: HudRenderer) {
-        if (Modules.get() == null || modules().isEmpty()) {
+        if (modules().isEmpty()) {
             renderer.text("Module Keybinds", x.toDouble(), y.toDouble(), moduleColor(), textShadow())
             setSize(renderer.textWidth("Module Keybinds"), renderer.textHeight())
             return
@@ -79,7 +77,7 @@ class ModuleKeybindHud : HudElement(info) {
 
         var width = 0.0
         var height = 0.0
-        modules().sorted(sorted(), sortOrder()) {
+        modules().sorted(sortModules(), ascendingOrder()) {
             it.title.length + it.keybind.toString().length
         }.forEachIndexed { i, module ->
             val keybindName = module.keybind.toString()

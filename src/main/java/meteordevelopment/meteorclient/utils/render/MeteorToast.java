@@ -17,12 +17,12 @@ import net.minecraft.client.toast.ToastManager;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.sound.SoundEvents;
-import net.minecraft.text.Style;
 import net.minecraft.text.Text;
-import net.minecraft.text.TextColor;
+import net.minecraft.util.Identifier;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
+import static net.greemdev.meteor.util.text.utils.Style;
 import static meteordevelopment.meteorclient.MeteorClient.mc;
 
 public class MeteorToast implements Toast {
@@ -34,6 +34,8 @@ public class MeteorToast implements Toast {
         return Meteor.currentTheme().textColor();
     }
 
+    private static final Identifier TEXTURE = new Identifier("textures/gui/sprites/toast/advancement.png");
+
     private ItemStack icon;
     private Text title, text;
     private boolean justUpdated = true, playedSound;
@@ -42,8 +44,8 @@ public class MeteorToast implements Toast {
 
     public MeteorToast(@Nullable Item item, @NotNull String title, @Nullable String text, SoundInstance sound, long duration) {
         this.icon = item != null ? item.getDefaultStack() : null;
-        this.title = Text.literal(title).setStyle(Style.EMPTY.withColor(getTitleColor().toTextColor()));
-        this.text = text != null ? Text.literal(text).setStyle(Style.EMPTY.withColor(getTextColor().toTextColor())) : null;
+        this.title = Text.literal(title).setStyle(Style().withColor(getTitleColor().toTextColor()));
+        this.text = text != null ? Text.literal(text).setStyle(Style().withColor(getTextColor().toTextColor())) : null;
         this.duration = duration;
         this.sound = sound;
     }
@@ -98,12 +100,12 @@ public class MeteorToast implements Toast {
     }
 
     public void setTitle(@NotNull String title) {
-        this.title = Text.literal(title).setStyle(Style.EMPTY.withColor(getTitleColor().toTextColor()));
+        this.title = Text.literal(title).setStyle(Style().withColor(getTitleColor().toTextColor()));
         justUpdated = true;
     }
 
     public void setText(@Nullable String text) {
-        this.text = text != null ? Text.literal(text).setStyle(Style.EMPTY.withColor(getTextColor().toTextColor())) : null;
+        this.text = text != null ? Text.literal(text).setStyle(Style().withColor(getTextColor().toTextColor())) : null;
         justUpdated = true;
     }
 

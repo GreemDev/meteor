@@ -6,13 +6,12 @@
 package meteordevelopment.meteorclient.utils.player;
 
 import baritone.api.BaritoneAPI;
-import com.mojang.brigadier.StringReader;
-import meteordevelopment.meteorclient.MeteorClient;
 import meteordevelopment.meteorclient.mixininterface.IChatHud;
 import meteordevelopment.meteorclient.systems.config.Config;
-import meteordevelopment.meteorclient.utils.PostInit;
-import net.greemdev.meteor.util.text.ChatFeedback;
+import net.greemdev.meteor.type.PrefixBrackets;
+import net.greemdev.meteor.util.meteor.Meteor;
 import net.greemdev.meteor.util.text.FormattedText;
+import net.greemdev.meteor.util.text.actions;
 import net.minecraft.text.*;
 import net.minecraft.util.Formatting;
 import net.minecraft.util.Pair;
@@ -23,6 +22,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.function.Supplier;
 
+import static kotlinx.atomicfu.AtomicFU.atomic;
 import static meteordevelopment.meteorclient.MeteorClient.mc;
 
 public class ChatUtils {
@@ -134,17 +134,17 @@ public class ChatUtils {
     private static Text getCustomPrefix(String prefixTitle, Formatting prefixColor) {
         var brackets = Config.get().meteorPrefixBrackets.get();
 
-        return FormattedText.build(brackets.left(), t -> {
+        return new FormattedText(brackets.left, t -> {
             t.colored(Config.get().meteorPrefixBracketsColor.get());
             t.addString(prefixTitle, prefixColor);
-            t.addString(brackets.right() + " ");
+            t.addString(brackets.right + " ");
         });
     }
 
     private static Text getPrefix() {
         if (customPrefixes.isEmpty()) {
             forcedPrefixClassName = null;
-            return ChatFeedback.prefix();
+            return getMeteorPrefix();
         }
 
         boolean foundChatUtils = false;
@@ -167,26 +167,24 @@ public class ChatUtils {
             }
         }
 
-        if (className == null) return ChatFeedback.prefix();
+        if (className == null) return getMeteorPrefix();
 
         for (Pair<String, Supplier<Text>> pair : customPrefixes) {
             if (className.startsWith(pair.getLeft())) {
                 Text prefix = pair.getRight().get();
-                return prefix != null ? prefix : ChatFeedback.prefix();
+                return prefix != null ? prefix : getMeteorPrefix();
             }
         }
 
-        return ChatFeedback.prefix();
+        return getMeteorPrefix();
     }
 
     private static MutableText formatMsg(String message, Formatting defaultColor) {
-        StringReader reader = new StringReader(message);
         MutableText text = Text.empty();
         Style style = Style.EMPTY.withFormatting(defaultColor);
         StringBuilder result = new StringBuilder();
         boolean formatting = false;
-        while (reader.canRead()) {
-            char c = reader.read();
+        for (char c : message.toCharArray()) {
             if (c == '(') {
                 text.append(Text.literal(result.toString()).setStyle(style));
                 result.setLength(0);
@@ -220,20 +218,25 @@ public class ChatUtils {
         return text;
     }
 
-    public static MutableText formatCoords(Vec3d pos) {
-        String coordsString = String.format("(highlight)(underline)%.0f, %.0f, %.0f(default)", pos.x, pos.y, pos.z);
-        MutableText coordsText = formatMsg(coordsString, Formatting.GRAY);
-        coordsText.setStyle(coordsText.getStyle()
-                .withFormatting(Formatting.BOLD)
-                .withClickEvent(new ClickEvent(
-                        ClickEvent.Action.RUN_COMMAND,
-                        String.format("%sgoto %d %d %d", BaritoneAPI.getSettings().prefix.value, (int) pos.x, (int) pos.y, (int) pos.z)
-                ))
-                .withHoverEvent(new HoverEvent(
-                        HoverEvent.Action.SHOW_TEXT,
-                        Text.literal("Set as Baritone goal")
-                ))
+    public static FormattedText formatCoords(Vec3d pos) {
+        return FormattedText.create(
+                formatMsg(
+                    "(highlight)(underline)%.0f, %.0f, %.0f(default)".formatted(pos.x, pos.y, pos.z),
+                    Formatting.GRAY
+                )
+            )
+            .bold()
+            .clicked(actions.runCommand, "%sgoto %d %d %d".formatted(BaritoneAPI.getSettings().prefix.value, (int) pos.x, (int) pos.y, (int) pos.z))
+            .hoveredText("Set as Baritone goal");
+    }
+
+    public static Text getMeteorPrefix() {
+        PrefixBrackets brackets = Meteor.config().meteorPrefixBrackets.get();
+        return new FormattedText(text ->
+            text.colored(Meteor.config().meteorPrefixBracketsColor.get())
+                .addString(brackets.left)
+                .addString(Meteor.config().chatPrefix.get().toString(), Meteor.config().meteorPrefixColor.get())
+                .addString("%s ".formatted(brackets.right))
         );
-        return coordsText;
     }
 }

@@ -29,7 +29,7 @@ public class ContainerTooltipComponent implements TooltipComponent, MeteorToolti
     }
 
     @Override
-    public TooltipComponent getComponent() {
+    public TooltipComponent component() {
         return this;
     }
 

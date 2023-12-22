@@ -8,7 +8,7 @@ package meteordevelopment.meteorclient.mixin;
 import com.llamalad7.mixinextras.injector.ModifyExpressionValue;
 import meteordevelopment.meteorclient.systems.modules.Modules;
 import meteordevelopment.meteorclient.systems.modules.render.Chams;
-import meteordevelopment.meteorclient.systems.modules.render.Freecam;
+import meteordevelopment.meteorclient.systems.modules.movement.Freecam;
 import meteordevelopment.meteorclient.systems.modules.render.NoRender;
 import meteordevelopment.meteorclient.utils.player.PlayerUtils;
 import meteordevelopment.meteorclient.utils.player.Rotations;

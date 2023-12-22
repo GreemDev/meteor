@@ -5,7 +5,7 @@
 
 package meteordevelopment.meteorclient.mixin;
 
-import net.greemdev.meteor.modules.MinecraftPresenceKt;
+import net.greemdev.meteor.Greteor;
 import net.minecraft.client.main.Main;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
@@ -13,7 +13,7 @@ import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
 @Mixin(Main.class)
-public class MainMixin {
+public abstract class MainMixin {
 
     @SuppressWarnings("SpellCheckingInspection") //clinit is literally the fucking name of static initializers intellij shut up
     @Inject(method = "<clinit>", at = @At("HEAD"), remap = false, cancellable = true)
@@ -23,6 +23,6 @@ public class MainMixin {
 
     @Inject(method = "main", at = @At("HEAD"), remap = false)
     private static void beforeStart(CallbackInfo ci) {
-        MinecraftPresenceKt.setGameStart(System.currentTimeMillis());
+        Greteor.setGameStartTime(System.currentTimeMillis());
     }
 }

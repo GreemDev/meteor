@@ -5,11 +5,13 @@
 
 package meteordevelopment.meteorclient.systems.proxies;
 
+import meteordevelopment.meteorclient.gui.utils.CharFilter;
 import meteordevelopment.meteorclient.settings.*;
 import meteordevelopment.meteorclient.utils.Utils;
 import meteordevelopment.meteorclient.utils.misc.ISerializable;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.nbt.NbtElement;
+import org.jetbrains.annotations.Nullable;
 
 import java.net.InetSocketAddress;
 import java.util.Objects;
@@ -27,10 +29,10 @@ public class Proxy implements ISerializable<Proxy> {
         .build()
     );
 
-    public Setting<ProxyType> type = sgGeneral.add(new EnumSetting.Builder<ProxyType>()
+    public Setting<Type> type = sgGeneral.add(new EnumSetting.Builder<Type>()
         .name("type")
         .description("The type of proxy.")
-        .defaultValue(ProxyType.Socks5)
+        .defaultValue(Type.Socks5)
         .build()
     );
 
@@ -38,7 +40,7 @@ public class Proxy implements ISerializable<Proxy> {
         .name("address")
         .description("The ip address of the proxy.")
         .defaultValue("")
-        .filter(Utils::ipFilter)
+        .filter(CharFilter.ip())
         .build()
     );
 
@@ -72,7 +74,7 @@ public class Proxy implements ISerializable<Proxy> {
         .name("password")
         .description("The password of the proxy.")
         .defaultValue("")
-        .visible(() -> type.get().equals(ProxyType.Socks5))
+        .visible(() -> type.get().equals(Type.Socks5))
         .build()
     );
 
@@ -90,15 +92,30 @@ public class Proxy implements ISerializable<Proxy> {
         return !socketAddress.isUnresolved();
     }
 
+    public enum Type {
+        Socks4,
+        Socks5;
+
+        @Nullable
+        public static Type parse(String group) {
+            for (Type type : values()) {
+                if (type.name().equalsIgnoreCase(group)) {
+                    return type;
+                }
+            }
+            return null;
+        }
+    }
+
     public static class Builder {
-        protected ProxyType type = ProxyType.Socks5;
+        protected Type type = Type.Socks5;
         protected String address = "";
         protected int port = 0;
         protected String name = "";
         protected String username = "";
         protected boolean enabled = false;
 
-        public Builder type(ProxyType type) {
+        public Builder type(Type type) {
             this.type = type;
             return this;
         }

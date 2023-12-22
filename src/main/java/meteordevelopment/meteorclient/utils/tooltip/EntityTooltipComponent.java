@@ -31,7 +31,7 @@ public class EntityTooltipComponent implements MeteorTooltipData, TooltipCompone
     }
 
     @Override
-    public TooltipComponent getComponent() {
+    public TooltipComponent component() {
         return this;
     }
 

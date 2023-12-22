@@ -3,51 +3,58 @@
  * Copyright (c) Meteor Development.
  */
 @file:JvmName("Strings")
+@file:Suppress("NOTHING_TO_INLINE")
 
 package net.greemdev.meteor.util
 
-import net.greemdev.meteor.invoking
-import net.greemdev.meteor.kotlin
+import net.greemdev.meteor.*
 import java.net.URI
 import java.util.*
 import java.util.function.Consumer
 import kotlin.io.path.Path
 
 
-fun String.toCamelCase(separator: String = "-") =
-    toPascalCase(separator).replaceFirstChar { it.lowercase() }
+fun String.capitalize() = replaceFirstChar(Char::uppercaseChar)
+fun String.decapitalize() = replaceFirstChar(Char::lowercaseChar)
 
-fun String.toPascalCase(separator: String = "-") =
-    split(separator).joinToString("") {
-        it.replaceFirstChar { ch -> ch.uppercase() }
-    }
+fun String.forEachChar(action: Consumer<Char>) = forEach(action.kotlin)
+
+fun String.toCamelCase(vararg separators: String = arrayOf("-"))
+    = toPascalCase(*separators).decapitalize()
+
+fun String.toPascalCase(vararg separators: String = arrayOf("-")) =
+    split(*separators).joinToString(empty, transform = String::capitalize)
 
 fun String.asPath() = Path(this)
 fun String.asURI() = URI(this)
 
-fun String.asUuidOrNull() = net.greemdev.meteor.getOrNull { UUID.fromString(this) }
+fun String.asUuidOrNull() =
+    runCatching(UUID::fromString)
+        .onFailureOf(IllegalArgumentException::class, Greteor.logger::catching)
+        .getOrNull()
+
+
+
+fun String.lines() = split("\n").toList()
+inline fun String.forEachLine(action: ValueAction<String>) = split("\n").forEach(action)
+
+inline fun String.widestLine(getWidth: Mapper<String, Double>) = lines().maxOf(getWidth)
+
+
+fun String.lineCount(): Int {
+    val count = count { it == '\n' }
+    return if (endsWith('\n') && count == 1)
+        1
+    else
+        count + 1 //0 newline literals makes one line, 1 literal makes 2 lines, etc
+}
+
 
 @JvmOverloads
 fun String.ensurePrefix(prefix: String, ignoreCase: Boolean = false) =
     if (startsWith(prefix, ignoreCase))
         this
     else "$prefix$this"
-
-fun String.lines() = split("\n").toList()
-inline fun String.forEachLine(action: (String) -> Unit) = split("\n").forEach(action)
-
-inline fun String.widestLine(getWidth: (String) -> Double) = lines().maxOf { getWidth(it) }
-
-
-fun String.lineCount(): Int {
-    val count = count { it == '\n' }
-    return if (endsWith('\n') && count == 1)
-        count
-    else
-        count + 1
-}
-     //0 newline literals makes one line, 1 newline makes 2 lines, etc
-
 
 @JvmOverloads
 fun String.ensureSuffix(suffix: String, ignoreCase: Boolean = false) =
@@ -56,7 +63,7 @@ fun String.ensureSuffix(suffix: String, ignoreCase: Boolean = false) =
     else "$this$suffix"
 
 @JvmOverloads
-fun String.pluralize(quantity: Number, useES: Boolean = false, prefixQuantity: Boolean = true) = string {
+fun String.pluralize(quantity: Number, useES: Boolean = false, prefixQuantity: Boolean = false) = string {
     if (prefixQuantity)
         +"$quantity "
 
@@ -69,10 +76,39 @@ fun String.pluralize(quantity: Number, useES: Boolean = false, prefixQuantity: B
     }
 }
 
+private val emptyStr = String()
+private const val singleSpaceStr = " "
+private const val singleSpaceChar = ' '
 
+val String.Companion.empty
+    get() = emptyStr
+
+val String.Companion.singleSpace
+    get() = singleSpaceStr
+
+val Char.Companion.singleSpace
+    get() = singleSpaceChar
+
+@get:JvmName("empty")
+val empty by invoking(::emptyStr)
+
+inline fun String.minify() = replace(" ", empty).removeNewlines()
+
+@JvmName("min") // String.minify() & minify(String) have the same JVM signature
+inline fun minify(str: String) = str.minify()
+
+inline fun String.removeNewlines() = replace("\n", empty)
+
+@JvmName("withoutNewlines")
+inline fun removeNewlines(str: String) = str.removeNewlines()
+
+fun Char.string(): String = java.lang.String.valueOf(this)
+fun Int.charStr() = toChar().string()
+
+@Suppress("MemberVisibilityCanBePrivate") // API
 data class StringScope(
-    private val appendNullLiteral: Boolean,
-    val inner: StringBuilder
+    private val omitNulls: Boolean,
+    private val inner: StringBuilder
 ) : CharSequence by inner, Comparable<StringBuilder> by inner, java.io.Serializable by inner {
     operator fun Any?.unaryPlus() {
         append(this)
@@ -89,7 +125,7 @@ data class StringScope(
     /**
      * Appends new line to the current [Any]? value's string representation.
      */
-    fun Any?.newline() = "${toString()}${System.lineSeparator()}"
+    fun Any?.newline() = "${toString()}${this@StringScope.newline()}"
     fun newline(): String = System.lineSeparator()
 
     /**
@@ -100,17 +136,18 @@ data class StringScope(
     fun lines(count: Number) = newline().repeat(count.toInt())
 
     fun append(content: Any?): StringScope {
-        if ((content == null && appendNullLiteral) || content != null) {
-            inner.append(content)
+        if ((content == null && !omitNulls) || content != null) {
+            inner.append(content.toString())
         }
 
         return this
     }
 
+    @JvmOverloads
     fun appendln(content: Any? = newline()) =
         append(content?.toString()?.ensureSuffix(newline()))
 
-    fun appendlns(vararg content: Any?): StringScope {
+    fun appendlns(vararg content: Any? = arrayOf(newline())): StringScope {
         content.forEach(::appendln)
         return this
     }
@@ -118,14 +155,14 @@ data class StringScope(
     val currentString by invoking(inner::toString)
 }
 
-inline fun string(initial: CharSequence = "", appendNullLiteral: Boolean = true, builderScope: StringScope.() -> Unit) =
-    StringScope(appendNullLiteral, StringBuilder(initial)).apply(builderScope).currentString
+inline fun string(initial: CharSequence = empty, omitNulls: Boolean = false, builderScope: Initializer<StringScope>) =
+    StringScope(omitNulls, StringBuilder(initial)).apply(builderScope).currentString
 
 
-@JvmName("buildStringKt")
-inline fun buildString(initialValue: String, builderAction: StringBuilder.() -> Unit) =
+@JvmName("ktBuildString")
+inline fun buildString(initialValue: String, builderAction: Initializer<StringBuilder>) =
     StringBuilder(initialValue).apply(builderAction).toString()
 
 @JvmName("buildString")
-fun `buildStringJava`(initialValue: String, builderAction: Consumer<StringBuilder>) =
+fun `java-buildString`(initialValue: String, builderAction: Consumer<StringBuilder>) =
     StringBuilder(initialValue).apply(builderAction.kotlin).toString()

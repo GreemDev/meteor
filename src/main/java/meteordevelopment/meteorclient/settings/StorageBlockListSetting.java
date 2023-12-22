@@ -39,8 +39,8 @@ public class StorageBlockListSetting extends Setting<List<BlockEntityType<?>>> {
 
     public static final Registry<BlockEntityType<?>> REGISTRY = new SRegistry();
 
-    protected StorageBlockListSetting(String name, String description, Object defaultValue, Consumer<List<BlockEntityType<?>>> onChanged, Consumer<Setting<List<BlockEntityType<?>>>> onModuleActivated, Supplier<Boolean> visible) {
-        super(name, description, defaultValue, onChanged, onModuleActivated, visible);
+    protected StorageBlockListSetting(String name, String description, Object defaultValue, Consumer<List<BlockEntityType<?>>> onChanged, Consumer<Setting<List<BlockEntityType<?>>>> onModuleActivated, Supplier<Boolean> visible, boolean serialize) {
+        super(name, description, defaultValue, onChanged, onModuleActivated, visible, serialize);
     }
 
     @Override
@@ -74,15 +74,13 @@ public class StorageBlockListSetting extends Setting<List<BlockEntityType<?>>> {
     }
 
     @Override
-    public NbtCompound save(NbtCompound tag) {
+    public void save(NbtCompound tag) {
         NbtList valueTag = new NbtList();
         for (BlockEntityType<?> type : get()) {
             Identifier id = Registries.BLOCK_ENTITY_TYPE.getId(type);
             if (id != null) valueTag.add(NbtString.of(id.toString()));
         }
         tag.put("value", valueTag);
-
-        return tag;
     }
 
     @Override
@@ -109,7 +107,7 @@ public class StorageBlockListSetting extends Setting<List<BlockEntityType<?>>> {
 
         @Override
         public StorageBlockListSetting build() {
-            return new StorageBlockListSetting(name, description, defaultValue, onChanged, onModuleActivated, visible);
+            return new StorageBlockListSetting(name, description, defaultValue, onChanged, onModuleActivated, visible, serialize);
         }
     }
 

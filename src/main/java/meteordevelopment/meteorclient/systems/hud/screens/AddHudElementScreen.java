@@ -71,7 +71,7 @@ public class AddHudElementScreen extends WindowScreen {
 
         // Create widgets
         for (HudGroup group : grouped.keySet()) {
-            WSection section = add(theme.section(group.title)).expandX().widget();
+            WSection section = add(theme.section(group.title())).expandX().widget();
 
             for (Item item : grouped.get(group)) {
                 WHorizontalList l = section.add(theme.horizontalList()).expandX().widget();
@@ -79,9 +79,8 @@ public class AddHudElementScreen extends WindowScreen {
                 WLabel title = l.add(theme.label(item.title)).widget();
                 title.tooltip = item.description;
 
-                if (item.object instanceof HudElementInfo.Preset preset) {
-                    WPlus add = l.add(theme.plus()).expandCellX().right().widget();
-                    add.action = () -> runObject(preset);
+                if (item.object instanceof HudElementInfo<?>.Preset preset) {
+                    l.add(theme.plus(() -> runObject(preset))).expandCellX().right().widget();
 
                     if (firstObject == null) firstObject = preset;
                 }
@@ -89,12 +88,10 @@ public class AddHudElementScreen extends WindowScreen {
                     HudElementInfo<?> info = (HudElementInfo<?>) item.object;
 
                     if (info.hasPresets()) {
-                        WButton open = l.add(theme.button(" > ")).expandCellX().right().widget();
-                        open.action = () -> runObject(info);
+                        l.add(theme.button(" > ", () -> runObject(info))).expandCellX().right();
                     }
                     else {
-                        WPlus add = l.add(theme.plus()).expandCellX().right().widget();
-                        add.action = () -> runObject(info);
+                        l.add(theme.plus(() -> runObject(info))).expandCellX().right();
                     }
 
                     if (firstObject == null) firstObject = info;
@@ -105,7 +102,7 @@ public class AddHudElementScreen extends WindowScreen {
 
     private void runObject(Object object) {
         if (object == null) return;
-        if (object instanceof HudElementInfo.Preset preset) {
+        if (object instanceof HudElementInfo<?>.Preset preset) {
             Hud.get().add(preset, x, y);
             close();
         }
