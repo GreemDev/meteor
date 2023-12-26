@@ -27,7 +27,7 @@ public class WMeteorModule extends WPressable implements MeteorWidget {
 
     public WMeteorModule(Module module) {
         this.module = module;
-        this.tooltip = module.description;
+        tooltip(module.description);
 
         animationProgress1 = animationProgress2 = module.isActive() ? 1 : 0;
     }
@@ -78,13 +78,12 @@ public class WMeteorModule extends WPressable implements MeteorWidget {
             renderer.quad(x, y + height * (1 - animationProgress2), theme.scale(2), height * animationProgress2, theme.accentColor.get());
         }
 
-        double x = this.x + pad;
-        double w = width - pad * 2;
-
-        if (theme.moduleAlignment.get().center())
-            x += w / 2 - titleWidth / 2;
-        else if (theme.moduleAlignment.get().right())
-            x += w - titleWidth;
+        double x = theme.moduleAlignment.get()
+            .align(
+                this.x + pad, // x
+                width - pad * 2, // w
+                titleWidth
+            );
 
         renderer.text(module.title, x, y + pad, theme.textColor.get(), false);
     }

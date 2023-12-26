@@ -103,10 +103,6 @@ public abstract class GuiTheme implements ISerializable<GuiTheme> {
         return label(text, false);
     }
 
-    public WLabel label(String text, String onHover) {
-        return net.greemdev.meteor.utils.apply(label(text, false), l -> l.tooltip = onHover);
-    }
-
     public abstract WHorizontalSeparator horizontalSeparator(String text);
     public WHorizontalSeparator horizontalSeparator() {
         return horizontalSeparator(null);

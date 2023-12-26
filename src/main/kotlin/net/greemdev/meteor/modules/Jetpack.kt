@@ -15,7 +15,7 @@ import net.greemdev.meteor.util.misc.player
 import net.greemdev.meteor.util.misc.setY
 
 // Based on https://github.com/AntiCope/meteor-rejects/blob/master/src/main/java/anticope/rejects/modules/Jetpack.java
-object Jetpack : GModule("jetpack", "Boosts upward as if flying with a jetpack while holding the jump key.") {
+object Jetpack : GModule.Movement("jetpack", "Boosts upward as if flying with a jetpack while holding the jump key.") {
     val speed by sg double {
         name("jetpack-speed")
         description("How fast to ascend while holding the jump key.")

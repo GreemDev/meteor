@@ -92,7 +92,6 @@ class HudLine(
     }
 
     fun draw(ctx: DrawContext) {
-        color(ctx.lineColor)
         var normalX = endX - startX
         var normalY = endY - startY
 
@@ -103,27 +102,28 @@ class HudLine(
         normalX /= length
         normalY /= length
 
-        ctx.bufferBuilder {
-            vertex(ctx.positionMatrix, startX, startY, -90f).
-            normal(ctx.normalMatrix, normalX, normalY, 0f).
-            color(startR, startG, startB, startA)
-        }
-        ctx.bufferBuilder {
-            vertex(ctx.positionMatrix, endX, endY, -90f).
-            normal(ctx.normalMatrix, normalX, normalY, 0f).
-            color(endR, endG, endB, endA)
-        }
+        ctx.bufferBuilder
+            .vertex(ctx.positionMatrix, startX, startY, -90f)
+            .normal(ctx.normalMatrix, normalX, normalY, 0f)
+            .color(startR, startG, startB, startA)
+            .next()
+
+        ctx.bufferBuilder
+            .vertex(ctx.positionMatrix, endX, endY, -90f)
+            .normal(ctx.normalMatrix, normalX, normalY, 0f)
+            .color(endR, endG, endB, endA)
+            .next()
     }
 
-    fun draw(bufferBuilder: BufferBuilder, positionMatrix: Matrix4f, normalMatrix: Matrix3f, lineColor: Color) =
-        draw(DrawContext(bufferBuilder, positionMatrix, normalMatrix, lineColor))
+    fun draw(bufferBuilder: BufferBuilder, positionMatrix: Matrix4f, normalMatrix: Matrix3f) =
+        draw(DrawContext(bufferBuilder, positionMatrix, normalMatrix))
 
     companion object {
-        fun drawer(bufferBuilder: BufferBuilder, positionMatrix: Matrix4f, normalMatrix: Matrix3f, lineColor: Color) =
-            DrawContext(bufferBuilder, positionMatrix, normalMatrix, lineColor)
+        fun drawer(bufferBuilder: BufferBuilder, positionMatrix: Matrix4f, normalMatrix: Matrix3f) =
+            DrawContext(bufferBuilder, positionMatrix, normalMatrix)
     }
 
-    class DrawContext(val bufferBuilder: BufferBuilder, val positionMatrix: Matrix4f, val normalMatrix: Matrix3f, val lineColor: Color) {
+    class DrawContext(val bufferBuilder: BufferBuilder, val positionMatrix: Matrix4f, val normalMatrix: Matrix3f) {
         operator fun invoke(
             startX: Float,
             startY: Float,
@@ -139,10 +139,6 @@ class HudLine(
             endA: Float = 1f
         ) = this(line(startX, startY, endX, endY, startR, startG, startB, startA, endR, endG, endB, endA))
 
-        operator fun invoke(hudLine: HudLine) = hudLine.draw(bufferBuilder, positionMatrix, normalMatrix, lineColor)
+        operator fun invoke(hudLine: HudLine) = hudLine.draw(bufferBuilder, positionMatrix, normalMatrix)
     }
-}
-
-operator fun BufferBuilder.invoke(vertex: BufferBuilder.() -> VertexConsumer) {
-    vertex().next()
 }

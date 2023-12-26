@@ -11,7 +11,7 @@ import meteordevelopment.starscript.utils.StarscriptError
 import net.greemdev.meteor.*
 import net.greemdev.meteor.util.meteor.*
 
-object CommandAliases : GModule(
+object CommandAliases : GModule.Misc(
     "command-aliases",
     "Use commands dynamically formatted with Starscript.\nAliases are accessible via Meteor command 'ca'."
 ) {

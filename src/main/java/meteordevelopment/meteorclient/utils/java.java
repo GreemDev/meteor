@@ -10,6 +10,7 @@ import net.greemdev.meteor.utils;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
+import java.util.Objects;
 import java.util.function.Consumer;
 import java.util.function.Predicate;
 
@@ -65,10 +66,10 @@ public class java {
         }
 
         protected void validate() {
-            if (start == null) throw new IllegalStateException("Cannot create a loop without a defined starting point.");
-            if (incrementBy == null) throw new IllegalStateException("Cannot create a loop without a defined increment.");
-            if (condition == null) throw new IllegalStateException("Cannot create a loop without a condition for execution of each iteration.");
-            if (body == null) throw new IllegalStateException("Cannot create a loop without a task to run on each iteration.");
+            Objects.requireNonNull(start, "Cannot create a loop without a defined starting point.");
+            Objects.requireNonNull(incrementBy, "Cannot create a loop without a defined increment.");
+            Objects.requireNonNull(condition, "Cannot create a loop without a condition for execution of each iteration.");
+            Objects.requireNonNull(body, "Cannot create a loop without a task to run on each iteration.");
         }
 
         public final void run() {
@@ -82,11 +83,9 @@ public class java {
             return new Loop<>() {
                 @Override
                 protected void runImpl() {
-                    for (Integer i = start;
-                         condition.test(i);
-                         i += incrementBy
-                    )
-                        body.accept(i);
+                    // getCondition & getBody will not be null at this point
+                    //noinspection DataFlowIssue
+                    loop(start, incrementBy, getCondition(), getBody());
                 }
             };
         }
@@ -95,11 +94,8 @@ public class java {
             return new Loop<>() {
                 @Override
                 protected void runImpl() {
-                    for (Float f = start;
-                         condition.test(f);
-                         f += incrementBy
-                    )
-                        body.accept(f);
+                    //noinspection DataFlowIssue
+                    loop(start, incrementBy, getCondition(), getBody());
                 }
             };
         }
@@ -108,26 +104,26 @@ public class java {
             return new Loop<>() {
                 @Override
                 protected void runImpl() {
-                    for (Double d = start;
-                         condition.test(d);
-                         d += incrementBy
-                    )
-                        body.accept(d);
+                    //noinspection DataFlowIssue
+                    loop(start, incrementBy, getCondition(), getBody());
                 }
             };
         }
     }
 
-    public static void loop(int start, int incr, Function1<Integer, Boolean> loopCondition, Function1<Integer, kotlin.Unit> loopBody) {
-        Loop.ofInt().setStartAt(start).setIncrement(incr).setCondition(loopCondition).setBody(loopBody).runImpl();
+    public static void loop(Integer start, Integer incr, Function1<@NotNull Integer, @NotNull Boolean> loopCondition, Function1<@NotNull Integer, kotlin.@NotNull Unit> loopBody) {
+        for (Integer i = start; loopCondition.invoke(i); i += incr)
+            loopBody.invoke(i);
     }
 
-    public static void loop(double start, double incr, Function1<Double, Boolean> loopCondition, Function1<Double, kotlin.Unit> loopBody) {
-        Loop.ofDouble().setStartAt(start).setIncrement(incr).setCondition(loopCondition).setBody(loopBody).runImpl();
+    public static void loop(Double start, Double incr, Function1<@NotNull Double, @NotNull Boolean> loopCondition, Function1<@NotNull Double, kotlin.@NotNull Unit> loopBody) {
+        for (Double i = start; loopCondition.invoke(i); i += incr)
+            loopBody.invoke(i);
     }
 
-    public static void loop(float start, float incr, Function1<Float, Boolean> loopCondition, Function1<Float, kotlin.Unit> loopBody) {
-        Loop.ofFloat().setStartAt(start).setIncrement(incr).setCondition(loopCondition).setBody(loopBody).runImpl();
+    public static void loop(Float start, Float incr, Function1<@NotNull Float, @NotNull Boolean> loopCondition, Function1<@NotNull Float, kotlin.@NotNull Unit> loopBody) {
+        for (Float i = start; loopCondition.invoke(i); i += incr)
+            loopBody.invoke(i);
     }
 
     //im a fucking psycho; a maniac, even. i cant believe i wrote a hundred-line API around a language feature

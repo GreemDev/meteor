@@ -24,7 +24,7 @@ class DamageNumber(val entityState: EntityState, val damage: Float) {
     var age = 0
 
     //var ax = 0.0f
-    var ay = -0.01f
+    val ay = -0.01f
     //var az = 0.0f
 
     var vx = 0.0f
@@ -35,7 +35,7 @@ class DamageNumber(val entityState: EntityState, val damage: Float) {
         val entityLoc = entityState.entity.pos.edit(y = (entityState.entity.height / 2).toDouble())
         val cameraLoc = minecraft.gameRenderer.camera.pos
         val offsetBy = entityState.entity.width.toDouble()
-        val offset = cameraLoc.subtract(entityLoc).normalize() * offsetBy
+        val offset = (cameraLoc - entityLoc).normalize() * offsetBy
         val pos = entityLoc.add(offset)
 
         vx = minecraftRandom.nextGaussian(0f, 0.04f)

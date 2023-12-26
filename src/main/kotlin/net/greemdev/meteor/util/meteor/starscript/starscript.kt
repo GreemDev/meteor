@@ -71,7 +71,6 @@ private fun Starscript.math() {
     }
     numberFunc("avg", Constraint.atLeast(2)) {
         getVariadicArguments(ArgType.Number, "All arguments to $functionName need to be a number.").average()
-        //TODO: test getVariadicArguments
     }
     numberFunc("xor", Constraint.exactCount(2)) {
         val first = nextNumber()
@@ -82,15 +81,34 @@ private fun Starscript.math() {
 
         first.toLong() xor second.toLong()
     }
+    numberFunc("or", Constraint.exactCount(2)) {
+        val first = nextNumber()
+        val second = nextNumber()
+
+        if (first.hasDecimal or second.hasDecimal)
+            starscript.error("Only non-decimal values are accepted for %s.", functionName)
+
+        first.toLong() or second.toLong()
+    }
+    numberFunc("and", Constraint.exactCount(2)) {
+        val first = nextNumber()
+        val second = nextNumber()
+
+        if (first.hasDecimal or second.hasDecimal)
+            starscript.error("Only non-decimal values are accepted for %s.", functionName)
+
+        first.toLong() and second.toLong()
+    }
 }
 
 
 private fun Starscript.utilities() {
     stringFunc("camelCase", Constraint.atLeast(1)) {
+        val subject = nextString()
         when (argCount) {
-            1 -> nextString().toCamelCase()
-            2 -> nextString().toCamelCase(nextString())
-            else -> nextString().toCamelCase(*getVariadicArguments(ArgType.Str))
+            1 -> subject.toCamelCase()
+            2 -> subject.toCamelCase(nextString())
+            else -> subject.toCamelCase(*getVariadicArguments(ArgType.Str))
         }
     }
 }

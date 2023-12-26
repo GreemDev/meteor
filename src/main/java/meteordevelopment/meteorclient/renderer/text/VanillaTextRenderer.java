@@ -90,11 +90,6 @@ public class VanillaTextRenderer implements TextRenderer {
     }
 
     @Override
-    public boolean isBuilding() {
-        return building;
-    }
-
-    @Override
     public void end(MatrixStack matrices) {
         if (!building) throw new RuntimeException("VanillaTextRenderer.end() called without calling begin()");
 

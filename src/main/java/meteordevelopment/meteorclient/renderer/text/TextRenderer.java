@@ -46,8 +46,6 @@ public interface TextRenderer {
         renderLegacy(text, x, y, Color.WHITE, false);
     }
 
-    boolean isBuilding();
-
     default void end() { end(null); }
     void end(MatrixStack matrices);
 }

@@ -10,6 +10,7 @@ import meteordevelopment.meteorclient.gui.renderer.GuiRenderer;
 import meteordevelopment.meteorclient.gui.utils.BaseWidget;
 import meteordevelopment.meteorclient.gui.utils.Cell;
 import meteordevelopment.meteorclient.gui.widgets.containers.WContainer;
+import meteordevelopment.meteorclient.utils.java;
 
 import java.util.function.Consumer;
 
@@ -23,6 +24,11 @@ public abstract class WWidget implements BaseWidget {
 
     public WWidget parent;
     public String tooltip;
+
+    public <T extends WWidget> T tooltip(String tooltip) {
+        this.tooltip = tooltip;
+        return java.cast(this);
+    }
 
     public boolean mouseOver;
     protected double mouseOverTimer;

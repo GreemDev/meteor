@@ -80,7 +80,7 @@ public abstract class CrashReportMixin {
             }
         }
 
-        if (Modules.get() == null && Hud.get() == null && !Hud.get().active) {
+        if (Modules.get() == null && Hud.get() == null) {
             crashReportBuilder.append("\nThis crash happened too early for Modules or Hud to be available.");
         } else
             crashReportBuilder.append("\n\n");

@@ -58,7 +58,7 @@ public class WKeybind extends WHorizontalList {
             if (actionOnSet != null) actionOnSet.run();
         }));
 
-        add(theme.label("  Released: ", "Activate this keybind when the specified key/mouse button is &zreleased&r."));
+        add(theme.label("  Released: ").tooltip("Activate this keybind when the specified key/mouse button is &zreleased&r."));
 
         add(theme.checkbox(keybind.onRelease, (c) -> keybind.onRelease = c));
 

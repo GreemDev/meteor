@@ -8,7 +8,7 @@ package net.greemdev.meteor.modules
 import net.greemdev.meteor.GModule
 import net.greemdev.meteor.util.meteor.*
 
-object VanillaFeatures : GModule(
+object VanillaFeatures : GModule.Misc(
     "vanilla-features", "Adds Meteor settings for easier access to some of Minecraft's toggle settings."
 ) {
     init {

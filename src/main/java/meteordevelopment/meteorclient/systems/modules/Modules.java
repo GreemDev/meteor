@@ -22,6 +22,7 @@ import meteordevelopment.meteorclient.settings.SettingGroup;
 import meteordevelopment.meteorclient.systems.System;
 import meteordevelopment.meteorclient.systems.Systems;
 import meteordevelopment.meteorclient.utils.Utils;
+import meteordevelopment.meteorclient.utils.java;
 import meteordevelopment.meteorclient.utils.misc.Keybind;
 import meteordevelopment.meteorclient.utils.misc.MeteorIdentifier;
 import meteordevelopment.meteorclient.utils.misc.ValueComparableMap;
@@ -29,6 +30,7 @@ import meteordevelopment.meteorclient.utils.misc.input.Input;
 import meteordevelopment.meteorclient.utils.misc.input.KeyAction;
 import meteordevelopment.orbit.EventHandler;
 import meteordevelopment.orbit.EventPriority;
+import net.greemdev.meteor.GModule;
 import net.greemdev.meteor.util.Reflection;
 import net.greemdev.meteor.util.misc.Nbt;
 import net.greemdev.meteor.utils;
@@ -81,7 +83,7 @@ public class Modules extends System<Modules> {
             Reflection.streamSubtypes(Module.class, Modules.class.getPackageName())
                 .map(Reflection::callNoArgsConstructor)
                 .filter(Objects::nonNull)
-                .filter(Module::isRegisterable)
+                .filter(Module::shouldAutoRegister)
                 .forEach(this::register);
 
             sortModules();
@@ -90,19 +92,19 @@ public class Modules extends System<Modules> {
 
     @Override
     public void load(File folder) {
-        for (Module module : modules) {
-            for (SettingGroup group : module.settings) {
-                for (Setting<?> setting : group) setting.reset();
-            }
-        }
+        modules.forEach(module ->
+            module.settings.forEach(group ->
+                group.forEach(Setting::reset)
+            )
+        );
 
         super.load(folder);
     }
 
     public void sortModules() {
-        for (List<Module> modules : groups.values()) {
-            modules.sort(Comparator.comparing(o -> o.title));
-        }
+        for (List<Module> modulesInGroup : groups.values())
+            modulesInGroup.sort(Comparator.comparing(o -> o.title));
+
         modules.sort(Comparator.comparing(o -> o.title));
     }
 
@@ -159,6 +161,10 @@ public class Modules extends System<Modules> {
         return groups.computeIfAbsent(category, xX_69_Xx -> new ArrayList<>());
     }
 
+    public static Stream<Module> streamCategoryModules(Category category) {
+        return get().getGroup(category).stream();
+    }
+
     public Collection<Module> getAll() {
         return moduleInstances.values();
     }
@@ -176,6 +182,13 @@ public class Modules extends System<Modules> {
     public Collection<Module> getAllVisible() {
         return stream()
             .filter(Predicate.not(Module::isHidden))
+            .toList();
+    }
+
+    public Collection<GModule> getGreteorModules() {
+        return stream()
+            .filter(m -> m instanceof GModule)
+            .<GModule>map(java::cast)
             .toList();
     }
 

@@ -21,7 +21,7 @@ import net.minecraft.registry.tag.TagKey
 import java.util.Optional
 import java.util.function.Predicate
 
-object AntiLogStrip : GModule("anti-log-strip", "Prevents you from stripping logs.") {
+object AntiLogStrip : GModule.World("anti-log-strip", "Prevents you from stripping logs.") {
 
     val swingHand by sg bool {
         name("swing-hand")

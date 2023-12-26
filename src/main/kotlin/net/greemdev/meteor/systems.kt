@@ -20,7 +20,7 @@ import net.minecraft.client.network.ClientCommandSource
 import java.lang.reflect.Modifier
 import kotlin.reflect.KClass
 
-abstract class GModule @JvmOverloads constructor(name: String, description: String, category: Category = Greteor.category()) : Module(category, name, description) {
+abstract class GModule private constructor(name: String, description: String, category: Category) : Module(category, name, description) {
     companion object : SubtypeInstances<GModule>("net.greemdev.meteor.modules", GModule::class)
 
     protected val sg by lazy(settings::group)

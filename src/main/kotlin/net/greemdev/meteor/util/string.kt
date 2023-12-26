@@ -63,22 +63,28 @@ fun String.ensureSuffix(suffix: String, ignoreCase: Boolean = false) =
     else "$this$suffix"
 
 @JvmOverloads
-fun String.pluralize(quantity: Number, useES: Boolean = false, prefixQuantity: Boolean = false) = string {
+fun String.pluralize(quantity: Number, plurality: Plurality = Plurality.Simple, prefixQuantity: Boolean = false) = string {
     if (prefixQuantity)
         +"$quantity "
 
-    +this@pluralize
+    if (quantity == 1)
+        +this@pluralize
+    else
+        +plurality.format(this@pluralize)
+}
 
-    if (quantity != 1) {
-        if (useES)
-            +'e'
-        +'s'
-    }
+enum class Plurality(private val str: String, private val trimAmount: Int = 0) {
+    Simple("s"),
+    ES("es"),
+    IES("ies", 1);
+
+    fun format(word: String) =
+        (if (trimAmount > 0) word.dropLast(trimAmount) else word) + this.str
 }
 
 private val emptyStr = String()
 private const val singleSpaceStr = " "
-private const val singleSpaceChar = ' '
+private val singleSpaceChar = singleSpaceStr[0]
 
 val String.Companion.empty
     get() = emptyStr

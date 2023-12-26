@@ -8,9 +8,8 @@
 package net.greemdev.meteor.util.meteor
 
 context(MutableMap<String, String>)
-private infix fun String.means(str: String) {
-    set(lowercase(), str)
-}
+private infix fun String.means(desc: String) =
+    set(lowercase(), desc)
 
 @JvmName("get")
 fun getDescriptionForBaritoneSetting(settingName: String) = descriptions.getOrDefault(settingName.lowercase(), settingName)

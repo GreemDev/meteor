@@ -14,7 +14,7 @@ import net.greemdev.meteor.invoke
 import net.minecraft.client.gui.screen.Screen
 
 // Based on https://github.com/AntiCope/meteor-rejects/blob/master/src/main/java/anticope/rejects/modules/Boost.java
-object Dash : GModule("dash", "Boosts you forward in the direction you're looking.") {
+object Dash : GModule.Movement("dash", "Boosts you forward in the direction you're looking.") {
     val power by sg double {
         name("power")
         description("The strength of your dash.")

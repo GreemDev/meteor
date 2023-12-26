@@ -10,6 +10,7 @@ import meteordevelopment.meteorclient.gui.widgets.WWidget;
 import meteordevelopment.meteorclient.gui.widgets.containers.WTable;
 import meteordevelopment.meteorclient.settings.Setting;
 import meteordevelopment.meteorclient.settings.Settings;
+import org.jetbrains.annotations.NotNull;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -20,7 +21,12 @@ public abstract class SettingsWidgetFactory {
     private static final Map<Class<?>, Function<GuiTheme, BiConsumer<WTable, Setting<?>>>> customFactories = new HashMap<>();
 
     protected final GuiTheme theme;
-    protected final Map<Class<?>, BiConsumer<WTable, Setting<?>>> factories = new HashMap<>();
+    private final Map<Class<?>, BiConsumer<WTable, Setting<?>>> factories = new HashMap<>();
+
+    protected void map(Class<?> settingClass, BiConsumer<WTable, Setting<?>> factory) {
+        if (factory != null)
+            factories.put(settingClass, factory);
+    }
 
     public SettingsWidgetFactory(GuiTheme theme) {
         this.theme = theme;
@@ -28,7 +34,8 @@ public abstract class SettingsWidgetFactory {
 
     /** {@code SettingsWidgetFactory.registerCustomFactory(SomeSetting.class, (theme) -> (table, setting) -> {//create widget})} */
     public static void registerCustomFactory(Class<?> settingClass, Function<GuiTheme, BiConsumer<WTable, Setting<?>>> factoryFunction) {
-        customFactories.put(settingClass, factoryFunction);
+        if (factoryFunction != null)
+            customFactories.put(settingClass, factoryFunction);
     }
 
     public static void unregisterCustomFactory(Class<?> settingClass) {
@@ -37,8 +44,12 @@ public abstract class SettingsWidgetFactory {
 
     public abstract WWidget create(GuiTheme theme, Settings settings, String filter);
 
+    @NotNull
     protected BiConsumer<WTable, Setting<?>> getFactory(Class<?> settingClass) {
         if (customFactories.containsKey(settingClass)) return customFactories.get(settingClass).apply(theme);
-        return factories.get(settingClass);
+        if (factories.containsKey(settingClass))
+            return factories.get(settingClass);
+        else
+            throw new IllegalArgumentException("Class %s does not have a registered factory function.".formatted(settingClass.getCanonicalName()));
     }
 }

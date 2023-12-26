@@ -66,5 +66,24 @@ fun<T> Class<T>.callNoArgsConstructor(): T? =
     runCatching {
         getConstructor().newInstance()
     }.onFailureOf(NoSuchMethodException::class) { nse ->
-        Greteor.logger.error("Specified type `$qualifiedNameOrMappingName` does not have a no-args constructor.", nse)
+        Greteor.logger.error("Specified type '$qualifiedNameOrMappingName' does not have a no-args constructor.", nse)
     }.getOrNull()
+
+fun<T> Class<T>.callConstructor(vararg _args: Any): T? {
+    val (argTypes, args) = if (_args.isNotEmpty())
+        _args.map {
+            it::class.java to it
+        }.let { argMap ->
+            Pair(argMap.map { it.first }, argMap.map { it.second })
+        }
+    else
+        listOf<Class<out Any>>() to listOf()
+
+    return runCatching {
+        getConstructor(*argTypes.toTypedArray()).newInstance(args.toTypedArray())
+    }.onFailureOf(NoSuchMethodException::class) { nse ->
+        val ctorSignature = argTypes.joinToString(", ") { it.qualifiedNameOrMappingName }
+
+        Greteor.logger.error("Specified type '$qualifiedNameOrMappingName' does not have a constructor matching ($ctorSignature).", nse)
+    }.getOrNull()
+}

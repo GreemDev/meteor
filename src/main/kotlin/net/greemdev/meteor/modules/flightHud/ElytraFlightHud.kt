@@ -34,7 +34,7 @@ private const val GRAVITY = -0.0784f
 // This module is based on recolic's fork: https://github.com/recolic/elytra-flight-hud/blob/recolic/1.20upgrade/src/main/java/eu/deltatimo/minecraft/elytrahud/ElytraFlightHud.java
 
 @Suppress("RedundantSuppression") //fucking intellij
-object ElytraFlightHud : GModule("elytra-flight-HUD", "Shows relevant flight information on-screen while flying with Elytra.") {
+object ElytraFlightHud : GModule.Render("elytra-flight-HUD", "Shows relevant flight information on-screen while flying with Elytra.") {
 
     init {
         autoRegister = (MeteorClient.FOLDER / "indev" / "elytraHud").exists()
@@ -147,7 +147,7 @@ object ElytraFlightHud : GModule("elytra-flight-HUD", "Shows relevant flight inf
         RenderSystem.lineWidth(lineWidth.valueAsFloat)
         tessellator.buffer.begin(VertexFormat.DrawMode.LINES, VertexFormats.LINES)
 
-        val draw = HudLine.drawer(tessellator.buffer, positionMatrix, normalMatrix, lineColor)
+        val draw = HudLine.drawer(tessellator.buffer, positionMatrix, normalMatrix)
 
         // draw lines on the horizon UPWARDS. (-degrees in minecraft)
         loop(
@@ -167,7 +167,7 @@ object ElytraFlightHud : GModule("elytra-flight-HUD", "Shows relevant flight inf
                     height,
                     screenCenterX - horizonWidth / 2f + horizonWidth / 3,
                     height
-                )
+                ).color(lineColor)
             )
             draw(
                 line(
@@ -175,7 +175,7 @@ object ElytraFlightHud : GModule("elytra-flight-HUD", "Shows relevant flight inf
                     height,
                     screenCenterX - horizonWidth / 2f,
                     height + horizonVerticalBlipLength
-                )
+                ).color(lineColor)
             )
             draw(
                 line(
@@ -183,7 +183,7 @@ object ElytraFlightHud : GModule("elytra-flight-HUD", "Shows relevant flight inf
                     height,
                     screenCenterX - horizonWidth / 2f + horizonWidth,
                     height
-                )
+                ).color(lineColor)
             )
             draw(
                 line(
@@ -191,7 +191,7 @@ object ElytraFlightHud : GModule("elytra-flight-HUD", "Shows relevant flight inf
                     height,
                     screenCenterX - horizonWidth / 2f + horizonWidth,
                     height + horizonVerticalBlipLength
-                )
+                ).color(lineColor)
             )
         }
 
@@ -210,22 +210,22 @@ object ElytraFlightHud : GModule("elytra-flight-HUD", "Shows relevant flight inf
             // left horizontal lines
             val leftX = screenCenterX - horizonWidth / 2f
             val partWidth = horizonWidth / 3f / 3f
-            draw(line(leftX, height, leftX + partWidth - partWidth / 3, height))
-            draw(line(leftX + partWidth, height, leftX + 2 * partWidth - partWidth / 3, height))
-            draw(line(leftX + 2 * partWidth, height, leftX + 3 * partWidth, height))
+            draw(line(leftX, height, leftX + partWidth - partWidth / 3, height).color(lineColor))
+            draw(line(leftX + partWidth, height, leftX + 2 * partWidth - partWidth / 3, height).color(lineColor))
+            draw(line(leftX + 2 * partWidth, height, leftX + 3 * partWidth, height).color(lineColor))
 
             // right horizontal lines
             val rightX = screenCenterX + horizonWidth / 2f
-            draw(line(rightX, height, rightX - partWidth + partWidth / 3, height))
+            draw(line(rightX, height, rightX - partWidth + partWidth / 3, height).color(lineColor))
             draw(
                 line(
                     rightX - partWidth,
                     height,
                     rightX - 2 * partWidth + partWidth / 3,
                     height
-                )
+                ).color(lineColor)
             )
-            draw(line(rightX - 2 * partWidth, height, rightX - 3 * partWidth, height))
+            draw(line(rightX - 2 * partWidth, height, rightX - 3 * partWidth, height).color(lineColor))
 
             // vertical ends
             draw(
@@ -234,7 +234,7 @@ object ElytraFlightHud : GModule("elytra-flight-HUD", "Shows relevant flight inf
                     height,
                     screenCenterX - horizonWidth / 2f,
                     height - horizonVerticalBlipLength
-                )
+                ).color(lineColor)
             )
             draw(
                 line(
@@ -242,7 +242,7 @@ object ElytraFlightHud : GModule("elytra-flight-HUD", "Shows relevant flight inf
                     height,
                     screenCenterX - horizonWidth / 2f + horizonWidth,
                     height - horizonVerticalBlipLength
-                )
+                ).color(lineColor)
             )
         }
 
@@ -253,7 +253,7 @@ object ElytraFlightHud : GModule("elytra-flight-HUD", "Shows relevant flight inf
                     centerHeight,
                     screenCenterX - horizonWidth / 2f + horizonWidth / 3,
                     centerHeight
-                )
+                ).color(lineColor)
             )
             draw(
                 line(
@@ -261,7 +261,7 @@ object ElytraFlightHud : GModule("elytra-flight-HUD", "Shows relevant flight inf
                     centerHeight,
                     screenCenterX + horizonWidth / 2f,
                     centerHeight
-                )
+                ).color(lineColor)
             )
         }
 
@@ -283,7 +283,7 @@ object ElytraFlightHud : GModule("elytra-flight-HUD", "Shows relevant flight inf
                 flightVectorY - cos(elytraRoll) * flightVectorRadius,
                 flightVectorX + sin(elytraRoll) * (flightVectorRadius + flightVectorSize * 0.4f),
                 flightVectorY - cos(elytraRoll) * (flightVectorRadius + flightVectorSize * 0.4f)
-            )
+            ).color(lineColor)
         )
 
         draw(
@@ -292,7 +292,7 @@ object ElytraFlightHud : GModule("elytra-flight-HUD", "Shows relevant flight inf
                 flightVectorY - cos(elytraRoll + 0.5 * Math.PI).toFloat() * flightVectorRadius,
                 flightVectorX + sin(elytraRoll + 0.5 * Math.PI).toFloat() * (flightVectorRadius + flightVectorSize * 0.5f),
                 flightVectorY - cos(elytraRoll + 0.5 * Math.PI).toFloat() * (flightVectorRadius + flightVectorSize * 0.5f)
-            )
+            ).color(lineColor)
         )
 
         draw(
@@ -301,7 +301,7 @@ object ElytraFlightHud : GModule("elytra-flight-HUD", "Shows relevant flight inf
                 flightVectorY - cos(elytraRoll - 0.5 * Math.PI).toFloat() * flightVectorRadius,
                 flightVectorX + sin(elytraRoll - 0.5 * Math.PI).toFloat() * (flightVectorRadius + flightVectorSize * 0.5f),
                 flightVectorY - cos(elytraRoll - 0.5 * Math.PI).toFloat() * (flightVectorRadius + flightVectorSize * 0.5f)
-            )
+            ).color(lineColor)
         )
 
         val flightVectorAngle = atan2(screenCenterY - flightVectorY, screenCenterX - flightVectorX)
@@ -311,7 +311,7 @@ object ElytraFlightHud : GModule("elytra-flight-HUD", "Shows relevant flight inf
                 screenCenterY + 0.66f * (flightVectorY - screenCenterY),
                 flightVectorX + (flightVectorSize / 2f) * cos(flightVectorAngle),
                 flightVectorY + (flightVectorSize / 2f) * sin(flightVectorAngle)
-            )
+            ).color(lineColor)
         )
 
         // Compass
@@ -337,7 +337,7 @@ object ElytraFlightHud : GModule("elytra-flight-HUD", "Shows relevant flight inf
                     screenCenterY + screenHeight / 4f + mc.textRenderer.fontHeight * 1.05f,
                     headingX,
                     screenCenterY + screenHeight / 4f + mc.textRenderer.fontHeight * 1.05f + compassBlipHeight
-                )
+                ).color(lineColor)
             )
         }
 

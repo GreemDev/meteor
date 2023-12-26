@@ -16,7 +16,7 @@ import org.joml.*
 import java.lang.Math
 import kotlin.math.pow
 
-@get:JvmName("mcRandom")
+@get:JvmName("rand")
 val minecraftRandom by lazy<Random>(Random::create)
 
 infix fun MatrixStack.onTop(logic: Initializer<MatrixStack>) = modifyPushedCopy(this, logic)
@@ -30,7 +30,7 @@ fun modifyPushedCopy(matrices: MatrixStack, logic: Initializer<MatrixStack>) {
 }
 
 fun MatrixStack.Entry.getPositionAndNormalMatrix(): Pair<Matrix4f, Matrix3f> = positionMatrix to normalMatrix
-fun MatrixStack.peekPositionAndNormalMatrix(): Pair<Matrix4f, Matrix3f> = peek().getPositionAndNormalMatrix()
+fun MatrixStack.peekPositionAndNormalMatrix() = peek().getPositionAndNormalMatrix()
 
 fun radiansToDegrees(angrad: Double) = Math.toDegrees(angrad)
 fun degreesToRadians(angdeg: Double) = Math.toRadians(angdeg)
@@ -50,7 +50,7 @@ fun Number.power(of: Number) = toDouble().pow(of.toDouble())
 @get:JvmName("hasDecimal")
 val Number.hasDecimal: Boolean
     get() = when {
-        this is Float || this is Double -> toString().substringAfter('.').isNotEmpty()
+        this is Float || this is Double -> toString().contains('.')
         else -> false
     }
 

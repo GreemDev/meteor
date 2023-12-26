@@ -19,13 +19,10 @@ import meteordevelopment.meteorclient.utils.misc.MeteorStarscript
 import meteordevelopment.meteorclient.utils.world.Dimension
 import meteordevelopment.orbit.EventHandler
 import meteordevelopment.starscript.Script
-import net.greemdev.meteor.GModule
-import net.greemdev.meteor.Greteor
 import net.greemdev.meteor.type.ItemSelectMode
 import net.greemdev.meteor.util.*
 import net.greemdev.meteor.util.meteor.*
 import net.greemdev.meteor.util.misc.*
-import net.greemdev.meteor.invoke
 import net.minecraft.SharedConstants
 import net.minecraft.client.gui.screen.*
 import net.minecraft.client.gui.screen.multiplayer.MultiplayerScreen
@@ -36,13 +33,13 @@ import net.minecraft.client.realms.gui.screen.RealmsScreen
 import net.minecraft.util.Util
 
 import meteordevelopment.meteorclient.gui.utils.CharFilter.*
-import net.greemdev.meteor.eq
+import net.greemdev.meteor.*
 
 const val safeAppId = "1013634358927691846"
 
 private val rpc = RichPresence()
 
-object MinecraftPresence : GModule("minecraft-presence", "Displays Minecraft as your presence on Discord.") {
+object MinecraftPresence : GModule.Misc("minecraft-presence", "Displays Minecraft (and not Meteor) as your presence on Discord.") {
 
     private val sgL1 = settings group "Line 1"
     private val sgL2 = settings group "Line 2"
@@ -147,14 +144,15 @@ object MinecraftPresence : GModule("minecraft-presence", "Displays Minecraft as 
     private val line1Scripts = mutableListOf<Script>()
     private val line2Scripts = mutableListOf<Script>()
 
+
+
     private fun recompileLines(line: Int, strings: List<String>) {
-        val scripts = if (line == 1)
+        (if (line == 1)
             line1Scripts
         else
             line2Scripts
+        ).setElements(strings.map(MeteorStarscript::compile))
 
-        scripts.clear()
-        scripts.addAll(strings.map(MeteorStarscript::compile))
         forceUpdate = true
     }
 
@@ -196,7 +194,8 @@ object MinecraftPresence : GModule("minecraft-presence", "Displays Minecraft as 
         theme.table {
             it.add(theme.button("Force Presence Update") {
                 updatePresenceNextTick = true
-            })
+            }.tooltip("Forces an update for Rich presence on the next tick."))
+
             it.add(theme.button("Starscript Info") {
                 Util.getOperatingSystem()
                     .open("https://github.com/GreemDev/meteor/wiki/Starscript")

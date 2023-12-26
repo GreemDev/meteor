@@ -10,6 +10,7 @@ import meteordevelopment.meteorclient.commands.Command;
 import meteordevelopment.meteorclient.commands.Commands;
 import meteordevelopment.meteorclient.utils.Utils;
 import meteordevelopment.meteorclient.utils.player.ChatUtils;
+import net.greemdev.meteor.util.text.FormattedText;
 import net.minecraft.client.network.ClientCommandSource;
 import net.minecraft.text.ClickEvent;
 import net.minecraft.text.HoverEvent;
@@ -17,6 +18,8 @@ import net.minecraft.text.MutableText;
 import net.minecraft.text.Text;
 import net.minecraft.util.Formatting;
 
+import java.util.Collection;
+import java.util.List;
 import java.util.function.Predicate;
 
 import static com.mojang.brigadier.Command.SINGLE_SUCCESS;
@@ -29,19 +32,22 @@ public class CommandsCommand extends Command {
     @Override
     public void build(LiteralArgumentBuilder<ClientCommandSource> builder) {
         builder.executes(context -> {
-            ChatUtils.info("--- Commands ((highlight)%d(default)) ---", Commands.COMMANDS.size());
+            List<Command> commands = Commands.COMMANDS.values().stream().toList();
+            ChatUtils.info("--- Commands ((highlight)%d(default)) ---", commands.size());
 
-            MutableText commands = Text.literal("");
-            Commands.COMMANDS.forEach(command -> commands.append(getCommandText(command)));
-            ChatUtils.sendMsg(commands);
+            ChatUtils.sendMsg(new FormattedText(text ->
+                commands.forEach(command ->
+                    text.addText(getCommandText(commands, command))
+                )
+            ));
 
             return SINGLE_SUCCESS;
         });
     }
 
-    private MutableText getCommandText(Command command) {
+    private MutableText getCommandText(List<? extends Command> commandList, Command command) {
         // Hover tooltip
-        MutableText tooltip = Text.literal("");
+        MutableText tooltip = Text.empty();
 
         tooltip.append(Text.literal(Utils.nameToTitle(command.getName())).formatted(Formatting.BLUE, Formatting.BOLD)).append("\n");
 
@@ -59,10 +65,9 @@ public class CommandsCommand extends Command {
 
         // Text
         MutableText text = Text.literal(Utils.nameToTitle(command.getName()));
-        if (command != Commands.COMMANDS.get(Commands.COMMANDS.size() - 1))
+        if (command != commandList.get(Commands.COMMANDS.size() - 1))
             text.append(Text.literal(", ").formatted(Formatting.GRAY));
-        text.setStyle(text
-            .getStyle()
+        text.setStyle(text.getStyle()
             .withHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, tooltip))
             .withClickEvent(new ClickEvent(ClickEvent.Action.SUGGEST_COMMAND, command.toString()))
         );

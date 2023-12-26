@@ -9,8 +9,6 @@ package net.greemdev.meteor
 
 import com.google.common.base.MoreObjects
 import com.google.common.base.Predicates
-import com.google.common.base.Suppliers
-import com.google.common.util.concurrent.Runnables
 import com.google.gson.GsonBuilder
 import com.google.gson.JsonDeserializer
 import meteordevelopment.meteorclient.gui.widgets.pressable.WPressable
@@ -72,6 +70,25 @@ inline fun <T> Collection<T>.getRandomElement(): T = //exists to be used from Ja
 inline fun <T : Any> Collection<T>.findFirst() = optionalOf(firstOrNull())
 inline fun <T : Any> Collection<T>.findLast() = optionalOf(lastOrNull())
 inline fun <T : Any> Collection<T>.find(predicate: Predicate<T>) = optionalOf(firstOrNull(predicate))
+
+fun<T> MutableSet<T>.removeMatching(predicate: Predicate<T>): Int {
+    var removed = 0
+    val iterator = iterator()
+    while (iterator.hasNext()) {
+        if (predicate(iterator.next())) {
+            iterator.remove()
+            removed++
+        }
+    }
+    return removed
+}
+
+fun<T> MutableSet<T>.retainMatching(predicate: Predicate<T>) = removeMatching(predicate.not())
+
+fun<T> MutableList<T>.setElements(elements: Collection<T>) {
+    clear()
+    addAll(elements)
+}
 
 val Any.logger
     get() = log4j(this).value
@@ -420,26 +437,26 @@ class Ticker private constructor(
 }
 
 object Lambdas {
-    @JvmField val noOperation: Action = Runnables.doNothing().kotlin
+    @JvmField val noOperation: Action = { }
     @JvmStatic fun <T> void(): ValueAction<T> = { }
-    @JvmStatic fun <T> constant(value: T): Getter<T> = Suppliers.ofInstance(value).kotlin
-    @JvmStatic fun <T> identity(): Mapper<T, T> = Function.identity<T>().kotlin
+    @JvmStatic fun <T> constant(value: T): Getter<T> = { value }
+    @JvmStatic fun <T> identity(): Mapper<T, T> = { it }
 
     @JvmName("ktAllowAll")
-    fun <T> allowAll(): Predicate<T> = Predicates.alwaysTrue<T>().kotlin
+    fun <T> allowAll(): Predicate<T> = { true }
 
     @JvmName("allowAll")
     @JvmStatic fun <T> `java-allowAll`(): JPredicate<T> = Predicates.alwaysTrue<T>()
 
     @JvmName("ktAllowNone")
-    fun <T> allowNone(): Predicate<T> = Predicates.alwaysFalse<T>().kotlin
+    fun <T> allowNone(): Predicate<T> = { false }
 
     @JvmName("allowNone")
     @JvmStatic fun <T> `java-allowNone`(): JPredicate<T> = Predicates.alwaysFalse<T>()
 
-    @JvmStatic fun invert(supplier: Supplier<Boolean>) = Supplier { !supplier() }
+    @JvmStatic inline fun invert(supplier: Supplier<Boolean>) = Supplier { !supplier() }
 
-    @JvmStatic fun<T> not(predicate: Predicate<T>): Predicate<T> = JPredicate.not(predicate.java).kotlin
+    @JvmStatic inline fun<T> not(crossinline predicate: Predicate<T>): Predicate<T> = { !predicate(it) }
 
     fun aboveZero(): Predicate<Int> = { it > 0 }
     fun aboveOrZero(): Predicate<Int> = { it >= 0 }
@@ -449,46 +466,46 @@ object Lambdas {
     fun belowOrZero(): Predicate<Int> = { it <= 0 }
 }
 
-fun Supplier<Boolean>.inverse() = Lambdas.invert(this)
-fun<T> Predicate<T>.not() = Lambdas.not(this)
+inline fun Supplier<Boolean>.inverse() = Lambdas.invert(this)
+inline fun<T> Predicate<T>.not() = Lambdas.not(this)
 
 // Kotlin <-> Java lambda type conversions for interoperability
 
 
 // Action <-> Runnable
 @get:JvmName("java")
-inline val Action.java: Runnable get() = Runnable(this::invoke)
+inline val Action.java: Runnable get() = Runnable(this)
 @get:JvmName("kotlin")
 inline val Runnable.kotlin: Action get() = this::run
 
 // ValueAction <-> Consumer
 @get:JvmName("java")
-inline val <T> ValueAction<T>.java: Consumer<T> get() = Consumer(this::invoke)
+inline val <T> ValueAction<T>.java: Consumer<T> get() = Consumer(this)
 @get:JvmName("kotlin")
 inline val <T> Consumer<T>.kotlin: ValueAction<T> get() = this::accept
 
 // BiValueAction <-> BiConsumer
 @get:JvmName("java")
-inline val <T1, T2> BiValueAction<T1, T2>.java: BiConsumer<T1, T2> get() = BiConsumer(this::invoke)
+inline val <T1, T2> BiValueAction<T1, T2>.java: BiConsumer<T1, T2> get() = BiConsumer(this)
 @get:JvmName("kotlin")
 inline val <T1, T2> BiConsumer<T1, T2>.kotlin: BiValueAction<T1, T2> get() = this::accept
 
 private typealias JPredicate<T> = java.util.function.Predicate<T>
 
 @get:JvmName("java")
-inline val <T> Predicate<T>.java: JPredicate<T> get() = JPredicate(this::invoke)
+inline val <T> Predicate<T>.java: JPredicate<T> get() = JPredicate(this)
 @get:JvmName("kotlin")
 inline val <T> JPredicate<T>.kotlin: Predicate<T> get() = this::test
 
 // Getter <-> Supplier
 @get:JvmName("java")
-inline val <T> Getter<T>.java: Supplier<T> get() = Supplier(this::invoke)
+inline val <T> Getter<T>.java: Supplier<T> get() = Supplier(this)
 @get:JvmName("kotlin")
 inline val <T> Supplier<T>.kotlin: Getter<T> get() = this::get
 
 // Mapper <-> Function
 @get:JvmName("java")
-inline val <I, O> Mapper<I, O>.java: Function<I, O> get() = Function(this::invoke)
+inline val <I, O> Mapper<I, O>.java: Function<I, O> get() = Function(this)
 @get:JvmName("kotlin")
 inline val <I, O> Function<I, O>.kotlin: Mapper<I, O> get() = this::apply
 

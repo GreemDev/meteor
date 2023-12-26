@@ -242,13 +242,11 @@ public class WaypointsModule extends Module {
 
         table.add(theme.button("Import from JourneyMap...", () ->
             mc.setScreen(new JourneyMapWaypointsImportScreen(theme))
-        )).expandX()
-            .widget().tooltip = "The waypoints will be imported to the current world.";
+        ).tooltip("The waypoints will be imported to the current world.")).expandX();
 
         table.add(theme.plus(() ->
             mc.setScreen(new EditWaypointScreen(theme, null, () -> initTable(theme, table)))
-        )).right()
-            .widget().tooltip = "Create a new waypoint.";
+        ).tooltip("Create a new waypoint.")).right();
     }
 
     private class EditWaypointScreen extends EditSystemScreen<Waypoint> {

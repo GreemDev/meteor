@@ -52,9 +52,9 @@ public abstract class Module implements ISerializable<Module>, Comparable<Module
     public boolean chatFeedback = true;
     public boolean favorite = false;
 
-    protected boolean autoRegister = false;
+    protected boolean autoRegister = true;
 
-    public boolean isRegisterable() {
+    public boolean shouldAutoRegister() {
         return autoRegister;
     }
 

@@ -102,8 +102,7 @@ public class Marker extends Module {
             WHorizontalList hList = list.add(theme.horizontalList()).expandX().widget();
 
             // Name
-            WLabel label = hList.add(theme.label(marker.name.get())).widget();
-            label.tooltip = marker.description.get();
+            hList.add(theme.label(marker.name.get()).tooltip(marker.description.get()));
 
             // Dimension
             hList.add(theme.label(" - " + marker.getDimension().toString())).expandX().widget().color = theme.textSecondaryColor();

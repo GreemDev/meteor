@@ -11,7 +11,7 @@ import net.minecraft.SharedConstants
 import net.greemdev.meteor.invoke
 
 // based on https://github.com/Declipsonator/Meteor-Tweaks/blob/main/src/main/java/me/declipsonator/meteortweaks/modules/GameTweaks.java
-object GameTweaks : GModule(
+object GameTweaks : GModule.Misc(
     "game-tweaks", "Minor changes to the game experience to improve gameplay."
 ) {
     private val clipboardScreenshots by sg bool {

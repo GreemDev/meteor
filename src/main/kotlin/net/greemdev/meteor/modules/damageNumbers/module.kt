@@ -33,7 +33,7 @@ import kotlin.math.round
 private val particles = hashSetOf<DamageNumber>()
 
 //Implementation based on ToroHealth
-object DamageNumbers : GModule(
+object DamageNumbers : GModule.Render(
     "damage-numbers", "Floating, disappearing text when you damage enemies showing how much damage was done."
 ) {
 

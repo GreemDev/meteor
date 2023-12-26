@@ -58,8 +58,7 @@ private class WorldListScreen(theme: GuiTheme, tab: Tab) : WindowTabScreen(theme
                     table.add(theme.minus {
                         it.delete()
                         reload()
-                    }).widget()
-                        .tooltip = "Delete the waypoints file for this world."
+                    }.tooltip("Delete the waypoints file for this world."))
                     table.row()
                 }
             } else

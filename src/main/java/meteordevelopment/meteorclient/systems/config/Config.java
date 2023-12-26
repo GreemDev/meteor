@@ -219,7 +219,7 @@ public class Config extends System<Config> {
         .name("horizontal-alignment")
         .description("Where the top bar should be placed horizontally.")
         .defaultValue(AlignmentX.Center)
-        .onChanged(a -> WTopBar.NEEDS_REFRESH = true)
+        .onChanged(WTopBar::onBarPropertyChanged)
         .build()
     );
 
@@ -227,29 +227,29 @@ public class Config extends System<Config> {
         .name("vertical-alignment")
         .description("Where the top bar should be placed vertically.")
         .defaultValue(VerticalAlignment.Top) //not using AlignmentY because you shouldn't be able to put the top bar on the vertical center of your screen
-        .onChanged(a -> WTopBar.NEEDS_REFRESH = true)
+        .onChanged(WTopBar::onBarPropertyChanged)
         .build()
     );
 
     @NotNull
     public static String getUserAgent() {
-        return orDefault(DEFAULT_USER_AGENT, c -> c.httpUserAgent.get());
+        return orDefault(c -> c.httpUserAgent.get(), DEFAULT_USER_AGENT);
     }
 
     @NotNull
     public static AlignmentX getTopBarAlignmentX() {
-        return orDefault(AlignmentX.Center, c -> c.topBarHorizontalAlignment.get());
+        return orDefault(c -> c.topBarHorizontalAlignment.get(), AlignmentX.Center);
     }
 
     @NotNull
     public static AlignmentY getTopBarAlignmentY() {
-        return orDefault(AlignmentY.Top, c -> c.topBarVerticalAlignment.get().asMeteor());
+        return orDefault(c -> c.topBarVerticalAlignment.get().asMeteor(), AlignmentY.Top);
     }
 
 
     @NotNull
-    private static <T> T orDefault(@NotNull T defaultValue, Function<@NotNull Config, T> valueGetter) {
-        return Optional.of(get()).map(valueGetter).orElse(defaultValue);
+    private static <T> T orDefault(Function<@NotNull Config, T> valueGetter, @NotNull T defaultValue) {
+        return Optional.ofNullable(get()).map(valueGetter).orElse(defaultValue);
     }
 
 
@@ -257,7 +257,7 @@ public class Config extends System<Config> {
         .name("baritone-icon")
         .description("Replace Baritone in top bar with the bass clef icon.")
         .defaultValue(true)
-        .onChanged(b -> WTopBar.NEEDS_REFRESH = true)
+        .onChanged(WTopBar::onBarPropertyChanged)
         .build()
     );
 
@@ -265,7 +265,7 @@ public class Config extends System<Config> {
         .name("friends-icon")
         .description("Replace Friends in top bar with the friends icon.")
         .defaultValue(false)
-        .onChanged(b -> WTopBar.NEEDS_REFRESH = true)
+        .onChanged(WTopBar::onBarPropertyChanged)
         .build()
     );
 
@@ -273,7 +273,7 @@ public class Config extends System<Config> {
         .name("profiles-icon")
         .description("Replace Profiles in top bar with a profile icon.")
         .defaultValue(false)
-        .onChanged(b -> WTopBar.NEEDS_REFRESH = true)
+        .onChanged(WTopBar::onBarPropertyChanged)
         .build()
     );
 
@@ -281,7 +281,7 @@ public class Config extends System<Config> {
         .name("GUI-icon")
         .description("Replace GUI in top bar with a GUI icon.")
         .defaultValue(false)
-        .onChanged(b -> WTopBar.NEEDS_REFRESH = true)
+        .onChanged(WTopBar::onBarPropertyChanged)
         .build()
     );
 
@@ -289,7 +289,7 @@ public class Config extends System<Config> {
         .name("waypoints-icon")
         .description("Replace Waypoints in top bar with a location pin icon.")
         .defaultValue(true)
-        .onChanged(b -> WTopBar.NEEDS_REFRESH = true)
+        .onChanged(WTopBar::onBarPropertyChanged)
         .build()
     );
 
@@ -297,7 +297,7 @@ public class Config extends System<Config> {
         .name("macros-icon")
         .description("Replace Macros in top bar with a generic M icon.")
         .defaultValue(true)
-        .onChanged(b -> WTopBar.NEEDS_REFRESH = true)
+        .onChanged(WTopBar::onBarPropertyChanged)
         .build()
     );
 

@@ -7,6 +7,7 @@ package meteordevelopment.meteorclient.commands;
 
 import com.mojang.brigadier.CommandDispatcher;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
+import it.unimi.dsi.fastutil.objects.Reference2ReferenceArrayMap;
 import meteordevelopment.meteorclient.MeteorClient;
 import meteordevelopment.meteorclient.systems.config.Config;
 import meteordevelopment.meteorclient.utils.PostInit;
@@ -29,7 +30,7 @@ public class Commands {
     @NotNull
     public static final CommandSource COMMAND_SOURCE = new ClientCommandSource(null, MeteorClient.mc);
     @NotNull
-    public static final List<Command> COMMANDS = new ArrayList<>();
+    public static final Map<Class<? extends Command>, Command> COMMANDS = new Reference2ReferenceArrayMap<>();
 
     @PostInit
     public static void init() {
@@ -73,14 +74,12 @@ public class Commands {
         add(new RotationCommand());
         add(new WaypointCommand());
         add(new InputCommand());*/
-
-        COMMANDS.sort(Comparator.comparing(Command::getName));
     }
 
     public static void add(Command command) {
-        COMMANDS.removeIf(existing -> existing.getName().equals(command.getName()));
+        COMMANDS.remove(command.getClass());
         command.registerTo(DISPATCHER);
-        COMMANDS.add(command);
+        COMMANDS.put(command.getClass(), command);
     }
 
     public static void addAll(Collection<Command> commands) {
@@ -93,12 +92,12 @@ public class Commands {
 
     @Nullable
     public static Command get(String name) {
-        return COMMANDS.stream().filter(c -> c.getName().equals(name)).findFirst().orElse(null);
+        return COMMANDS.values().stream().filter(c -> c.getName().equals(name)).findFirst().orElse(null);
     }
 
     @NotNull
     public static Command get(Class<? extends Command> commandClass) {
-        return COMMANDS.stream().filter(c -> c.getClass().equals(commandClass)).findFirst().orElseThrow();
+        return COMMANDS.get(commandClass);
     }
 
     @NotNull

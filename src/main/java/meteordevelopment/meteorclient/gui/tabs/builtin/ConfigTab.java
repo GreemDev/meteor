@@ -91,20 +91,7 @@ public class ConfigTab extends Tab {
         public void tick() {
             settings.tick(window, theme);
 
-            // This is done here because top bar placement/icon settings can only be changed from the config screen
-            if (WTopBar.NEEDS_REFRESH) {
-                root.cells.stream()
-                    .filter(c -> c.widget() instanceof WTopBar)
-                    .findFirst()
-                    .map(c ->
-                        (WTopBar)c
-                            .alignY(Config.getTopBarAlignmentY())
-                            .alignX(Config.getTopBarAlignmentX())
-                            .widget())
-                    .ifPresent(WTopBar::init);
-
-                WTopBar.NEEDS_REFRESH = false;
-            }
+            WTopBar.tick(root);
         }
 
         @Override

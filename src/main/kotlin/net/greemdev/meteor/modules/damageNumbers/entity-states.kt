@@ -59,24 +59,26 @@ data class EntityState(val entity: LivingEntity) {
 
     // Manager of EntityState instances
     companion object : HashMap<Int, EntityState>() {
-
         private val cleaner = ticker {
             tickLimit(200)
-            action(::clean)
-        }
+            action {
+                val cleanedEntries = entries.retainMatching { (id, state) ->
+                    val entity = minecraft.currentWorld().getEntityById(id)
+                        ?: return@retainMatching false
 
-        private fun clean() {
-            entries.removeIf { (id, state) ->
-                val entity = minecraft.currentWorld().getEntityById(id) ?: return@removeIf true
-                if (entity !is LivingEntity)
-                    true
-                else if (!minecraft.currentWorld().chunkManager.isChunkLoaded(entity.blockPos.x, entity.blockPos.z))
-                    true
-                else if (DamageNumbers.ignoreSelf() && minecraft.player().uuid == state.entity.uuid)
-                    true
-                else !entity.isAlive
+                    entity is LivingEntity &&
+                        minecraft.currentWorld().chunkManager.isChunkLoaded(entity.blockPos.x, entity.blockPos.z) and
+                        !(DamageNumbers.ignoreSelf() && minecraft.player().uuid == state.entity.uuid) and
+                        entity.isAlive
+
+                    //TODO: ensure this new cache cleaner works properly
+                }
+
+                if (cleanedEntries > 0)
+                    Greteor.debug("cleared $cleanedEntries EntityStates")
             }
         }
+
         @JvmStatic
         fun track(entity: LivingEntity) {
             if (!DamageNumbers.isActive) return
@@ -91,8 +93,10 @@ data class EntityState(val entity: LivingEntity) {
             if (Meteor.isModuleActive(DamageNumbers::class.java)) {
                 cleaner.tick()
                 values.forEach(EntityState::tick)
-            } else
-                clear()
+            } else {
+                if (isNotEmpty())
+                    clear()
+            }
         }
     }
 }

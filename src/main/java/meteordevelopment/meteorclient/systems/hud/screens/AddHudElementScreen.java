@@ -76,23 +76,25 @@ public class AddHudElementScreen extends WindowScreen {
             for (Item item : grouped.get(group)) {
                 WHorizontalList l = section.add(theme.horizontalList()).expandX().widget();
 
-                WLabel title = l.add(theme.label(item.title)).widget();
-                title.tooltip = item.description;
+                l.add(theme.label(item.title()).tooltip(item.description()));
 
-                if (item.object instanceof HudElementInfo<?>.Preset preset) {
+                Object obj = item.object();
+
+                if (obj instanceof HudElementInfo<?>.Preset preset) {
                     l.add(theme.plus(() -> runObject(preset))).expandCellX().right().widget();
 
                     if (firstObject == null) firstObject = preset;
                 }
                 else {
-                    HudElementInfo<?> info = (HudElementInfo<?>) item.object;
+                    HudElementInfo<?> info = (HudElementInfo<?>) obj;
 
-                    if (info.hasPresets()) {
-                        l.add(theme.button(" > ", () -> runObject(info))).expandCellX().right();
-                    }
-                    else {
-                        l.add(theme.plus(() -> runObject(info))).expandCellX().right();
-                    }
+                    Runnable action = () -> runObject(info);
+
+                    l.add(
+                        info.hasPresets()
+                            ? theme.button(" > ", action)
+                            : theme.plus(action)
+                    ).expandCellX().right();
 
                     if (firstObject == null) firstObject = info;
                 }

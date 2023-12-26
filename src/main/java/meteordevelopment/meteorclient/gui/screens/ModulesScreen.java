@@ -19,9 +19,12 @@ import meteordevelopment.meteorclient.systems.modules.Category;
 import meteordevelopment.meteorclient.systems.modules.Module;
 import meteordevelopment.meteorclient.systems.modules.Modules;
 import meteordevelopment.meteorclient.utils.misc.NbtUtils;
+import net.greemdev.meteor.GModule;
+import net.greemdev.meteor.Greteor;
 import net.minecraft.item.Items;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 import java.util.Set;
 import java.util.function.Predicate;
@@ -33,7 +36,7 @@ public class ModulesScreen extends TabScreen {
     private WCategoryController controller;
 
     public ModulesScreen(GuiTheme theme) {
-        super(theme, Tabs.get().get(0));
+        super(theme, Tabs.modules());
     }
 
     @Override
@@ -63,7 +66,7 @@ public class ModulesScreen extends TabScreen {
         w.spacing = 0;
 
         if (theme.categoryIcons()) {
-            w.beforeHeaderInit = wContainer -> wContainer.add(theme.item(category.icon)).pad(2);
+            w.beforeHeaderInit = wContainer -> wContainer.add(theme.item(category.itemIcon())).pad(2);
         }
 
         c.add(w);
@@ -71,8 +74,7 @@ public class ModulesScreen extends TabScreen {
         w.view.hasScrollBar = false;
         w.view.spacing = 0;
 
-        Modules.get()
-            .getGroup(category).stream()
+        Modules.streamCategoryModules(category)
             .filter(Predicate.not(Module::isHidden))
             .forEach(module -> w.add(theme.module(module)).expandX());
 
@@ -179,6 +181,34 @@ public class ModulesScreen extends TabScreen {
         return hasFavorites;
     }
 
+    // Greteor category
+
+    protected WWindow createGreteor(WContainer c) {
+        Collection<GModule> greteorModules = Modules.get().getGreteorModules();
+        if (greteorModules.isEmpty()) return null;
+
+        WWindow w = theme.window(Greteor.category().name);
+        w.id = "greteor";
+        w.padding = 0;
+        w.spacing = 0;
+
+        if (theme.categoryIcons()) {
+            w.beforeHeaderInit = wContainer -> wContainer.add(theme.item(Greteor.category().itemIcon())).pad(2);
+        }
+
+        c.add(w);
+        w.view.scrollOnlyWhenMouseOver = true;
+        w.view.hasScrollBar = false;
+        w.view.spacing = 0;
+
+        createGreteorW(greteorModules, w);
+        return w;
+    }
+
+    protected void createGreteorW(Collection<GModule> modules, WWindow w) {
+        modules.forEach(module -> w.add(theme.module(module)).expandX());
+    }
+
     @Override
     public boolean toClipboard() {
         return NbtUtils.toClipboard(Modules.get());
@@ -203,6 +233,8 @@ public class ModulesScreen extends TabScreen {
             for (Category category : Modules.categories()) {
                 windows.add(createCategory(this, category));
             }
+
+            windows.add(createGreteor(this));
 
             windows.add(createSearch(this));
 

@@ -18,6 +18,7 @@ import net.greemdev.meteor.modules.flightHud.ElytraFlightHud
 import net.greemdev.meteor.util.className
 import net.greemdev.meteor.util.meteor.*
 import net.greemdev.meteor.util.meteor.starscript.initGStarscript
+import net.greemdev.meteor.util.modLoader
 import net.minecraft.block.Block
 import net.minecraft.item.Items
 import net.minecraft.registry.RegistryKeys
@@ -55,6 +56,12 @@ object Greteor {
         WorldRenderEvents.END.register(DamageNumbers::render)
 
         initGStarscript()
+    }
+
+    @JvmStatic
+    fun debug(message: String, inProd: Boolean = false) {
+        if (modLoader.isDevelopmentEnvironment || inProd)
+            logger.info("dbg| $message")
     }
 
     @JvmStatic

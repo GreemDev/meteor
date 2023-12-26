@@ -76,11 +76,11 @@ public abstract class System<T> implements ISerializable<T> {
                     String backupName = FilenameUtils.removeExtension(file.getName()) + "-" + ZonedDateTime.now().format(DATE_TIME_FORMATTER) + ".backup.nbt";
                     File backup = new File(file.getParentFile(), backupName);
                     StreamUtils.copy(file, backup);
-                    MeteorClient.LOG.error("Error loading system " + this.name + "; possibly corrupted? Saved backup to '" + backup + "'.", ce);
+                    MeteorClient.LOG.error("Error loading system %s; possibly corrupted? Saved backup to '%s'.".formatted(this.name, backup), ce);
                 }
             }
         } catch (IOException e) {
-            MeteorClient.LOG.error("Error loading system " + this.name + ".", e);
+            MeteorClient.LOG.error("Error loading system %s.".formatted(this.name), e);
         }
     }
 

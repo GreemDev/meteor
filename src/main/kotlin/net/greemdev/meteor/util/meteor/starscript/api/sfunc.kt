@@ -9,13 +9,12 @@ import meteordevelopment.starscript.Starscript
 import meteordevelopment.starscript.utils.StarscriptError
 import meteordevelopment.starscript.value.Value
 import meteordevelopment.starscript.value.ValueMap
+import net.greemdev.meteor.Getter
 import net.greemdev.meteor.Predicate
 import net.greemdev.meteor.invoking
+import net.greemdev.meteor.util.ensureSuffix
 import net.greemdev.meteor.util.pluralize
 import net.greemdev.meteor.util.string
-
-fun <T> Starscript.popArg(argPos: Int, functionName: String, type: ArgType<T>, customError: String? = null) =
-    type.popper(this, customError ?: "Argument $argPos of $functionName() needs to be a ${type.friendly}.")
 
 sealed class ArgType<T>(
     val friendly: String,
@@ -41,7 +40,7 @@ class StarscriptFunctionContext(val name: String, val starscript: Starscript, va
     var argPos = 1
         private set
 
-    val functionName by invoking { "$name()" }
+    val functionName = "$name()"
 
     fun constrain(constraint: Constraint, customError: String? = null): StarscriptFunctionContext {
         if (!constraint(argCount))
@@ -49,7 +48,10 @@ class StarscriptFunctionContext(val name: String, val starscript: Starscript, va
         return this
     }
 
-    fun<T> nextArg(type: ArgType<T>, customError: String? = null): T = starscript.popArg(argPos++, name, type, customError)
+    private fun <T> Starscript.popArg(type: ArgType<T>, customError: String? = null) =
+        type.popper(this, customError ?: "Argument ${argPos++} of ${functionName.ensureSuffix("()")} needs to be a ${type.friendly}.")
+
+    fun<T> nextArg(type: ArgType<T>, customError: String? = null): T = starscript.popArg(type, customError)
     fun nextBoolean(customError: String? = null) = nextArg(ArgType.Bool, customError)
     fun nextString(customError: String? = null) = nextArg(ArgType.Str, customError)
     fun nextNumber(customError: String? = null) = nextArg(ArgType.Number, customError)
@@ -62,39 +64,32 @@ class StarscriptFunctionContext(val name: String, val starscript: Starscript, va
 }
 
 sealed class Constraint(
-    private val type: Int,
-    private val data: Any,
-    private val test: Predicate<Int>
+    private val test: Predicate<Int>,
+    private val friendlyError: Getter<String>
 ) : Predicate<Int> by test {
-    class ExactCount(count: Number) : Constraint(0, count, { it == count })
-    class AtLeast(minimum: Number) : Constraint(1, minimum, { it >= minimum.toInt() })
-    class AtMost(maximum: Number) : Constraint(2, maximum, { it <= maximum.toInt() })
-    class Within(range: IntRange) : Constraint(3, range, { it in range })
+    class ExactCount(count: Int) : Constraint(
+        { it == count },
+        { "argument".pluralize(count, prefixQuantity = true) }
+    )
+    class AtLeast(minimum: Int) : Constraint(
+        { it >= minimum },
+        { "at least ${"argument".pluralize(minimum, prefixQuantity = true)}" }
+    )
+    class AtMost(maximum: Int) : Constraint(
+        { it <= maximum },
+        { "at most ${"argument".pluralize(maximum, prefixQuantity = true)}" }
+    )
+    class Within(range: IntRange) : Constraint(range::contains, { "$range arguments" })
 
     companion object {
-        fun exactCount(number: Number) = ExactCount(number)
-        fun atLeast(minimum: Number) = AtLeast(minimum)
-        fun atMost(maximum: Number) = AtMost(maximum)
+        fun exactCount(number: Number) = ExactCount(number.toInt())
+        fun atLeast(minimum: Number) = AtLeast(minimum.toInt())
+        fun atMost(maximum: Number) = AtMost(maximum.toInt())
         fun within(range: IntRange) = Within(range)
     }
 
-    fun getError(ctx: StarscriptFunctionContext) = string {
-        +"${ctx.functionName} requires "
-        when {
-            type == 0 && data is Int -> +"argument".pluralize(data, prefixQuantity = true)
-            type == 1 && data is Int -> +"at least ${"argument".pluralize(data, prefixQuantity = true)}"
-            type == 2 && data is Int -> +"at most ${"argument".pluralize(data, prefixQuantity = true)}"
-            type == 3 && data is IntRange -> {
-                +data.toString()
-                +" argument".pluralize(
-                    data.sum().takeUnless {
-                            it == 1 && data.first == 0
-                        } ?: 2 //account for the fact that the range 0-1 should still be considered plural
-                )
-            }
-        }
-        +", got ${ctx.argCount}."
-    }
+    fun getError(ctx: StarscriptFunctionContext) =
+        "${ctx.functionName} requires ${friendlyError()}, got ${ctx.argCount}."
 }
 
 fun Starscript.func(name: String, logic: UnconstrainedStarscriptFunction<Value>): Starscript {

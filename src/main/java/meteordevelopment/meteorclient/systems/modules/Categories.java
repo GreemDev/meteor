@@ -29,8 +29,6 @@ public class Categories {
         Modules.registerCategory(World);
         Modules.registerCategory(Misc);
 
-        Modules.registerCategory(Greteor);
-
         REGISTERING = false;
     }
 }
