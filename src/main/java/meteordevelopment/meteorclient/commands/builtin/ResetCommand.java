@@ -27,40 +27,57 @@ public class ResetCommand extends Command {
 
     @Override
     public void build(LiteralArgumentBuilder<ClientCommandSource> builder) {
-        builder.then(literal("settings")
-                .then(argument("module", ModuleArgumentType.create()).executes(context -> {
-                    Module module = context.getArgument("module", Module.class);
-                    module.settings.forEach(group -> group.forEach(Setting::reset));
-                    module.info("Reset all settings.");
-                    return SINGLE_SUCCESS;
-                }))
-                .then(literal("all").executes(context -> {
-                    Modules.get().getAll().forEach(module -> module.settings.forEach(group -> group.forEach(Setting::reset)));
-                    ChatUtils.infoPrefix("Modules", "Reset all module settings");
-                    return SINGLE_SUCCESS;
-                }))
-        ).then(literal("gui").executes(context -> {
-            GuiThemes.get().clearWindowConfigs();
-            ChatUtils.info("Reset GUI positioning.");
-            return SINGLE_SUCCESS;
-        })).then(literal("bind")
-                .then(argument("module", ModuleArgumentType.create()).executes(context -> {
-                    Module module = context.getArgument("module", Module.class);
+        builder.then(
+            literal("settings")
+                .then(argument("module", ModuleArgumentType.create())
+                    .executes(context -> {
+                        Module module = context.getArgument("module", Module.class);
+                        module.settings.forEach(group -> group.forEach(Setting::reset));
+                        module.info("Reset all settings.");
+                        return SINGLE_SUCCESS;
+                    }))
+                .then(literal("all")
+                    .executes(context -> {
+                        Modules.get().getAll().forEach(module -> module.settings.forEach(group -> group.forEach(Setting::reset)));
+                        ChatUtils.infoPrefix("Modules", "Reset all module settings");
+                        return SINGLE_SUCCESS;
+                    }))
+        ).then(
+            literal("bind")
+                .then(argument("module", ModuleArgumentType.create())
+                    .executes(context -> {
+                        Module module = context.getArgument("module", Module.class);
 
-                    module.keybind.set(true, -1);
-                    module.info("Reset bind.");
+                        module.keybind.set(true, -1);
+                        module.info("Reset bind.");
 
-                    return SINGLE_SUCCESS;
-                }))
-                .then(literal("all").executes(context -> {
-                    Modules.get().getAll().forEach(module -> module.keybind.set(true, -1));
-                    ChatUtils.infoPrefix("Modules", "Reset all binds.");
-                    return SINGLE_SUCCESS;
-                }))
-        ).then(literal("hud").executes(context -> {
-            Hud.get().resetToDefaultElements();
-            ChatUtils.infoPrefix("HUD", "Reset all elements.");
-            return SINGLE_SUCCESS;
-        }));
+                        return SINGLE_SUCCESS;
+                    }))
+                .then(literal("all")
+                    .executes(context -> {
+                        Modules.get().getAll().forEach(module -> module.keybind.set(true, -1));
+                        ChatUtils.infoPrefix("Modules", "Reset all binds.");
+                        return SINGLE_SUCCESS;
+                    }))
+        ).then(literal("gui")
+            .executes(context -> {
+                GuiThemes.get().clearWindowConfigs();
+                ChatUtils.info("Reset GUI positioning.");
+                return SINGLE_SUCCESS;
+            })
+        ).then(literal("hud")
+            .executes(context -> {
+                Hud.get().resetToDefaultElements();
+                ChatUtils.infoPrefix("HUD", "Reset all elements.");
+                return SINGLE_SUCCESS;
+            })
+        ).then(literal("hidden-modules")
+            .executes(context -> {
+                Modules.get().getAllHidden()
+                    .forEach(module -> module.setHidden(false));
+                ChatUtils.infoPrefix("Reset", "Revealed all hidden modules.");
+                return SINGLE_SUCCESS;
+            })
+        );
     }
 }

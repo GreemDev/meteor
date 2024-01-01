@@ -5,9 +5,9 @@
 
 package meteordevelopment.meteorclient.utils.render.color;
 
+import com.google.common.base.Suppliers;
 import meteordevelopment.meteorclient.utils.misc.ICopyable;
 import meteordevelopment.meteorclient.utils.misc.ISerializable;
-import net.greemdev.meteor.type.interop.JLazy;
 import net.greemdev.meteor.util.Strings;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.text.Style;
@@ -19,6 +19,7 @@ import net.greemdev.meteor.utils;
 import org.joml.Vector4f;
 
 import java.util.Random;
+import java.util.function.Supplier;
 
 @SuppressWarnings("unused")
 public class Color implements ICopyable<Color>, ISerializable<Color> {
@@ -202,7 +203,8 @@ public class Color implements ICopyable<Color>, ISerializable<Color> {
         }
     }
 
-    private static final JLazy<Random> _rand = JLazy.getting(Random::new);
+
+    private static final Supplier<Random> _rand = Suppliers.memoize(Random::new);
 
     public static Color random() {
         Random rand = _rand.get();

@@ -84,7 +84,7 @@ enum class Plurality(private val str: String, private val trimAmount: Int = 0) {
 
 private val emptyStr = String()
 private const val singleSpaceStr = " "
-private val singleSpaceChar = singleSpaceStr[0]
+private const val singleSpaceChar = ' '
 
 val String.Companion.empty
     get() = emptyStr
@@ -110,6 +110,9 @@ inline fun removeNewlines(str: String) = str.removeNewlines()
 
 fun Char.string(): String = java.lang.String.valueOf(this)
 fun Int.charStr() = toChar().string()
+
+fun String.isEndOf(str: String) = str.endsWith(this)
+fun String.isStartOf(str: String) = str.startsWith(this)
 
 @Suppress("MemberVisibilityCanBePrivate") // API
 data class StringScope(

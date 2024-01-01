@@ -20,11 +20,11 @@ public enum AlignmentX {
         return this == Left;
     }
 
-    public double align(double x, double w, double titleWidth) {
+    public double align(double x, double w, double width) {
         return switch (this) {
             case Left -> x;
-            case Center -> x + w / 2 - titleWidth / 2;
-            case Right -> x + w - titleWidth;
+            case Center -> x + w / 2 - width / 2;
+            case Right -> x + w - width;
         };
     }
 }

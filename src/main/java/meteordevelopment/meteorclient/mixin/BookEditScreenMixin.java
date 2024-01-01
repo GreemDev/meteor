@@ -6,6 +6,8 @@
 package meteordevelopment.meteorclient.mixin;
 
 import it.unimi.dsi.fastutil.io.FastByteArrayOutputStream;
+import meteordevelopment.meteorclient.MeteorClient;
+import net.greemdev.meteor.util.misc.Nbt;
 import net.greemdev.meteor.util.misc.NbtUtil;
 import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.client.gui.screen.ingame.BookEditScreen;
@@ -49,24 +51,28 @@ public abstract class BookEditScreenMixin extends Screen {
     private void onInit(CallbackInfo info) {
         addDrawableChild(
             new ButtonWidget.Builder(Text.literal("Copy"), button -> {
-                NbtList listTag = new NbtList();
-                pages.stream().map(NbtString::of).forEach(listTag::add);
+                NbtList pagesNbt = Nbt.newList(listTag ->
+                    pages.stream()
+                        .map(NbtString::of)
+                        .forEach(listTag::add)
+                );
 
-                NbtCompound tag = new NbtCompound();
-                tag.put("pages", listTag);
-                tag.putInt("currentPage", currentPage);
+                NbtCompound bookNbt = Nbt.newCompound(tag -> {
+                    tag.put("pages", pagesNbt);
+                    tag.putInt("currentPage", currentPage);
+                });
 
-                FastByteArrayOutputStream bytes = new FastByteArrayOutputStream();
-                DataOutputStream out = new DataOutputStream(bytes);
+                try (FastByteArrayOutputStream bytes = new FastByteArrayOutputStream()) {
+                    try (DataOutputStream out = new DataOutputStream(bytes)) {
+                        Throwable err = NbtUtil.write(out, bookNbt);
+                        if (err != null) //noinspection CallToPrintStackTrace
+                            err.printStackTrace();
+                    }
 
-                Optional.ofNullable(NbtUtil.write(out, tag))
-                    .ifPresent(Throwable::printStackTrace);
-
-
-                try {
                     GLFW.glfwSetClipboardString(mc.getWindow().getHandle(), Base64.getEncoder().encodeToString(bytes.array));
-                } catch (OutOfMemoryError exception) {
-                    GLFW.glfwSetClipboardString(mc.getWindow().getHandle(), exception.toString());
+                } catch (Throwable e) {
+                    MeteorClient.LOG.error("Error occurred releasing output stream or copying NBT to clipboard", e);
+                    GLFW.glfwSetClipboardString(mc.getWindow().getHandle(), e.toString());
                 }
             })
                 .position(4, 4)

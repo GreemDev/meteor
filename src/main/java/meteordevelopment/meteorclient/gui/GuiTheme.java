@@ -193,15 +193,7 @@ public abstract class GuiTheme implements ISerializable<GuiTheme> {
 
     public abstract <T> WDropdown<T> dropdown(T[] values, T value);
     public <T extends Enum<?>> WDropdown<T> dropdown(T value) {
-        Class<?> klass = value.getClass();
-        T[] values = null;
-        try {
-            values = java.cast(klass.getDeclaredMethod("values").invoke(null));
-        } catch (IllegalAccessException | InvocationTargetException | NoSuchMethodException e) {
-            MeteorClient.LOG.error("Error getting enum values", e);
-        }
-
-        return dropdown(values, value);
+        return dropdown(Utils.getEnumConstants(value.getClass()), value);
     }
 
     public <T extends Enum<?>> WDropdown<T> dropdown(T value, Consumer<WDropdown<T>> action) {

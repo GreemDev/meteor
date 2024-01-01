@@ -15,13 +15,17 @@ import java.time.Instant;
 import java.util.Date;
 
 public class JsonDateDeserializer implements JsonDeserializer<Date> {
-    @Override
-    public Date deserialize(JsonElement jsonElement, Type type, JsonDeserializationContext jsonDeserializationContext) throws JsonParseException {
+    public static JsonDeserializer<Date> INSTANCE = (jsonElement, type, context) -> {
         try {
             return Date.from(Instant.parse(jsonElement.getAsString()));
         }
         catch (Exception ignored) {
             return null;
         }
+    };
+
+    @Override
+    public Date deserialize(JsonElement jsonElement, Type type, JsonDeserializationContext jsonDeserializationContext) throws JsonParseException {
+        return INSTANCE.deserialize(jsonElement, type, jsonDeserializationContext);
     }
 }

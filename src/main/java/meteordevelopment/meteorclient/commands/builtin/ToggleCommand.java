@@ -59,6 +59,13 @@ public class ToggleCommand extends Command {
                     .executes(context -> {
                         ModuleArgumentType.get(context).disable();
                         return SINGLE_SUCCESS;
+                    }))
+                .then(literal("visibility")
+                    .executes(context -> {
+                        Module module = ModuleArgumentType.get(context);
+                        module.toggleHidden();
+                        module.sendVisibilityMsg();
+                        return SINGLE_SUCCESS;
                     })
                 )
             )

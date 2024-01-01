@@ -36,7 +36,7 @@ public abstract class Module implements ISerializable<Module>, Comparable<Module
     public final Settings settings = new Settings();
 
     private boolean active;
-    private boolean hidden;
+    private boolean hidden = false;
 
     public boolean canBind = true;
     public boolean allowChatFeedback = true;
@@ -114,6 +114,11 @@ public abstract class Module implements ISerializable<Module>, Comparable<Module
         }
     }
 
+    public void sendVisibilityMsg() {
+        ChatUtils.forceNextPrefixClass(getClass());
+        ChatUtils.sendMsg(this.hashCode(), Formatting.GRAY, "(highlight)%s(default) is now %s(default).", title, isActive() ? Formatting.GREEN + "visible" : Formatting.RED + "hidden");
+    }
+
     public void info(Text message) {
         ChatUtils.forceNextPrefixClass(getClass());
         ChatUtils.sendMsg(title, message);
@@ -142,6 +147,10 @@ public abstract class Module implements ISerializable<Module>, Comparable<Module
 
     public void setHidden(boolean hidden) {
         this.hidden = hidden;
+    }
+
+    public void toggleHidden() {
+        this.hidden = !hidden;
     }
 
     public String getInfoString() {
@@ -176,7 +185,8 @@ public abstract class Module implements ISerializable<Module>, Comparable<Module
 
         // Settings
         NbtElement settingsTag = tag.get("settings");
-        if (settingsTag instanceof NbtCompound) settings.fromTag((NbtCompound) settingsTag);
+        if (settingsTag instanceof NbtCompound compound)
+            settings.fromTag(compound);
 
         if (tag.contains("hidden"))
             hidden = tag.getBoolean("hidden");

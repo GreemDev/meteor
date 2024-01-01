@@ -30,6 +30,10 @@ object TitleScreenInfo {
                 if (modLoader.isDevelopmentEnvironment)
                     darkRed section " - *dev mode*"
             }
+        else if (modLoader.isDevelopmentEnvironment)
+            InfoLine {
+                darkRed section "can't get latest revision"
+            }
         else null
     }
 
@@ -45,9 +49,8 @@ object TitleScreenInfo {
     }
 }
 
-fun InfoLine(builder: context(ChatColor.Companion) InfoLine.() -> Unit) = InfoLine().apply {
-    builder(ChatColor, this)
-}
+fun InfoLine(builder: context(ChatColor.Companion) InfoLine.() -> Unit) =
+    InfoLine().apply { builder(ChatColor, this) }
 
 class InfoLine(private val secs: MutableList<Section> = mutableListOf()) {
     val sections = secs.toList()

@@ -11,6 +11,7 @@ import com.google.common.base.MoreObjects
 import com.google.common.base.Predicates
 import com.google.gson.GsonBuilder
 import com.google.gson.JsonDeserializer
+import com.mojang.util.UndashedUuid
 import meteordevelopment.meteorclient.gui.widgets.pressable.WPressable
 import meteordevelopment.meteorclient.utils.java.Loop as JavaLoop
 import net.fabricmc.loader.api.FabricLoader
@@ -236,12 +237,16 @@ fun<T : Any> T?.opt() = optionalOf(this)
 fun <T : Any> T.optionalIf(predicate: Predicate<T>) = optionalOf(takeIf(predicate))
 fun <T : Any> T.optionalUnless(predicate: Predicate<T>) = optionalOf(takeUnless(predicate))
 
-fun<T> Optional<T>.test(predicate: JPredicate<in T>): Boolean {
+fun<T> Optional<T>.test(predicate: Predicate<in T>): Boolean {
     if (isEmpty) return false
     return filter(predicate).isPresent
 }
 
-fun <T, R : Any> Optional<T>.mapNullable(mapper: Mapper<T, R?>): Optional<R> = flatMap { optionalOf(mapper(it)) }
+@Suppress("FunctionName")
+@JvmName("err")
+fun `i fucking hate checked exceptions`(t: Throwable): Nothing =
+    throw t
+
 
 
 operator fun File.div(child: String) = File(this, child)
@@ -277,6 +282,9 @@ fun grossSynchronousShit(millis: Long) {
         e.printStackTrace()
     }
 }
+
+val UUID.undashedString
+    get() = UndashedUuid.toString(this)
 
 fun File.filter(predicate: Predicate<File>): List<File>? = listFiles(predicate)?.toList()
 

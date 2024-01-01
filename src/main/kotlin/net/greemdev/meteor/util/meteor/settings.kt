@@ -172,7 +172,7 @@ infix fun Settings.group(name: String) = group(name, true)
 fun Settings.group(name: String? = null, expanded: Boolean = true): SettingGroup =
     name?.let { getGroup(it) ?: createGroup(it, expanded) } ?: group("General", expanded)
 
-// utilities for the Setting functions
+// utilities for the above Setting functions
 
 // B = SettingBuilder type
 // V = value type contained in Setting S
@@ -183,8 +183,9 @@ inline infix fun <B : Setting.SettingBuilder<B, V, S>, V : Any, S : Setting<V>> 
     crossinline func: Initializer<B>
 ) = createDelegate(this.apply(func))
 
-fun<B : Setting.SettingBuilder<B, V, S>, V : Any, S : Setting<V>> SettingGroup.createDelegate(builder: B) =
-    SettingDelegate(this, builder)
+fun<B : Setting.SettingBuilder<B, V, S>, V : Any, S : Setting<V>> SettingGroup.createDelegate(
+    builder: B
+) = SettingDelegate(this, builder)
 
 class SettingDelegate<
     B : Setting.SettingBuilder<B, V, S>,

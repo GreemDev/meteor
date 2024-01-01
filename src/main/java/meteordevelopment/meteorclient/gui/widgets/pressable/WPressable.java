@@ -34,10 +34,17 @@ public abstract class WPressable extends WWidget {
         return false;
     }
 
+    @Override
+    public boolean onKeyPressed(int key, int mods) {
+        onPressed(key);
+
+        return false;
+    }
+
     public <T extends WWidget> T action(Runnable action) {
         this.action = action;
         return java.cast(this);
     }
 
-    protected void onPressed(int button) {}
+    protected void onPressed(int buttonOrKey) {}
 }

@@ -51,13 +51,6 @@ public class WMeteorModule extends WPressable implements MeteorWidget {
     protected void onPressed(int button) {
         if (button == GLFW_MOUSE_BUTTON_LEFT) module.toggle();
         else if (button == GLFW_MOUSE_BUTTON_RIGHT) mc.setScreen(theme.moduleScreen(module));
-        else if (button == GLFW_KEY_H) {
-            if (module.isActive())
-                module.toggle();
-
-            module.setHidden(true);
-            Tabs.modules().openScreen(theme);
-        }
     }
 
     @Override

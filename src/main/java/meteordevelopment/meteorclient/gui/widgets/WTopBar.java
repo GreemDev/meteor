@@ -14,6 +14,7 @@ import meteordevelopment.meteorclient.gui.widgets.containers.WHorizontalList;
 import meteordevelopment.meteorclient.gui.widgets.pressable.WPressable;
 import meteordevelopment.meteorclient.systems.config.Config;
 import meteordevelopment.meteorclient.utils.render.color.Color;
+import net.greemdev.meteor.util.meteor.MeteorKt;
 
 import java.util.Objects;
 
@@ -58,13 +59,13 @@ public abstract class WTopBar extends WHorizontalList {
     @Override
     public void init() {
         clear();
-        var tabs = Tabs.renderSections();
+        var tabs = MeteorKt.TabRenderSections();
 
-        tabs.getLeft().forEach(t -> add(new WTopBarButton(t)));
+        tabs.getFirst().forEach(t -> add(new WTopBarButton(t)));
 
         add(theme.verticalSeparator(true)).expandWidgetY();
 
-        tabs.getRight().forEach(t -> add(new WTopBarButton(t)));
+        tabs.getSecond().forEach(t -> add(new WTopBarButton(t)));
     }
 
     protected class WTopBarButton extends WPressable {

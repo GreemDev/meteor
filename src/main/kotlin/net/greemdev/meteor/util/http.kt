@@ -13,8 +13,8 @@ import kotlinx.coroutines.async
 import kotlinx.coroutines.future.asCompletableFuture
 import kotlinx.coroutines.launch
 import meteordevelopment.meteorclient.systems.config.Config
-import meteordevelopment.meteorclient.utils.other.JsonDateDeserializer
 import net.greemdev.meteor.*
+import net.greemdev.meteor.util.misc.dateDeserializer
 import java.io.InputStream
 import java.io.InputStreamReader
 import java.net.http.HttpClient
@@ -33,7 +33,7 @@ private val httpClient by lazy {
 }
 
 private val gson = GsonBuilder().apply {
-    registerTypeAdapter(JsonDateDeserializer())
+    registerTypeAdapter(dateDeserializer)
 }.create()
 
 @Suppress("FunctionName")
@@ -299,6 +299,11 @@ object HTTP {
             PUT;
 
             operator fun invoke(url: String) = Request(newRequestBuilder(url), this)
+
+            companion object {
+                fun byNameOrNull(httpMethod: String): Method? =
+                    Method.entries.firstOrNull { it.name.equals(httpMethod, true) }
+            }
         }
 
         @Suppress("PropertyName", "unused") // HTTP status code DSL

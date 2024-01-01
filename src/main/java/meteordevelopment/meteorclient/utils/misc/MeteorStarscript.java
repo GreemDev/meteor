@@ -106,6 +106,9 @@ public class MeteorStarscript {
 
         // Camera
         ss.set("camera", new ValueMap()
+            .set("yaw", () -> yaw(true))
+            .set("pitch", () -> pitch(true))
+            .set("direction", () -> direction(true))
             .set("pos", new ValueMap()
                 .set("_toString", () -> posString(false, true))
                 .set("x", () -> Value.number(mc.gameRenderer.getCamera().getPos().x))
@@ -118,10 +121,6 @@ public class MeteorStarscript {
                 .set("y", () -> Value.number(mc.gameRenderer.getCamera().getPos().y))
                 .set("z", () -> oppositeZ(true))
             )
-
-            .set("yaw", () -> yaw(true))
-            .set("pitch", () -> pitch(true))
-            .set("direction", () -> direction(true))
         );
 
         // Player
@@ -130,7 +129,22 @@ public class MeteorStarscript {
             .set("health", () -> Value.number(mc.player != null ? mc.player.getHealth() : 0))
             .set("absorption", () -> Value.number(mc.player != null ? mc.player.getAbsorptionAmount() : 0))
             .set("hunger", () -> Value.number(mc.player != null ? mc.player.getHungerManager().getFoodLevel() : 0))
-
+            .set("breakingProgress", () -> Value.number(mc.interactionManager != null ? ((ClientPlayerInteractionManagerAccessor) mc.interactionManager).getBreakingProgress() : 0))
+            .set("biome", MeteorStarscript::biome)
+            .set("dimension", () -> Value.string(PlayerUtils.getDimension().name()))
+            .set("dimensionOpposite", () -> Value.string(PlayerUtils.getDimension().opposite().name()))
+            .set("yaw", () -> yaw(false))
+            .set("pitch", () -> pitch(false))
+            .set("direction", () -> direction(false))
+            .set("hand", () -> mc.player != null ? wrap(mc.player.getMainHandStack()) : Value.null_())
+            .set("offhand", () -> mc.player != null ? wrap(mc.player.getOffHandStack()) : Value.null_())
+            .set("handOrOffhand", MeteorStarscript::handOrOffhand)
+            .set("isItemHeld", MeteorStarscript::isHoldingItem)
+            .set("getItem", MeteorStarscript::getItem)
+            .set("countItems", MeteorStarscript::countItems)
+            .set("hasPotionEffect", MeteorStarscript::hasPotionEffect)
+            .set("getEotionEffect", MeteorStarscript::getPotionEffect)
+            .set("getStat", MeteorStarscript::getStat)
             .set("speed", () -> Value.number(Utils.getPlayerSpeed().horizontalLength()))
             .set("speedAll", new ValueMap()
                 .set("_toString", () -> Value.string(mc.player != null ? Utils.getPlayerSpeed().toString() : ""))
@@ -138,13 +152,6 @@ public class MeteorStarscript {
                 .set("y", () -> Value.number(mc.player != null ? Utils.getPlayerSpeed().y : 0))
                 .set("z", () -> Value.number(mc.player != null ? Utils.getPlayerSpeed().z : 0))
             )
-
-            .set("breakingProgress", () -> Value.number(mc.interactionManager != null ? ((ClientPlayerInteractionManagerAccessor) mc.interactionManager).getBreakingProgress() : 0))
-            .set("biome", MeteorStarscript::biome)
-
-            .set("dimension", () -> Value.string(PlayerUtils.getDimension().name()))
-            .set("dimensionOpposite", () -> Value.string(PlayerUtils.getDimension().opposite().name()))
-
             .set("pos", new ValueMap()
                 .set("_toString", () -> posString(false, false))
                 .set("x", () -> Value.number(mc.player != null ? mc.player.getX() : 0))
@@ -157,28 +164,11 @@ public class MeteorStarscript {
                 .set("y", () -> Value.number(mc.player != null ? mc.player.getY() : 0))
                 .set("z", () -> oppositeZ(false))
             )
-
-            .set("yaw", () -> yaw(false))
-            .set("pitch", () -> pitch(false))
-            .set("direction", () -> direction(false))
-
-            .set("hand", () -> mc.player != null ? wrap(mc.player.getMainHandStack()) : Value.null_())
-            .set("offhand", () -> mc.player != null ? wrap(mc.player.getOffHandStack()) : Value.null_())
-            .set("handOrOffhand", MeteorStarscript::handOrOffhand)
-            .set("isItemHeld", MeteorStarscript::isHoldingItem)
-            .set("getItem", MeteorStarscript::getItem)
-            .set("countItems", MeteorStarscript::countItems)
-
             .set("xp", new ValueMap()
                 .set("level", () -> Value.number(mc.player != null ? mc.player.experienceLevel : 0))
                 .set("progress", () -> Value.number(mc.player != null ? mc.player.experienceProgress : 0))
                 .set("total", () -> Value.number(mc.player != null ? mc.player.totalExperience : 0))
             )
-
-            .set("hasPotionEffect", MeteorStarscript::hasPotionEffect)
-            .set("getEotionEffect", MeteorStarscript::getPotionEffect)
-
-            .set("getStat", MeteorStarscript::getStat)
         );
 
         // Crosshair target

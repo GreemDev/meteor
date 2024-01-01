@@ -8,41 +8,61 @@ package net.greemdev.meteor.util.misc
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.isActive
-import kotlinx.coroutines.launch
 import meteordevelopment.meteorclient.MeteorClient
 import meteordevelopment.meteorclient.utils.PreInit
 import net.greemdev.meteor.*
 import net.greemdev.meteor.util.*
 import net.greemdev.meteor.util.text.ChatColor
-import java.util.Optional
 import kotlin.time.Duration.Companion.hours
 
 private const val UpstreamGradleProperties = "https://raw.githubusercontent.com/GreemDev/meteor/1.20.1/gradle.properties"
 
 object GVersioning {
-    private lateinit var revisionChecker: Job
+
+    @get:JvmStatic
+    @get:JvmName("revisionChecker")
+    lateinit var revisionChecker: DisposableCoroutine<Job>
+        private set
 
     @JvmStatic
     @PreInit
     fun init() {
-        revisionChecker = scope.launch {
-            updateRevision()
-
-            while (isActive) {
-                delay(1.hours)
+        revisionChecker = scope.newJobBuilder()
+            .whenError { Greteor.logger.error("Error in revision checking coroutine", it) }
+            .executing {
                 updateRevision()
+
+                while (isActive) {
+                    delay(1.hours)
+                    updateRevision()
+                }
             }
-        }
     }
 
 
     private suspend fun updateRevision() {
-        latestRevision = (HTTP GET UpstreamGradleProperties)
-            .requestLinesAsync() thenMap { resp ->
-                resp.orEmpty()
-                    .find { it.startsWith("revision") }
-                    .mapNullable { it.substringAfterLast('=').toIntOrNull() }
-                    .orElse(-1)
+        fun versioning(message: String) = "[Versioning] $message"
+        (HTTP GET UpstreamGradleProperties)
+            .requestLinesAsync() thenAccept  { resp ->
+                if (resp == null) {
+                    Greteor debug versioning("Received no response from '$UpstreamGradleProperties'.")
+                    return
+                }
+
+                val revisionLine = resp.find("revision"::isStartOf)
+                if (revisionLine.isEmpty) {
+                    Greteor debug versioning("Could not find revision line in response.")
+                    return
+                }
+
+                val revision = revisionLine.map { it.substringAfterLast('=').toIntOrNull() }
+
+                if (revision.isEmpty) {
+                    Greteor debug versioning("Could not parse detected revision string.")
+                    return
+                }
+
+                latestRevision = revision.get()
             }
     }
 
@@ -66,7 +86,7 @@ object GVersioning {
                 it >= 15 -> ChatColor.darkRed.meteor.darker().darker()
                 it >= 10 -> ChatColor.darkRed.meteor.darker()
                 it >=  5 -> ChatColor.darkRed.meteor
-                else     -> ChatColor.red.meteor
+                  else   -> ChatColor.red.meteor
             }
         }
     }

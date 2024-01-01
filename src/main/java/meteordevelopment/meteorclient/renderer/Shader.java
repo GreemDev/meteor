@@ -12,11 +12,15 @@ import meteordevelopment.meteorclient.MeteorClient;
 import meteordevelopment.meteorclient.utils.misc.MeteorIdentifier;
 import meteordevelopment.meteorclient.utils.render.color.Color;
 import net.greemdev.meteor.util.misc.KMC;
+import net.greemdev.meteor.utils;
+import net.minecraft.resource.Resource;
 import org.apache.commons.io.IOUtils;
 import org.joml.Matrix4f;
 
+import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
+import java.util.Optional;
 
 import static meteordevelopment.meteorclient.MeteorClient.mc;
 import static org.lwjgl.opengl.GL32C.*;
@@ -29,7 +33,12 @@ public class Shader {
 
     public Shader(String vertPath, String fragPath) {
         int vert = GL.createShader(GL_VERTEX_SHADER);
-        GL.shaderSource(vert, read(vertPath));
+        Optional<String> vertexShader = read(vertPath);
+        if (vertexShader.isPresent())
+            GL.shaderSource(vert, vertexShader.get());
+        else
+            utils.err(new FileNotFoundException("Cannot find vertex shader %s".formatted(vertPath)));
+
 
         String vertError = GL.compileShader(vert);
         if (vertError != null) {
@@ -38,7 +47,11 @@ public class Shader {
         }
 
         int frag = GL.createShader(GL_FRAGMENT_SHADER);
-        GL.shaderSource(frag, read(fragPath));
+        Optional<String> fragmentShader = read(fragPath);
+        if (fragmentShader.isPresent())
+            GL.shaderSource(frag, fragmentShader.get());
+        else
+            utils.err(new FileNotFoundException("Cannot find fragment shader %s".formatted(fragPath)));
 
         String fragError = GL.compileShader(frag);
         if (fragError != null) {
@@ -58,13 +71,14 @@ public class Shader {
         GL.deleteShader(frag);
     }
 
-    private String read(String path) {
-        try {
-            return IOUtils.toString(KMC.getMeteorResource("shaders/" + path).get().getInputStream(), StandardCharsets.UTF_8);
-        } catch (IOException e) {
-            e.printStackTrace();
-            return "";
-        }
+    private Optional<String> read(String path) {
+        return KMC.getMeteorResource("shaders/%s".formatted(path)).map(rs -> {
+            try {
+                return IOUtils.toString(rs.getInputStream(), StandardCharsets.UTF_8);
+            } catch (IOException e) {
+                throw new IllegalStateException("Could not read shader '" + path + "'", e);
+            }
+        });
     }
 
     public void bind() {

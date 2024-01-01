@@ -37,19 +37,6 @@ public class Tabs {
     }
     private static final List<Tab> tabs = new ArrayList<>();
 
-    public static Pair<List<Tab>, List<Tab>> renderSections() {
-        ArrayList<Tab> right = get().stream().filter(tab -> tab.displayIcon.get())
-            .collect(Collectors.toCollection(ArrayList::new));
-        //Config is added at the end to ensure it's always at the very right of the top bar
-        right.removeIf(t -> t instanceof ConfigTab);
-        right.add(config());
-
-        return new Pair<>(
-            get().stream().filter(tab -> !tab.displayIcon.get()).toList(),
-            right
-        );
-    }
-
     public static <T extends Tab> T get(String name) {
         return java.cast(
             tabs.stream()

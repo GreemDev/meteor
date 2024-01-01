@@ -11,12 +11,15 @@ import net.greemdev.meteor.MeteorColor
 import net.greemdev.meteor.commands.api.Arguments
 import net.greemdev.meteor.commands.api.contextArg
 import net.greemdev.meteor.util.meteor.Meteor
+import net.greemdev.meteor.util.minecraft
+import net.greemdev.meteor.util.misc.player
+import net.greemdev.meteor.util.misc.showMessage
 import net.greemdev.meteor.util.text.*
 import java.util.function.Predicate
 
 private val HiddenModulesArgument = Arguments.module(Module::isHidden)
 private val VisibleModulesArgument = Arguments.module(Predicate.not(Module::isHidden))
-private const val ModulesPerLine = 5
+private const val ModulesPerLine = 7
 private const val ListCommand = "list"
 private const val AddCommand = "add"
 private const val RemoveCommand = "remove"
@@ -28,28 +31,27 @@ private val Module.unhideCommand
 object HiddenModulesCommand : GCommand("hidden-modules", "List, add, remove, or toggle hidden modules.", {
     then(ListCommand) {
         runs {
-            Meteor.modules().allHidden
-                .takeIf { modules ->
-                    modules.isNotEmpty().also {
-                        if (!it) info("You have no modules hidden.")
-                    }
-                }
-                ?.run {
-                    chunked(ModulesPerLine)
-                        .forEach {
-                            info {
-                                colored(ChatColor.grey)
-                                it.forEachIndexed { i, mdl ->
-                                    addString(mdl.name) {
-                                        colored(MeteorColor.random())
-                                        hoveredText(textOf("Click to unhide this module."))
-                                        clicked(actions.runCommand, mdl.unhideCommand)
-                                    }
-                                    if (i < it.lastIndex)
-                                        addString(", ")
-                                }
+            val modules = Meteor.modules().allHidden
+            if (modules.isEmpty()) {
+                info("You have no modules hidden.")
+                return@runs
+            }
+
+            info("The following modules are currently hidden:")
+            modules.chunked(ModulesPerLine)
+                .forEach {
+                    minecraft.showMessage {
+                        colored(ChatColor.grey)
+                        it.forEachIndexed { i, mdl ->
+                            addString(mdl.name) {
+                                colored(mdl.color)
+                                hoveredText("Click to unhide this module.")
+                                clicked(actions.runCommand, mdl.unhideCommand)
                             }
+                            if (i < it.lastIndex)
+                                addString(", ")
                         }
+                    }
                 }
         }
     }
@@ -86,7 +88,7 @@ object HiddenModulesCommand : GCommand("hidden-modules", "List, add, remove, or 
                     addString("That module is now ")
                     addText(visibilityText(false))
                     addString(". ")
-                    addCommandHyperlink("Click here to hide.", subcommand("$AddCommand $name"))
+                    addCommandHyperlink("Click here to hide.", subcommand("$AddCommand ${module.name}"))
                 }
             }
         }
@@ -96,7 +98,7 @@ object HiddenModulesCommand : GCommand("hidden-modules", "List, add, remove, or 
         then(ArgType.module()) {
             runs {
                 val module by contextArg(ArgType.module())
-                module.isHidden = !module.isHidden
+                module.toggleHidden()
 
                 info {
                     colored(ChatColor.grey)
@@ -105,14 +107,15 @@ object HiddenModulesCommand : GCommand("hidden-modules", "List, add, remove, or 
                     addText(visibilityText(module.isHidden))
 
                     addString(". ")
-                    addCommandHyperlink("Click here to undo.", subcommand("$ToggleCommand $name"))
+                    addCommandHyperlink("Click here to undo.", subcommand("$ToggleCommand ${module.name}"))
                 }
             }
         }
     }
 })
 
-private fun visibilityText(isHidden: Boolean) = FormattedText.withColor(
-    if (isHidden) "hidden" else "visible",
-    if (isHidden) ChatColor.red else ChatColor.green
-)
+private fun visibilityText(isHidden: Boolean) =
+    FormattedText.withColor(
+        if (isHidden) "hidden" else "visible",
+        if (isHidden) ChatColor.red else ChatColor.green
+    )

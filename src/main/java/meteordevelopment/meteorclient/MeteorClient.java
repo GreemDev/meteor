@@ -5,6 +5,10 @@
 
 package meteordevelopment.meteorclient;
 
+import com.google.common.base.Predicates;
+import com.google.common.base.Supplier;
+import com.google.common.base.Suppliers;
+import com.google.common.collect.ImmutableList;
 import meteordevelopment.discordipc.DiscordIPC;
 import meteordevelopment.meteorclient.commands.Commands;
 import meteordevelopment.meteorclient.events.game.OpenScreenEvent;
@@ -22,7 +26,6 @@ import meteordevelopment.meteorclient.systems.modules.misc.DiscordPresence;
 import meteordevelopment.meteorclient.utils.*;
 import meteordevelopment.meteorclient.utils.misc.Version;
 import meteordevelopment.meteorclient.utils.misc.input.KeyAction;
-import meteordevelopment.meteorclient.utils.misc.input.KeyBinds;
 import meteordevelopment.meteorclient.utils.network.OnlinePlayers;
 import meteordevelopment.meteorclient.utils.render.color.Color;
 import meteordevelopment.orbit.EventBus;
@@ -41,11 +44,17 @@ import net.greemdev.meteor.util.misc.GVersioning;
 import net.greemdev.meteor.utils;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.screen.ChatScreen;
+import net.minecraft.client.option.KeyBinding;
+import net.minecraft.client.util.InputUtil;
+import org.jetbrains.annotations.NotNull;
+import org.lwjgl.glfw.GLFW;
+import org.reflections.Reflections;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.File;
 import java.lang.invoke.MethodHandles;
+import java.lang.reflect.Modifier;
 import java.util.Arrays;
 import java.util.List;
 
@@ -154,6 +163,7 @@ public class MeteorClient implements ClientModInitializer {
             OnlinePlayers.leave();
             Systems.save();
             GuiThemes.save();
+            GVersioning.revisionChecker().destroy();
         }));
 
 
@@ -163,21 +173,21 @@ public class MeteorClient implements ClientModInitializer {
 
     @EventHandler
     private void onTick(TickEvent.Post event) {
-        if (mc.currentScreen == null && mc.getOverlay() == null && KeyBinds.OPEN_COMMANDS.wasPressed()) {
+        if (mc.currentScreen == null && mc.getOverlay() == null && OPEN_COMMANDS.wasPressed()) {
             mc.setScreen(new ChatScreen(Commands.prefix()));
         }
     }
 
     @EventHandler
     private void onKey(KeyEvent event) {
-        if (event.action == KeyAction.Press && KeyBinds.OPEN_GUI.matchesKey(event.key, 0)) {
+        if (event.action == KeyAction.Press && OPEN_GUI.matchesKey(event.key, 0)) {
             toggleGui();
         }
     }
 
     @EventHandler
     private void onMouseButton(MouseButtonEvent event) {
-        if (event.action == KeyAction.Press && KeyBinds.OPEN_GUI.matchesMouse(event.button)) {
+        if (event.action == KeyAction.Press && OPEN_GUI.matchesMouse(event.button)) {
             toggleGui();
         }
     }
@@ -211,5 +221,36 @@ public class MeteorClient implements ClientModInitializer {
                 java.cast(lookupInMethod.invoke(null, klass, MethodHandles.lookup()))
             )
         );
+    }
+
+    // Key bindings
+
+    public static final String KEYBIND_CATEGORY = "Meteor Client";
+
+    public static KeyBinding OPEN_GUI = new KeyBinding("key.meteor-client.open-gui", InputUtil.Type.KEYSYM, GLFW.GLFW_KEY_RIGHT_SHIFT, KEYBIND_CATEGORY);
+    public static KeyBinding OPEN_COMMANDS = new KeyBinding("key.meteor-client.open-commands", InputUtil.Type.KEYSYM, GLFW.GLFW_KEY_PERIOD, KEYBIND_CATEGORY);
+
+
+    private static final Supplier<ImmutableList<@NotNull KeyBinding>> KEYBINDS = Suppliers.memoize(() ->
+        ImmutableList.<KeyBinding>builder()
+            .addAll(
+                Arrays.stream(MeteorClient.class.getFields())
+                    .filter(f -> KeyBinding.class.isAssignableFrom(f.getType()) && Modifier.isStatic(f.getModifiers()))
+                    .map(f -> {
+                        try {
+                            return (KeyBinding) f.get(null);
+                        } catch (Exception ignored) { //ignore (somehow) failed casts & IllegalAccessExceptions
+                            return null;
+                        }
+                    })
+                    .filter(Predicates.notNull())
+                    .toList()
+            )
+            .build()
+    );
+
+    @NotNull
+    public static ImmutableList<KeyBinding> getKeybinds() {
+        return KEYBINDS.get();
     }
 }

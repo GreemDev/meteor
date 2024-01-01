@@ -47,6 +47,9 @@ object Greteor {
     fun hudGroup() = hudGroup
 
     @JvmStatic
+    fun hudElements() = listOf<HudElementDescriptor<*>>(ModuleKeybindHud)
+
+    @JvmStatic
     fun init() {
         Modules.addAll(GModule.subtypeInstances)
         Commands.addAll(GCommand.subtypeInstances)
@@ -58,16 +61,25 @@ object Greteor {
         initGStarscript()
     }
 
-    @JvmStatic
-    fun debug(message: String, inProd: Boolean = false) {
-        if (modLoader.isDevelopmentEnvironment || inProd)
-            logger.info("dbg| $message")
-    }
-
-    @JvmStatic
-    fun hudElements() = listOf<HudElementDescriptor<*>>(ModuleKeybindHud)
-
     object Tags {
         val nonStrippedLogs: TagKey<Block> = TagKey.of(RegistryKeys.BLOCK, resource("non-stripped-logs"))
     }
+
+    @JvmStatic
+    fun debug(message: String, inProd: Boolean) {
+        if (modLoader.isDevelopmentEnvironment || inProd)
+            logger.info("dbg -> $message")
+    }
+
+    @JvmStatic
+    infix fun debug(message: String) {
+        if (modLoader.isDevelopmentEnvironment)
+            logger.info("dbg -> $message")
+    }
+
+    @JvmStatic
+    infix fun debug(message: Getter<String>) = debug(message())
+
+    @JvmStatic
+    fun debug(inProd: Boolean = false, message: Getter<String>) = debug(message(), inProd)
 }
