@@ -9,6 +9,7 @@ package net.greemdev.meteor
 
 import com.google.common.base.MoreObjects
 import com.google.common.base.Predicates
+import com.google.common.collect.ImmutableList
 import com.google.gson.GsonBuilder
 import com.google.gson.JsonDeserializer
 import com.mojang.util.UndashedUuid
@@ -180,7 +181,8 @@ fun colorOf(value: Any): MeteorColor = when (value) {
     else -> throw IllegalArgumentException("Unknown color value. Only accepts R,G,B(,A); (#)RRGGBB; and (#)RRGGBBAA, a raw RGB int, or 3F/4F vectors.")
 }
 
-fun Date.format(fmt: String): String = formats.computeIfAbsent(fmt, ::SimpleDateFormat).format(this)
+fun Date.format(dateFormat: SimpleDateFormat): String = dateFormat.format(this)
+fun Date.format(fmt: String): String = format(formats.computeIfAbsent(fmt, ::SimpleDateFormat))
 
 private val formats = mutableMapOf<String, SimpleDateFormat>()
 
@@ -189,6 +191,11 @@ fun <T> Iterable<T?>.firstNotNull(): T = firstNotNullOf(Lambdas.identity())
 
 @JvmName("forEachIndexed")
 fun <T> List<T>.indexedForEach(consumer: BiConsumer<Int, T>) = forEachIndexed(consumer.kotlin)
+
+fun<T> buildImmutableList(expectedSize: Int? = null, listBuilder: Initializer<ImmutableList.Builder<T>>): ImmutableList<T> =
+    (expectedSize?.let { ImmutableList.builderWithExpectedSize(it) } ?: ImmutableList.builder<T>())
+        .apply(listBuilder)
+        .build()
 
 /**
  * Sets the [KMutableProperty]'s value and then returns the new value.
@@ -215,7 +222,7 @@ val Class<out Packet<*>>.isClientbound
 
 fun AwtColor.meteor() = MeteorColor(red, green, blue, alpha)
 
-fun any(vararg conditions: Boolean) = conditions.any()
+fun any(vararg conditions: Boolean) = conditions.any(Lambdas.identity())
 
 fun <T, R : Comparable<R>> List<T>.sorted(
     sorted: Boolean = true,

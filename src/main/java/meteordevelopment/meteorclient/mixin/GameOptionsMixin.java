@@ -32,27 +32,7 @@ public abstract class GameOptionsMixin {
 
     @Inject(method = "<init>", at = @At(value = "FIELD", target = "Lnet/minecraft/client/option/GameOptions;allKeys:[Lnet/minecraft/client/option/KeyBinding;", opcode = Opcodes.PUTFIELD, shift = At.Shift.AFTER))
     private void onInitAfterKeysAll(MinecraftClient client, File optionsFile, CallbackInfo info) {
-        // Add category
-        Map<String, Integer> categories = KeyBindingAccessor.getCategoryOrderMap();
-
-        int highest = 0;
-        for (int i : categories.values()) {
-            if (i > highest) highest = i;
-        }
-
-        categories.put(MeteorClient.KEYBIND_CATEGORY, highest + 1);
-
-        List<KeyBinding> meteorBinds = MeteorClient.getKeybinds();
-
-        // Add key binding
-        KeyBinding[] newBinds = new KeyBinding[allKeys.length + meteorBinds.size()];
-
-        System.arraycopy(allKeys, 0, newBinds, 0, allKeys.length);
-
-        for (int i = 0; i < meteorBinds.size(); i++)
-            newBinds[allKeys.length + i] = meteorBinds.get(i);
-
-        allKeys = newBinds;
+        allKeys = MeteorClient.injectKeybinds(allKeys);
     }
 
     @Inject(method = "setPerspective", at = @At("HEAD"), cancellable = true)

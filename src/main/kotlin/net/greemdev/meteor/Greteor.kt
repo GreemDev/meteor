@@ -5,6 +5,8 @@
 
 package net.greemdev.meteor
 
+import com.google.common.collect.ImmutableList
+import meteordevelopment.meteorclient.MeteorClient
 import meteordevelopment.meteorclient.commands.Commands
 import meteordevelopment.meteorclient.systems.hud.HudGroup
 import meteordevelopment.meteorclient.systems.modules.Category
@@ -19,10 +21,15 @@ import net.greemdev.meteor.util.className
 import net.greemdev.meteor.util.meteor.*
 import net.greemdev.meteor.util.meteor.starscript.initGStarscript
 import net.greemdev.meteor.util.modLoader
+import net.greemdev.meteor.util.tryGet
 import net.minecraft.block.Block
+import net.minecraft.client.option.KeyBinding
 import net.minecraft.item.Items
 import net.minecraft.registry.RegistryKeys
 import net.minecraft.registry.tag.TagKey
+import java.lang.reflect.Field
+import java.lang.reflect.Modifier
+import kotlin.reflect.full.isSuperclassOf
 
 private val category = Category(className<Greteor>(), Items.LIME_CONCRETE_POWDER.defaultStack)
 private val hudGroup = HudGroup(className<Greteor>())
@@ -82,4 +89,14 @@ object Greteor {
 
     @JvmStatic
     fun debug(inProd: Boolean = false, message: Getter<String>) = debug(message(), inProd)
+
+    @JvmStatic
+    @get:JvmName("keybinds")
+    val keybindings: List<KeyBinding> by lazy {
+        MeteorClient::class.java.fields
+            .filter {
+                KeyBinding::class.java.isAssignableFrom(it.type) and Modifier.isStatic(it.modifiers)
+            }.mapNotNull(Field::tryGet)
+    }
+
 }

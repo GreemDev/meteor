@@ -5,10 +5,8 @@
 
 package meteordevelopment.meteorclient;
 
-import com.google.common.base.Predicates;
-import com.google.common.base.Supplier;
-import com.google.common.base.Suppliers;
 import com.google.common.collect.ImmutableList;
+import kotlin.collections.CollectionsKt;
 import meteordevelopment.discordipc.DiscordIPC;
 import meteordevelopment.meteorclient.commands.Commands;
 import meteordevelopment.meteorclient.events.game.OpenScreenEvent;
@@ -19,6 +17,7 @@ import meteordevelopment.meteorclient.gui.GuiThemes;
 import meteordevelopment.meteorclient.gui.WidgetScreen;
 import meteordevelopment.meteorclient.gui.tabs.TabScreen;
 import meteordevelopment.meteorclient.gui.tabs.Tabs;
+import meteordevelopment.meteorclient.mixin.KeyBindingAccessor;
 import meteordevelopment.meteorclient.systems.Systems;
 import meteordevelopment.meteorclient.systems.modules.Categories;
 import meteordevelopment.meteorclient.systems.modules.Modules;
@@ -48,15 +47,15 @@ import net.minecraft.client.option.KeyBinding;
 import net.minecraft.client.util.InputUtil;
 import org.jetbrains.annotations.NotNull;
 import org.lwjgl.glfw.GLFW;
-import org.reflections.Reflections;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.File;
 import java.lang.invoke.MethodHandles;
-import java.lang.reflect.Modifier;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Map;
+import java.util.OptionalInt;
 
 import static net.greemdev.meteor.util.accessors.modLoader;
 
@@ -225,32 +224,33 @@ public class MeteorClient implements ClientModInitializer {
 
     // Key bindings
 
-    public static final String KEYBIND_CATEGORY = "Meteor Client";
+    public static final String KEYBIND_CATEGORY = Utils.nameToTitle(MOD_ID);
 
     public static KeyBinding OPEN_GUI = new KeyBinding("key.meteor-client.open-gui", InputUtil.Type.KEYSYM, GLFW.GLFW_KEY_RIGHT_SHIFT, KEYBIND_CATEGORY);
     public static KeyBinding OPEN_COMMANDS = new KeyBinding("key.meteor-client.open-commands", InputUtil.Type.KEYSYM, GLFW.GLFW_KEY_PERIOD, KEYBIND_CATEGORY);
 
+    public static KeyBinding[] injectKeybinds(KeyBinding[] baseKeybinds) {
+        { // add keybind screen category
+            Map<String, Integer> categories = KeyBindingAccessor.getCategoryOrderMap();
 
-    private static final Supplier<ImmutableList<@NotNull KeyBinding>> KEYBINDS = Suppliers.memoize(() ->
-        ImmutableList.<KeyBinding>builder()
-            .addAll(
-                Arrays.stream(MeteorClient.class.getFields())
-                    .filter(f -> KeyBinding.class.isAssignableFrom(f.getType()) && Modifier.isStatic(f.getModifiers()))
-                    .map(f -> {
-                        try {
-                            return (KeyBinding) f.get(null);
-                        } catch (Exception ignored) { //ignore (somehow) failed casts & IllegalAccessExceptions
-                            return null;
-                        }
-                    })
-                    .filter(Predicates.notNull())
-                    .toList()
-            )
-            .build()
-    );
+            Integer highest = CollectionsKt.maxOrNull(categories.values());
+            if (highest == null) highest = 0;
 
-    @NotNull
-    public static ImmutableList<KeyBinding> getKeybinds() {
-        return KEYBINDS.get();
+            categories.put(MeteorClient.KEYBIND_CATEGORY, highest + 1);
+        }
+
+
+        //doing the reflection to get all static KeyBinding fields was cleaner to impl in kotlin (no try block), so it's not in this class
+        List<KeyBinding> meteorBinds = Greteor.keybinds();
+
+        // Add key binding
+        KeyBinding[] newBinds = new KeyBinding[baseKeybinds.length + meteorBinds.size()];
+
+        System.arraycopy(baseKeybinds, 0, newBinds, 0, baseKeybinds.length);
+
+        for (int i = 0; i < meteorBinds.size(); i++)
+            newBinds[baseKeybinds.length + i] = meteorBinds.get(i);
+
+        return newBinds;
     }
 }

@@ -12,6 +12,7 @@ import meteordevelopment.meteorclient.utils.player.InvUtils
 import net.greemdev.meteor.GCommand
 import net.greemdev.meteor.commands.api.CommandExceptions
 import net.greemdev.meteor.commands.api.contextArg
+import net.greemdev.meteor.commands.api.get
 import net.greemdev.meteor.undashedString
 import net.greemdev.meteor.util.*
 import net.greemdev.meteor.util.misc.createRandomNbtIntArray
@@ -25,18 +26,24 @@ import kotlin.random.Random
 // based on https://github.com/cally72jhb/vector-addon/blob/main/src/main/java/cally72jhb/addon/commands/commands/PlayerHeadCommand.java
 
 object PlayerHeadCommand : GCommand("player-head", "Gives you a player's current head. Creative mode only.", {
-    runs { scope.launch { execute(minecraft.player().gameProfile, 1) } }
+    runs { giveHead() }
+    then("amount", ArgType.int(1, 64)) {
+        runs {
+            val amount by contextArg("amount", ArgType.int(1, 64))
+            giveHead(amount = amount)
+        }
+    }
 
     then("player", ArgType.playerListEntry()) {
         runs {
             val player by contextArg("player", ArgType.playerListEntry())
-            scope.launch { execute(player.profile, 1) }
+            giveHead(player.profile)
         }
         then("amount", ArgType.int(1, 64)) {
             runs {
                 val player by contextArg("player", ArgType.playerListEntry())
                 val amount by contextArg("amount", ArgType.int(1, 64))
-                scope.launch { execute(player.profile, amount) }
+                giveHead(player.profile, amount)
             }
         }
     }
@@ -44,16 +51,19 @@ object PlayerHeadCommand : GCommand("player-head", "Gives you a player's current
 
 private val notCreative by CommandExceptions simple "You must be in creative mode to use this."
 
-private suspend fun GCommand.execute(player: GameProfile, amount: Int) {
+private fun GCommand.giveHead(player: GameProfile = minecraft.player().gameProfile, amount: Int = 1) { scope.launch { execute(player, amount) } }
 
+private suspend fun GCommand.execute(player: GameProfile = minecraft.player().gameProfile, amount: Int = 1) {
     require(minecraft.player().abilities.creativeMode, notCreative)
 
     val profileResponse = (HTTP GET "https://sessionserver.mojang.com/session/minecraft/profile/${player.id.undashedString}")
-        .requestJsonAsync().await() ?: return
+        .requestJsonAsync()
+        .await() ?: return
 
     val newItemStack = ItemStack(Items.PLAYER_HEAD)
 
-    newItemStack.nbt = StringNbtReader.parse(minify("""{
+    newItemStack.nbt = StringNbtReader.parse(minify(
+            """{
                     SkullOwner: {
                         Id:${Random(player.name.hashCode()).createRandomNbtIntArray(4)},
                         Properties: {
@@ -64,7 +74,8 @@ private suspend fun GCommand.execute(player: GameProfile, amount: Int) {
                             ]
                         }
                     }
-               }"""))
+               }"""
+    ))
 
     newItemStack.count = amount.coerceIn(1, 64)
 
