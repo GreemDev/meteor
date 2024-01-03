@@ -86,7 +86,7 @@ public class Font {
             if (cp < 32 || cp > 128) cp = 32;
             CharData c = charData[cp - 32];
 
-            width += c.xAdvance;
+            width += c.advance();
         }
 
         return width;
@@ -105,15 +105,29 @@ public class Font {
             CharData c = charData[cp - 32];
 
             mesh.quad(
-                mesh.vec2(x + c.x0 * scale, y + c.y0 * scale).vec2(c.u0, c.v0).color(color).next(),
-                mesh.vec2(x + c.x0 * scale, y + c.y1 * scale).vec2(c.u0, c.v1).color(color).next(),
-                mesh.vec2(x + c.x1 * scale, y + c.y1 * scale).vec2(c.u1, c.v1).color(color).next(),
-                mesh.vec2(x + c.x1 * scale, y + c.y0 * scale).vec2(c.u1, c.v0).color(color).next()
+                mesh.vec2(x + c.x0() * scale, y + c.y0() * scale)
+                    .vec2(c.u0(), c.v0())
+                    .color(color)
+                    .next(),
+                mesh.vec2(x + c.x0() * scale, y + c.y1() * scale)
+                    .vec2(c.u0(), c.v1())
+                    .color(color)
+                    .next(),
+                mesh.vec2(x + c.x1() * scale, y + c.y1() * scale)
+                    .vec2(c.u1(), c.v1())
+                    .color(color)
+                    .next(),
+                mesh.vec2(x + c.x1() * scale, y + c.y0() * scale)
+                    .vec2(c.u1(), c.v0())
+                    .color(color)
+                    .next()
             );
 
-            x += c.xAdvance * scale;
+            x += c.advance() * scale;
         }
 
         return x;
     }
+
+    record CharData(float x0, float y0, float x1, float y1, float u0, float v0, float u1, float v1, float advance) {}
 }

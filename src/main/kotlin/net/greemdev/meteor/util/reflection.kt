@@ -10,6 +10,7 @@ import net.greemdev.meteor.*
 import org.reflections.Reflections
 import org.reflections.scanners.Scanners
 import org.reflections.util.ConfigurationBuilder
+import java.lang.reflect.Field
 import java.util.function.Consumer
 import java.util.stream.Stream
 import kotlin.reflect.KClass
@@ -87,3 +88,6 @@ fun<T> Class<T>.callConstructor(vararg _args: Any): T? {
         Greteor.logger.error("Specified type '$qualifiedNameOrMappingName' does not have a constructor matching ($ctorSignature).", nse)
     }.getOrNull()
 }
+
+@Suppress("UNCHECKED_CAST")
+fun<T> Field.tryGet(instance: Any? = null) = getOrNull { get(instance) as? T }

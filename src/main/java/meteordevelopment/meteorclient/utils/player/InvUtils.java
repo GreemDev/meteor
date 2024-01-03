@@ -354,17 +354,14 @@ public class InvUtils {
     // Other
 
     public static int getEmptySlot() {
-        for (int i = 0; i <= 8; i++) {
-            if (mc.player.getInventory().getStack(i).isEmpty()) {
+        for (int i = 0; i <= 8; i++)
+            if (mc.player.getInventory().getStack(i).isEmpty())
                 return i + 36;
-            }
-        }
 
-        for (int i = 0; i < mc.player.getInventory().main.size(); i++) {
-            if (mc.player.getInventory().main.get(i).isEmpty()) {
+        for (int i = 0; i < mc.player.getInventory().main.size(); i++)
+            if (mc.player.getInventory().main.get(i).isEmpty())
                 return i;
-            }
-        }
+
 
         return -1;
     }
@@ -375,17 +372,13 @@ public class InvUtils {
         } else if (canStackAddMore(mc.player.getInventory().getStack(40), stack)) {
             return 40;
         } else {
-            for (int i = 0; i <= 8; i++) {
-                if (canStackAddMore(mc.player.getInventory().getStack(i), stack)) {
+            for (int i = 0; i <= 8; i++)
+                if (canStackAddMore(mc.player.getInventory().getStack(i), stack))
                     return i + 36;
-                }
-            }
 
-            for (int i = 0; i < mc.player.getInventory().main.size(); i++) {
-                if (canStackAddMore(mc.player.getInventory().main.get(i), stack)) {
+            for (int i = 0; i < mc.player.getInventory().main.size(); i++)
+                if (canStackAddMore(mc.player.getInventory().main.get(i), stack))
                     return i;
-                }
-            }
 
             return -1;
         }

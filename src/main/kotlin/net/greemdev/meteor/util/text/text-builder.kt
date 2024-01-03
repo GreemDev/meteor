@@ -3,7 +3,6 @@
  * Copyright (c) Meteor Development.
  */
 @file:Suppress("FunctionName", "unused", "MemberVisibilityCanBePrivate") // API
-@file:JvmName("TextBuilding")
 // see comment in http.kt for interop design scheme
 
 package net.greemdev.meteor.util.text
@@ -25,13 +24,13 @@ import kotlin.io.path.absolutePathString
 @DslMarker
 annotation class TextDsl
 
-@JvmName("create")
-inline fun buildText(initial: Text = emptyText(), block: FormattedText.() -> Unit) =
-    FormattedText(initial.copy())
-        .apply(block)
+fun buildText(initial: Text = emptyText(), block: FormattedText.() -> Unit) =
+    FormattedText(initial.copy(), block.java)
+
+
 
 @TextDsl
-class FormattedText(private var internal: MutableText = emptyText()) : Text {
+class FormattedText(internal: MutableText = emptyText()) : TextProxy(internal) {
 
     constructor(internal: MutableText = emptyText(), builder: Consumer<FormattedText>) : this(internal) {
         builder.accept(this)
@@ -41,16 +40,7 @@ class FormattedText(private var internal: MutableText = emptyText()) : Text {
 
     constructor(builder: Consumer<FormattedText>) : this(emptyText(), builder)
 
-    fun mutableText() = internal
-    fun copyMutableText(): MutableText = internal.copy()
-
-    override fun asOrderedText(): OrderedText = internal.asOrderedText()
-
-    override fun getStyle(): Style = internal.style
-
-    override fun getContent(): TextContent = internal.content
-
-    override fun getSiblings(): List<Text> = internal.siblings
+    fun copyText() = FormattedText(copy())
 
 
     fun addString(content: String?): FormattedText {
@@ -103,14 +93,14 @@ class FormattedText(private var internal: MutableText = emptyText()) : Text {
         content: String,
         url: String,
         hoverText: Text = textOf(url)
-    ) = addHyperlink(content, url, actions.openURL, hoverText)
+    ) = addText(urlHyperlink(content, url, hoverText))
 
     @JvmOverloads
     fun addFileHyperlink(
         content: String,
         url: String,
         hoverText: Text = textOf(url)
-    ) = addHyperlink(content, url, actions.openFile, hoverText)
+    ) = addText(fileHyperlink(content, url, hoverText))
 
     @JvmOverloads
     fun addFileHyperlink(
@@ -131,7 +121,7 @@ class FormattedText(private var internal: MutableText = emptyText()) : Text {
         content: String,
         command: String,
         hoverText: Text = textOf(command)
-    ) = addHyperlink(content, command, actions.runCommand, hoverText)
+    ) = addText(commandHyperlink(content, command, hoverText))
 
     @JvmOverloads
     fun addHyperlink(
@@ -244,19 +234,19 @@ class FormattedText(private var internal: MutableText = emptyText()) : Text {
 
     companion object {
         @JvmStatic
-        fun styled(text: String, style: Style) = create().addString(text, style)
+        fun styled(text: String, style: Style) = FormattedText().addString(text, style)
 
         @JvmStatic
         fun withColor(text: Any? = null, color: MeteorColor) = create(text).colored(color)
 
         @JvmStatic
-        fun withColor(color: MeteorColor) = create().colored(color)
+        fun withColor(color: MeteorColor) = FormattedText().colored(color)
 
         @JvmStatic
         fun withColor(text: Any? = null, color: ChatColor) = create(text).colored(color)
 
         @JvmStatic
-        fun withColor(color: ChatColor) = create().colored(color)
+        fun withColor(color: ChatColor) = FormattedText().colored(color)
 
         @JvmStatic
         fun gradient(text: Text, firstColor: MeteorColor, secondColor: MeteorColor) =
@@ -270,14 +260,8 @@ class FormattedText(private var internal: MutableText = emptyText()) : Text {
         fun create(initial: Text, builder: Consumer<FormattedText>) = buildText(initial, builder.kotlin)
 
         @JvmStatic
-        fun create(builder: Consumer<FormattedText>) = FormattedText(builder)
-
-        @JvmStatic
         fun create(initial: String, builder: Consumer<FormattedText>) =
             FormattedText(initial, builder)
-
-        @JvmStatic
-        fun create() = FormattedText()
 
         @JvmStatic
         @JvmOverloads
@@ -324,4 +308,16 @@ class FormattedText(private var internal: MutableText = emptyText()) : Text {
             }
         )
     }
+}
+
+abstract class TextProxy(protected var internal: MutableText) : Text {
+    override fun copy(): MutableText = internal.copy()
+
+    override fun asOrderedText(): OrderedText = internal.asOrderedText()
+
+    override fun getStyle(): Style = internal.style
+
+    override fun getContent(): TextContent = internal.content
+
+    override fun getSiblings(): List<Text> = internal.siblings
 }

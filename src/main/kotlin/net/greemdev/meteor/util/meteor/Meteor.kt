@@ -10,6 +10,9 @@ import meteordevelopment.meteorclient.commands.Command
 import meteordevelopment.meteorclient.commands.Commands
 import meteordevelopment.meteorclient.gui.GuiTheme
 import meteordevelopment.meteorclient.gui.GuiThemes
+import meteordevelopment.meteorclient.gui.tabs.Tab
+import meteordevelopment.meteorclient.gui.tabs.Tabs
+import meteordevelopment.meteorclient.gui.tabs.builtin.ConfigTab
 import meteordevelopment.meteorclient.systems.accounts.Accounts
 import meteordevelopment.meteorclient.systems.config.Config
 import meteordevelopment.meteorclient.systems.friends.Friend
@@ -96,3 +99,9 @@ object Meteor {
     @JvmStatic
     fun profile(name: String): Profile? = profiles().get(name)
 }
+
+@Suppress("FunctionName")
+fun TabRenderSections(): Pair<List<Tab>, List<Tab>> = Tabs.get()
+    .let { tabs ->
+        tabs.filter { !it.displayIcon.get() } to (tabs.filter { it.displayIcon.get() && it.name != ConfigTab.NAME } + Tabs.config() )
+    }

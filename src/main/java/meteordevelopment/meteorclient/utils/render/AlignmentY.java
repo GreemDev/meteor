@@ -19,4 +19,12 @@ public enum AlignmentY {
     public boolean bottom() {
         return this == Bottom;
     }
+
+    public double align(double y, double scaledTopMargin, double h, double height) {
+        return switch (this) {
+            case Top -> y + scaledTopMargin;
+            case Center -> y + h / 2 - height / 2;
+            case Bottom -> y - h - height;
+        };
+    }
 }

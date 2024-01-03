@@ -17,6 +17,7 @@ import meteordevelopment.meteorclient.systems.modules.Module;
 import meteordevelopment.meteorclient.systems.modules.Modules;
 import net.greemdev.meteor.commands.api.Suggest;
 import net.minecraft.text.Text;
+import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.Collection;
@@ -25,7 +26,7 @@ import java.util.concurrent.CompletableFuture;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
-public class ModuleArgumentType implements ArgumentType<Module> {
+public class ModuleArgumentType implements ArgumentType<@NotNull Module> {
 
     public ModuleArgumentType(@Nullable Predicate<Module> predicate, String message) {
         this.predicate = Objects.requireNonNullElse(predicate, Predicates.alwaysTrue());
@@ -46,6 +47,7 @@ public class ModuleArgumentType implements ArgumentType<Module> {
         return new ModuleArgumentType(predicate, message);
     }
 
+    @NotNull
     public static Module get(CommandContext<?> context) {
         return context.getArgument("module", Module.class);
     }
@@ -53,6 +55,7 @@ public class ModuleArgumentType implements ArgumentType<Module> {
     public final Predicate<Module> predicate;
     public final String predicateFailedMessage;
 
+    @NotNull
     @Override
     public Module parse(StringReader reader) throws CommandSyntaxException {
         String argument = reader.readString();

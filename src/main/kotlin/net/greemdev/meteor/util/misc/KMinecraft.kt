@@ -51,6 +51,7 @@ import java.util.Optional
 @JvmField
 var allowNextChatClear = false
 
+@JvmOverloads
 fun clearChat(clearHistory: Boolean = false) {
     allowNextChatClear = true
     minecraft.inGameHud.chatHud.clear(clearHistory)
@@ -68,7 +69,8 @@ inline fun HitResult?.ifMissed(block: ValueAction<BlockHitResult>) {
     block(this?.tryCast<BlockHitResult>()?.takeIf { it.type == HitResult.Type.MISS } ?: return)
 }
 
-fun fps() = MinecraftClientAccessor.getFps()
+@get:JvmName("fps")
+val currentFps by invoking(MinecraftClientAccessor::getFps)
 
 fun MinecraftClient.setPlayerPos(x: Double = playerX, y: Double = playerY, z: Double = playerZ) {
     player().setPos(x, y, z)
@@ -227,7 +229,7 @@ fun sendMeteorMessage(
         buildText(block = builder)
     )
 
-
+fun MinecraftClient.showMessage(initial: Text = emptyText(), textBuilder: Initializer<FormattedText>) = player().sendMessage(buildText(initial, textBuilder))
 fun MinecraftClient.showMessage(text: Text) = player().sendMessage(text)
 fun MinecraftClient.showMessage(message: String) = showMessage(textOf(message))
 fun MinecraftClient.showActionBar(text: Text) = player().sendMessage(text, true)

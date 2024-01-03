@@ -34,7 +34,7 @@ object TargetNBTCommand : GCommand("target-nbt", "Gets NBT data of the entity yo
         runs {
             getTargetNbt()?.also {
                 minecraft.keyboard.clipboard = it.asString()
-                info("NBT copied successfully copied to clipboard.")
+                info("NBT successfully copied to clipboard.")
             }
         }
     }

@@ -12,6 +12,7 @@ import meteordevelopment.meteorclient.mixininterface.ICapabilityTracker;
 import meteordevelopment.meteorclient.utils.PreInit;
 import net.fabricmc.loader.api.FabricLoader;
 import net.minecraft.util.Identifier;
+import org.jetbrains.annotations.NotNull;
 import org.joml.Matrix4f;
 import org.lwjgl.BufferUtils;
 
@@ -25,9 +26,13 @@ import static org.lwjgl.opengl.GL32C.*;
 public class GL {
     private static final FloatBuffer MAT = BufferUtils.createFloatBuffer(4 * 4);
 
+    @NotNull
     private static final ICapabilityTracker DEPTH = getTracker("DEPTH");
+    @NotNull
     private static final ICapabilityTracker BLEND = getTracker("BLEND");
+    @NotNull
     private static final ICapabilityTracker CULL = getTracker("CULL");
+    @NotNull
     private static final ICapabilityTracker SCISSOR = getTracker("SCISSOR");
 
     private static boolean depthSaved, blendSaved, cullSaved, scissorSaved;
@@ -342,8 +347,7 @@ public class GL {
             capStateField.setAccessible(true);
             return (ICapabilityTracker) capStateField.get(state);
         } catch (NoSuchFieldException | IllegalAccessException e) {
-            e.printStackTrace();
-            return null;
+            throw new IllegalStateException("Could not find GL state tracker '" + fieldName + "'", e);
         }
     }
 }

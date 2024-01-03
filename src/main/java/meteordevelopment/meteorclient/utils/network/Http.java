@@ -9,8 +9,7 @@ import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import meteordevelopment.meteorclient.MeteorClient;
 import meteordevelopment.meteorclient.systems.config.Config;
-import meteordevelopment.meteorclient.utils.other.JsonDateDeserializer;
-import net.greemdev.meteor.util.meteor.Meteor;
+import net.greemdev.meteor.util.misc.JsonSerialization;
 import net.greemdev.meteor.utils;
 
 import java.io.IOException;
@@ -29,7 +28,7 @@ public class Http {
     private static final HttpClient CLIENT = HttpClient.newHttpClient();
 
     private static final Gson GSON = new GsonBuilder()
-        .registerTypeAdapter(Date.class, new JsonDateDeserializer())
+        .registerTypeAdapter(Date.class, JsonSerialization.jsonToDate())
         .create();
 
     private enum Method {

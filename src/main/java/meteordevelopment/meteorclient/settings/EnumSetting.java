@@ -6,10 +6,12 @@
 package meteordevelopment.meteorclient.settings;
 
 import meteordevelopment.meteorclient.MeteorClient;
+import meteordevelopment.meteorclient.utils.Utils;
 import net.minecraft.nbt.NbtCompound;
 
 import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.function.Consumer;
 import java.util.function.Supplier;
@@ -19,30 +21,24 @@ public class EnumSetting<T extends Enum<?>> extends Setting<T> {
         return new Builder<>();
     }
 
-    private T[] values;
+    private final T[] values;
 
     private final List<String> suggestions;
 
     protected EnumSetting(String name, String description, Object defaultValue, Consumer<T> onChanged, Consumer<Setting<T>> onModuleActivated, Supplier<Boolean> visible, boolean serialize) {
         super(name, description, defaultValue, onChanged, onModuleActivated, visible, serialize);
 
-        try {
-            values = (T[]) defaultValue.getClass().getMethod("values").invoke(null);
-        } catch (IllegalAccessException | InvocationTargetException | NoSuchMethodException e) {
-            MeteorClient.LOG.error("EnumSetting constructor encountered error", e);
-        }
-
+        values = Utils.getEnumConstants(getDefaultValue().getClass());
         suggestions = new ArrayList<>(values.length);
         for (T value : values) suggestions.add(value.toString());
     }
 
     @Override
     protected T parseImpl(String str) {
-        for (T possibleValue : values) {
-            if (str.equalsIgnoreCase(possibleValue.toString())) return possibleValue;
-        }
-
-        return null;
+        return Arrays.stream(values)
+            .filter(enumEntry -> str.equalsIgnoreCase(enumEntry.toString()))
+            .findFirst()
+            .orElse(null);
     }
 
     @Override

@@ -614,4 +614,9 @@ public class Utils {
 
         return vec;
     }
+
+    public static <T extends Enum<?>> T[] getEnumConstants(Class<?> klass) {
+        //noinspection unchecked
+        return (T[]) klass.getEnumConstants();
+    }
 }

@@ -16,7 +16,8 @@ import java.util.Date
 
 object NameHistoryCommand : GCommand(
     "name-history",
-    "Provides a list of a player's previous names from the laby.net API.", {
+    "Provides a list of a player's previous names from the laby.net API.",
+    {
         then("player", ArgType.playerListEntry()) {
             runs {
                 val target by contextArg("player", ArgType.playerListEntry())
@@ -61,9 +62,7 @@ object NameHistoryCommand : GCommand(
                                     }
                                 }
 
-                                addString(
-                                    "*".takeIf { nameEntry.accurate }
-                                ) {
+                                addString("*".takeIf { nameEntry.accurate }) {
                                     colored(ChatColor.yellow)
                                     hoveredText("This name history entry is not accurate according to laby.net")
                                 }
@@ -79,14 +78,13 @@ object NameHistoryCommand : GCommand(
 private class NameHistory(
     @JvmField
     val username_history: Array<Name>?
-)
-
-
-private class Name(
-    @JvmField
-    val name: String,
-    @JvmField
-    val changed_at: Date?,
-    @JvmField
-    val accurate: Boolean
-)
+) {
+    data class Name(
+        @JvmField
+        val name: String,
+        @JvmField
+        val changed_at: Date?,
+        @JvmField
+        val accurate: Boolean
+    )
+}

@@ -88,38 +88,41 @@ public abstract class Command {
         return toString(subcommand);
     }
 
-    public final <T> T require(@Nullable T value, SimpleCommandExceptionType scet) throws CommandSyntaxException {
+    @NotNull
+    public final <T> T require(@Nullable T value, @NotNull SimpleCommandExceptionType scet) throws CommandSyntaxException {
         if (value == null)
             throw scet.create();
 
         return value;
     }
 
-    public final <T> T require(@Nullable T value, CommandSyntaxException cse) throws CommandSyntaxException {
+    @NotNull
+    public final <T> T require(@Nullable T value, @NotNull CommandSyntaxException cse) throws CommandSyntaxException {
         if (value == null)
             throw cse;
 
         return value;
     }
 
-    public final <T> T require(@Nullable T value, Supplier<CommandSyntaxException> cse) throws CommandSyntaxException {
+    @NotNull
+    public final <T> T require(@Nullable T value, @NotNull Supplier<@NotNull CommandSyntaxException> cse) throws CommandSyntaxException {
         if (value == null)
             throw cse.get();
 
         return value;
     }
 
-    public final void require(boolean condition, SimpleCommandExceptionType scet) throws CommandSyntaxException {
+    public final void require(boolean condition, @NotNull SimpleCommandExceptionType scet) throws CommandSyntaxException {
         if (!condition)
             throw scet.create();
     }
 
-    public final void require(boolean condition, CommandSyntaxException cse) throws CommandSyntaxException {
+    public final void require(boolean condition, @NotNull CommandSyntaxException cse) throws CommandSyntaxException {
         if (!condition)
             throw cse;
     }
 
-    public final void require(boolean condition, Supplier<CommandSyntaxException> cse) throws CommandSyntaxException {
+    public final void require(boolean condition, @NotNull Supplier<@NotNull CommandSyntaxException> cse) throws CommandSyntaxException {
         if (!condition)
             throw cse.get();
     }

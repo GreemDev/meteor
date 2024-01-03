@@ -57,7 +57,9 @@ public class Fonts {
     }
 
     public static void load(FontFace fontFace) {
-        if (RENDERER != null && RENDERER.fontFace.equals(fontFace)) return;
+        if (RENDERER != null)
+            if (!RENDERER.fontFace.equals(fontFace))
+                RENDERER.destroy();
 
         try {
             RENDERER = new CustomTextRenderer(fontFace);
@@ -72,18 +74,13 @@ public class Fonts {
             load(Fonts.DEFAULT_FONT);
         }
 
-        if (mc.currentScreen instanceof WidgetScreen && Config.get().customFont.get()) {
-            ((WidgetScreen) mc.currentScreen).invalidate();
-        }
+        if (mc.currentScreen instanceof WidgetScreen ws && Config.get().customFont.get())
+            ws.invalidate();
     }
 
     public static FontFamily getFamily(String name) {
-        for (FontFamily fontFamily : Fonts.FONT_FAMILIES) {
-            if (fontFamily.getName().equalsIgnoreCase(name)) {
-                return fontFamily;
-            }
-        }
-
-        return null;
+        return Fonts.FONT_FAMILIES.stream()
+            .filter(ff -> ff.getName().equalsIgnoreCase(name))
+            .findFirst().orElse(null);
     }
 }

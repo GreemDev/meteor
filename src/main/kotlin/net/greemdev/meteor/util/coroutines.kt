@@ -3,6 +3,7 @@
  * Copyright (c) Meteor Development.
  */
 @file:JvmName("Coroutines")
+@file:OptIn(InternalCoroutinesApi::class)
 package net.greemdev.meteor.util
 
 
@@ -38,17 +39,17 @@ fun<T> `deferred-result-from-java`(deferred: Deferred<T>): T {
     return runBlocking { deferred.await() }
 }
 
-suspend infix fun <T> Deferred<T>.thenAccept(block: SuspendingValueAction<T>) = thenMap(block)
-suspend infix fun <T> Deferred<T>.then(block: SuspendingPipe<T>): T = block(await())
+suspend inline infix fun <T> Deferred<T>.thenAccept(block: SuspendingValueAction<T>) = thenMap(block)
+suspend inline infix fun <T> Deferred<T>.then(block: SuspendingPipe<T>): T = block(await())
 
-infix fun <T, R> Deferred<T>.thenAsync(block: suspend T.() -> R): Deferred<R> =
+inline infix fun <T, R> Deferred<T>.thenAsync(crossinline block: suspend T.() -> R): Deferred<R> =
     scope.async { thenMap(block) }
 
-suspend infix fun <T, R> Deferred<T>.thenMap(block: SuspendingMapper<T, R>): R = block(await())
+suspend inline infix fun <T, R> Deferred<T>.thenMap(block: SuspendingMapper<T, R>): R = block(await())
 
-inline fun CoroutineScope.jobBuilder() = object : AsyncJobBuilder(this) {}
+fun CoroutineScope.newJobBuilder() = object : AsyncJobBuilder(this) {}
 
-inline fun<J : Job> CoroutineScope.wrapJob(job: J, crossinline block: Initializer<AsyncJobBuilder>) = jobBuilder().apply(block) executing job
+inline fun<J : Job> CoroutineScope.wrapJob(job: J, crossinline block: Initializer<AsyncJobBuilder>) = newJobBuilder().apply(block) executing job
 
 abstract class AsyncJobBuilder(
     @get:JvmName("scope")
@@ -75,14 +76,23 @@ abstract class AsyncJobBuilder(
 
     infix fun executing(block: SuspendingInitializer<CoroutineScope>) = executing(scope.launch(block = block))
 
-    infix fun<J : Job> executing(job: J) = job.apply {
-        invokeOnCompletion {
+
+    infix fun<J : Job> executing(job: J): DisposableCoroutine<J> {
+        val handle = job.invokeOnCompletion(onCancelling = true, invokeImmediately = true) {
             when (it) {
                 null -> onSuccess()
                 is CancellationException -> onCancel(it)
                 else -> onFailure(it)
             }
         }
+        return DisposableCoroutine(handle, job)
+    }
+}
+
+class DisposableCoroutine<J : Job>(handle: DisposableHandle, val job: J) : Job by job, DisposableHandle by handle {
+    fun destroy() {
+        cancel()
+        dispose()
     }
 }
 
@@ -125,9 +135,10 @@ fun scoped(block: CoroutineScope.() -> Unit) = coroutines(block)
 inline fun<T> coroutines(block: CoroutineScope.() -> T): T = scope.block()
 
 /**
- * Intended usage is to call [AsyncJobBuilder.executing] as the last line of the lambda so that it's the result of the lambda.
+ * Intended usage is to call [AsyncJobBuilder.executing] so it's the last line of the lambda so that it's the result of the lambda,
+ * and because [AsyncJobBuilder.executing] is what starts the job.
  */
-fun<J : Job> buildJob(coroutineScope: CoroutineScope = scope, build: AsyncJobBuilder.() -> J) = coroutineScope.jobBuilder().build()
+fun<J : Job> buildJob(coroutineScope: CoroutineScope = scope, build: AsyncJobBuilder.() -> J) = coroutineScope.newJobBuilder().build()
 
 @JvmOverloads
 fun Runnable.runInCoroutine(coroutineScope: CoroutineScope = scope) = coroutineScope.launch { run() }

@@ -109,16 +109,13 @@ public class Cell<T extends WWidget> {
     }
 
     public Cell<T> padHorizontal(double pad) {
-        padRight = padLeft = pad;
-        return this;
+        return padRight(pad).padLeft(pad);
     }
     public Cell<T> padVertical(double pad) {
-        padTop = padBottom = pad;
-        return this;
+        return padTop(pad).padBottom(pad);
     }
     public Cell<T> pad(double pad) {
-        padTop = padRight = padBottom = padLeft = pad;
-        return this;
+        return padHorizontal(pad).padVertical(pad);
     }
 
     public double padTop() {
@@ -170,24 +167,14 @@ public class Cell<T extends WWidget> {
         if (expandWidgetX) {
             widget.x = x;
             widget.width = width;
-        } else {
-            switch (alignX) {
-                case Left -> widget.x = x;
-                case Center -> widget.x = x + width / 2 - widget.width / 2;
-                case Right -> widget.x = x + width - widget.width;
-            }
-        }
+        } else
+            widget.x = alignX.align(x, width, widget.width);
 
         if (expandWidgetY) {
             widget.y = y;
             widget.height = height;
-        } else {
-            switch (alignY) {
-                case Top -> widget.y = y + s(marginTop);
-                case Center -> widget.y = y + height / 2 - widget.height / 2;
-                case Bottom -> widget.y = y + height - widget.height;
-            }
-        }
+        } else
+            widget.y = alignY.align(y, s(marginTop), height, widget.height);
     }
 
     private double s(double value) {

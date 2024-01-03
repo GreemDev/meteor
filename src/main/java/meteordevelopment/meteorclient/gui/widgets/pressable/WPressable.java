@@ -39,5 +39,5 @@ public abstract class WPressable extends WWidget {
         return java.cast(this);
     }
 
-    protected void onPressed(int button) {}
+    protected void onPressed(int mouseButton) {}
 }
