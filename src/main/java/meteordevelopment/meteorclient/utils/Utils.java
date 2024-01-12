@@ -12,8 +12,7 @@ import it.unimi.dsi.fastutil.objects.Object2IntMap;
 import meteordevelopment.meteorclient.MeteorClient;
 import meteordevelopment.meteorclient.events.world.TickEvent;
 import meteordevelopment.meteorclient.gui.tabs.TabScreen;
-import meteordevelopment.meteorclient.gui.utils.CharFilter;
-import meteordevelopment.meteorclient.mixin.*;
+import meteordevelopment.meteorclient.mixin.accessor.*;
 import meteordevelopment.meteorclient.mixininterface.IMinecraftClient;
 import meteordevelopment.meteorclient.systems.modules.Modules;
 import meteordevelopment.meteorclient.systems.modules.render.BetterTooltips;
@@ -24,6 +23,7 @@ import meteordevelopment.meteorclient.utils.render.color.Color;
 import meteordevelopment.meteorclient.utils.world.BlockEntityIterator;
 import meteordevelopment.meteorclient.utils.world.ChunkIterator;
 import meteordevelopment.orbit.EventHandler;
+import net.greemdev.meteor.util.Strings;
 import net.minecraft.block.Block;
 import net.minecraft.block.Blocks;
 import net.minecraft.block.ShulkerBoxBlock;
@@ -68,7 +68,7 @@ public class Utils {
     public static final Pattern FILE_NAME_INVALID_CHARS_PATTERN = Pattern.compile("[\\s\\\\/:*?\"<>|]");
     public static final Color WHITE = new Color(255, 255, 255);
 
-    private static final Random random = new Random();
+    public static final Random RANDOM = new Random();
     public static boolean firstTimeTitleScreen = true;
     public static boolean isReleasingTrident;
     public static boolean rendering3D = true;
@@ -110,6 +110,14 @@ public class Utils {
         return new Vec3d(tX, tY, tZ);
     }
 
+    public static boolean equals(String left, String right, boolean ignoreCase) {
+        if (left == null && right == null) return true;
+        if (left == null || right == null) return false;
+        return ignoreCase
+            ? left.equalsIgnoreCase(right)
+            : left.equals(right);
+    }
+
     public static String getWorldTime() {
         if (mc.world == null) return "00:00";
 
@@ -136,7 +144,7 @@ public class Utils {
         enchantments.clear();
 
         if (!itemStack.isEmpty()) {
-            NbtList listTag = itemStack.getItem() == Items.ENCHANTED_BOOK ? EnchantedBookItem.getEnchantmentNbt(itemStack) : itemStack.getEnchantments();
+            NbtList listTag = itemStack.isOf(Items.ENCHANTED_BOOK) ? EnchantedBookItem.getEnchantmentNbt(itemStack) : itemStack.getEnchantments();
 
             for (int i = 0; i < listTag.size(); ++i) {
                 NbtCompound tag = listTag.getCompound(i);
@@ -170,12 +178,12 @@ public class Utils {
 
     public static void unscaledProjection() {
         vertexSorter = RenderSystem.getVertexSorting();
-        RenderSystem.setProjectionMatrix(new Matrix4f().setOrtho(0, mc.getWindow().getFramebufferWidth(), mc.getWindow().getFramebufferHeight(), 0, 1000, 21000), VertexSorter.BY_Z);
+        RenderSystem.setProjectionMatrix(new Matrix4f().setOrtho(0, getWindowWidth(), getWindowHeight(), 0, 1000, 21000), VertexSorter.BY_Z);
         rendering3D = false;
     }
 
     public static void scaledProjection() {
-        RenderSystem.setProjectionMatrix(new Matrix4f().setOrtho(0, (float) (mc.getWindow().getFramebufferWidth() / mc.getWindow().getScaleFactor()), (float) (mc.getWindow().getFramebufferHeight() / mc.getWindow().getScaleFactor()), 0, 1000, 21000), vertexSorter);
+        RenderSystem.setProjectionMatrix(new Matrix4f().setOrtho(0, (float) (getWindowWidth() / mc.getWindow().getScaleFactor()), (float) (getWindowHeight() / mc.getWindow().getScaleFactor()), 0, 1000, 21000), vertexSorter);
         rendering3D = true;
     }
 
@@ -184,7 +192,7 @@ public class Utils {
     }
 
     public static boolean openContainer(ItemStack itemStack, ItemStack[] contents, boolean pause) {
-        if (hasItems(itemStack) || itemStack.getItem() == Items.ENDER_CHEST) {
+        if (hasItems(itemStack) || itemStack.isOf(Items.ENDER_CHEST)) {
             Utils.getItemsInContainerItem(itemStack, contents);
             if (pause) screenToOpen = new PeekScreen(itemStack, contents);
             else mc.setScreen(new PeekScreen(itemStack, contents));
@@ -236,10 +244,10 @@ public class Utils {
 
     public static boolean hasItems(ItemStack itemStack) {
         NbtCompound compoundTag = itemStack.getSubNbt("BlockEntityTag");
-        return compoundTag != null && compoundTag.contains("Items", 9);
+        return compoundTag != null && compoundTag.contains("Items", NbtElement.LIST_TYPE);
     }
 
-    public static Object2IntMap<StatusEffect> createStatusEffectMap() {
+    public static Object2IntMap<StatusEffect> createStatusEffect2AmplifierMap() {
         Object2IntMap<StatusEffect> map = new Object2IntArrayMap<>(Registries.STATUS_EFFECT.getIds().size());
 
         Registries.STATUS_EFFECT.forEach(potion -> map.put(potion, 0));
@@ -264,7 +272,7 @@ public class Utils {
 
         int wordsFound = 0;
         text = text.toLowerCase(Locale.ROOT);
-        String[] words = filter.toLowerCase(Locale.ROOT).split(" ");
+        String[] words = filter.toLowerCase(Locale.ROOT).split(Strings.singleSpace);
 
         for (String word : words) {
             if (!text.contains(word)) return 0;
@@ -330,7 +338,7 @@ public class Utils {
     public static String getWorldName(boolean useAddress) {
         // Singleplayer
         if (mc.isInSingleplayer()) {
-            if (mc.world == null) return "";
+            if (mc.world == null) return Strings.empty;
 
             File folder = ((MinecraftServerAccessor) mc.getServer()).getSession().getWorldDirectory(mc.world.getRegistryKey()).toFile();
             if (folder.toPath().relativize(mc.runDirectory.toPath()).getNameCount() != 2) {
@@ -348,15 +356,15 @@ public class Utils {
                     : mc.getCurrentServerEntry().name;
         }
 
-        return "";
+        return Strings.empty;
     }
 
     public static String nameToTitle(String name) {
-        return Arrays.stream(name.split("-")).map(StringUtils::capitalize).collect(Collectors.joining(" "));
+        return Arrays.stream(name.split("-")).map(StringUtils::capitalize).collect(Collectors.joining(Strings.singleSpace));
     }
 
     public static String titleToName(String title) {
-        return title.replace(" ", "-").toLowerCase(Locale.ROOT);
+        return title.replace(Strings.singleSpace, "-").toLowerCase(Locale.ROOT);
     }
 
     public static String getKeyName(int key) {
@@ -461,19 +469,25 @@ public class Utils {
     public static boolean canOpenGui() {
         if (canUpdate()) return mc.currentScreen == null;
 
-        return mc.currentScreen instanceof TitleScreen || mc.currentScreen instanceof MultiplayerScreen || mc.currentScreen instanceof SelectWorldScreen;
+        return GUI_OPENABLE_SCREENS.stream().anyMatch(sc -> sc.isInstance(mc.currentScreen));
     }
+
+    public static List<Class<? extends Screen>> GUI_OPENABLE_SCREENS = new ArrayList<>(3) {{
+        add(TitleScreen.class);
+        add(MultiplayerScreen.class);
+        add(SelectWorldScreen.class);
+    }};
 
     public static boolean canCloseGui() {
         return mc.currentScreen instanceof TabScreen;
     }
 
     public static int random(int min, int max) {
-        return random.nextInt(max - min) + min;
+        return RANDOM.nextInt(max - min) + min;
     }
 
     public static double random(double min, double max) {
-        return min + (max - min) * random.nextDouble();
+        return min + (max - min) * RANDOM.nextDouble();
     }
 
     public static void pressAttackKey() {
@@ -499,11 +513,11 @@ public class Utils {
         NbtList listTag;
 
         // Get list tag
-        if (!tag.contains("Enchantments", 9)) {
+        if (!tag.contains("Enchantments", NbtElement.LIST_TYPE)) {
             listTag = new NbtList();
             tag.put("Enchantments", listTag);
         } else {
-            listTag = tag.getList("Enchantments", 10);
+            listTag = tag.getList("Enchantments", NbtElement.COMPOUND_TYPE);
         }
 
         // Check if item already has the enchantment and modify the level
@@ -535,8 +549,8 @@ public class Utils {
         NbtCompound nbt = itemStack.getNbt();
         if (nbt == null) return;
 
-        if (!nbt.contains("Enchantments", 9)) return;
-        NbtList list = nbt.getList("Enchantments", 10);
+        if (!nbt.contains("Enchantments", NbtElement.LIST_TYPE)) return;
+        NbtList list = nbt.getList("Enchantments", NbtElement.COMPOUND_TYPE);
 
         String enchId = Registries.ENCHANTMENT.getId(enchantment).toString();
 

@@ -7,10 +7,13 @@ package meteordevelopment.meteorclient.commands.builtin;
 
 import com.mojang.brigadier.arguments.IntegerArgumentType;
 import com.mojang.brigadier.builder.LiteralArgumentBuilder;
+import com.mojang.brigadier.context.CommandContext;
+import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import com.mojang.brigadier.exceptions.SimpleCommandExceptionType;
 import meteordevelopment.meteorclient.commands.Command;
 import meteordevelopment.meteorclient.utils.player.FindItemResult;
 import meteordevelopment.meteorclient.utils.player.InvUtils;
+import net.greemdev.meteor.commands.api.Arguments;
 import net.minecraft.client.network.ClientCommandSource;
 import net.minecraft.command.argument.ItemStackArgumentType;
 import net.minecraft.item.ItemStack;
@@ -30,26 +33,38 @@ public class GiveCommand extends Command {
 
     @Override
     public void build(LiteralArgumentBuilder<ClientCommandSource> builder) {
-        builder.then(argument("item", ItemStackArgumentType.itemStack(REGISTRY_ACCESS)).executes(context -> {
-            require(mc.player.getAbilities().creativeMode, NOT_IN_CREATIVE);
+        builder.then(
+            argument("item", Arguments.itemStack())
+                .executes(this::singleItem)
+                .then(
+                    argument("number", IntegerArgumentType.integer())
+                        .executes(this::multipleItems)
+                )
+        );
+    }
 
-            ItemStack item = ItemStackArgumentType.getItemStackArgument(context, "item").createStack(1, false);
-            FindItemResult fir = InvUtils.find(ItemStack::isEmpty, 0, 8);
-            require(fir.found(), NO_SPACE);
+    private int singleItem(CommandContext<ClientCommandSource> context) throws CommandSyntaxException {
+        require(mc.player.getAbilities().creativeMode, NOT_IN_CREATIVE);
 
-            mc.getNetworkHandler().sendPacket(new CreativeInventoryActionC2SPacket(36 + fir.slot(), item));
+        ItemStack item = ItemStackArgumentType.getItemStackArgument(context, "item").createStack(1, false);
+        FindItemResult fir = InvUtils.find(ItemStack::isEmpty, 0, 8);
+        require(fir.found(), NO_SPACE);
 
-            return SINGLE_SUCCESS;
-        }).then(argument("number", IntegerArgumentType.integer()).executes(context -> {
-            require(mc.player.getAbilities().creativeMode, NOT_IN_CREATIVE);
+        mc.getNetworkHandler().sendPacket(new CreativeInventoryActionC2SPacket(36 + fir.slot(), item));
 
-            ItemStack item = ItemStackArgumentType.getItemStackArgument(context, "item").createStack(IntegerArgumentType.getInteger(context, "number"), false);
-            FindItemResult fir = InvUtils.find(ItemStack::isEmpty, 0, 8);
-            require(fir.found(), NO_SPACE);
+        return SINGLE_SUCCESS;
+    }
 
-            mc.getNetworkHandler().sendPacket(new CreativeInventoryActionC2SPacket(36 + fir.slot(), item));
+    private int multipleItems(CommandContext<ClientCommandSource> context) throws CommandSyntaxException {
+        require(mc.player.getAbilities().creativeMode, NOT_IN_CREATIVE);
 
-            return SINGLE_SUCCESS;
-        })));
+        ItemStack item = ItemStackArgumentType.getItemStackArgument(context, "item")
+            .createStack(IntegerArgumentType.getInteger(context, "number"), false);
+        FindItemResult fir = InvUtils.find(ItemStack::isEmpty, 0, 8);
+        require(fir.found(), NO_SPACE);
+
+        mc.getNetworkHandler().sendPacket(new CreativeInventoryActionC2SPacket(36 + fir.slot(), item));
+
+        return SINGLE_SUCCESS;
     }
 }

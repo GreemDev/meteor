@@ -13,6 +13,7 @@ import meteordevelopment.meteorclient.gui.widgets.pressable.WPlus;
 import meteordevelopment.meteorclient.systems.hud.Hud;
 import meteordevelopment.meteorclient.systems.hud.HudElementInfo;
 import meteordevelopment.meteorclient.utils.Utils;
+import net.greemdev.meteor.util.Strings;
 import net.minecraft.client.gui.DrawContext;
 
 public class HudElementPresetsScreen extends WindowScreen {
@@ -29,7 +30,7 @@ public class HudElementPresetsScreen extends WindowScreen {
         this.x = x + 9;
         this.y = y;
 
-        searchBar = theme.textBox("");
+        searchBar = theme.textBox(Strings.empty);
         searchBar.action = () -> {
             clear();
             initWidgets();

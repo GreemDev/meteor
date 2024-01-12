@@ -23,10 +23,12 @@ import meteordevelopment.meteorclient.utils.render.color.Color;
 import meteordevelopment.meteorclient.utils.world.Dimension;
 import meteordevelopment.orbit.EventHandler;
 import meteordevelopment.orbit.EventPriority;
+import net.greemdev.meteor.util.Strings;
 import net.minecraft.client.texture.AbstractTexture;
 import net.minecraft.client.texture.NativeImage;
 import net.minecraft.client.texture.NativeImageBackedTexture;
 import net.minecraft.nbt.NbtCompound;
+import net.minecraft.nbt.NbtElement;
 import net.minecraft.util.math.BlockPos;
 import org.joml.Vector3d;
 
@@ -71,7 +73,7 @@ public class Waypoints extends System<Waypoints> implements Iterable<Waypoint> {
         for (File file : files) {
             if (file.getName().endsWith(".png")) {
                 try {
-                    String name = file.getName().replace(".png", "");
+                    String name = file.getName().replace(".png", Strings.empty);
                     AbstractTexture texture = new NativeImageBackedTexture(NativeImage.read(new FileInputStream(file)));
                     icons.put(name, texture);
                 } catch (IOException e) {
@@ -172,7 +174,7 @@ public class Waypoints extends System<Waypoints> implements Iterable<Waypoint> {
 
     @Override
     public Waypoints fromTag(NbtCompound tag) {
-        Map<String, Waypoint> fromNbt = NbtUtils.listFromTag(tag.getList("waypoints", 10), Waypoint::new).stream().collect(Collectors.toMap(o -> o.name.get().toLowerCase(Locale.ROOT), o -> o));
+        Map<String, Waypoint> fromNbt = NbtUtils.listFromTag(tag.getList("waypoints", NbtElement.COMPOUND_TYPE), Waypoint::new).stream().collect(Collectors.toMap(o -> o.name.get().toLowerCase(Locale.ROOT), o -> o));
         this.waypoints = new ConcurrentHashMap<>(fromNbt);
 
         return this;

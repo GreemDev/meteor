@@ -25,6 +25,7 @@ import meteordevelopment.meteorclient.utils.render.RenderUtils;
 import meteordevelopment.meteorclient.utils.render.color.Color;
 import meteordevelopment.meteorclient.utils.render.color.SettingColor;
 import meteordevelopment.orbit.EventHandler;
+import net.greemdev.meteor.util.Strings;
 import net.minecraft.enchantment.Enchantment;
 import net.minecraft.enchantment.EnchantmentHelper;
 import net.minecraft.enchantment.Enchantments;
@@ -400,7 +401,7 @@ public class Nametags extends Module {
         int health = Math.round(player.getHealth() + absorption);
         double healthPercentage = health / (player.getMaxHealth() + absorption);
 
-        String healthText = " " + health;
+        String healthText = Strings.singleSpace + health;
         Color healthColor;
 
         if (healthPercentage <= 0.333) healthColor = RED;
@@ -413,7 +414,7 @@ public class Nametags extends Module {
 
         // Distance
         double dist = Math.round(PlayerUtils.distanceToCamera(player) * 10.0) / 10.0;
-        String distText = " " + dist + "m";
+        String distText = Strings.singleSpace + dist + "m";
 
         // Calc widths
         double gmWidth = text.getWidth(gmText, shadow);
@@ -476,7 +477,7 @@ public class Nametags extends Module {
                     int size = 0;
                     for (var enchantment : enchantments.keySet()) {
                         if (!shownEnchantments.get().contains(enchantment)) continue;
-                        String enchantName = Utils.getEnchantSimpleName(enchantment, enchantLength.get()) + " " + enchantments.get(enchantment);
+                        String enchantName = Utils.getEnchantSimpleName(enchantment, enchantLength.get()) + Strings.singleSpace + enchantments.get(enchantment);
                         itemWidths[i] = Math.max(itemWidths[i], (text.getWidth(enchantName, shadow) / 2));
                         size++;
                     }
@@ -522,7 +523,7 @@ public class Nametags extends Module {
                     double enchantX;
 
                     for (Enchantment enchantment : enchantmentsToShow.keySet()) {
-                        String enchantName = Utils.getEnchantSimpleName(enchantment, enchantLength.get()) + " " + enchantmentsToShow.get(enchantment);
+                        String enchantName = Utils.getEnchantSimpleName(enchantment, enchantLength.get()) + Strings.singleSpace + enchantmentsToShow.get(enchantment);
 
                         Color enchantColor = WHITE;
                         if (enchantment.isCursed()) enchantColor = RED;
@@ -580,8 +581,7 @@ public class Nametags extends Module {
         NametagUtils.begin(pos);
 
         //Name
-        String nameText = entity.getType().getName().getString();
-        nameText += " ";
+        String nameText = entity.getType().getName().getString() + Strings.singleSpace;
 
         //Health
         float absorption = entity.getAbsorptionAmount();

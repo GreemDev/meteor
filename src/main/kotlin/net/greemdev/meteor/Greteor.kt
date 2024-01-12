@@ -5,7 +5,6 @@
 
 package net.greemdev.meteor
 
-import com.google.common.collect.ImmutableList
 import meteordevelopment.meteorclient.MeteorClient
 import meteordevelopment.meteorclient.commands.Commands
 import meteordevelopment.meteorclient.systems.hud.HudGroup
@@ -29,24 +28,18 @@ import net.minecraft.registry.RegistryKeys
 import net.minecraft.registry.tag.TagKey
 import java.lang.reflect.Field
 import java.lang.reflect.Modifier
-import kotlin.reflect.full.isSuperclassOf
+import kotlin.properties.Delegates
 
 private val category = Category(className<Greteor>(), Items.LIME_CONCRETE_POWDER.defaultStack)
 private val hudGroup = HudGroup(className<Greteor>())
 
 object Greteor {
     @JvmStatic
-    var gameStartTime: Long = -1
-        set(value) {
-            if (field == -1L)
-                field = value
-            else
-                logger.warn("Game start timestamp may only be set once. Call ignored.")
-        }
+    var gameStartTime by Delegates.placeholder(-1L)
 
     @JvmStatic
     @get:JvmName("logger")
-    val logger by log4j("Greteor")
+    val logger by slf4j("Greteor")
 
     @JvmStatic
     fun category() = category
@@ -58,8 +51,8 @@ object Greteor {
 
     @JvmStatic
     fun init() {
-        Modules.addAll(GModule.subtypeInstances)
-        Commands.addAll(GCommand.subtypeInstances)
+        Modules.addAll(GModule.subtypes())
+        Commands.addAll(GCommand.subtypes())
 
         HudRenderCallback.EVENT.register { drawContext, _ -> ElytraFlightHud.render(drawContext) }
 
@@ -98,5 +91,4 @@ object Greteor {
                 KeyBinding::class.java.isAssignableFrom(it.type) and Modifier.isStatic(it.modifiers)
             }.mapNotNull(Field::tryGet)
     }
-
 }

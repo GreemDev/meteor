@@ -13,6 +13,7 @@ import meteordevelopment.meteorclient.systems.modules.Categories;
 import meteordevelopment.meteorclient.systems.modules.Module;
 import meteordevelopment.meteorclient.utils.render.color.Color;
 import meteordevelopment.meteorclient.utils.render.color.SettingColor;
+import net.greemdev.meteor.util.Strings;
 import net.minecraft.client.network.PlayerListEntry;
 import net.minecraft.text.MutableText;
 import net.minecraft.text.Text;
@@ -102,7 +103,7 @@ public class BetterTab extends Module {
             String nameString = name.getString();
 
             for (Formatting format : Formatting.values()) {
-                if (format.isColor()) nameString = nameString.replace(format.toString(), "");
+                if (format.isColor()) nameString = nameString.replace(format.toString(), Strings.empty);
             }
 
             name = Text.literal(nameString).setStyle(name.getStyle().withColor(TextColor.fromRgb(color.getPacked())));
@@ -119,7 +120,7 @@ public class BetterTab extends Module {
                     case ADVENTURE -> "A";
                 };
             }
-            MutableText text = Text.literal("");
+            MutableText text = Text.empty();
             text.append(name);
             text.append(" [" + gmText + "]");
             name = text;

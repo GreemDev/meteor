@@ -16,7 +16,7 @@ public class BuiltinFontFace extends FontFace {
     @Override
     public InputStream toStream() {
         InputStream in = FontUtils.stream(name);
-        if (in == null) throw new RuntimeException("Failed to load builtin font " + name + ".");
+        if (in == null) throw new RuntimeException("Failed to load builtin font %s.".formatted(name));
         return in;
     }
 

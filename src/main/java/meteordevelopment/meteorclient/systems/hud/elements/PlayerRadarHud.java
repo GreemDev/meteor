@@ -11,6 +11,7 @@ import meteordevelopment.meteorclient.systems.hud.*;
 import meteordevelopment.meteorclient.utils.player.PlayerUtils;
 import meteordevelopment.meteorclient.utils.render.color.Color;
 import meteordevelopment.meteorclient.utils.render.color.SettingColor;
+import net.greemdev.meteor.util.Strings;
 import net.minecraft.client.network.AbstractClientPlayerEntity;
 import net.minecraft.entity.player.PlayerEntity;
 
@@ -174,7 +175,7 @@ public class PlayerRadarHud extends HudElement {
         renderer.text("Players:", x + border.get() + alignX(renderer.textWidth("Players:", shadow.get(), getScale()), alignment.get()), y, secondaryColor.get(), shadow.get(), getScale());
 
         if (mc.world == null) return;
-        double spaceWidth = renderer.textWidth(" ", shadow.get(), getScale());
+        double spaceWidth = renderer.textWidth(Strings.singleSpace, shadow.get(), getScale());
 
         for (PlayerEntity entity : getPlayers()) {
             if (entity.equals(mc.player)) continue;

@@ -37,6 +37,7 @@ import meteordevelopment.meteorclient.utils.render.color.Color;
 import net.greemdev.meteor.gui.widget.WGuiTexture;
 import net.greemdev.meteor.gui.widget.WWaypointIcon;
 import net.greemdev.meteor.type.ColorSettingScreenMode;
+import net.greemdev.meteor.util.Strings;
 import net.greemdev.meteor.util.meteor.Meteor;
 import net.greemdev.meteor.util.misc.Nbt;
 import net.greemdev.meteor.utils;
@@ -321,7 +322,7 @@ public abstract class GuiTheme implements ISerializable<GuiTheme> {
         return settingsFactory.create(this, settings, filter);
     }
     public WWidget settings(Settings settings) {
-        return settings(settings, "");
+        return settings(settings, Strings.empty);
     }
 
     // Screens
@@ -356,6 +357,8 @@ public abstract class GuiTheme implements ISerializable<GuiTheme> {
     public abstract Color titleTextColor();
 
     public abstract Color textSecondaryColor();
+
+    public abstract Color badColor();
 
     //     Starscript
 

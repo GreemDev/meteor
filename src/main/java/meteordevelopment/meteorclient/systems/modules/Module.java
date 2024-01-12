@@ -49,6 +49,10 @@ public abstract class Module implements ISerializable<Module>, Comparable<Module
 
     public final Keybind keybind = Keybind.none();
 
+    public boolean hasKeybind() {
+        return keybind.isSet();
+    }
+
     public boolean chatFeedback = true;
     public boolean favorite = false;
 

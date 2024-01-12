@@ -5,6 +5,7 @@
 
 package meteordevelopment.meteorclient.settings;
 
+import net.greemdev.meteor.util.Strings;
 import net.minecraft.nbt.NbtCompound;
 import org.joml.Vector3d;
 
@@ -50,7 +51,7 @@ public class Vector3dSetting extends Setting<Vector3d> {
     @Override
     protected Vector3d parseImpl(String str) {
         try {
-            String[] strs = str.split(" ");
+            String[] strs = str.split(Strings.singleSpace);
             return new Vector3d(Double.parseDouble(strs[0]), Double.parseDouble(strs[1]), Double.parseDouble(strs[2]));
         } catch (IndexOutOfBoundsException | NumberFormatException ignored) {
             return null;

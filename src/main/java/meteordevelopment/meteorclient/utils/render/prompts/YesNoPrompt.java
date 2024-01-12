@@ -12,6 +12,7 @@ import meteordevelopment.meteorclient.gui.widgets.containers.WHorizontalList;
 import meteordevelopment.meteorclient.gui.widgets.pressable.WCheckbox;
 import meteordevelopment.meteorclient.systems.config.Config;
 import meteordevelopment.meteorclient.utils.render.RenderUtils;
+import net.greemdev.meteor.util.Strings;
 import net.minecraft.client.gui.screen.Screen;
 
 import java.util.ArrayList;
@@ -24,7 +25,7 @@ public class YesNoPrompt {
     private final GuiTheme theme;
     private final Screen parent;
 
-    private String title = "";
+    private String title = Strings.empty;
     private final List<String> messages = new ArrayList<>();
     private String id = null;
 
@@ -118,17 +119,17 @@ public class YesNoPrompt {
                 WHorizontalList list = add(theme.horizontalList()).expandX().widget();
 
                 list.add(theme.button("Yes", () -> {
-                    if (!requiredToDisplay) {
-                        if (dontShowAgainCheckbox.checked) Config.get().dontShowAgainPrompts.add(id);
+                    if (!requiredToDisplay && dontShowAgainCheckbox.checked) {
+                        Config.get().dontShowAgainPrompts.add(id);
                     }
                     onYes.run();
                     close();
                 })).expandX();
 
                 list.add(theme.button("No", () -> {
-                    if (!requiredToDisplay) {
-                        if (dontShowAgainCheckbox.checked) Config.get().dontShowAgainPrompts.add(id);
-                    }
+                    if (!requiredToDisplay && dontShowAgainCheckbox.checked)
+                        Config.get().dontShowAgainPrompts.add(id);
+
                     onNo.run();
                     close();
                 })).expandX();

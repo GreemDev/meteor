@@ -1,9 +1,7 @@
 package meteordevelopment.meteorclient.utils.render.postprocess;
 
-import meteordevelopment.meteorclient.mixin.WorldRendererAccessor;
+import meteordevelopment.meteorclient.mixin.accessor.WorldRendererAccessor;
 import net.minecraft.client.gl.Framebuffer;
-import net.minecraft.client.render.OutlineVertexConsumerProvider;
-import net.minecraft.client.render.WorldRenderer;
 
 import static meteordevelopment.meteorclient.MeteorClient.mc;
 

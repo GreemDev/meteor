@@ -23,6 +23,7 @@ import meteordevelopment.meteorclient.utils.player.PlayerUtils;
 import meteordevelopment.meteorclient.utils.render.color.Color;
 import meteordevelopment.meteorclient.utils.render.color.SettingColor;
 import net.greemdev.meteor.Greteor;
+import net.greemdev.meteor.util.Strings;
 import net.minecraft.client.gui.screen.ingame.InventoryScreen;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.enchantment.Enchantment;
@@ -361,7 +362,7 @@ public class CombatHud extends HudElement {
                 }
 
                 for (Enchantment enchantment : enchantmentsToShow.keySet()) {
-                    String enchantName = Utils.getEnchantSimpleName(enchantment, 3) + " " + enchantmentsToShow.get(enchantment);
+                    String enchantName = Utils.getEnchantSimpleName(enchantment, 3) + Strings.singleSpace + enchantmentsToShow.get(enchantment);
 
                     double enchX = (armorX + 8) - (TextRenderer.get().getWidth(enchantName) / 2);
 

@@ -5,6 +5,7 @@
 
 package meteordevelopment.meteorclient.mixin;
 
+import meteordevelopment.meteorclient.mixin.accessor.BufferBuilderAccessor;
 import meteordevelopment.meteorclient.systems.modules.render.Xray;
 import net.minecraft.block.BlockState;
 import net.minecraft.client.render.BufferBuilder;

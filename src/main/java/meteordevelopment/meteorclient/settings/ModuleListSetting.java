@@ -74,7 +74,7 @@ public class ModuleListSetting extends Setting<List<Module>> {
     public List<Module> load(NbtCompound tag) {
         get().clear();
 
-        NbtList valueTag = tag.getList("modules", 8);
+        NbtList valueTag = tag.getList("modules", NbtElement.STRING_TYPE);
         for (NbtElement tagI : valueTag) {
             Module module = Modules.get().get(tagI.asString());
             if (module != null) get().add(module);

@@ -9,6 +9,7 @@ import meteordevelopment.meteorclient.systems.System;
 import meteordevelopment.meteorclient.systems.Systems;
 import meteordevelopment.meteorclient.utils.misc.NbtUtils;
 import net.minecraft.nbt.NbtCompound;
+import net.minecraft.nbt.NbtElement;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.ArrayList;
@@ -87,7 +88,7 @@ public class Proxies extends System<Proxies> implements Iterable<Proxy> {
 
     @Override
     public Proxies fromTag(NbtCompound tag) {
-        proxies = NbtUtils.listFromTag(tag.getList("proxies", 10), Proxy::new);
+        proxies = NbtUtils.listFromTag(tag.getList("proxies", NbtElement.COMPOUND_TYPE), Proxy::new);
 
         return this;
     }

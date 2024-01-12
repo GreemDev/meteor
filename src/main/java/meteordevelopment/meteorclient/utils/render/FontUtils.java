@@ -160,7 +160,7 @@ public class FontUtils {
             return new FileInputStream(file);
         }
         catch (FileNotFoundException e) {
-            Greteor.logger().catching(e);
+            Greteor.logger().error(e.getMessage(), e);
             return null;
         }
     }

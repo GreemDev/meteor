@@ -8,6 +8,7 @@ package meteordevelopment.meteorclient.settings;
 import it.unimi.dsi.fastutil.objects.Object2IntArrayMap;
 import it.unimi.dsi.fastutil.objects.Object2IntMap;
 import meteordevelopment.meteorclient.utils.Utils;
+import net.greemdev.meteor.util.Strings;
 import net.minecraft.entity.effect.StatusEffect;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.registry.Registries;
@@ -33,11 +34,11 @@ public class StatusEffectAmplifierMapSetting extends Setting<Object2IntMap<Statu
     @Override
     protected Object2IntMap<StatusEffect> parseImpl(String str) {
         String[] values = str.split(",");
-        Object2IntMap<StatusEffect> effects = Utils.createStatusEffectMap();
+        Object2IntMap<StatusEffect> effects = Utils.createStatusEffect2AmplifierMap();
 
         try {
             for (String value : values) {
-                String[] split = value.split(" ");
+                String[] split = value.split(Strings.singleSpace);
 
                 StatusEffect effect = parseId(Registries.STATUS_EFFECT, split[0]);
                 int level = Integer.parseInt(split[1]);

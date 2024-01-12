@@ -5,10 +5,12 @@
 
 package meteordevelopment.meteorclient.renderer.text;
 
+import net.greemdev.meteor.util.Strings;
+
 public record FontInfo(String family, Type type) {
     @Override
     public String toString() {
-        return family + " " + type;
+        return family + Strings.singleSpace + type;
     }
 
     public boolean equals(FontInfo info) {

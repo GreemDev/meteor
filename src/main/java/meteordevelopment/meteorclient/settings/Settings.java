@@ -137,7 +137,7 @@ public class Settings implements ISerializable<Settings>, Iterable<SettingGroup>
 
     @Override
     public Settings fromTag(NbtCompound tag) {
-        NbtList groupsTag = tag.getList("groups", 10);
+        NbtList groupsTag = tag.getList("groups", NbtElement.COMPOUND_TYPE);
 
         for (NbtElement t : groupsTag) {
             NbtCompound groupTag = (NbtCompound) t;

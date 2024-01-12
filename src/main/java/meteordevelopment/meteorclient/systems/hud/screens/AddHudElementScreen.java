@@ -17,6 +17,7 @@ import meteordevelopment.meteorclient.systems.hud.Hud;
 import meteordevelopment.meteorclient.systems.hud.HudElementInfo;
 import meteordevelopment.meteorclient.systems.hud.HudGroup;
 import meteordevelopment.meteorclient.utils.Utils;
+import net.greemdev.meteor.util.Strings;
 import net.minecraft.client.gui.DrawContext;
 
 import java.util.ArrayList;
@@ -38,7 +39,7 @@ public class AddHudElementScreen extends WindowScreen {
         this.x = x;
         this.y = y;
 
-        searchBar = theme.textBox("");
+        searchBar = theme.textBox(Strings.empty);
         searchBar.action = () -> {
             clear();
             initWidgets();

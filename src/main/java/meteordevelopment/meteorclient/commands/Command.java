@@ -29,8 +29,6 @@ import java.util.List;
 import java.util.function.Supplier;
 
 public abstract class Command {
-    protected static final CommandRegistryAccess REGISTRY_ACCESS = CommandManager.createRegistryAccess(BuiltinRegistries.createWrapperLookup());
-
     private final String name;
     protected final String title;
     private final String description;
@@ -54,7 +52,7 @@ public abstract class Command {
 
     public final void registerTo(CommandDispatcher<CommandSource> dispatcher) {
         register(dispatcher, name);
-        for (String alias : aliases) register(dispatcher, alias);
+        for (String alias : getAliases()) register(dispatcher, alias);
     }
 
     public void register(CommandDispatcher<CommandSource> dispatcher, String name) {

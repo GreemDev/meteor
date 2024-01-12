@@ -35,11 +35,11 @@ public class StarscriptTextBoxRenderer implements WTextBox.Renderer {
 
     @Override
     public List<String> getCompletions(String text, int position) {
-        List<String> completions = new ArrayList<>();
-
-        MeteorStarscript.ss.getCompletions(text, position, (completion, function) -> {
-            completions.add(function ? completion + "(" : completion);
-        });
+        List<String> completions = new ArrayList<>() {{
+            MeteorStarscript.ss.getCompletions(text, position, (completion, function) ->
+                add(function ? completion + "(" : completion)
+            );
+        }};
 
         completions.sort(String::compareToIgnoreCase);
 

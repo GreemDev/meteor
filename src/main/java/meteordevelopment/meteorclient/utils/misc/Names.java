@@ -10,6 +10,7 @@ import meteordevelopment.meteorclient.MeteorClient;
 import meteordevelopment.meteorclient.events.game.ResourcePacksReloadedEvent;
 import meteordevelopment.meteorclient.utils.PreInit;
 import meteordevelopment.orbit.EventHandler;
+import net.greemdev.meteor.util.Strings;
 import net.minecraft.block.Block;
 import net.minecraft.client.sound.WeightedSoundSet;
 import net.minecraft.enchantment.Enchantment;
@@ -74,8 +75,8 @@ public class Names {
     }
 
     public static String get(ParticleType<?> type) {
-        if (!(type instanceof ParticleEffect)) return "";
-        return particleTypesNames.computeIfAbsent(type, effect1 -> WordUtils.capitalize(((ParticleEffect) effect1).asString().substring(10).replace("_", " ")));
+        if (!(type instanceof ParticleEffect)) return Strings.empty;
+        return particleTypesNames.computeIfAbsent(type, effect1 -> WordUtils.capitalize(((ParticleEffect) effect1).asString().substring(10).replace("_", Strings.singleSpace)));
     }
 
     public static String getSoundName(Identifier id) {

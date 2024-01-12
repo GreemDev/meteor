@@ -22,6 +22,7 @@ import meteordevelopment.meteorclient.gui.widgets.pressable.WPlus;
 import meteordevelopment.meteorclient.renderer.Fonts;
 import meteordevelopment.meteorclient.settings.*;
 import meteordevelopment.meteorclient.utils.render.color.SettingColor;
+import net.greemdev.meteor.util.Strings;
 import org.apache.commons.lang3.StringUtils;
 
 import java.util.ArrayList;
@@ -499,7 +500,7 @@ public class DefaultSettingsWidgetFactory extends SettingsWidgetFactory {
         private int lastSize = -1;
 
         public WSelectedCountLabel(Setting<?> setting) {
-            super("", false);
+            super(Strings.empty, false);
 
             this.setting = setting;
         }

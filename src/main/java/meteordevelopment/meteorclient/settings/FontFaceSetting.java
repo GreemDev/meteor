@@ -9,6 +9,7 @@ import meteordevelopment.meteorclient.renderer.Fonts;
 import meteordevelopment.meteorclient.renderer.text.FontFace;
 import meteordevelopment.meteorclient.renderer.text.FontFamily;
 import meteordevelopment.meteorclient.renderer.text.FontInfo;
+import net.greemdev.meteor.util.Strings;
 import net.minecraft.nbt.NbtCompound;
 
 import java.util.List;
@@ -26,11 +27,11 @@ public class FontFaceSetting extends Setting<FontFace> {
 
     @Override
     protected FontFace parseImpl(String str) {
-        String[] split = str.replace(" ", "").split("-");
+        String[] split = str.replace(Strings.singleSpace, Strings.empty).split("-");
         if (split.length != 2) return null;
 
         for (FontFamily family : Fonts.FONT_FAMILIES) {
-            if (family.getName().replace(" ", "").equals(split[0])) {
+            if (family.getName().replace(Strings.singleSpace, Strings.empty).equals(split[0])) {
                 try {
                     return family.get(FontInfo.Type.valueOf(split[1]));
                 }

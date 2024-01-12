@@ -6,7 +6,7 @@
 package meteordevelopment.meteorclient.systems.modules.render;
 
 import meteordevelopment.meteorclient.events.render.Render2DEvent;
-import meteordevelopment.meteorclient.mixin.ProjectileEntityAccessor;
+import meteordevelopment.meteorclient.mixin.accessor.ProjectileEntityAccessor;
 import meteordevelopment.meteorclient.renderer.Renderer2D;
 import meteordevelopment.meteorclient.renderer.text.TextRenderer;
 import meteordevelopment.meteorclient.settings.BoolSetting;
@@ -21,6 +21,7 @@ import meteordevelopment.meteorclient.utils.render.NametagUtils;
 import meteordevelopment.meteorclient.utils.render.color.Color;
 import meteordevelopment.orbit.EventHandler;
 import net.greemdev.meteor.util.HTTP;
+import net.greemdev.meteor.util.Strings;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.passive.AbstractHorseEntity;
 import net.minecraft.entity.passive.TameableEntity;
@@ -119,7 +120,7 @@ public class EntityOwner extends Module {
         // Makes a HTTP request to Mojang API
         MeteorExecutor.execute(() -> {
             if (isActive()) {
-                ProfileResponse res = HTTP.get("https://sessionserver.mojang.com/session/minecraft/profile/" + uuid.toString().replace("-", "")).requestJson(ProfileResponse.class);
+                ProfileResponse res = HTTP.get("https://sessionserver.mojang.com/session/minecraft/profile/" + uuid.toString().replace("-", Strings.empty)).requestJson(ProfileResponse.class);
 
                 if (isActive()) {
                     if (res == null) uuidToName.put(uuid, "Failed to get name");

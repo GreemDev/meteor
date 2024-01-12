@@ -85,10 +85,3 @@ fun<T> SuggestionsBuilder.matching(
 ): CompletableFuture<Suggestions> =
     CommandSource.suggestMatching(candidates, this, suggestionText, tooltip)
 
-fun SuggestionsBuilder.listIds(
-    context: CommandContext<ClientCommandSource>,
-    registryRef: RegistryKey<out Registry<*>>,
-    idType: CommandSource.SuggestedIdType
-): CompletableFuture<Suggestions> =
-    context.source.listIdSuggestions(registryRef, idType, this, context)
-

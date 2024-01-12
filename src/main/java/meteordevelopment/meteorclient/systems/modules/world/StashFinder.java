@@ -25,6 +25,7 @@ import meteordevelopment.meteorclient.systems.modules.Module;
 import meteordevelopment.meteorclient.utils.Utils;
 import meteordevelopment.meteorclient.utils.render.MeteorToast;
 import meteordevelopment.orbit.EventHandler;
+import net.greemdev.meteor.util.Strings;
 import net.minecraft.block.entity.*;
 import net.minecraft.item.Items;
 import net.minecraft.util.math.ChunkPos;
@@ -215,7 +216,7 @@ public class StashFinder extends Module {
 
                 String line;
                 while ((line = reader.readLine()) != null) {
-                    String[] values = line.split(" ");
+                    String[] values = line.split(Strings.singleSpace);
                     Chunk chunk = new Chunk(new ChunkPos(Integer.parseInt(values[0]), Integer.parseInt(values[1])));
 
                     chunk.chests = Integer.parseInt(values[2]);
@@ -344,7 +345,7 @@ public class StashFinder extends Module {
 
             // Total
             t.add(theme.label("Total:"));
-            t.add(theme.label(chunk.getTotal() + ""));
+            t.add(theme.label(chunk.getTotal() + Strings.empty));
             t.row();
 
             t.add(theme.horizontalSeparator()).expandX();
@@ -352,31 +353,31 @@ public class StashFinder extends Module {
 
             // Separate
             t.add(theme.label("Chests:"));
-            t.add(theme.label(chunk.chests + ""));
+            t.add(theme.label(chunk.chests + Strings.empty));
             t.row();
 
             t.add(theme.label("Barrels:"));
-            t.add(theme.label(chunk.barrels + ""));
+            t.add(theme.label(chunk.barrels + Strings.empty));
             t.row();
 
             t.add(theme.label("Shulkers:"));
-            t.add(theme.label(chunk.shulkers + ""));
+            t.add(theme.label(chunk.shulkers + Strings.empty));
             t.row();
 
             t.add(theme.label("Ender Chests:"));
-            t.add(theme.label(chunk.enderChests + ""));
+            t.add(theme.label(chunk.enderChests + Strings.empty));
             t.row();
 
             t.add(theme.label("Furnaces:"));
-            t.add(theme.label(chunk.furnaces + ""));
+            t.add(theme.label(chunk.furnaces + Strings.empty));
             t.row();
 
             t.add(theme.label("Dispensers and droppers:"));
-            t.add(theme.label(chunk.dispensersDroppers + ""));
+            t.add(theme.label(chunk.dispensersDroppers + Strings.empty));
             t.row();
 
             t.add(theme.label("Hoppers:"));
-            t.add(theme.label(chunk.hoppers + ""));
+            t.add(theme.label(chunk.hoppers + Strings.empty));
         }
     }
 }

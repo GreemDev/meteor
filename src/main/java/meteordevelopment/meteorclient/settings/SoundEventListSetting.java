@@ -72,7 +72,7 @@ public class SoundEventListSetting extends Setting<List<SoundEvent>> {
     public List<SoundEvent> load(NbtCompound tag) {
         get().clear();
 
-        NbtList valueTag = tag.getList("value", 8);
+        NbtList valueTag = tag.getList("value", NbtElement.STRING_TYPE);
         for (NbtElement tagI : valueTag) {
             SoundEvent soundEvent = Registries.SOUND_EVENT.get(new Identifier(tagI.asString()));
             if (soundEvent != null) get().add(soundEvent);

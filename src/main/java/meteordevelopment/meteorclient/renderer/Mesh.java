@@ -278,7 +278,7 @@ public class Mesh {
             Shader.BOUND.setDefaults();
 
             GL.bindVertexArray(vao);
-            GL.drawElements(drawMode.getGL(), indicesCount, GL_UNSIGNED_INT);
+            GL.drawElements(drawMode.gl, indicesCount, GL_UNSIGNED_INT);
 
             // Cleanup opengl state and matrix stack
             GL.bindVertexArray(0);

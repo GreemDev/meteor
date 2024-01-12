@@ -45,7 +45,7 @@ abstract class GCommand(
 
     constructor(name: String, description: String, vararg aliases: String) : this(name, description, null, *aliases)
 
-    protected open fun inject(builder: CommandBuilder) = b!!.invoke(this, builder)
+    protected open fun inject(builder: CommandBuilder) = b?.invoke(this, builder) ?: throw AbstractMethodError()
 
 
     final override fun build(builder: LiteralArgumentBuilder<ClientCommandSource>) = inject(CommandBuilder(builder))
@@ -61,13 +61,13 @@ abstract class GCommand(
         t.rethrowSpecial()
 
         info {
-            addString(t.message ?: "Uncaught exception without message. Check game logs for stacktrace information.", ChatColor.red)
+            addString(t.message ?: "Caught exception without message. Check game logs for stacktrace information.", ChatColor.red)
             addFileHyperlink(
                 "Click here to open your game logs folder.",
                 minecraft.runDirectory / "logs"
             )
         }
-        Greteor.logger.catching(t)
+        Greteor.logger.error(t.message, t)
     }
 
     fun info(textBuilder: FormattedText.() -> Unit) = info(buildText(block = textBuilder))
@@ -77,10 +77,13 @@ open class SubtypeInstances<T : Any>(
     pkg: String,
     supertype: KClass<T>
 ) {
-    val subtypeInstances by lazy {
-        javaSubtypesOf(supertype.java, pkg)
+    private val subtypeInstances by lazy {
+        javaSubtypesOf<T>(supertype.java, pkg)
             .filter { !Modifier.isAbstract(it.modifiers) }
+            .map(Class<out T>::kotlin)
             .toList()
-            .mapNotNull { getOrNull { it.kotlin.findInstance() } }
+            .mapNotNull(KClass<out T>::tryFindInstance)
     }
+
+    fun subtypes() = subtypeInstances
 }

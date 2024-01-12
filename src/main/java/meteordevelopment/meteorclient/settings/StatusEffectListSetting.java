@@ -73,7 +73,7 @@ public class StatusEffectListSetting extends Setting<List<StatusEffect>> {
     public List<StatusEffect> load(NbtCompound tag) {
         get().clear();
 
-        NbtList valueTag = tag.getList("value", 8);
+        NbtList valueTag = tag.getList("value", NbtElement.STRING_TYPE);
         for (NbtElement tagI : valueTag) {
             StatusEffect effect = Registries.STATUS_EFFECT.get(new Identifier(tagI.asString()));
             if (effect != null) get().add(effect);

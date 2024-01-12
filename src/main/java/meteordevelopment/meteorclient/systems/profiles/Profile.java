@@ -13,6 +13,7 @@ import meteordevelopment.meteorclient.systems.modules.Modules;
 import meteordevelopment.meteorclient.systems.waypoints.Waypoints;
 import meteordevelopment.meteorclient.utils.Utils;
 import meteordevelopment.meteorclient.utils.misc.ISerializable;
+import net.greemdev.meteor.util.Strings;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.nbt.NbtElement;
 import org.apache.commons.io.FileUtils;
@@ -31,7 +32,7 @@ public class Profile implements ISerializable<Profile> {
     public Setting<String> name = sgGeneral.add(new StringSetting.Builder()
         .name("name")
         .description("The name of the profile.")
-        .defaultValue("")
+        .defaultValue(Strings.empty)
         .filter(CharFilter.alphanumericLenient())
         .build()
     );

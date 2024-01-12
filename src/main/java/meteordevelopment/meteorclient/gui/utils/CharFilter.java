@@ -5,6 +5,7 @@
 
 package meteordevelopment.meteorclient.gui.utils;
 
+import net.greemdev.meteor.util.Strings;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -18,6 +19,8 @@ public interface CharFilter {
     CharFilter ALPHANUMERIC_STRICT = alphanumeric(false, false, false, false);
 
     CharFilter NUMERIC = (t, c) -> Character.isDigit(c);
+
+    CharFilter NO_SPACES = (t, c) -> !Character.isWhitespace(c);
 
 
     /**
@@ -82,6 +85,14 @@ public interface CharFilter {
                 (hyphen && c == '-') ||
                 (period && c == '.') ||
                 (space && c == ' ');
+    }
+
+    /**
+     * A {@link CharFilter} that only prevents whitespace.
+     * @return A space-less {@link CharFilter}.
+     */
+    static CharFilter noSpaces() {
+        return NO_SPACES;
     }
 
     /**

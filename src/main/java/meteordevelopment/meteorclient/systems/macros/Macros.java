@@ -15,6 +15,7 @@ import meteordevelopment.meteorclient.utils.misc.input.KeyAction;
 import meteordevelopment.orbit.EventHandler;
 import meteordevelopment.orbit.EventPriority;
 import net.minecraft.nbt.NbtCompound;
+import net.minecraft.nbt.NbtElement;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.ArrayList;
@@ -94,7 +95,7 @@ public class Macros extends System<Macros> implements Iterable<Macro> {
     public Macros fromTag(NbtCompound tag) {
         for (Macro macro : macros) MeteorClient.EVENT_BUS.unsubscribe(macro);
 
-        macros = NbtUtils.listFromTag(tag.getList("macros", 10), Macro::new);
+        macros = NbtUtils.listFromTag(tag.getList("macros", NbtElement.COMPOUND_TYPE), Macro::new);
 
         for (Macro macro : macros) MeteorClient.EVENT_BUS.subscribe(macro);
         return this;

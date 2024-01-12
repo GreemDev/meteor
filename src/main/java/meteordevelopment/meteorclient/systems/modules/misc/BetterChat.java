@@ -14,7 +14,7 @@ import it.unimi.dsi.fastutil.ints.IntList;
 import meteordevelopment.meteorclient.commands.Commands;
 import meteordevelopment.meteorclient.events.game.ReceiveMessageEvent;
 import meteordevelopment.meteorclient.events.game.SendMessageEvent;
-import meteordevelopment.meteorclient.mixin.ChatHudAccessor;
+import meteordevelopment.meteorclient.mixin.accessor.ChatHudAccessor;
 import meteordevelopment.meteorclient.mixininterface.IChatHudLine;
 import meteordevelopment.meteorclient.mixininterface.IChatHudLineVisible;
 import meteordevelopment.meteorclient.settings.*;
@@ -26,6 +26,7 @@ import meteordevelopment.meteorclient.utils.player.ChatUtils;
 import meteordevelopment.meteorclient.utils.render.color.Color;
 import meteordevelopment.orbit.EventHandler;
 import net.greemdev.meteor.type.PrefixBrackets;
+import net.greemdev.meteor.util.Strings;
 import net.minecraft.client.gui.DrawContext;
 import net.minecraft.client.gui.hud.ChatHudLine;
 import net.minecraft.client.network.PlayerListEntry;
@@ -229,8 +230,8 @@ public class BetterChat extends Module {
     public BetterChat() {
         super(Categories.Misc, "better-chat", "Improves your chat experience in various ways.");
 
-        String[] a = "abcdefghijklmnopqrstuvwxyz".split("");
-        String[] b = "ᴀʙᴄᴅᴇꜰɢʜɪᴊᴋʟᴍɴᴏᴩqʀꜱᴛᴜᴠᴡxyᴢ".split("");
+        String[] a = "abcdefghijklmnopqrstuvwxyz".split(Strings.empty);
+        String[] b = "ᴀʙᴄᴅᴇꜰɢʜɪᴊᴋʟᴍɴᴏᴩqʀꜱᴛᴜᴠᴡxyᴢ".split(Strings.empty);
         for (int i = 0; i < a.length; i++) SMALL_CAPS.put(a[i].charAt(0), b[i].charAt(0));
         compileFilterRegexList();
     }
@@ -500,11 +501,11 @@ public class BetterChat extends Module {
     // Prefix and Suffix
 
     private String getPrefix() {
-        return prefix.get() ? getAffix(prefixText.get(), prefixSmallCaps.get(), prefixRandom.get()) : "";
+        return prefix.get() ? getAffix(prefixText.get(), prefixSmallCaps.get(), prefixRandom.get()) : Strings.empty;
     }
 
     private String getSuffix() {
-        return suffix.get() ? getAffix(suffixText.get(), suffixSmallCaps.get(), suffixRandom.get()) : "";
+        return suffix.get() ? getAffix(suffixText.get(), suffixSmallCaps.get(), suffixRandom.get()) : Strings.empty;
     }
 
     private String getAffix(String text, boolean smallcaps, boolean random) {
@@ -523,7 +524,7 @@ public class BetterChat extends Module {
 
     private MutableText getSendButton(String message) {
         MutableText sendButton = Text.literal("[SEND ANYWAY]");
-        MutableText hintBaseText = Text.literal("");
+        MutableText hintBaseText = Text.empty();
 
         MutableText hintMsg = Text.literal("Send your message to the global chat even if there are coordinates:");
         hintMsg.setStyle(hintBaseText.getStyle().withFormatting(Formatting.GRAY));

@@ -17,6 +17,7 @@ import meteordevelopment.meteorclient.gui.widgets.input.WTextBox;
 import meteordevelopment.meteorclient.settings.*;
 import meteordevelopment.meteorclient.systems.config.Config;
 import meteordevelopment.meteorclient.utils.render.color.SettingColor;
+import net.greemdev.meteor.util.Strings;
 import net.greemdev.meteor.util.meteor.BaritoneSettingDescriptions;
 import net.minecraft.block.Block;
 import net.minecraft.client.gui.screen.Screen;
@@ -172,7 +173,7 @@ public class BaritoneTab extends Tab {
 
         @Override
         public void initWidgets() {
-            WTextBox filter = add(theme.textBox("")).minWidth(400).expandX().widget();
+            WTextBox filter = add(theme.textBox(Strings.empty)).minWidth(400).expandX().widget();
             filter.setFocused(true);
             filter.action = () -> {
                 clear();

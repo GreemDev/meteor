@@ -92,7 +92,9 @@ public abstract class LivingEntityMixin extends Entity {
     @ModifyConstant(method = "getHandSwingDuration", constant = @Constant(intValue = 6))
     private int getHandSwingDuration(int constant) {
         if ((Object) this != mc.player) return constant;
-        return Modules.get().get(HandView.class).isActive() && mc.options.getPerspective().isFirstPerson() ? Modules.get().get(HandView.class).swingSpeed.get() : constant;
+        return Modules.get().get(HandView.class).isActive() && mc.options.getPerspective().isFirstPerson()
+            ? Modules.get().get(HandView.class).swingSpeed.get()
+            : constant;
     }
 
     @ModifyReturnValue(method = "isFallFlying", at = @At("RETURN"))

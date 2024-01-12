@@ -8,19 +8,14 @@ package meteordevelopment.meteorclient.renderer;
 import org.lwjgl.opengl.GL32C;
 
 public enum DrawMode {
-    Lines(2),
-    Triangles(3);
+    Lines(2, GL32C.GL_LINES),
+    Triangles(3, GL32C.GL_TRIANGLES);
 
     public final int indicesCount;
+    public final int gl;
 
-    DrawMode(int indicesCount) {
+    DrawMode(int indicesCount, int gl) {
         this.indicesCount = indicesCount;
-    }
-
-    public int getGL() {
-        return switch (this) {
-            case Lines ->     GL32C.GL_LINES;
-            case Triangles -> GL32C.GL_TRIANGLES;
-        };
+        this.gl = gl;
     }
 }

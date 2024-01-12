@@ -19,6 +19,7 @@ import meteordevelopment.meteorclient.renderer.Fonts;
 import meteordevelopment.meteorclient.renderer.text.FontFamily;
 import meteordevelopment.meteorclient.renderer.text.FontInfo;
 import meteordevelopment.meteorclient.settings.FontFaceSetting;
+import net.greemdev.meteor.util.Strings;
 import org.apache.commons.lang3.StringUtils;
 
 import java.util.List;
@@ -29,7 +30,7 @@ public class FontFaceSettingScreen extends WindowScreen {
     private WTable table;
 
     private WTextBox filter;
-    private String filterText = "";
+    private String filterText = Strings.empty;
 
     public FontFaceSettingScreen(GuiTheme theme, FontFaceSetting setting) {
         super(theme, "Select Font");
@@ -39,7 +40,7 @@ public class FontFaceSettingScreen extends WindowScreen {
 
     @Override
     public void initWidgets() {
-        filter = add(theme.textBox("")).expandX().widget();
+        filter = add(theme.textBox(Strings.empty)).expandX().widget();
         filter.setFocused(true);
         filter.action = () -> {
             filterText = filter.get().trim();

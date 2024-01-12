@@ -22,7 +22,6 @@ import net.greemdev.meteor.util.misc.readNbt
 import net.greemdev.meteor.util.misc.write
 import net.minecraft.client.gui.screen.Screen
 import java.io.File
-import kotlin.math.round
 
 class WaypointsTab : Tab(NAME, GuiRenderer.WAYPOINTS, Meteor.config().waypointsIcon) {
     override fun createScreen(theme: GuiTheme): TabScreen = WorldListScreen(theme, this)
@@ -44,14 +43,14 @@ private class WorldListScreen(theme: GuiTheme, tab: Tab) : WindowTabScreen(theme
             //File#filter returns null if the file isn't a directory, so this is basically an existence, isDirectory, and files isNotEmpty check all in one
             if (!files.isNullOrEmpty()) {
                 files.forEach {
-                    val nameLabel = table.add(theme.label(it.name.removeSuffix(".nbt"))).expandX().widget()
+                    val nameLabel = table.add(theme.label(it.nameWithoutExtension)).expandX().widget()
                     table.add(theme.verticalSeparator()).expandWidgetY()
                     table.add(theme.button("View") {
                         runCatching {
                             minecraft.setScreen(WaypointListScreen(this, theme, it))
                         }.onFailure { err ->
-                            nameLabel.color(MeteorColor.RED).append(" ERR")
-                            Greteor.logger.catching(err)
+                            nameLabel.color(theme.badColor()).append(" ERR")
+                            Greteor.logger.error("Error opening waypoint list screen for waypoint data at ${it.name}", err)
                         }
                     })
                     table.add(theme.verticalSeparator()).expandWidgetY()
@@ -65,7 +64,7 @@ private class WorldListScreen(theme: GuiTheme, tab: Tab) : WindowTabScreen(theme
                 table.add(theme.label("No waypoint files."))
         }).expandX().minWidth(
             Utils.getWindowWidth() / (GuiTheme.getWidthDivisor() * 2.818182)
-        ) /* default width divisor is 2.2 and 2.2 * 2.818182 is roughly equivalent to the previous hardcoded 6.2 divisor here*/
+        ) /* default width divisor is 2.2 and 2.2 x 2.818182 is roughly equal to the previous hardcoded 6.2 divisor here*/
     }
 }
 

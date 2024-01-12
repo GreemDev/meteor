@@ -31,7 +31,7 @@ public class WMeteorTextBox extends WTextBox implements MeteorWidget {
     protected WContainer createCompletionsRootWidget() {
         return new WVerticalList() {
             @Override
-            protected void onRender(GuiRenderer renderer1, double mouseX, double mouseY, double delta) {
+            protected void onRender(GuiRenderer r, double mouseX, double mouseY, double delta) {
                 MeteorGuiTheme theme1 = meteorTheme();
                 double s = theme1.scale(2);
                 Color c = theme1.outlineColor.get();
@@ -40,12 +40,12 @@ public class WMeteorTextBox extends WTextBox implements MeteorWidget {
                 int preA = col.a;
                 col.a += col.a / 2;
                 col.validate();
-                renderer1.quad(this, col);
+                r.quad(this, col);
                 col.a = preA;
 
-                renderer1.quad(x, y + height - s, width, s, c);
-                renderer1.quad(x, y, s, height - s, c);
-                renderer1.quad(x + width - s, y, s, height - s, c);
+                r.quad(x, y + height - s, width, s, c);
+                r.quad(x, y, s, height - s, c);
+                r.quad(x + width - s, y, s, height - s, c);
             }
         };
     }

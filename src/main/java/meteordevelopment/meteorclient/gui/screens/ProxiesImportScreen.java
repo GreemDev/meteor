@@ -12,6 +12,7 @@ import meteordevelopment.meteorclient.systems.proxies.Proxies;
 import meteordevelopment.meteorclient.systems.proxies.Proxy;
 import meteordevelopment.meteorclient.utils.Utils;
 import meteordevelopment.meteorclient.utils.render.color.Color;
+import net.greemdev.meteor.util.Strings;
 
 import java.io.File;
 import java.io.IOException;
@@ -43,7 +44,7 @@ public class ProxiesImportScreen extends WindowScreen {
                     Matcher matcher = Proxies.PROXY_PATTERN.matcher(line);
 
                     if (matcher.matches()) {
-                        String address = matcher.group(2).replaceAll("\\b0+\\B", "");
+                        String address = matcher.group(2).replaceAll("\\b0+\\B", Strings.empty);
                         int port = Integer.parseInt(matcher.group(3));
 
                         Proxy proxy = new Proxy.Builder()

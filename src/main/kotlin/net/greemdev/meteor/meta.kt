@@ -24,6 +24,7 @@ import org.apache.logging.log4j.Logger
 import org.apache.logging.log4j.message.MessageFactory
 import org.joml.Vector3f
 import org.joml.Vector4f
+import org.slf4j.LoggerFactory
 import kotlin.math.*
 import java.awt.Color
 import java.io.File
@@ -31,10 +32,8 @@ import java.nio.file.Path
 import java.text.SimpleDateFormat
 import java.util.*
 import java.util.concurrent.Callable
-import java.util.function.BiConsumer
-import java.util.function.Consumer
+import java.util.function.*
 import java.util.function.Function
-import java.util.function.Supplier
 import kotlin.io.path.Path
 import kotlin.reflect.KClass
 import kotlin.reflect.KMutableProperty
@@ -55,13 +54,12 @@ fun interface ErrorProneRunnable {
 
 
 // Looks repetitive however each different type we check for has its own unique overload in LogManager
-fun log4j(value: Any) = lazy<Logger> {
+fun slf4j(value: Any) = lazy<org.slf4j.Logger> {
     when (value) {
-        is String -> LogManager.getLogger(value)
-        is Class<*> -> LogManager.getLogger(value)
-        is KClass<*> -> LogManager.getLogger(value.java)
-        is MessageFactory -> LogManager.getLogger(value)
-        else -> LogManager.getLogger(value)
+        is String -> LoggerFactory.getLogger(value)
+        is Class<*> -> LoggerFactory.getLogger(value)
+        is KClass<*> -> LoggerFactory.getLogger(value.java)
+        else -> LoggerFactory.getLogger(value.toString())
     }
 }
 
@@ -93,7 +91,7 @@ fun<T> MutableList<T>.setElements(elements: Collection<T>) {
 }
 
 val Any.logger
-    get() = log4j(this).value
+    get() = slf4j(this).value
 
 inline infix fun Any?.eq(other: Any?) = Objects.equals(this, other)
 inline fun hashOf(vararg objects: Any?) = Objects.hash(objects)
@@ -267,6 +265,9 @@ fun <T> `apply-java`(value: T, consumer: Consumer<T>) = value.apply(consumer::ac
 @JvmName("let")
 fun <T, R> `let-java`(value: T, mapper: Mapper<T, R>) = value.let(mapper::invoke)
 
+inline fun<T> T.applyIf(condition: Boolean, block: Initializer<T>): T =
+    if (condition) apply(block) else this
+
 @JvmField
 val forLoop = object : Loops() {}
 
@@ -305,6 +306,8 @@ fun File.createFile() = getOrNull { createNewFile() } ?: false
  * If the receiver [KClass] is an `object` definition, return the singleton instance, otherwise call the primary constructor with the provided arguments.
  */
 fun <T : Any> KClass<T>.findInstance(vararg args: Any?) = objectInstance ?: primaryConstructor?.call(args)
+
+fun <T : Any> KClass<T>.tryFindInstance(vararg args: Any?) = getOrNull { findInstance(args) }
 
 infix fun <T : WPressable> T.action(func: ValueAction<T>): T = action { func(this) }
 
@@ -526,11 +529,14 @@ inline val <I, O> Function<I, O>.kotlin: Mapper<I, O> get() = this::apply
 
 
 inline operator fun Runnable.invoke() = run()
-inline operator fun<T> Consumer<T>.invoke(arg: T) = accept(arg)
-inline operator fun<T1, T2> BiConsumer<T1, T2>.invoke(arg1: T1, arg2: T2) = accept(arg1, arg2)
 inline operator fun<T> JPredicate<T>.invoke(arg: T) = test(arg)
 inline operator fun<T> Supplier<T>.invoke() = get()
+
+inline operator fun<T> Consumer<T>.invoke(arg: T) = accept(arg)
+inline operator fun<T1, T2> BiConsumer<T1, T2>.invoke(arg1: T1, arg2: T2) = accept(arg1, arg2)
+
 inline operator fun<I, O> Function<I, O>.invoke(arg: I) = apply(arg)
+inline operator fun<I1, I2, O> BiFunction<I1, I2, O>.invoke(arg1: I1, arg2: I2) = apply(arg1, arg2)
 
 typealias Action = () -> Unit
 typealias SuspendingAction = suspend () -> Unit

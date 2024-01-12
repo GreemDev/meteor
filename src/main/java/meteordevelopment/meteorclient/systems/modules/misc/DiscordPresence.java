@@ -26,6 +26,7 @@ import meteordevelopment.meteorclient.utils.misc.MeteorStarscript;
 import meteordevelopment.orbit.EventHandler;
 import meteordevelopment.starscript.Script;
 import net.greemdev.meteor.modules.MinecraftPresence;
+import net.greemdev.meteor.util.Strings;
 import net.minecraft.client.gui.screen.*;
 import net.minecraft.client.gui.screen.multiplayer.MultiplayerScreen;
 import net.minecraft.client.gui.screen.option.*;
@@ -253,7 +254,7 @@ public class DiscordPresence extends Module {
         }
         else {
             if (!lastWasInMainMenu) {
-                rpc.setDetails(MeteorClient.NAME + " " + MeteorClient.fullVersion());
+                rpc.setDetails(MeteorClient.NAME + Strings.singleSpace + MeteorClient.fullVersion());
 
                 if (mc.currentScreen instanceof TitleScreen) rpc.setState("Looking at title screen");
                 else if (mc.currentScreen instanceof SelectWorldScreen) rpc.setState("Selecting world");

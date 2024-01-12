@@ -11,6 +11,7 @@ import meteordevelopment.meteorclient.utils.PreInit;
 import meteordevelopment.meteorclient.utils.misc.MeteorIdentifier;
 import meteordevelopment.orbit.EventHandler;
 import net.greemdev.meteor.util.HTTP;
+import net.greemdev.meteor.util.Strings;
 import net.minecraft.client.texture.NativeImage;
 import net.minecraft.client.texture.NativeImageBackedTexture;
 import net.minecraft.entity.player.PlayerEntity;
@@ -47,7 +48,7 @@ public final class Capes {
         HTTP.get(CAPE_OWNERS_URL).requestLinesAsync(lines -> {
             if (lines != null)
                 lines.forEach(s -> {
-                    String[] split = s.split(" ");
+                    String[] split = s.split(Strings.singleSpace);
 
                     if (split.length >= 2) {
                         OWNERS.put(UUID.fromString(split[0]), split[1]);
@@ -66,7 +67,7 @@ public final class Capes {
         HTTP.get(CAPES_URL).requestLinesAsync(lines -> {
             if (lines != null)
                 lines.forEach(s -> {
-                    String[] split = s.split(" ");
+                    String[] split = s.split(Strings.singleSpace);
 
                     if (split.length >= 2) {
                         if (!URLS.containsKey(split[0])) URLS.put(split[0], split[1]);

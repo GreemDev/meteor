@@ -7,19 +7,21 @@ package meteordevelopment.meteorclient.utils;
 
 import kotlin.jvm.functions.Function1;
 import net.greemdev.meteor.utils;
+import net.minecraft.item.ItemStack;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.Objects;
 import java.util.function.Consumer;
+import java.util.function.Function;
 import java.util.function.Predicate;
 
 public class java {
     @SuppressWarnings("unused") // explicit getters & setters are required to enable property-like (.value) getting & setting from kotlin
     public abstract static class Loop<T extends Number> {
         protected T start, incrementBy = null;
-        protected Predicate<T> condition = null;
-        protected Consumer<T> body = null;
+        protected Function1<@NotNull T, @NotNull Boolean> condition = null;
+        protected Function1<@NotNull T, kotlin.@NotNull Unit> body = null;
 
         @Nullable
         public T getStartAt() {
@@ -45,31 +47,33 @@ public class java {
 
         @Nullable
         public Function1<@NotNull T, @NotNull Boolean> getCondition() {
-            return condition != null ? utils.kotlin(condition) : null;
+            return condition;
         }
 
         @NotNull
         public Loop<@NotNull T> setCondition(Function1<@NotNull T, @NotNull Boolean> condition) {
-            this.condition = utils.java(condition);
+            this.condition = condition;
             return this;
         }
 
         @Nullable
         public Function1<@NotNull T, kotlin.@NotNull Unit> getBody() {
-            return body != null ? utils.kotlin(body) : null;
+            return body;
         }
 
         @NotNull
         public Loop<@NotNull T> setBody(Function1<@NotNull T, kotlin.@NotNull Unit> body) {
-            this.body = utils.java(body);
+            this.body = body;
             return this;
         }
 
-        protected void validate() {
-            Objects.requireNonNull(start, "Cannot create a loop without a defined starting point.");
-            Objects.requireNonNull(incrementBy, "Cannot create a loop without a defined increment.");
-            Objects.requireNonNull(condition, "Cannot create a loop without a condition for execution of each iteration.");
-            Objects.requireNonNull(body, "Cannot create a loop without a task to run on each iteration.");
+        private static final String MISSING = "Cannot create a loop without a %s.";
+
+        protected final void validate() {
+            Objects.requireNonNull(      start, MISSING.formatted("defined starting point"));
+            Objects.requireNonNull(incrementBy, MISSING.formatted("defined increment"));
+            Objects.requireNonNull(  condition, MISSING.formatted("condition for execution of each iteration"));
+            Objects.requireNonNull(       body, MISSING.formatted("task to run on each iteration"));
         }
 
         public final void run() {
@@ -117,13 +121,13 @@ public class java {
     }
 
     public static void loop(Double start, Double incr, Function1<@NotNull Double, @NotNull Boolean> loopCondition, Function1<@NotNull Double, kotlin.@NotNull Unit> loopBody) {
-        for (Double i = start; loopCondition.invoke(i); i += incr)
-            loopBody.invoke(i);
+        for (Double d = start; loopCondition.invoke(d); d += incr)
+            loopBody.invoke(d);
     }
 
     public static void loop(Float start, Float incr, Function1<@NotNull Float, @NotNull Boolean> loopCondition, Function1<@NotNull Float, kotlin.@NotNull Unit> loopBody) {
-        for (Float i = start; loopCondition.invoke(i); i += incr)
-            loopBody.invoke(i);
+        for (Float f = start; loopCondition.invoke(f); f += incr)
+            loopBody.invoke(f);
     }
 
     //im a fucking psycho; a maniac, even. i cant believe i wrote a hundred-line API around a language feature
@@ -131,5 +135,10 @@ public class java {
     @SuppressWarnings("unchecked")
     public static <T> T cast(Object value) {
         return (T)value;
+    }
+
+    @NotNull
+    public static <T> T requireCast(Object value) {
+        return Objects.requireNonNull(cast(value));
     }
 }

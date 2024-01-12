@@ -77,7 +77,7 @@ public class EntityTypeListSetting extends Setting<Set<EntityType<?>>> {
     public Set<EntityType<?>> load(NbtCompound tag) {
         get().clear();
 
-        NbtList valueTag = tag.getList("value", 8);
+        NbtList valueTag = tag.getList("value", NbtElement.STRING_TYPE);
         for (NbtElement tagI : valueTag) {
             EntityType<?> type = Registries.ENTITY_TYPE.get(new Identifier(tagI.asString()));
             if (filter == null || filter.test(type)) get().add(type);

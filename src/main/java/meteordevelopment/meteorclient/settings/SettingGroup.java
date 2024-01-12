@@ -80,7 +80,7 @@ public class SettingGroup implements ISerializable<SettingGroup>, Iterable<Setti
     public SettingGroup fromTag(NbtCompound tag) {
         sectionExpanded = tag.getBoolean("sectionExpanded");
 
-        NbtList settingsTag = tag.getList("settings", 10);
+        NbtList settingsTag = tag.getList("settings", NbtElement.COMPOUND_TYPE);
         for (NbtElement t : settingsTag) {
             NbtCompound settingTag = (NbtCompound) t;
 

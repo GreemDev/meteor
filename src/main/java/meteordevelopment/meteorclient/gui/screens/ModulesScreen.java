@@ -21,6 +21,7 @@ import meteordevelopment.meteorclient.systems.modules.Modules;
 import meteordevelopment.meteorclient.utils.misc.NbtUtils;
 import net.greemdev.meteor.GModule;
 import net.greemdev.meteor.Greteor;
+import net.greemdev.meteor.util.Strings;
 import net.minecraft.item.Items;
 
 import java.util.ArrayList;
@@ -132,7 +133,7 @@ public class ModulesScreen extends TabScreen {
 
         WVerticalList l = theme.verticalList();
 
-        WTextBox text = w.add(theme.textBox("")).minWidth(140).expandX().widget();
+        WTextBox text = w.add(theme.textBox(Strings.empty)).minWidth(140).expandX().widget();
         text.toggleFocusing().action = () -> {
             l.clear();
             createSearchW(l, text.get());

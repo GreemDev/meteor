@@ -7,6 +7,7 @@ package meteordevelopment.meteorclient.mixin;
 
 import meteordevelopment.meteorclient.systems.modules.Modules;
 import meteordevelopment.meteorclient.systems.modules.misc.AutoReconnect;
+import net.greemdev.meteor.util.Strings;
 import net.minecraft.client.gui.screen.ConnectScreen;
 import net.minecraft.client.gui.screen.DisconnectedScreen;
 import net.minecraft.client.gui.screen.Screen;
@@ -75,7 +76,7 @@ public abstract class DisconnectedScreenMixin extends Screen {
     @Unique
     private String getText() {
         String reconnectText = "Reconnect";
-        if (Modules.get().isActive(AutoReconnect.class)) reconnectText += " " + String.format("(%.1f)", time / 20);
+        if (Modules.get().isActive(AutoReconnect.class)) reconnectText += Strings.singleSpace + String.format("(%.1f)", time / 20);
         return reconnectText;
     }
 

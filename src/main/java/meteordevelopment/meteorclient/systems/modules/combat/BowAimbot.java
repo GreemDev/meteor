@@ -104,7 +104,7 @@ public class BowAimbot extends Module {
             if (!PlayerUtils.canSeeEntity(entity)) return false;
             if (entity instanceof PlayerEntity) {
                 if (((PlayerEntity) entity).isCreative()) return false;
-                if (!Friends.get().shouldAttack((PlayerEntity) entity)) return false;
+                if (Friends.get().isFriend((PlayerEntity) entity)) return false;
             }
             return !(entity instanceof AnimalEntity) || babies.get() || !((AnimalEntity) entity).isBaby();
         }, priority.get());

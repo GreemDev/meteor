@@ -396,7 +396,7 @@ public class Color implements ICopyable<Color>, ISerializable<Color> {
 
     @Override
     public String toString() {
-        return r + " " + g + " " + b + " " + a;
+        return "%d %d %d".formatted(r, g, b);
     }
 
     @Override

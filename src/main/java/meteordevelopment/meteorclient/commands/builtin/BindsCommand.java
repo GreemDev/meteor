@@ -11,6 +11,7 @@ import meteordevelopment.meteorclient.systems.modules.Module;
 import meteordevelopment.meteorclient.systems.modules.Modules;
 import meteordevelopment.meteorclient.utils.Utils;
 import meteordevelopment.meteorclient.utils.player.ChatUtils;
+import net.greemdev.meteor.util.text.FormattedText;
 import net.minecraft.client.network.ClientCommandSource;
 import net.minecraft.text.HoverEvent;
 import net.minecraft.text.MutableText;
@@ -31,27 +32,18 @@ public class BindsCommand extends Command {
         builder.executes(context -> {
             // Modules
             List<Module> modules = Modules.get().getAll().stream()
-                .filter(module -> module.keybind.isSet())
+                .filter(Module::hasKeybind)
                 .toList();
 
             ChatUtils.info("--- Bound Modules ((highlight)%d(default)) ---", modules.size());
 
-            for (Module module : modules) {
-                HoverEvent hoverEvent = new HoverEvent(HoverEvent.Action.SHOW_TEXT, getTooltip(module));
-
-                MutableText text = Text.literal(module.title).formatted(Formatting.WHITE);
-                text.setStyle(text.getStyle().withHoverEvent(hoverEvent));
-
-                MutableText sep = Text.literal(" - ");
-                sep.setStyle(sep.getStyle().withHoverEvent(hoverEvent));
-                text.append(sep.formatted(Formatting.GRAY));
-
-                MutableText key = Text.literal(module.keybind.toString());
-                key.setStyle(key.getStyle().withHoverEvent(hoverEvent));
-                text.append(key.formatted(Formatting.GRAY));
-
-                ChatUtils.sendMsg(text);
-            }
+            modules.forEach(module ->
+                ChatUtils.sendMsg(new FormattedText() {{
+                    hoveredText(getTooltip(module));
+                    addString(module.title, Formatting.WHITE);
+                    addString(" - " + module.keybind.toString(), Formatting.GRAY);
+                }})
+            );
 
             return SINGLE_SUCCESS;
         });

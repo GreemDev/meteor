@@ -90,7 +90,7 @@ public abstract class HandledScreenMixin<T extends ScreenHandler> extends Screen
 
         if (button == GLFW.GLFW_MOUSE_BUTTON_MIDDLE && focusedSlot != null && !focusedSlot.getStack().isEmpty() && mc.player.currentScreenHandler.getCursorStack().isEmpty() && toolips.middleClickOpen()) {
             ItemStack itemStack = focusedSlot.getStack();
-            if (Utils.hasItems(itemStack) || itemStack.getItem() == Items.ENDER_CHEST) {
+            if (Utils.hasItems(itemStack) || itemStack.isOf(Items.ENDER_CHEST)) {
                 cir.setReturnValue(Utils.openContainer(focusedSlot.getStack(), ITEMS, false));
             }
         }

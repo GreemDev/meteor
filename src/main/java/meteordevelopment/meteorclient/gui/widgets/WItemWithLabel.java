@@ -6,6 +6,7 @@
 package meteordevelopment.meteorclient.gui.widgets;
 
 import meteordevelopment.meteorclient.gui.widgets.containers.WHorizontalList;
+import net.greemdev.meteor.util.Strings;
 import net.minecraft.entity.effect.StatusEffectInstance;
 import net.minecraft.entity.effect.StatusEffectUtil;
 import net.minecraft.item.ItemStack;
@@ -33,16 +34,16 @@ public class WItemWithLabel extends WHorizontalList {
     }
 
     private String getStringToAppend() {
-        String str = "";
+        String str = Strings.empty();
 
-        if (itemStack.getItem() == Items.POTION) {
+        if (itemStack.isOf(Items.POTION)) {
             List<StatusEffectInstance> effects = PotionUtil.getPotion(itemStack).getEffects();
 
             if (effects.size() > 0) {
-                str += " ";
+                str += Strings.singleSpace;
 
                 StatusEffectInstance effect = effects.get(0);
-                if (effect.getAmplifier() > 0) str += effect.getAmplifier() + 1 + " ";
+                if (effect.getAmplifier() > 0) str += effect.getAmplifier() + 1 + Strings.singleSpace;
 
                 str += "(" + StatusEffectUtil.getDurationText(effect, 1).getString() + ")";
             }

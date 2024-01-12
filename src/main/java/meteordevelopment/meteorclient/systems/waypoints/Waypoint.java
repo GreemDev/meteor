@@ -14,6 +14,7 @@ import meteordevelopment.meteorclient.utils.misc.ISerializable;
 import meteordevelopment.meteorclient.utils.player.PlayerUtils;
 import meteordevelopment.meteorclient.utils.render.color.SettingColor;
 import meteordevelopment.meteorclient.utils.world.Dimension;
+import net.greemdev.meteor.util.Strings;
 import net.greemdev.meteor.util.misc.NbtUtil;
 import net.minecraft.client.texture.AbstractTexture;
 import net.minecraft.nbt.NbtCompound;
@@ -144,7 +145,7 @@ public class Waypoint implements ISerializable<Waypoint> {
     }
 
     public static class Builder {
-        private String name = "", icon = "";
+        private String name = Strings.empty, icon = Strings.empty;
         private BlockPos pos = BlockPos.ORIGIN;
         private Dimension dimension = Dimension.Overworld;
 

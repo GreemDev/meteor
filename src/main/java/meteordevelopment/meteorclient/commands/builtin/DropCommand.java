@@ -10,12 +10,15 @@ import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import com.mojang.brigadier.exceptions.SimpleCommandExceptionType;
 import meteordevelopment.meteorclient.commands.Command;
 import meteordevelopment.meteorclient.utils.player.InvUtils;
+import net.greemdev.meteor.commands.api.Arguments;
 import net.minecraft.client.network.ClientCommandSource;
 import net.minecraft.client.network.ClientPlayerEntity;
 import net.minecraft.command.argument.ItemStackArgumentType;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
 import net.minecraft.text.Text;
+
+import java.util.concurrent.Callable;
 
 import static com.mojang.brigadier.Command.SINGLE_SUCCESS;
 import static meteordevelopment.meteorclient.MeteorClient.mc;
@@ -66,7 +69,7 @@ public class DropCommand extends Command {
                 })));
 
         // Specific item
-        builder.then(argument("item", ItemStackArgumentType.itemStack(REGISTRY_ACCESS)).executes(context -> drop(player -> {
+        builder.then(argument("item", Arguments.itemStack()).executes(context -> drop(player -> {
             ItemStack stack = ItemStackArgumentType.getItemStackArgument(context, "item").createStack(1, false);
 
             if (stack == null || stack.getItem() == Items.AIR) throw NO_SUCH_ITEM.create();

@@ -11,13 +11,12 @@ import it.unimi.dsi.fastutil.objects.Object2IntOpenHashMap;
 import meteordevelopment.meteorclient.events.game.ItemStackTooltipEvent;
 import meteordevelopment.meteorclient.events.game.SectionVisibleEvent;
 import meteordevelopment.meteorclient.events.render.TooltipDataEvent;
-import meteordevelopment.meteorclient.mixin.EntityAccessor;
-import meteordevelopment.meteorclient.mixin.EntityBucketItemAccessor;
+import meteordevelopment.meteorclient.mixin.accessor.EntityAccessor;
+import meteordevelopment.meteorclient.mixin.accessor.EntityBucketItemAccessor;
 import meteordevelopment.meteorclient.settings.*;
 import meteordevelopment.meteorclient.systems.modules.Categories;
 import meteordevelopment.meteorclient.systems.modules.Module;
 import meteordevelopment.meteorclient.utils.Utils;
-import meteordevelopment.meteorclient.utils.misc.ByteCountDataOutput;
 import meteordevelopment.meteorclient.utils.misc.Keybind;
 import meteordevelopment.meteorclient.utils.player.EChestMemory;
 import meteordevelopment.meteorclient.utils.render.color.Color;
@@ -285,7 +284,7 @@ public class BetterTooltips extends Module {
 
                     NbtCompound blockEntityTag = tag.getCompound("BlockEntityTag");
                     if (blockEntityTag != null) {
-                        NbtList beesTag = blockEntityTag.getList("Bees", 10);
+                        NbtList beesTag = blockEntityTag.getList("Bees", NbtElement.COMPOUND_TYPE);
                         event.list.add(1, Text.literal(String.format("%sBees: %s%d%s.", Formatting.GRAY, Formatting.YELLOW, beesTag.size(), Formatting.GRAY)));
                     }
                 }
@@ -319,7 +318,7 @@ public class BetterTooltips extends Module {
             || (event.itemStack.getItem() instanceof BannerItem && banners.get() && !previewBanners())
             || (event.itemStack.getItem() instanceof BannerPatternItem && banners.get()  && !previewBanners())
             || (event.itemStack.getItem() == Items.SHIELD && banners.get() && !previewBanners())) {
-            event.list.add(Text.literal(""));
+            event.list.add(Text.empty());
             event.list.add(Text.literal("Hold " + Formatting.YELLOW + keybind + Formatting.RESET + " to preview"));
         }
     }
@@ -394,11 +393,11 @@ public class BetterTooltips extends Module {
         NbtCompound tag = stack.getSubNbt("BlockEntityTag");
 
         if (tag != null) {
-            if (tag.contains("LootTable", 8)) {
+            if (tag.contains("LootTable", NbtElement.STRING_TYPE)) {
                 tooltip.add(Text.literal("???????"));
             }
 
-            if (tag.contains("Items", 9)) {
+            if (tag.contains("Items", NbtElement.LIST_TYPE)) {
                 DefaultedList<ItemStack> items = DefaultedList.ofSize(27, ItemStack.EMPTY);
                 Inventories.readNbt(tag, items);
 
@@ -441,7 +440,7 @@ public class BetterTooltips extends Module {
         NbtCompound tag = stack.getNbt();
         if (tag == null) return null;
 
-        NbtList pages = tag.getList("pages", 8);
+        NbtList pages = tag.getList("pages", NbtElement.STRING_TYPE);
         if (pages.size() < 1) return null;
         if (stack.getItem() == Items.WRITABLE_BOOK) return Text.literal(pages.getString(0));
 

@@ -13,6 +13,7 @@ import meteordevelopment.meteorclient.gui.widgets.input.WTextBox;
 import meteordevelopment.meteorclient.gui.widgets.pressable.WButton;
 import meteordevelopment.meteorclient.settings.ItemSetting;
 import meteordevelopment.meteorclient.utils.misc.Names;
+import net.greemdev.meteor.util.Strings;
 import net.minecraft.item.Item;
 import net.minecraft.item.Items;
 import net.minecraft.registry.Registries;
@@ -24,7 +25,7 @@ public class ItemSettingScreen extends WindowScreen {
     private WTable table;
 
     private WTextBox filter;
-    private String filterText = "";
+    private String filterText = Strings.empty;
 
     public ItemSettingScreen(GuiTheme theme, ItemSetting setting) {
         super(theme, "Select item");
@@ -34,7 +35,7 @@ public class ItemSettingScreen extends WindowScreen {
 
     @Override
     public void initWidgets() {
-        filter = add(theme.textBox("")).minWidth(400).expandX().widget();
+        filter = add(theme.textBox(Strings.empty)).minWidth(400).expandX().widget();
         filter.setFocused(true);
         filter.action = () -> {
             filterText = filter.get().trim();

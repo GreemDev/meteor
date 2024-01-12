@@ -11,6 +11,7 @@ import com.mojang.brigadier.builder.LiteralArgumentBuilder;
 import meteordevelopment.meteorclient.commands.Command;
 import meteordevelopment.meteorclient.commands.Commands;
 import meteordevelopment.meteorclient.commands.arguments.CompoundNbtTagArgumentType;
+import net.greemdev.meteor.util.Strings;
 import net.greemdev.meteor.util.misc.KMC;
 import net.greemdev.meteor.util.misc.NbtUtil;
 import net.greemdev.meteor.util.text.ChatColor;
@@ -89,7 +90,7 @@ public class NbtCommand extends Command {
                             .hoveredText(Text.literal("Copy the NBT data to your clipboard."))
                     );
                     if (tag != null)
-                        b.addString(" ").addText(NbtUtil.asPrettyText(tag));
+                        b.addString(Strings.singleSpace).addText(NbtUtil.asPrettyText(tag));
                     else
                         b.addString("{}");
                 }));

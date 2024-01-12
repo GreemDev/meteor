@@ -148,7 +148,7 @@ public class Blur extends Module {
         if (shaderDown == null) {
             shaderDown = new Shader("blur.vert", "blur_down.frag");
             shaderUp = new Shader("blur.vert", "blur_up.frag");
-            shaderPassthrough = new Shader("passthrough.vert", "passthrough.frag");
+            shaderPassthrough = new Shader("passthrough");
             for (int i = 0; i < fbos.length; i++) {
                 if (fbos[i] == null) {
                     fbos[i] = new Framebuffer(1 / Math.pow(2, i));

@@ -25,6 +25,7 @@ import org.joml.Vector4f
 import kotlin.math.*
 
 import meteordevelopment.meteorclient.utils.java.*
+import net.greemdev.meteor.util.empty
 import net.greemdev.meteor.util.misc.setRenderSystemShaderColor
 
 private const val GRAVITY = -0.0784f
@@ -440,7 +441,7 @@ object ElytraFlightHud : GModule.Render("elytra-flight-HUD", "Shows relevant fli
                     if (headingBlip360 == 36f)
                         headingBlip360 = 0f
 
-                    val headingText = (if (floor(headingBlip360) < 10) "0" else "") + floor(headingBlip360).toInt()
+                    val headingText = (if (floor(headingBlip360) < 10) "0" else String.empty) + floor(headingBlip360).toInt()
                     val headingOffset = heading - it * 10f
                     val headingX = screenCenterX - headingOffset / 15f * compassWidth / 2f
                     drawContext.drawText(

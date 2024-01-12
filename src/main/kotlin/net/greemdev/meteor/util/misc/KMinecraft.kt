@@ -8,7 +8,7 @@
 package net.greemdev.meteor.util.misc
 
 import com.mojang.blaze3d.systems.RenderSystem
-import meteordevelopment.meteorclient.mixin.MinecraftClientAccessor
+import meteordevelopment.meteorclient.mixin.accessor.MinecraftClientAccessor
 import meteordevelopment.meteorclient.mixininterface.IVec3d
 import meteordevelopment.meteorclient.utils.player.ChatUtils
 import meteordevelopment.meteorclient.utils.player.PlayerUtils

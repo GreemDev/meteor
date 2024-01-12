@@ -8,13 +8,15 @@ package meteordevelopment.meteorclient.commands.builtin;
 import com.mojang.brigadier.builder.LiteralArgumentBuilder;
 import com.mojang.brigadier.suggestion.Suggestion;
 import com.mojang.brigadier.suggestion.Suggestions;
-import joptsimple.internal.Strings;
+import kotlin.collections.CollectionsKt;
+import kotlin.text.StringsKt;
 import meteordevelopment.meteorclient.MeteorClient;
 import meteordevelopment.meteorclient.commands.Command;
 import meteordevelopment.meteorclient.events.packets.PacketEvent;
 import meteordevelopment.meteorclient.events.world.TickEvent;
 import meteordevelopment.meteorclient.utils.world.TickRate;
 import meteordevelopment.orbit.EventHandler;
+import net.greemdev.meteor.util.Strings;
 import net.greemdev.meteor.utils;
 import net.minecraft.client.network.ClientCommandSource;
 import net.minecraft.client.network.ServerAddress;
@@ -114,7 +116,7 @@ public class ServerCommand extends Command {
         }
 
         if (!plugins.isEmpty()) {
-            info("Plugins (%d): %s ", plugins.size(), Strings.join(plugins.toArray(new String[0]), ", "));
+            info("Plugins (%d): %s ", plugins.size(), joptsimple.internal.Strings.join(plugins.toArray(new String[0]), ", "));
         } else {
             error("No plugins found.");
         }
@@ -141,7 +143,7 @@ public class ServerCommand extends Command {
             return;
         }
 
-        String ipv4 = "";
+        String ipv4 = net.greemdev.meteor.util.Strings.empty;
         try {
             ipv4 = InetAddress.getByName(server.address).getHostAddress();
         } catch (UnknownHostException ignored) {}
@@ -250,7 +252,7 @@ public class ServerCommand extends Command {
                     else {
                         String[] command = suggestion.getText().split(":");
                         if (command.length > 1) {
-                            String pluginName = command[0].replace("/", "");
+                            String pluginName = command[0].replace("/", Strings.empty);
 
                             if (!plugins.contains(pluginName)) {
                                 plugins.add(pluginName);

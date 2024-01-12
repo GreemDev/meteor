@@ -38,42 +38,6 @@ public class Commands {
             .map(Reflection::callNoArgsConstructor)
             .filter(Objects::nonNull)
             .forEach(Commands::add);
-
-        /*add(new VClipCommand());
-        add(new HClipCommand());
-        add(new DismountCommand());
-        add(new DamageCommand());
-        add(new DropCommand());
-        add(new EnchantCommand());
-        add(new FakePlayerCommand());
-        add(new FriendsCommand());
-        add(new CommandsCommand());
-        add(new InventoryCommand());
-        add(new LocateCommand());
-        add(new NbtCommand());
-        add(new NotebotCommand());
-        add(new PeekCommand());
-        add(new EnderChestCommand());
-        add(new ProfilesCommand());
-        add(new ReloadCommand());
-        add(new ResetCommand());
-        add(new SayCommand());
-        add(new ServerCommand());
-        add(new SwarmCommand());
-        add(new ToggleCommand());
-        add(new SettingCommand());
-        add(new SpectateCommand());
-        add(new GamemodeCommand());
-        add(new SaveMapCommand());
-        add(new MacroCommand());
-        add(new ModulesCommand());
-        add(new BindsCommand());
-        add(new GiveCommand());
-        add(new BindCommand());
-        add(new FovCommand());
-        add(new RotationCommand());
-        add(new WaypointCommand());
-        add(new InputCommand());*/
     }
 
     public static void add(Command command) {
@@ -92,7 +56,15 @@ public class Commands {
 
     @Nullable
     public static Command get(String name) {
-        return COMMANDS.values().stream().filter(c -> c.getName().equals(name)).findFirst().orElse(null);
+        return COMMANDS.entrySet()
+            .stream()
+            .filter(entry ->
+                entry.getKey().getSimpleName().equalsIgnoreCase(name) ||
+                    entry.getValue().getName().equalsIgnoreCase(name)
+            )
+            .findFirst()
+            .map(Map.Entry::getValue)
+            .orElse(null);
     }
 
     @NotNull

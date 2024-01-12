@@ -70,7 +70,7 @@ public class Marker extends Module {
         super.fromTag(tag);
 
         markers.clear();
-        NbtList list = tag.getList("markers", 10);
+        NbtList list = tag.getList("markers", NbtElement.COMPOUND_TYPE);
 
         for (NbtElement tagII : list) {
             NbtCompound tagI = (NbtCompound) tagII;

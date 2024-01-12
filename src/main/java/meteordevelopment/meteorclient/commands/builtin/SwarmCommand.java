@@ -22,6 +22,8 @@ import meteordevelopment.meteorclient.systems.modules.misc.swarm.SwarmConnection
 import meteordevelopment.meteorclient.systems.modules.misc.swarm.SwarmWorker;
 import meteordevelopment.meteorclient.systems.modules.world.InfinityMiner;
 import meteordevelopment.meteorclient.utils.player.ChatUtils;
+import net.greemdev.meteor.commands.api.Arguments;
+import net.greemdev.meteor.util.Strings;
 import net.minecraft.client.network.ClientCommandSource;
 import net.minecraft.command.argument.BlockStateArgument;
 import net.minecraft.command.argument.BlockStateArgumentType;
@@ -97,7 +99,7 @@ public class SwarmCommand extends Command {
             require(swarm.isActive(), SWARM_NOT_ACTIVE);
 
             if (swarm.isHost()) {
-                swarm.host.sendMessage(context.getInput() + " " + mc.player.getEntityName());
+                swarm.host.sendMessage(context.getInput() + Strings.singleSpace + mc.player.getEntityName());
             }
             else if (swarm.isWorker()) {
                 error("The follow host command must be used by the host.");
@@ -154,7 +156,7 @@ public class SwarmCommand extends Command {
 
             return SINGLE_SUCCESS;
         })
-        .then(argument("target", BlockStateArgumentType.blockState(REGISTRY_ACCESS)).executes(context -> {
+        .then(argument("target", Arguments.blockState()).executes(context -> {
             Swarm swarm = Modules.get().get(Swarm.class);
             require(swarm.isActive(), SWARM_NOT_ACTIVE);
 
@@ -168,7 +170,7 @@ public class SwarmCommand extends Command {
 
             return SINGLE_SUCCESS;
         })
-        .then(argument("repair", BlockStateArgumentType.blockState(REGISTRY_ACCESS)).executes(context -> {
+        .then(argument("repair", Arguments.blockState()).executes(context -> {
             Swarm swarm = Modules.get().get(Swarm.class);
             require(swarm.isActive(), SWARM_NOT_ACTIVE);
 
@@ -210,7 +212,7 @@ public class SwarmCommand extends Command {
         }))));
 
         builder.then(literal("mine")
-                .then(argument("block", BlockStateArgumentType.blockState(REGISTRY_ACCESS)).executes(context -> {
+                .then(argument("block", Arguments.blockState()).executes(context -> {
                     Swarm swarm = Modules.get().get(Swarm.class);
                     require(swarm.isActive(), SWARM_NOT_ACTIVE);
 

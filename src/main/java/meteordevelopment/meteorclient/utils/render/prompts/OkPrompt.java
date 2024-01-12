@@ -15,6 +15,7 @@ import meteordevelopment.meteorclient.gui.widgets.pressable.WCheckbox;
 import meteordevelopment.meteorclient.systems.config.Config;
 import meteordevelopment.meteorclient.utils.render.RenderUtils;
 import net.greemdev.meteor.type.MeteorPromptException;
+import net.greemdev.meteor.util.Strings;
 import net.minecraft.client.gui.screen.Screen;
 import org.jetbrains.annotations.Nullable;
 
@@ -27,7 +28,7 @@ public class OkPrompt {
     private final GuiTheme theme;
     private final Screen parent;
 
-    private String title = "";
+    private String title = Strings.empty;
     private final List<String> messages = new ArrayList<>();
     private String id = null;
 

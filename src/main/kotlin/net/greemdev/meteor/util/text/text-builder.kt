@@ -30,7 +30,7 @@ fun buildText(initial: Text = emptyText(), block: FormattedText.() -> Unit) =
 
 
 @TextDsl
-class FormattedText(internal: MutableText = emptyText()) : TextProxy(internal) {
+open class FormattedText(internal: MutableText = emptyText()) : TextProxy(internal) {
 
     constructor(internal: MutableText = emptyText(), builder: Consumer<FormattedText>) : this(internal) {
         builder.accept(this)

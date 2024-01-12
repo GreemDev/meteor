@@ -5,6 +5,7 @@
 
 package meteordevelopment.meteorclient.gui.widgets.input;
 
+import com.google.common.base.Supplier;
 import it.unimi.dsi.fastutil.doubles.DoubleArrayList;
 import it.unimi.dsi.fastutil.doubles.DoubleList;
 import meteordevelopment.meteorclient.gui.GuiKeyEvents;
@@ -14,6 +15,7 @@ import meteordevelopment.meteorclient.gui.utils.CharFilter;
 import meteordevelopment.meteorclient.gui.widgets.WWidget;
 import meteordevelopment.meteorclient.gui.widgets.containers.WContainer;
 import meteordevelopment.meteorclient.utils.render.color.Color;
+import net.greemdev.meteor.util.Strings;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.util.math.MathHelper;
 import org.apache.commons.lang3.SystemUtils;
@@ -24,7 +26,7 @@ import java.util.List;
 import static meteordevelopment.meteorclient.MeteorClient.mc;
 import static org.lwjgl.glfw.GLFW.*;
 
-public abstract class WTextBox extends WWidget {
+public abstract class WTextBox extends WWidget implements Supplier<String> {
 
     public Runnable action;
     public Runnable actionOnUnfocused;
@@ -108,7 +110,7 @@ public abstract class WTextBox extends WWidget {
         if (mouseOver && !used) {
             if (button == GLFW_MOUSE_BUTTON_RIGHT) {
                 if (!text.isEmpty()) {
-                    text = "";
+                    text = Strings.empty;
                     cursor = 0;
                     selectionStart = 0;
                     selectionEnd = 0;
@@ -613,7 +615,7 @@ public abstract class WTextBox extends WWidget {
         completions = renderer.getCompletions(text, this.cursor);
         completionsStart = 0;
         completionsW = null;
-        if (completions != null && completions.size() > 0) createCompletions(0);
+        if (completions != null && !completions.isEmpty()) createCompletions(0);
     }
     protected void onCursorChanged() {}
 
@@ -653,6 +655,7 @@ public abstract class WTextBox extends WWidget {
         return textStart;
     }
 
+    @Override
     public String get() {
         return text;
     }

@@ -10,8 +10,7 @@ import baritone.api.pathing.goals.Goal;
 import baritone.api.process.IBaritoneProcess;
 import meteordevelopment.meteorclient.MeteorClient;
 import meteordevelopment.meteorclient.commands.Commands;
-import meteordevelopment.meteorclient.mixin.ClientPlayerInteractionManagerAccessor;
-import meteordevelopment.meteorclient.mixin.MinecraftClientAccessor;
+import meteordevelopment.meteorclient.mixin.accessor.ClientPlayerInteractionManagerAccessor;
 import meteordevelopment.meteorclient.systems.config.Config;
 import meteordevelopment.meteorclient.systems.modules.Module;
 import meteordevelopment.meteorclient.systems.modules.Modules;
@@ -147,7 +146,7 @@ public class MeteorStarscript {
             .set("getStat", MeteorStarscript::getStat)
             .set("speed", () -> Value.number(Utils.getPlayerSpeed().horizontalLength()))
             .set("speedAll", new ValueMap()
-                .set("_toString", () -> Value.string(mc.player != null ? Utils.getPlayerSpeed().toString() : ""))
+                .set("_toString", () -> Value.string(mc.player != null ? Utils.getPlayerSpeed().toString() : Strings.empty))
                 .set("x", () -> Value.number(mc.player != null ? Utils.getPlayerSpeed().x : 0))
                 .set("y", () -> Value.number(mc.player != null ? Utils.getPlayerSpeed().y : 0))
                 .set("z", () -> Value.number(mc.player != null ? Utils.getPlayerSpeed().z : 0))
@@ -334,10 +333,10 @@ public class MeteorStarscript {
         Module module = Modules.get().get(ss.popString("First argument to meteor.getModuleInfo() needs to be a string."));
         if (module != null && module.isActive()) {
             String info = module.getInfoString();
-            return Value.string(info == null ? "" : info);
+            return Value.string(info == null ? Strings.empty : info);
         }
 
-        return Value.string("");
+        return Value.string(Strings.empty);
     }
 
     private static Value isModuleActive(Starscript ss, int argCount) {
@@ -403,12 +402,12 @@ public class MeteorStarscript {
 
     private static Value baritoneProcess() {
         Optional<IBaritoneProcess> process = BaritoneAPI.getProvider().getPrimaryBaritone().getPathingControlManager().mostRecentInControl();
-        return Value.string(process.isEmpty() ? "" : process.get().displayName0());
+        return Value.string(process.isEmpty() ? Strings.empty : process.get().displayName0());
     }
 
     private static Value baritoneProcessName() {
         Optional<IBaritoneProcess> process = BaritoneAPI.getProvider().getPrimaryBaritone().getPathingControlManager().mostRecentInControl();
-        if (process.isEmpty()) return Value.string("");
+        if (process.isEmpty()) return Value.string(Strings.empty);
 
         String className = process.get().getClass().getSimpleName();
         if (className.endsWith("Process")) className = className.substring(0, className.length() - 7);
@@ -489,13 +488,13 @@ public class MeteorStarscript {
     }
 
     private static Value biome() {
-        if (mc.player == null || mc.world == null) return Value.string("");
+        if (mc.player == null || mc.world == null) return Value.string(Strings.empty);
 
         BP.set(mc.player.getX(), mc.player.getY(), mc.player.getZ());
         Identifier id = mc.world.getRegistryManager().get(RegistryKeys.BIOME).getId(mc.world.getBiome(BP).value());
         if (id == null) return Value.string("Unknown");
 
-        return Value.string(Arrays.stream(id.getPath().split("_")).map(StringUtils::capitalize).collect(Collectors.joining(" ")));
+        return Value.string(Arrays.stream(id.getPath().split("_")).map(StringUtils::capitalize).collect(Collectors.joining(Strings.singleSpace)));
     }
 
 
@@ -553,7 +552,7 @@ public class MeteorStarscript {
     private static Value crosshairValue() {
         if (mc.world == null || mc.crosshairTarget == null) return Value.null_();
 
-        if (mc.crosshairTarget.getType() == HitResult.Type.MISS) return Value.string("");
+        if (mc.crosshairTarget.getType() == HitResult.Type.MISS) return Value.string(Strings.empty);
         if (mc.crosshairTarget instanceof BlockHitResult hit) return wrap(hit.getBlockPos(), mc.world.getBlockState(hit.getBlockPos()));
         return wrap(((EntityHitResult) mc.crosshairTarget).getEntity());
     }
@@ -573,7 +572,7 @@ public class MeteorStarscript {
     // Wrapping
 
     public static Value wrap(ItemStack itemStack) {
-        String name = itemStack.isEmpty() ? "" : Names.get(itemStack.getItem());
+        String name = itemStack.isEmpty() ? Strings.empty : Names.get(itemStack.getItem());
 
         return Value.map(new ValueMap()
             .set("_toString", Value.string(itemStack.getCount() <= 1 ? name : String.format("%s %dx", name, itemStack.getCount())))
@@ -615,7 +614,7 @@ public class MeteorStarscript {
 
     public static Value wrap(HorizontalDirection dir) {
         return Value.map(new ValueMap()
-            .set("_toString", Value.string(dir.name + " " + dir.axis))
+            .set("_toString", Value.string(dir.name + Strings.singleSpace + dir.axis))
             .set("name", Value.string(dir.name))
             .set("axis", Value.string(dir.axis))
         );

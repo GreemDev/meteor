@@ -11,6 +11,7 @@ import meteordevelopment.meteorclient.systems.modules.Module;
 import meteordevelopment.meteorclient.systems.modules.Modules;
 import meteordevelopment.meteorclient.systems.modules.combat.*;
 import meteordevelopment.meteorclient.utils.render.color.SettingColor;
+import net.greemdev.meteor.util.Strings;
 
 import java.util.List;
 
@@ -87,7 +88,7 @@ public class ModuleInfosHud extends HudElement {
 
         int i = 0;
         for (Module module : modules.get()) {
-            double moduleWidth = renderer.textWidth(module.title) + renderer.textWidth(" ");
+            double moduleWidth = renderer.textWidth(module.title) + renderer.textWidth(Strings.singleSpace);
             String text = null;
 
             if (module.isActive()) {
@@ -103,7 +104,7 @@ public class ModuleInfosHud extends HudElement {
 
             double x = this.x + alignX(moduleWidth, alignment.get());
             x = renderer.text(module.title, x, y, moduleColor.get(), textShadow.get());
-            renderer.text(text, x + renderer.textWidth(" "), y, module.isActive() ? onColor.get() : offColor.get(), textShadow.get());
+            renderer.text(text, x + renderer.textWidth(Strings.singleSpace), y, module.isActive() ? onColor.get() : offColor.get(), textShadow.get());
             y += renderer.textHeight() + 2;
 
             width = Math.max(width, moduleWidth);

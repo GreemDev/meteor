@@ -10,6 +10,7 @@ import meteordevelopment.meteorclient.gui.renderer.GuiRenderer;
 import meteordevelopment.meteorclient.gui.tabs.Tab;
 import meteordevelopment.meteorclient.gui.tabs.TabScreen;
 import meteordevelopment.meteorclient.gui.tabs.WindowTabScreen;
+import meteordevelopment.meteorclient.gui.utils.CharFilter;
 import meteordevelopment.meteorclient.gui.widgets.containers.WHorizontalList;
 import meteordevelopment.meteorclient.gui.widgets.containers.WTable;
 import meteordevelopment.meteorclient.gui.widgets.input.WTextBox;
@@ -20,6 +21,7 @@ import meteordevelopment.meteorclient.systems.friends.Friend;
 import meteordevelopment.meteorclient.systems.friends.Friends;
 import meteordevelopment.meteorclient.utils.misc.NbtUtils;
 import meteordevelopment.meteorclient.utils.network.MeteorExecutor;
+import net.greemdev.meteor.util.Strings;
 import net.minecraft.client.gui.screen.Screen;
 
 public class FriendsTab extends Tab {
@@ -54,7 +56,7 @@ public class FriendsTab extends Tab {
             // New
             WHorizontalList list = add(theme.horizontalList()).expandX().widget();
 
-            WTextBox nameW = list.add(theme.textBox("", (text, c) -> c != ' ')).expandX().widget();
+            WTextBox nameW = list.add(theme.textBox(Strings.empty, CharFilter.noSpaces())).expandX().widget();
             nameW.toggleFocusing();
 
             WPlus add = list.add(theme.plus()).widget();
@@ -63,7 +65,7 @@ public class FriendsTab extends Tab {
                 Friend friend = new Friend(name);
 
                 if (Friends.get().add(friend)) {
-                    nameW.set("");
+                    nameW.set(Strings.empty);
                     reload();
 
                     MeteorExecutor.execute(() -> {

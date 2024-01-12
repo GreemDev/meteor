@@ -8,7 +8,7 @@ package meteordevelopment.meteorclient.commands.builtin;
 import com.mojang.brigadier.arguments.StringArgumentType;
 import com.mojang.brigadier.builder.LiteralArgumentBuilder;
 import meteordevelopment.meteorclient.commands.Command;
-import meteordevelopment.meteorclient.mixin.ClientPlayNetworkHandlerAccessor;
+import meteordevelopment.meteorclient.mixin.accessor.ClientPlayNetworkHandlerAccessor;
 import meteordevelopment.meteorclient.utils.misc.MeteorStarscript;
 import meteordevelopment.starscript.Script;
 import net.greemdev.meteor.util.misc.KMC;

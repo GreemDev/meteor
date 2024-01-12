@@ -5,6 +5,7 @@
 
 package meteordevelopment.meteorclient.gui.widgets;
 
+import net.greemdev.meteor.util.Strings;
 import net.greemdev.meteor.util.meteor.LegacyText;
 
 import java.util.ArrayList;
@@ -27,13 +28,13 @@ public abstract class WMultiLabel extends WLabel {
 
         String[] words = (
             LegacyText.needsSpecialRenderer(text)
-                ? LegacyText.getColorCodeRegex().replace(text, "")
+                ? LegacyText.getColorCodeRegex().replace(text, Strings.empty)
                 : text
-            ).split(" ");
+            ).split(Strings.singleSpace);
 
         StringBuilder sb = new StringBuilder();
 
-        double spaceWidth = theme.textWidth(" ", 1, title);
+        double spaceWidth = theme.textWidth(Strings.singleSpace, 1, title);
         double maxWidth = theme.scale(this.maxWidth);
 
         double lineWidth = 0;

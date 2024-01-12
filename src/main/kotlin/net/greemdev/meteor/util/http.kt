@@ -401,7 +401,7 @@ object HTTP {
 
 private fun newRequestBuilder(url: String): HttpRequest.Builder =
     runCatching(url::asURI)
-        .onFailure(Greteor.logger::catching)
+        .onFailure { Greteor.logger.error("Invalid URI", it) }
         .mapTo {
             HttpRequest.newBuilder(it)
                 .header("User-Agent", Config.getUserAgent())

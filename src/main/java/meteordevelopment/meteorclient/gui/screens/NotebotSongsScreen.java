@@ -15,6 +15,7 @@ import meteordevelopment.meteorclient.systems.modules.Modules;
 import meteordevelopment.meteorclient.systems.modules.misc.Notebot;
 import meteordevelopment.meteorclient.utils.Utils;
 import meteordevelopment.meteorclient.utils.notebot.decoder.SongDecoders;
+import net.greemdev.meteor.util.Strings;
 import org.apache.commons.io.FilenameUtils;
 
 import java.io.IOException;
@@ -27,7 +28,7 @@ public class NotebotSongsScreen extends WindowScreen {
     private static final Notebot notebot = Modules.get().get(Notebot.class);
 
     private WTextBox filter;
-    private String filterText = "";
+    private String filterText = Strings.empty;
 
     private WTable table;
 
@@ -41,7 +42,7 @@ public class NotebotSongsScreen extends WindowScreen {
         add(theme.button("Random Song", notebot::playRandomSong)).minWidth(400).expandX();
 
         // Filter
-        filter = add(theme.textBox("", "Search for the songs...")).minWidth(400).expandX().widget();
+        filter = add(theme.textBox(Strings.empty, "Search for the songs...")).minWidth(400).expandX().widget();
         filter.toggleFocusing().action = () -> {
             filterText = filter.get().trim();
 

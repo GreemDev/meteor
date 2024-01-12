@@ -23,8 +23,13 @@ import java.util.function.Predicate
 
 inline infix fun <reified T> MinecraftCommandContext.contextArg(name: String): Lazy<T> = lazy { getArgument(name, T::class.java) }
 
-inline fun <reified T> MinecraftCommandContext.contextArg(type: ArgumentType<T>) = lazy { type.get(this, formatArgType(type)) }
-inline fun <reified T> MinecraftCommandContext.contextArg(name: String, type: ArgumentType<T>) = lazy { type.get(this, name) }
+inline infix fun <reified T> MinecraftCommandContext.contextArg(type: ArgumentType<T>) = lazy { type.find() }
+inline fun <reified T> MinecraftCommandContext.contextArg(name: String, type: ArgumentType<T>) = lazy { type.find(name) }
+
+context(MinecraftCommandContext)
+inline fun <reified T> ArgumentType<T>.find(name: String = formatArgType(this)): T =
+    getArgument(name, T::class.java)
+
 
 inline fun<reified T> MinecraftCommandContext.contextArg(
     name: String,

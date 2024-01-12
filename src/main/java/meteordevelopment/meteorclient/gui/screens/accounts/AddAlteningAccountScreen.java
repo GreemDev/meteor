@@ -9,6 +9,7 @@ import meteordevelopment.meteorclient.gui.GuiTheme;
 import meteordevelopment.meteorclient.gui.widgets.containers.WTable;
 import meteordevelopment.meteorclient.gui.widgets.input.WTextBox;
 import meteordevelopment.meteorclient.systems.accounts.types.TheAlteningAccount;
+import net.greemdev.meteor.util.Strings;
 
 public class AddAlteningAccountScreen extends AddAccountScreen {
     public AddAlteningAccountScreen(GuiTheme theme, AccountsScreen parent) {
@@ -21,7 +22,7 @@ public class AddAlteningAccountScreen extends AddAccountScreen {
 
         // Token
         t.add(theme.label("Token: "));
-        WTextBox token = t.add(theme.textBox("")).minWidth(400).expandX().widget();
+        WTextBox token = t.add(theme.textBox(Strings.empty)).minWidth(400).expandX().widget();
         token.setFocused(true);
         t.row();
 

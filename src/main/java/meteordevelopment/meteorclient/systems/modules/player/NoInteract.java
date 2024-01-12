@@ -179,7 +179,7 @@ public class NoInteract extends Module {
     private boolean shouldAttackEntity(Entity entity) {
         // Friends
         if ((friends.get() == InteractMode.Both || friends.get() == InteractMode.Hit) &&
-            entity instanceof PlayerEntity && !Friends.get().shouldAttack((PlayerEntity) entity)) {
+            entity instanceof PlayerEntity && Friends.get().isFriend((PlayerEntity) entity)) {
             return false;
         }
 
@@ -212,7 +212,7 @@ public class NoInteract extends Module {
 
         // Friends
         if ((friends.get() == InteractMode.Both || friends.get() == InteractMode.Interact) &&
-            entity instanceof PlayerEntity && !Friends.get().shouldAttack((PlayerEntity) entity)) {
+            entity instanceof PlayerEntity && Friends.get().isFriend((PlayerEntity) entity)) {
             return false;
         }
 

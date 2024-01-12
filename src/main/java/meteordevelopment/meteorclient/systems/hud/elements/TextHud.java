@@ -20,6 +20,7 @@ import meteordevelopment.starscript.Section;
 import meteordevelopment.starscript.compiler.Compiler;
 import meteordevelopment.starscript.compiler.Parser;
 import meteordevelopment.starscript.utils.StarscriptError;
+import net.greemdev.meteor.util.Strings;
 
 import java.util.List;
 
@@ -89,7 +90,7 @@ public class TextHud extends HudElement {
         .name("condition")
         .description("Condition to check when shown is not Always.")
         .visible(() -> !shown.get().always())
-        .defaultValue("")
+        .defaultValue(Strings.empty)
         .onChanged(s -> recompile())
         .renderer(StarscriptTextBoxRenderer.class)
         .build()

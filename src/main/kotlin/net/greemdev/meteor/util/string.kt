@@ -30,7 +30,7 @@ fun String.asURI() = URI(this)
 
 fun String.asUuidOrNull() =
     runCatching(UUID::fromString)
-        .onFailureOf(IllegalArgumentException::class, Greteor.logger::catching)
+        .onFailureOf(IllegalArgumentException::class) { Greteor.logger.error("$this is not a valid UUID string", it) }
         .getOrNull()
 
 
@@ -82,23 +82,22 @@ enum class Plurality(private val str: String, private val trimAmount: Int = 0) {
         (if (trimAmount > 0) word.dropLast(trimAmount) else word) + this.str
 }
 
-private val emptyStr = String()
-private const val singleSpaceStr = " "
-private const val singleSpaceChar = ' '
+@JvmField
+val empty = String()
+
+const val singleSpace = " "
+const val singleSpaceChar = ' '
 
 val String.Companion.empty
-    get() = emptyStr
+    get() = net.greemdev.meteor.util.empty
 
 val String.Companion.singleSpace
-    get() = singleSpaceStr
+    get() = net.greemdev.meteor.util.singleSpace
 
 val Char.Companion.singleSpace
     get() = singleSpaceChar
 
-@get:JvmName("empty")
-val empty by invoking(::emptyStr)
-
-inline fun String.minify() = replace(" ", empty).removeNewlines()
+inline fun String.minify() = replace(singleSpace, empty).removeNewlines()
 
 @JvmName("min") // String.minify() & minify(String) have the same JVM signature
 inline fun minify(str: String) = str.minify()

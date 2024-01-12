@@ -20,6 +20,7 @@ import meteordevelopment.meteorclient.settings.ColorSetting;
 import meteordevelopment.meteorclient.settings.Setting;
 import meteordevelopment.meteorclient.utils.render.color.Color;
 import meteordevelopment.meteorclient.utils.render.color.SettingColor;
+import net.greemdev.meteor.util.Strings;
 import net.minecraft.util.math.MathHelper;
 
 import static meteordevelopment.meteorclient.MeteorClient.mc;
@@ -50,7 +51,7 @@ public class ColorSettingScreen extends WindowScreen {
 
     @Override
     public boolean toClipboard() {
-        String color = setting.get().toString().replace(" ", ",");
+        String color = setting.get().toString().replace(Strings.singleSpace, ",");
         mc.keyboard.setClipboard(color);
         return mc.keyboard.getClipboard().equals(color);
     }
@@ -76,7 +77,7 @@ public class ColorSettingScreen extends WindowScreen {
     }
 
     private SettingColor parseRGBA(String string) {
-        String[] rgba = string.replaceAll("[^0-9|,]", "").split(",");
+        String[] rgba = string.replaceAll("[^0-9|,]", Strings.empty).split(",");
         if (rgba.length < 3 || rgba.length > 4) return null;
 
         SettingColor color;
@@ -93,7 +94,7 @@ public class ColorSettingScreen extends WindowScreen {
 
     private SettingColor parseHex(String string) {
         if (!string.startsWith("#")) return null;
-        String hex = string.toLowerCase().replaceAll("[^0-9a-f]", "");
+        String hex = string.toLowerCase().replaceAll("[^0-9a-f]", Strings.empty);
         if (hex.length() != 6 && hex.length() != 8) return null;
 
         SettingColor color;

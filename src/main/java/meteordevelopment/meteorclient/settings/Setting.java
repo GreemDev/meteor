@@ -9,6 +9,7 @@ import meteordevelopment.meteorclient.systems.modules.Module;
 import meteordevelopment.meteorclient.utils.java;
 import meteordevelopment.meteorclient.utils.Utils;
 import meteordevelopment.meteorclient.utils.misc.ISerializable;
+import net.greemdev.meteor.util.Strings;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.registry.Registry;
 import net.minecraft.util.Identifier;
@@ -166,16 +167,18 @@ public abstract class Setting<T> implements ISerializable<T>, Supplier<T> {
     public static <T> T parseId(Registry<T> registry, String name) {
         name = name.trim();
 
-        Identifier id;
-        if (name.contains(":")) id = new Identifier(name);
-        else id = new Identifier("minecraft", name);
-        if (registry.containsId(id)) return registry.get(id);
+        Identifier id = name.contains(":")
+            ? new Identifier(name)
+            : new Identifier("minecraft", name);
+
+        if (registry.containsId(id))
+            return registry.get(id);
 
         return null;
     }
 
     public abstract static class SettingBuilder<B, V, S> {
-        protected String name = "undefined", description = "";
+        protected String name = "undefined", description = Strings.empty;
         protected Object defaultValue;
         protected Supplier<Boolean> visible;
         protected boolean serialize;

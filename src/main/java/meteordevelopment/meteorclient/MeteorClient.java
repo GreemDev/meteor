@@ -17,7 +17,7 @@ import meteordevelopment.meteorclient.gui.GuiThemes;
 import meteordevelopment.meteorclient.gui.WidgetScreen;
 import meteordevelopment.meteorclient.gui.tabs.TabScreen;
 import meteordevelopment.meteorclient.gui.tabs.Tabs;
-import meteordevelopment.meteorclient.mixin.KeyBindingAccessor;
+import meteordevelopment.meteorclient.mixin.accessor.KeyBindingAccessor;
 import meteordevelopment.meteorclient.systems.Systems;
 import meteordevelopment.meteorclient.systems.modules.Categories;
 import meteordevelopment.meteorclient.systems.modules.Modules;
@@ -45,7 +45,6 @@ import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.screen.ChatScreen;
 import net.minecraft.client.option.KeyBinding;
 import net.minecraft.client.util.InputUtil;
-import org.jetbrains.annotations.NotNull;
 import org.lwjgl.glfw.GLFW;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -55,7 +54,6 @@ import java.lang.invoke.MethodHandles;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
-import java.util.OptionalInt;
 
 import static net.greemdev.meteor.util.accessors.modLoader;
 
@@ -84,8 +82,9 @@ public class MeteorClient implements ClientModInitializer {
         return utils.getRandomElement(MeteorClient.MOD_META.getAuthors());
     }
 
-    public static List<String> authors() {
-        return MeteorClient.MOD_META.getAuthors().stream().map(Person::getName).toList();
+    public static ImmutableList<String> authors() {
+        return MeteorClient.MOD_META.getAuthors().stream().map(Person::getName)
+            .collect(ImmutableList.toImmutableList());
     }
 
     public static String fullVersion() {

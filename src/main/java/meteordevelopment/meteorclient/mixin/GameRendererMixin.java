@@ -98,7 +98,7 @@ public abstract class GameRendererMixin {
 
     @Inject(method = "showFloatingItem", at = @At("HEAD"), cancellable = true)
     private void onShowFloatingItem(ItemStack floatingItem, CallbackInfo info) {
-        if (floatingItem.getItem() == Items.TOTEM_OF_UNDYING && Modules.get().get(NoRender.class).noTotemAnimation()) {
+        if (floatingItem.isOf(Items.TOTEM_OF_UNDYING) && Modules.get().get(NoRender.class).noTotemAnimation()) {
             info.cancel();
         }
     }

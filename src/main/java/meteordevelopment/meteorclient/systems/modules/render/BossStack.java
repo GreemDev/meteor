@@ -13,6 +13,7 @@ import meteordevelopment.meteorclient.settings.SettingGroup;
 import meteordevelopment.meteorclient.systems.modules.Categories;
 import meteordevelopment.meteorclient.systems.modules.Module;
 import meteordevelopment.orbit.EventHandler;
+import net.greemdev.meteor.util.Strings;
 import net.minecraft.client.gui.hud.ClientBossBar;
 import net.minecraft.text.Text;
 
@@ -53,7 +54,7 @@ public class BossStack extends Module {
     @EventHandler
     private void onFetchText(RenderBossBarEvent.BossText event) {
         if (hideName.get()) {
-            event.name = Text.of("");
+            event.name = Text.empty();
             return;
         } else if (barMap.isEmpty() || !stack.get()) return;
         ClientBossBar bar = event.bossBar;

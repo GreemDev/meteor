@@ -375,7 +375,7 @@ public class KillAura extends Module {
         }
         if (entity instanceof PlayerEntity player) {
             if (player.isCreative()) return false;
-            if (!Friends.get().shouldAttack(player)) return false;
+            if (Friends.get().isFriend(player)) return false;
             if (shieldMode.get() == ShieldMode.Ignore && player.blockedByShield(mc.world.getDamageSources().playerAttack(mc.player))) return false;
         }
         return !(entity instanceof AnimalEntity animal) || !ignoreBabies.get() || !animal.isBaby();

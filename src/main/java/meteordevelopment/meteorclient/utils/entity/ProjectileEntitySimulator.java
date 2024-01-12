@@ -5,8 +5,8 @@
 
 package meteordevelopment.meteorclient.utils.entity;
 
-import meteordevelopment.meteorclient.mixin.CrossbowItemAccessor;
-import meteordevelopment.meteorclient.mixin.ProjectileInGroundAccessor;
+import meteordevelopment.meteorclient.mixin.accessor.CrossbowItemAccessor;
+import meteordevelopment.meteorclient.mixin.accessor.ProjectileInGroundAccessor;
 import meteordevelopment.meteorclient.mixininterface.IVec3d;
 import meteordevelopment.meteorclient.utils.Utils;
 import meteordevelopment.meteorclient.utils.misc.MissHitResult;

@@ -7,10 +7,11 @@ package meteordevelopment.meteorclient.gui.screens.settings;
 
 import meteordevelopment.meteorclient.gui.GuiTheme;
 import meteordevelopment.meteorclient.gui.widgets.WWidget;
-import meteordevelopment.meteorclient.mixin.IdentifierAccessor;
+import meteordevelopment.meteorclient.mixin.accessor.IdentifierAccessor;
 import meteordevelopment.meteorclient.settings.BlockListSetting;
 import meteordevelopment.meteorclient.settings.Setting;
 import meteordevelopment.meteorclient.utils.misc.Names;
+import net.greemdev.meteor.util.Strings;
 import net.minecraft.block.Block;
 import net.minecraft.block.Blocks;
 import net.minecraft.registry.Registries;
@@ -20,7 +21,7 @@ import java.util.List;
 import java.util.function.Predicate;
 
 public class BlockListSettingScreen extends LeftRightListSettingScreen<Block> {
-    private static final Identifier ID = new Identifier("minecraft", "");
+    private static final Identifier ID = new Identifier("minecraft", Strings.empty);
 
     public BlockListSettingScreen(GuiTheme theme, Setting<List<Block>> setting) {
         super(theme, "Select Blocks", setting, setting.get(), Registries.BLOCK);

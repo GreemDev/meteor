@@ -40,6 +40,9 @@ fun resource(path: String) = MeteorIdentifier(path)
 
 object Meteor {
 
+    @JvmStatic
+    fun identifier(path: String) = MeteorIdentifier(path)
+
     @JvmField
     val client: MeteorClient = MeteorClient.INSTANCE
 

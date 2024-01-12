@@ -11,6 +11,7 @@ import meteordevelopment.meteorclient.gui.GuiTheme;
 import meteordevelopment.meteorclient.gui.utils.StarscriptTextBoxRenderer;
 import meteordevelopment.meteorclient.gui.widgets.containers.WTable;
 import meteordevelopment.meteorclient.gui.widgets.input.WTextBox;
+import net.greemdev.meteor.util.Strings;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.nbt.NbtString;
 
@@ -129,7 +130,7 @@ public class StringMapSetting extends Setting<Map<String, String>> {
         }
 
         table.add(theme.plus(() -> {
-            map.put("", "");
+            map.put(Strings.empty, Strings.empty);
             fillTable(theme, table, setting);
         })).expandCellX();
 

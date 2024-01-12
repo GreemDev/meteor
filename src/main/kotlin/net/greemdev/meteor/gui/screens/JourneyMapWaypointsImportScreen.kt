@@ -29,7 +29,7 @@ import java.nio.file.InvalidPathException
 import kotlin.io.path.Path
 import kotlin.time.Duration.Companion.seconds
 
-private val gson = GsonBuilder().setPrettyPrinting().create()
+private val gson = GsonBuilder().setPrettyPrinting().create()!!
 
 private const val STATUS_LABEL_DEFAULT =
     "Input a file directory. Relative paths are relative to your .minecraft folder."
@@ -43,7 +43,6 @@ private const val DATA_FILE_EXTENSION = ".json"
 
 private const val WAYPOINTS_IMPORTED_F = "Successfully imported %s new waypoints from JourneyMap data."
 private const val NO_WAYPOINTS_FOUND = "No waypoints found or imported."
-
 
 
 class JourneyMapWaypointsImportScreen(theme: GuiTheme) : WindowScreen(theme, SCREEN_TITLE) {
@@ -60,12 +59,12 @@ class JourneyMapWaypointsImportScreen(theme: GuiTheme) : WindowScreen(theme, SCR
             val dir = runCatching {
                 Path(textBox.get()).toFile()
             }.onFailureOf(InvalidPathException::class) {
-                statusLabel.set(Color.RED, INVALID_PATH_F.format(it.reason))
+                statusLabel.set(theme.badColor(), INVALID_PATH_F.format(it.reason))
                 return@button
             }.getOrThrow()
 
             if (dir.isFile) {
-                statusLabel.set(Color.RED, NOT_DIRECTORY)
+                statusLabel.set(theme.badColor(), NOT_DIRECTORY)
                 return@button
             }
 
@@ -95,7 +94,7 @@ class JourneyMapWaypointsImportScreen(theme: GuiTheme) : WindowScreen(theme, SCR
             }
 
             Meteor.waypoints().addAll(newWaypoints).also { imported ->
-                if (imported != 0)
+                if (imported > 0)
                     statusLabel.set(Color.GREEN, WAYPOINTS_IMPORTED_F.format(imported))
                 else
                     statusLabel.set(Color.ORANGE, NO_WAYPOINTS_FOUND)

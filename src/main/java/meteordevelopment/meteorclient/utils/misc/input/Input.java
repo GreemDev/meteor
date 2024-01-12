@@ -6,7 +6,7 @@
 package meteordevelopment.meteorclient.utils.misc.input;
 
 import meteordevelopment.meteorclient.gui.GuiKeyEvents;
-import meteordevelopment.meteorclient.mixin.KeyBindingAccessor;
+import meteordevelopment.meteorclient.mixin.accessor.KeyBindingAccessor;
 import meteordevelopment.meteorclient.utils.misc.CursorStyle;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.option.KeyBinding;

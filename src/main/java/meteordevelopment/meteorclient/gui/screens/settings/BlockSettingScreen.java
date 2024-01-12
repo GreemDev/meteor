@@ -13,6 +13,7 @@ import meteordevelopment.meteorclient.gui.widgets.input.WTextBox;
 import meteordevelopment.meteorclient.gui.widgets.pressable.WButton;
 import meteordevelopment.meteorclient.settings.BlockSetting;
 import meteordevelopment.meteorclient.utils.misc.Names;
+import net.greemdev.meteor.util.Strings;
 import net.minecraft.block.Block;
 import net.minecraft.block.Blocks;
 import net.minecraft.registry.Registries;
@@ -24,7 +25,7 @@ public class BlockSettingScreen extends WindowScreen {
     private WTable table;
 
     private WTextBox filter;
-    private String filterText = "";
+    private String filterText = Strings.empty;
 
     public BlockSettingScreen(GuiTheme theme, BlockSetting setting) {
         super(theme, "Select Block");
@@ -34,7 +35,7 @@ public class BlockSettingScreen extends WindowScreen {
 
     @Override
     public void initWidgets() {
-        filter = add(theme.textBox("")).minWidth(400).expandX().widget();
+        filter = add(theme.textBox(Strings.empty)).minWidth(400).expandX().widget();
         filter.setFocused(true);
         filter.action = () -> {
             filterText = filter.get().trim();

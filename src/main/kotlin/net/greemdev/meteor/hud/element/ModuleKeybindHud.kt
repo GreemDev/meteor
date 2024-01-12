@@ -8,10 +8,12 @@ package net.greemdev.meteor.hud.element
 import meteordevelopment.meteorclient.systems.hud.Alignment
 import meteordevelopment.meteorclient.systems.hud.HudElement
 import meteordevelopment.meteorclient.systems.hud.HudRenderer
+import meteordevelopment.meteorclient.systems.modules.Module
 import meteordevelopment.meteorclient.utils.render.color.SettingColor
 import net.greemdev.meteor.hud.HudElementDescriptor
 import net.greemdev.meteor.*
 import net.greemdev.meteor.util.meteor.*
+import net.greemdev.meteor.util.singleSpace
 import kotlin.math.max
 
 class ModuleKeybindHud : HudElement(info) {
@@ -27,12 +29,14 @@ class ModuleKeybindHud : HudElement(info) {
         name("modules")
         description("The modules to display the keybinds of.")
         defaultValue(emptyList())
+        onChanged { updateDisplayModules() }
     }
 
     val sortModules by sg bool {
         name("sort-modules")
         description("Sort the modules on the HUD.")
         defaultValue(true)
+        onChanged { updateDisplayModules() }
     }
 
     val ascendingOrder by sg bool {
@@ -40,6 +44,7 @@ class ModuleKeybindHud : HudElement(info) {
         description("Sort the modules on the HUD in ascending order. Turn off for descending order.")
         defaultValue(false)
         visible(sortModules)
+        onChanged { updateDisplayModules() }
     }
 
     val textShadow by sg bool {
@@ -66,6 +71,23 @@ class ModuleKeybindHud : HudElement(info) {
         defaultValue(Alignment.Auto)
     }
 
+    // do not mutate outside of updateDisplayModules
+    private val displayModules = mutableListOf<Module>()
+
+    private fun updateDisplayModules() {
+        displayModules.clear()
+        displayModules.addAll(modules())
+        displayModules.applyIf(sortModules()) {
+            if (ascendingOrder())
+                sortBy(::sorter)
+            else
+                sortByDescending(::sorter)
+        }
+    }
+
+    private fun sorter(module: Module): Int =
+        module.title.length + module.keybind.toString().length
+
     override fun render(renderer: HudRenderer) {
         if (modules().isEmpty()) {
             renderer.text("Module Keybinds", x.toDouble(), y.toDouble(), moduleColor(), textShadow())
@@ -77,15 +99,15 @@ class ModuleKeybindHud : HudElement(info) {
 
         var width = 0.0
         var height = 0.0
-        modules().sorted(sortModules(), ascendingOrder()) {
-            it.title.length + it.keybind.toString().length
-        }.forEachIndexed { i, module ->
+
+        val spaceWidth = renderer.textWidth(String.singleSpace)
+        displayModules.forEachIndexed { i, module ->
             val keybindName = module.keybind.toString()
             val moduleWidth = renderer.textWidth("${module.title} $keybindName")
 
             var x = this.x + alignX(moduleWidth, alignment())
             x = renderer.text(module.title, x, y, moduleColor(), textShadow())
-            renderer.text(keybindName, x + renderer.textWidth(" "), y, keybindColor(), textShadow())
+            renderer.text(keybindName, x + spaceWidth, y, keybindColor(), textShadow())
             y += renderer.textHeight() + 2
 
             width = max(width, moduleWidth)

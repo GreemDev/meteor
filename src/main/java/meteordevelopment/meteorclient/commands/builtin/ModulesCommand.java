@@ -31,7 +31,7 @@ public class ModulesCommand extends Command {
             ChatUtils.info("--- Modules ((highlight)%d(default)) ---", Modules.get().getCount());
 
             Modules.categories().forEach(category -> {
-                MutableText categoryMessage = Text.literal("");
+                MutableText categoryMessage = Text.empty();
                 Modules.get().getGroup(category).stream().filter(Predicate.not(Module::isHidden)).forEach(module -> categoryMessage.append(getModuleText(module)));
                 ChatUtils.sendMsg(category.name, categoryMessage);
             });
@@ -42,7 +42,7 @@ public class ModulesCommand extends Command {
 
     private MutableText getModuleText(Module module) {
         // Hover tooltip
-        MutableText tooltip = Text.literal("");
+        MutableText tooltip = Text.empty();
 
         tooltip.append(Text.literal(module.title).formatted(Formatting.BLUE, Formatting.BOLD)).append("\n");
         tooltip.append(Text.literal(module.name).formatted(Formatting.GRAY)).append("\n\n");

@@ -5,6 +5,7 @@
 
 package meteordevelopment.meteorclient.systems.friends;
 
+import com.mojang.authlib.GameProfile;
 import com.mojang.util.UUIDTypeAdapter;
 import com.mojang.util.UndashedUuid;
 import meteordevelopment.meteorclient.utils.misc.ISerializable;
@@ -29,6 +30,10 @@ public class Friend implements ISerializable<Friend>, Comparable<Friend> {
         this.name = name;
         this.id = id;
         this.headTexture = null;
+    }
+
+    public static Friend fromGameProfile(GameProfile profile) {
+        return new Friend(profile.getName(), profile.getId());
     }
 
     public Friend(PlayerEntity player) {

@@ -12,7 +12,7 @@ import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import com.mojang.brigadier.exceptions.SimpleCommandExceptionType;
 import meteordevelopment.meteorclient.MeteorClient;
 import meteordevelopment.meteorclient.commands.Command;
-import meteordevelopment.meteorclient.mixin.MapRendererAccessor;
+import meteordevelopment.meteorclient.mixin.accessor.MapRendererAccessor;
 import net.minecraft.client.network.ClientCommandSource;
 import net.minecraft.client.render.MapRenderer;
 import net.minecraft.item.FilledMapItem;

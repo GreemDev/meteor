@@ -10,11 +10,12 @@ import meteordevelopment.meteorclient.utils.misc.ISerializable;
 import meteordevelopment.meteorclient.utils.misc.NbtException;
 import meteordevelopment.meteorclient.utils.render.PlayerHeadTexture;
 import meteordevelopment.meteorclient.utils.render.PlayerHeadUtils;
+import net.greemdev.meteor.util.Strings;
 import net.minecraft.nbt.NbtCompound;
 
 public class AccountCache implements ISerializable<AccountCache> {
-    public String username = "";
-    public String uuid = "";
+    public String username = Strings.empty;
+    public String uuid = Strings.empty;
     private PlayerHeadTexture headTexture;
 
     public PlayerHeadTexture getHeadTexture() {

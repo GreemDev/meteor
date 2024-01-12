@@ -9,6 +9,7 @@ import com.mojang.datafixers.util.Pair;
 import com.mojang.serialization.Lifecycle;
 import it.unimi.dsi.fastutil.objects.ObjectIterators;
 import meteordevelopment.meteorclient.utils.misc.MeteorIdentifier;
+import net.greemdev.meteor.util.meteor.Meteor;
 import net.minecraft.block.entity.BlockEntityType;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.nbt.NbtElement;
@@ -76,7 +77,7 @@ public class StorageBlockListSetting extends Setting<List<BlockEntityType<?>>> {
     @Override
     public void save(NbtCompound tag) {
         NbtList valueTag = new NbtList();
-        for (BlockEntityType<?> type : get()) {
+        for (BlockEntityType<?> type : value) {
             Identifier id = Registries.BLOCK_ENTITY_TYPE.getId(type);
             if (id != null) valueTag.add(NbtString.of(id.toString()));
         }
@@ -85,12 +86,12 @@ public class StorageBlockListSetting extends Setting<List<BlockEntityType<?>>> {
 
     @Override
     public List<BlockEntityType<?>> load(NbtCompound tag) {
-        get().clear();
+        value.clear();
 
-        NbtList valueTag = tag.getList("value", 8);
+        NbtList valueTag = tag.getList("value", NbtElement.STRING_TYPE);
         for (NbtElement tagI : valueTag) {
             BlockEntityType<?> type = Registries.BLOCK_ENTITY_TYPE.get(new Identifier(tagI.asString()));
-            if (type != null) get().add(type);
+            if (type != null) value.add(type);
         }
 
         return get();
@@ -98,7 +99,7 @@ public class StorageBlockListSetting extends Setting<List<BlockEntityType<?>>> {
 
     public static class Builder extends SettingBuilder<Builder, List<BlockEntityType<?>>, StorageBlockListSetting> {
         public Builder() {
-            super(new ArrayList<>(0));
+            super(new ArrayList<>());
         }
 
         public Builder defaultValue(BlockEntityType<?>... defaults) {
@@ -113,7 +114,7 @@ public class StorageBlockListSetting extends Setting<List<BlockEntityType<?>>> {
 
     private static class SRegistry extends SimpleRegistry<BlockEntityType<?>> {
         public SRegistry() {
-            super(RegistryKey.ofRegistry(new MeteorIdentifier("storage-blocks")), Lifecycle.stable());
+            super(RegistryKey.ofRegistry(Meteor.identifier("storage-blocks")), Lifecycle.stable());
         }
 
         @Override

@@ -8,6 +8,7 @@ package meteordevelopment.meteorclient.settings;
 import com.google.common.collect.ImmutableList;
 import meteordevelopment.meteorclient.utils.render.color.Color;
 import meteordevelopment.meteorclient.utils.render.color.SettingColor;
+import net.greemdev.meteor.util.Strings;
 import net.greemdev.meteor.util.text.ChatColor;
 import net.minecraft.nbt.NbtCompound;
 
@@ -32,7 +33,7 @@ public class ColorSetting extends Setting<SettingColor> {
     @Override
     protected SettingColor parseImpl(String str) {
         try {
-            String[] strs = str.split(" ");
+            String[] strs = str.split(Strings.singleSpace);
             return new SettingColor(Integer.parseInt(strs[0]), Integer.parseInt(strs[1]), Integer.parseInt(strs[2]), Integer.parseInt(strs[3]));
         } catch (IndexOutOfBoundsException | NumberFormatException ignored) {
             return null;

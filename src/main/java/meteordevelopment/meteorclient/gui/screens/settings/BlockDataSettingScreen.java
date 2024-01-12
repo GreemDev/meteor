@@ -17,6 +17,7 @@ import meteordevelopment.meteorclient.utils.misc.IChangeable;
 import meteordevelopment.meteorclient.utils.misc.ICopyable;
 import meteordevelopment.meteorclient.utils.misc.ISerializable;
 import meteordevelopment.meteorclient.utils.misc.Names;
+import net.greemdev.meteor.util.Strings;
 import net.minecraft.block.Block;
 import net.minecraft.registry.Registries;
 import org.apache.commons.lang3.StringUtils;
@@ -32,7 +33,7 @@ public class BlockDataSettingScreen extends WindowScreen {
     private final BlockDataSetting<?> setting;
 
     private WTable table;
-    private String filterText = "";
+    private String filterText = Strings.empty;
 
     public BlockDataSettingScreen(GuiTheme theme, BlockDataSetting<?> setting) {
         super(theme, "Configure Blocks");
@@ -42,7 +43,7 @@ public class BlockDataSettingScreen extends WindowScreen {
 
     @Override
     public void initWidgets() {
-        WTextBox filter = add(theme.textBox("")).minWidth(400).expandX().widget();
+        WTextBox filter = add(theme.textBox(Strings.empty)).minWidth(400).expandX().widget();
         filter.setFocused(true);
         filter.action = () -> {
             filterText = filter.get().trim();
@@ -71,7 +72,7 @@ public class BlockDataSettingScreen extends WindowScreen {
             T blockData = (T) setting.get().get(block);
 
             table.add(theme.itemWithLabel(block.asItem().getDefaultStack(), Names.get(block))).expandCellX();
-            table.add(theme.label((blockData != null && blockData.isChanged()) ? "*" : " "));
+            table.add(theme.label((blockData != null && blockData.isChanged()) ? "*" : Strings.singleSpace));
 
             table.add(theme.editButton(() -> {
                 T data = blockData;

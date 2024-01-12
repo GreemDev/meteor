@@ -78,6 +78,6 @@ public class ModuleArgumentType implements ArgumentType<@NotNull Module> {
             .filter(predicate)
             .limit(5)
             .map(module -> module.name)
-            .collect(Collectors.toList());
+            .toList();
     }
 }

@@ -11,6 +11,7 @@ import meteordevelopment.meteorclient.systems.modules.misc.NameProtect;
 import meteordevelopment.meteorclient.systems.proxies.Proxies;
 import meteordevelopment.meteorclient.systems.proxies.Proxy;
 import meteordevelopment.meteorclient.utils.render.color.Color;
+import net.greemdev.meteor.util.Strings;
 import net.minecraft.client.font.TextRenderer;
 import net.minecraft.client.gui.DrawContext;
 import net.minecraft.client.gui.screen.Screen;
@@ -77,7 +78,7 @@ public abstract class MultiplayerScreenMixin extends Screen {
         Proxy proxy = Proxies.get().getEnabled();
 
         String left = proxy != null ? "Using proxy " : "Not using a proxy";
-        String right = proxy != null ? (proxy.name.get() != null && !proxy.name.get().isEmpty() ? "(" + proxy.name.get() + ") " : "") + proxy.address.get() + ":" + proxy.port.get() : null;
+        String right = proxy != null ? (proxy.name.get() != null && !proxy.name.get().isEmpty() ? "(" + proxy.name.get() + ") " : Strings.empty) + proxy.address.get() + ":" + proxy.port.get() : null;
 
         context.drawTextWithShadow(mc.textRenderer, left, x, y, textColor1);
         if (right != null)

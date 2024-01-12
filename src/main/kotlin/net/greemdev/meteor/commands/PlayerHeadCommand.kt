@@ -53,7 +53,7 @@ private val notCreative by CommandExceptions simple "You must be in creative mod
 
 private fun GCommand.giveHead(player: GameProfile = minecraft.player().gameProfile, amount: Int = 1) { scope.launch { execute(player, amount) } }
 
-private suspend fun GCommand.execute(player: GameProfile = minecraft.player().gameProfile, amount: Int = 1) {
+private suspend fun GCommand.execute(player: GameProfile, amount: Int) {
     require(minecraft.player().abilities.creativeMode, notCreative)
 
     val profileResponse = (HTTP GET "https://sessionserver.mojang.com/session/minecraft/profile/${player.id.undashedString}")

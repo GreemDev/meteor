@@ -5,6 +5,7 @@
 
 package meteordevelopment.meteorclient.systems.modules;
 
+import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Ordering;
 import com.mojang.datafixers.util.Pair;
 import com.mojang.serialization.Lifecycle;
@@ -176,20 +177,20 @@ public class Modules extends System<Modules> {
     public Collection<Module> getAllHidden() {
         return stream()
             .filter(Module::isHidden)
-            .toList();
+            .collect(ImmutableList.toImmutableList());
     }
 
     public Collection<Module> getAllVisible() {
         return stream()
             .filter(Predicate.not(Module::isHidden))
-            .toList();
+            .collect(ImmutableList.toImmutableList());
     }
 
     public Collection<GModule> getGreteorModules() {
         return stream()
             .filter(m -> m instanceof GModule)
             .<GModule>map(java::cast)
-            .toList();
+            .collect(ImmutableList.toImmutableList());
     }
 
     public List<Module> getList() {

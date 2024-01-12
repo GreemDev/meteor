@@ -18,7 +18,6 @@ import net.minecraft.text.MutableText;
 import net.minecraft.text.Text;
 import net.minecraft.util.Formatting;
 
-import java.util.Collection;
 import java.util.List;
 import java.util.function.Predicate;
 
@@ -35,17 +34,17 @@ public class CommandsCommand extends Command {
             List<Command> commands = Commands.COMMANDS.values().stream().toList();
             ChatUtils.info("--- Commands ((highlight)%d(default)) ---", commands.size());
 
-            ChatUtils.sendMsg(new FormattedText(text ->
+            ChatUtils.sendMsg(new FormattedText() {{
                 commands.forEach(command ->
-                    text.addText(getCommandText(commands, command))
-                )
-            ));
+                    addText(getCommandText(commands, commands.size() - 1, command))
+                );
+            }});
 
             return SINGLE_SUCCESS;
         });
     }
 
-    private MutableText getCommandText(List<? extends Command> commandList, Command command) {
+    private MutableText getCommandText(List<? extends Command> commandList, int lastIndex, Command command) {
         // Hover tooltip
         MutableText tooltip = Text.empty();
 
@@ -65,8 +64,9 @@ public class CommandsCommand extends Command {
 
         // Text
         MutableText text = Text.literal(Utils.nameToTitle(command.getName()));
-        if (command != commandList.get(Commands.COMMANDS.size() - 1))
+        if (command != commandList.get(lastIndex))
             text.append(Text.literal(", ").formatted(Formatting.GRAY));
+
         text.setStyle(text.getStyle()
             .withHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, tooltip))
             .withClickEvent(new ClickEvent(ClickEvent.Action.SUGGEST_COMMAND, command.toString()))

@@ -80,7 +80,7 @@ public abstract class ScreenshotRecorderMixin {
                 ci.cancel();
             } catch (IOException ioe) {
                 GameTweaks.INSTANCE.error("Internal error: %s", ioe.getMessage());
-                Greteor.logger().catching(ioe);
+                Greteor.logger().error("Error taking/saving screenshot", ioe);
             }
         }
     }

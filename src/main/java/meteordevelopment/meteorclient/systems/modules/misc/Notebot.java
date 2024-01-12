@@ -507,7 +507,7 @@ public class Notebot extends Module {
 
                 List<Note> foundNotes = uniqueNotesToUse.stream()
                     .filter(note -> note.getInstrument() == inst)
-                    .collect(Collectors.toList());
+                    .toList();
 
                 if (foundNotes.isEmpty()) continue;
 

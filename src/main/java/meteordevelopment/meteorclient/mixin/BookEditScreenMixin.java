@@ -7,15 +7,13 @@ package meteordevelopment.meteorclient.mixin;
 
 import it.unimi.dsi.fastutil.io.FastByteArrayOutputStream;
 import meteordevelopment.meteorclient.MeteorClient;
+import net.greemdev.meteor.util.Strings;
 import net.greemdev.meteor.util.misc.Nbt;
 import net.greemdev.meteor.util.misc.NbtUtil;
 import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.client.gui.screen.ingame.BookEditScreen;
 import net.minecraft.client.gui.widget.ButtonWidget;
-import net.minecraft.nbt.NbtCompound;
-import net.minecraft.nbt.NbtIo;
-import net.minecraft.nbt.NbtList;
-import net.minecraft.nbt.NbtString;
+import net.minecraft.nbt.*;
 import net.minecraft.text.Text;
 import org.lwjgl.glfw.GLFW;
 import org.spongepowered.asm.mixin.Final;
@@ -96,14 +94,14 @@ public abstract class BookEditScreenMixin extends Screen {
                     try {
                         NbtCompound tag = NbtIo.readCompressed(in);
 
-                        NbtList listTag = tag.getList("pages", 8).copy();
+                        NbtList listTag = tag.getList("pages", NbtElement.STRING_TYPE).copy();
 
                         pages.clear();
                         for(int i = 0; i < listTag.size(); ++i)
                             pages.add(listTag.getString(i));
 
                         if (pages.isEmpty())
-                            pages.add("");
+                            pages.add(Strings.empty);
 
 
                         currentPage = tag.getInt("currentPage");

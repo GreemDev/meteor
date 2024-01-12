@@ -10,6 +10,7 @@ import meteordevelopment.meteorclient.gui.utils.CharFilter;
 import meteordevelopment.meteorclient.gui.utils.StarscriptTextBoxRenderer;
 import meteordevelopment.meteorclient.gui.widgets.containers.WTable;
 import meteordevelopment.meteorclient.gui.widgets.input.WTextBox;
+import net.greemdev.meteor.util.Strings;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.nbt.NbtElement;
 import net.minecraft.nbt.NbtList;
@@ -104,7 +105,7 @@ public class StringListSetting extends Setting<List<String>> {
         }
 
         table.add(theme.button("Add", () -> {
-            strings.add("");
+            strings.add(Strings.empty);
             setting.set(strings);
 
             fillTable(theme, table, setting);

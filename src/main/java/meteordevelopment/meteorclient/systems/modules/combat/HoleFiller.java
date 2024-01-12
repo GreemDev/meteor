@@ -7,7 +7,7 @@ package meteordevelopment.meteorclient.systems.modules.combat;
 
 import meteordevelopment.meteorclient.events.render.Render3DEvent;
 import meteordevelopment.meteorclient.events.world.TickEvent;
-import meteordevelopment.meteorclient.mixin.AbstractBlockAccessor;
+import meteordevelopment.meteorclient.mixin.accessor.AbstractBlockAccessor;
 import meteordevelopment.meteorclient.mixininterface.IBox;
 import meteordevelopment.meteorclient.renderer.ShapeMode;
 import meteordevelopment.meteorclient.settings.*;
@@ -347,7 +347,7 @@ public class HoleFiller extends Module {
                 player.isCreative() ||
                 player == mc.player ||
                 player.isDead() ||
-                !Friends.get().shouldAttack(player) ||
+                Friends.get().isFriend(player) ||
                 (ignoreSafe.get() && isSurrounded(player)) ||
                 (onlyMoving.get() && (player.getX() - player.prevX != 0 || player.getY() - player.prevY != 0 || player.getZ() - player.prevZ != 0))
             ) continue;

@@ -14,6 +14,7 @@ import meteordevelopment.meteorclient.gui.widgets.input.WTextBox;
 import meteordevelopment.meteorclient.gui.widgets.pressable.WPressable;
 import meteordevelopment.meteorclient.settings.Setting;
 import meteordevelopment.meteorclient.utils.Utils;
+import net.greemdev.meteor.util.Strings;
 import net.minecraft.registry.Registry;
 import net.minecraft.util.Pair;
 
@@ -29,7 +30,7 @@ public abstract class LeftRightListSettingScreen<T> extends WindowScreen {
     private final Registry<T> registry;
 
     private WTextBox filter;
-    private String filterText = "";
+    private String filterText = Strings.empty;
 
     private WTable table;
 
@@ -44,7 +45,7 @@ public abstract class LeftRightListSettingScreen<T> extends WindowScreen {
     @Override
     public void initWidgets() {
         // Filter
-        filter = add(theme.textBox("")).minWidth(400).expandX().widget();
+        filter = add(theme.textBox(Strings.empty)).minWidth(400).expandX().widget();
         filter.setFocused(true);
         filter.action = () -> {
             filterText = filter.get().trim();

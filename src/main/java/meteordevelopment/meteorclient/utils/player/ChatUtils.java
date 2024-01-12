@@ -9,6 +9,7 @@ import baritone.api.BaritoneAPI;
 import meteordevelopment.meteorclient.mixininterface.IChatHud;
 import meteordevelopment.meteorclient.systems.config.Config;
 import net.greemdev.meteor.type.PrefixBrackets;
+import net.greemdev.meteor.util.Strings;
 import net.greemdev.meteor.util.meteor.Meteor;
 import net.greemdev.meteor.util.text.FormattedText;
 import net.greemdev.meteor.util.text.actions;
@@ -137,7 +138,7 @@ public class ChatUtils {
         return new FormattedText(brackets.left, t -> {
             t.colored(Config.get().meteorPrefixBracketsColor.get());
             t.addString(prefixTitle, prefixColor);
-            t.addString(brackets.right + " ");
+            t.addString(brackets.right + Strings.singleSpace);
         });
     }
 

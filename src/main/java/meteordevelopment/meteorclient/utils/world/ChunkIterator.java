@@ -5,8 +5,8 @@
 
 package meteordevelopment.meteorclient.utils.world;
 
-import meteordevelopment.meteorclient.mixin.ClientChunkManagerAccessor;
-import meteordevelopment.meteorclient.mixin.ClientChunkMapAccessor;
+import meteordevelopment.meteorclient.mixin.accessor.ClientChunkManagerAccessor;
+import meteordevelopment.meteorclient.mixin.accessor.ClientChunkMapAccessor;
 import net.minecraft.world.chunk.Chunk;
 
 import java.util.Iterator;

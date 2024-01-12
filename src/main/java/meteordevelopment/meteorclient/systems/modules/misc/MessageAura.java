@@ -15,6 +15,7 @@ import meteordevelopment.meteorclient.systems.modules.Categories;
 import meteordevelopment.meteorclient.systems.modules.Module;
 import meteordevelopment.meteorclient.utils.player.ChatUtils;
 import meteordevelopment.orbit.EventHandler;
+import net.greemdev.meteor.util.Strings;
 import net.minecraft.entity.player.PlayerEntity;
 
 public class MessageAura extends Module {
@@ -22,8 +23,15 @@ public class MessageAura extends Module {
 
     private final Setting<String> message = sgGeneral.add(new StringSetting.Builder()
         .name("message")
-        .description("The specified message sent to the player.")
+        .description("The message sent to the player.")
         .defaultValue("Meteor on Crack!")
+        .build()
+    );
+
+    private final Setting<String> command = sgGeneral.add(new StringSetting.Builder()
+        .name("message-command")
+        .description("The message command for the server you're on.")
+        .defaultValue("msg")
         .build()
     );
 
@@ -43,7 +51,7 @@ public class MessageAura extends Module {
         if (!(event.entity instanceof PlayerEntity) || event.entity.getUuid().equals(mc.player.getUuid())) return;
 
         if (!ignoreFriends.get() || (ignoreFriends.get() && !Friends.get().isFriend((PlayerEntity)event.entity))) {
-            ChatUtils.sendPlayerMsg("/msg " + event.entity.getEntityName() + " " + message.get());
+            ChatUtils.sendPlayerMsg("/%s %s %s".formatted(command.get(), event.entity.getEntityName(), message.get()));
         }
     }
 }

@@ -46,7 +46,7 @@ private fun getTargetNbt(): NbtCompound? {
 
     when (hitResult) {
         is EntityHitResult -> return hitResult.entity.writeNbt(NbtCompound())
-        is BlockHitResult -> {
+        is BlockHitResult ->
             minecraft.currentWorld().getBlockEntity(
                 hitResult.takeUnless {
                     it.type == HitResult.Type.MISS
@@ -57,7 +57,6 @@ private fun getTargetNbt(): NbtCompound? {
             )?.also {
                 return it.createNbt()
             } ?: TargetNBTCommand.warning("The block you are looking at does not have NBT.")
-        }
     }
 
     return null

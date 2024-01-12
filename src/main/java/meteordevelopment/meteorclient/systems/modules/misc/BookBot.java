@@ -12,7 +12,7 @@ import meteordevelopment.meteorclient.gui.widgets.WLabel;
 import meteordevelopment.meteorclient.gui.widgets.WWidget;
 import meteordevelopment.meteorclient.gui.widgets.containers.WHorizontalList;
 import meteordevelopment.meteorclient.gui.widgets.pressable.WButton;
-import meteordevelopment.meteorclient.mixin.TextHandlerAccessor;
+import meteordevelopment.meteorclient.mixin.accessor.TextHandlerAccessor;
 import meteordevelopment.meteorclient.settings.*;
 import meteordevelopment.meteorclient.systems.modules.Categories;
 import meteordevelopment.meteorclient.systems.modules.Module;
@@ -202,7 +202,7 @@ public class BookBot extends Module {
 
             // Handle the file being empty
             if (file.length() == 0) {
-                MutableText message = Text.literal("");
+                MutableText message = Text.empty();
                 message.append(Text.literal("The bookbot file is empty! ").formatted(Formatting.RED));
                 message.append(Text.literal("Click here to edit it.")
                     .setStyle(Style.EMPTY

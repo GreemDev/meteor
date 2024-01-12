@@ -13,6 +13,7 @@ import meteordevelopment.meteorclient.gui.widgets.input.WIntEdit;
 import meteordevelopment.meteorclient.gui.widgets.input.WTextBox;
 import meteordevelopment.meteorclient.settings.Setting;
 import meteordevelopment.meteorclient.utils.misc.Names;
+import net.greemdev.meteor.util.Strings;
 import net.minecraft.entity.effect.StatusEffect;
 import org.apache.commons.lang3.StringUtils;
 
@@ -26,7 +27,7 @@ public class StatusEffectAmplifierMapSettingScreen extends WindowScreen {
     private WTable table;
 
     private WTextBox filter;
-    private String filterText = "";
+    private String filterText = Strings.empty;
 
     public StatusEffectAmplifierMapSettingScreen(GuiTheme theme, Setting<Object2IntMap<StatusEffect>> setting) {
         super(theme, "Modify Amplifiers");
@@ -36,7 +37,7 @@ public class StatusEffectAmplifierMapSettingScreen extends WindowScreen {
 
     @Override
     public void initWidgets() {
-        filter = add(theme.textBox("")).minWidth(400).expandX().widget();
+        filter = add(theme.textBox(Strings.empty)).minWidth(400).expandX().widget();
         filter.setFocused(true);
         filter.action = () -> {
             filterText = filter.get().trim();

@@ -15,6 +15,7 @@ import meteordevelopment.meteorclient.utils.misc.NbtException;
 import meteordevelopment.meteorclient.utils.misc.NbtUtils;
 import meteordevelopment.meteorclient.utils.network.MeteorExecutor;
 import net.minecraft.nbt.NbtCompound;
+import net.minecraft.nbt.NbtElement;
 
 import java.util.ArrayList;
 import java.util.Iterator;
@@ -66,7 +67,7 @@ public class Accounts extends System<Accounts> implements Iterable<Account<?>> {
 
     @Override
     public Accounts fromTag(NbtCompound tag) {
-        MeteorExecutor.execute(() -> accounts = NbtUtils.listFromTag(tag.getList("accounts", 10), tag1 -> {
+        MeteorExecutor.execute(() -> accounts = NbtUtils.listFromTag(tag.getList("accounts", NbtElement.COMPOUND_TYPE), tag1 -> {
             NbtCompound t = (NbtCompound) tag1;
             if (!t.contains("type")) return null;
 

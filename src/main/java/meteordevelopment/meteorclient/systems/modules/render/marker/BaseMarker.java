@@ -13,6 +13,7 @@ import meteordevelopment.meteorclient.settings.*;
 import meteordevelopment.meteorclient.utils.misc.ISerializable;
 import meteordevelopment.meteorclient.utils.player.PlayerUtils;
 import meteordevelopment.meteorclient.utils.world.Dimension;
+import net.greemdev.meteor.util.Strings;
 import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.nbt.NbtCompound;
 
@@ -24,14 +25,14 @@ public abstract class BaseMarker implements ISerializable<BaseMarker> {
     public final Setting<String> name = sgBase.add(new StringSetting.Builder()
         .name("name")
         .description("Custom name for this marker.")
-        .defaultValue("")
+        .defaultValue(Strings.empty)
         .build()
     );
 
     protected final Setting<String> description = sgBase.add(new StringSetting.Builder()
         .name("description")
         .description("Custom description for this marker.")
-        .defaultValue("")
+        .defaultValue(Strings.empty)
         .build()
     );
 

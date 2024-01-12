@@ -9,6 +9,7 @@ import meteordevelopment.meteorclient.gui.utils.CharFilter;
 import meteordevelopment.meteorclient.settings.*;
 import meteordevelopment.meteorclient.utils.Utils;
 import meteordevelopment.meteorclient.utils.misc.ISerializable;
+import net.greemdev.meteor.util.Strings;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.nbt.NbtElement;
 import org.jetbrains.annotations.Nullable;
@@ -25,7 +26,7 @@ public class Proxy implements ISerializable<Proxy> {
     public Setting<String> name = sgGeneral.add(new StringSetting.Builder()
         .name("name")
         .description("The name of the proxy.")
-        .defaultValue("")
+        .defaultValue(Strings.empty)
         .build()
     );
 
@@ -39,7 +40,7 @@ public class Proxy implements ISerializable<Proxy> {
     public Setting<String> address = sgGeneral.add(new StringSetting.Builder()
         .name("address")
         .description("The ip address of the proxy.")
-        .defaultValue("")
+        .defaultValue(Strings.empty)
         .filter(CharFilter.ip())
         .build()
     );
@@ -66,14 +67,14 @@ public class Proxy implements ISerializable<Proxy> {
     public Setting<String> username = sgOptional.add(new StringSetting.Builder()
         .name("username")
         .description("The username of the proxy.")
-        .defaultValue("")
+        .defaultValue(Strings.empty)
         .build()
     );
 
     public Setting<String> password = sgOptional.add(new StringSetting.Builder()
         .name("password")
         .description("The password of the proxy.")
-        .defaultValue("")
+        .defaultValue(Strings.empty)
         .visible(() -> type.get().equals(Type.Socks5))
         .build()
     );
@@ -109,10 +110,10 @@ public class Proxy implements ISerializable<Proxy> {
 
     public static class Builder {
         protected Type type = Type.Socks5;
-        protected String address = "";
+        protected String address = Strings.empty;
         protected int port = 0;
-        protected String name = "";
-        protected String username = "";
+        protected String name = Strings.empty;
+        protected String username = Strings.empty;
         protected boolean enabled = false;
 
         public Builder type(Type type) {

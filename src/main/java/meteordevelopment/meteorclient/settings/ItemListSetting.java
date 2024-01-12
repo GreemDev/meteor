@@ -78,7 +78,7 @@ public class ItemListSetting extends Setting<List<Item>> {
     public List<Item> load(NbtCompound tag) {
         get().clear();
 
-        NbtList valueTag = tag.getList("value", 8);
+        NbtList valueTag = tag.getList("value", NbtElement.STRING_TYPE);
         for (NbtElement tagI : valueTag) {
             Item item = Registries.ITEM.get(new Identifier(tagI.asString()));
 

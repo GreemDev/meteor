@@ -8,9 +8,30 @@
 package net.greemdev.meteor
 
 import java.util.function.BiConsumer
+import kotlin.properties.Delegates
 import kotlin.properties.ReadOnlyProperty
 import kotlin.properties.ReadWriteProperty
 import kotlin.reflect.KProperty
+
+@Suppress("UnusedReceiverParameter") // namespacing
+fun<T> Delegates.placeholder(initialValue: T, throwOnReinitialization: Boolean = false) =
+    PlaceholderValue(initialValue, throwOnReinitialization)
+
+class PlaceholderValue<T>(private var backingValue: T, private val throwOnReinitialization: Boolean = false) : ReadWriteProperty<Any?, T> {
+    private var initialized = false
+
+    override fun getValue(thisRef: Any?, property: KProperty<*>): T {
+        return backingValue
+    }
+
+    override fun setValue(thisRef: Any?, property: KProperty<*>, value: T) {
+        if (!initialized) {
+            backingValue = value
+            initialized = true
+        }
+        else if (throwOnReinitialization) throw IllegalStateException("Cannot reinitialize an already provided value")
+    }
+}
 
 inline fun <T> invoking(noinline func: Getter<T>) = ReadOnlyProperty<Any?, T> { _, _ -> func() }
 inline fun <T> invokingOrNull(noinline func: Getter<T>) = ReadOnlyProperty<Any?, T?> { _, _ -> getOrNull(func) }

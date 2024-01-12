@@ -5,12 +5,13 @@
 
 package meteordevelopment.meteorclient.systems.friends;
 
-import com.mojang.util.UUIDTypeAdapter;
 import com.mojang.util.UndashedUuid;
 import meteordevelopment.meteorclient.systems.System;
 import meteordevelopment.meteorclient.systems.Systems;
+import meteordevelopment.meteorclient.utils.Utils;
 import meteordevelopment.meteorclient.utils.misc.NbtUtils;
 import meteordevelopment.meteorclient.utils.network.MeteorExecutor;
+import net.greemdev.meteor.util.Strings;
 import net.minecraft.client.network.PlayerListEntry;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.nbt.NbtCompound;
@@ -34,7 +35,7 @@ public class Friends extends System<Friends> implements Iterable<Friend> {
     }
 
     public boolean add(Friend friend) {
-        if (friend.name.isEmpty() || friend.name.contains(" ")) return false;
+        if (friend.name.isEmpty() || friend.name.contains(Strings.singleSpace)) return false;
 
         if (!friends.contains(friend)) {
             friends.add(friend);
@@ -57,9 +58,7 @@ public class Friends extends System<Friends> implements Iterable<Friend> {
 
     public Friend get(String name, boolean ignoreCase) {
         return friends.stream()
-            .filter(f -> ignoreCase
-                ? f.getName().equalsIgnoreCase(name)
-                : f.getName().equals(name))
+            .filter(f -> Utils.equals(f.getName(), name, ignoreCase))
             .findFirst()
             .orElse(null);
     }
@@ -89,10 +88,6 @@ public class Friends extends System<Friends> implements Iterable<Friend> {
         return get(player) != null;
     }
 
-    public boolean shouldAttack(PlayerEntity player) {
-        return !isFriend(player);
-    }
-
     public int count() {
         return friends.size();
     }
@@ -119,7 +114,7 @@ public class Friends extends System<Friends> implements Iterable<Friend> {
     public Friends fromTag(NbtCompound tag) {
         friends.clear();
 
-        for (NbtElement itemTag : tag.getList("friends", 10)) {
+        for (NbtElement itemTag : tag.getList("friends", NbtElement.COMPOUND_TYPE)) {
             NbtCompound friendTag = (NbtCompound) itemTag;
             if (!friendTag.contains("name")) continue;
 
