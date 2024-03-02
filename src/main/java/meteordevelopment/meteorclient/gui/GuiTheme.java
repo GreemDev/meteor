@@ -53,7 +53,15 @@ import static net.minecraft.client.MinecraftClient.IS_SYSTEM_MAC;
 public abstract class GuiTheme implements ISerializable<GuiTheme> {
 
     public static double getWideSettingWidth() {
-        return Utils.getWindowWidth() / GuiThemes.get().widthDivisor.get();
+        return scaleWidth(Utils.getWindowWidth());
+    }
+
+    public static double getWidthDivisor() {
+        return GuiThemes.get().widthDivisor.get();
+    }
+
+    public static double scaleWidth(double baseWidth) {
+        return baseWidth / getWidthDivisor();
     }
 
     public static final double TITLE_TEXT_SCALE = 1.25;

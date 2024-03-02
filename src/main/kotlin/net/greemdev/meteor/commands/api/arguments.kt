@@ -11,6 +11,7 @@ package net.greemdev.meteor.commands.api
 import com.mojang.brigadier.arguments.*
 import meteordevelopment.meteorclient.commands.Commands
 import meteordevelopment.meteorclient.commands.arguments.*
+import meteordevelopment.meteorclient.systems.modules.Module
 import net.greemdev.meteor.commands.args.DirectionArgumentType
 import net.greemdev.meteor.commands.args.PathArgumentType
 import net.minecraft.command.CommandRegistryAccess
@@ -18,12 +19,19 @@ import net.minecraft.command.argument.*
 import net.minecraft.predicate.NumberRange
 import net.minecraft.registry.BuiltinRegistries
 import net.minecraft.server.command.CommandManager
+import java.util.function.Predicate
 
-inline infix fun <reified T> MinecraftCommandContext.argument(name: String): Lazy<T> = lazy { getArgument(name, T::class.java) }
+inline infix fun <reified T> MinecraftCommandContext.contextArg(name: String): Lazy<T> = lazy { getArgument(name, T::class.java) }
 
-inline fun <reified T> MinecraftCommandContext.argument(type: ArgumentType<T>, name: String = formatArgType(type)) = lazy { type.get(this, name) }
+inline infix fun <reified T> MinecraftCommandContext.contextArg(type: ArgumentType<T>) = lazy { type.find() }
+inline fun <reified T> MinecraftCommandContext.contextArg(name: String, type: ArgumentType<T>) = lazy { type.find(name) }
 
-inline fun<reified T> MinecraftCommandContext.argument(
+context(MinecraftCommandContext)
+inline fun <reified T> ArgumentType<T>.find(name: String = formatArgType(this)): T =
+    getArgument(name, T::class.java)
+
+
+inline fun<reified T> MinecraftCommandContext.contextArg(
     name: String,
     noinline parser: MinecraftCommandContext.(String) -> T
 ) =
@@ -84,7 +92,8 @@ object Arguments {
         Vec3ArgumentType.vec3(centerIntegers)
 
 
-    fun module(): ModuleArgumentType = ModuleArgumentType.create()
+    fun module(predicate: Predicate<Module>? = null, moduleNotValidForArgMessage: String? = null): ModuleArgumentType =
+        ModuleArgumentType.create(predicate, moduleNotValidForArgMessage)
     fun friend(): FriendArgumentType = FriendArgumentType.create()
     fun player(): PlayerArgumentType = PlayerArgumentType.create()
     fun playerListEntry(): PlayerListEntryArgumentType = PlayerListEntryArgumentType.create()
@@ -138,6 +147,14 @@ fun formatArgType(argType: ArgumentType<*>) = buildString {
     append(typeName.replaceFirstChar(Char::lowercase))
 }
 
-inline fun<reified T> ArgumentType<T>.get(ctx: MinecraftCommandContext, name: String = formatArgType(this)): T = ctx.getArgument(name, T::class.java)
+inline fun<reified T> ArgumentType<T>.get(
+    ctx: MinecraftCommandContext,
+    name: String = formatArgType(this)
+): T = get(name, ctx)
+
+inline fun<reified T> get(
+    name: String,
+    ctx: MinecraftCommandContext
+): T = ctx.getArgument(name, T::class.java)
 
 

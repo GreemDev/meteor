@@ -6,19 +6,24 @@
 package net.greemdev.meteor
 
 import com.mojang.brigadier.builder.LiteralArgumentBuilder
+import com.mojang.brigadier.exceptions.CommandSyntaxException
 import meteordevelopment.meteorclient.commands.Command
 import meteordevelopment.meteorclient.systems.modules.Categories
 import meteordevelopment.meteorclient.systems.modules.Category
 import meteordevelopment.meteorclient.systems.modules.Module
-import meteordevelopment.meteorclient.utils.player.ChatUtils
 import net.greemdev.meteor.commands.api.*
-import net.greemdev.meteor.util.findInstancesOfSubtypesOf
+import net.greemdev.meteor.util.javaSubtypesOf
 import net.greemdev.meteor.util.meteor.group
 import net.greemdev.meteor.util.minecraft
 import net.greemdev.meteor.util.text.*
 import net.minecraft.command.CommandSource
+import net.minecraft.util.crash.CrashException
+import java.lang.reflect.Modifier
+import kotlin.reflect.KClass
 
-abstract class GModule(name: String, description: String, category: Category = Greteor.category()) : Module(category, name, description) {
+abstract class GModule private constructor(name: String, description: String, category: Category) : Module(category, name, description) {
+    companion object : SubtypeInstances<GModule>("net.greemdev.meteor.modules", GModule::class)
+
     protected val sg by lazy(settings::group)
 
     abstract class Combat(name: String, description: String) : GModule(name, description, Categories.Combat)
@@ -28,55 +33,58 @@ abstract class GModule(name: String, description: String, category: Category = G
     abstract class World(name: String, description: String) : GModule(name, description, Categories.World)
     abstract class Misc(name: String, description: String) : GModule(name, description, Categories.Misc)
 
-    companion object {
-        fun findAll() = findInstancesOfSubtypesOf<GModule>("net.greemdev.meteor.modules")
-    }
+    fun info(textBuilder: FormattedText.() -> Unit) = info(buildText(block = textBuilder))
 }
 
 abstract class GCommand(
     name: String,
     description: String,
     private val b: (context(GCommand) CommandBuilder.() -> Unit)? = null,
-    private vararg val aliases: String
-) : Command(name, description) {
+    vararg aliases: String
+) : Command(name, description, *aliases) {
+    companion object : SubtypeInstances<GCommand>("net.greemdev.meteor.commands", GCommand::class)
 
     constructor(name: String, description: String, vararg aliases: String) : this(name, description, null, *aliases)
 
-    override fun getAliases() = aliases.toList()
+    protected open fun inject(builder: CommandBuilder) = b?.invoke(this, builder) ?: throw AbstractMethodError()
 
-    protected open fun CommandBuilder.inject() {
-        kotlin.error("The base implementation of GCommand#inject should never be called! " +
-            "You forgot to override the method or provide the builder function in the abstract class constructor for command $name.")
-    }
 
-    override fun build(builder: LiteralArgumentBuilder<CommandSource>) {
-        with(CommandBuilder(builder)) {
-            b?.invoke(this@GCommand, this) ?: inject()
-        }
-    }
+    final override fun build(builder: LiteralArgumentBuilder<CommandSource>) = inject(CommandBuilder(builder))
+
 
     /**
      * Show the exception to the user and log it.
      * Useful for [BrigadierBuilder.triesRunning]'s first parameter for simple command error display.
+     *
+     * Rethrows any passed [net.minecraft.util.crash.CrashException]s or [com.mojang.brigadier.exceptions.CommandSyntaxException]s as they have specialized handling and shouldn't be caught.
      */
     fun catching(t: Throwable) {
-        ChatUtils.sendMsg(title, buildText {
-            addString(t.message ?: "Uncaught exception without message. Check game logs for stacktrace information.") {
-                colored(ChatColor.red)
-            }
-            addString("Click here to open your game logs folder.") {
-                colored(MeteorColor.HYPERLINK_BLUE).underlined()
+        if (t is CommandSyntaxException || t is CrashException) throw t
 
-                (minecraft.runDirectory / "logs").path.also {
-                    clicked(actions.openFile, it)
-                    hovered(actions.showText, textOf(it))
-                }
-            }
-        })
-        Greteor.logger.catching(t)
+        info {
+            addString(t.message ?: "Caught exception without message. Check game logs for stacktrace information.", ChatColor.red)
+            addFileHyperlink(
+                "Click here to open your game logs folder.",
+                minecraft.runDirectory / "logs"
+            )
+        }
+        Greteor.logger.error(t.message, t)
     }
 
-    companion object {
-        fun findAll() = findInstancesOfSubtypesOf<GCommand>("net.greemdev.meteor.commands")
+    fun info(textBuilder: FormattedText.() -> Unit) = info(buildText(block = textBuilder))
+}
+
+open class SubtypeInstances<T : Any>(
+    pkg: String,
+    supertype: KClass<T>
+) {
+    private val subtypeInstances by lazy {
+        javaSubtypesOf<T>(supertype.java, pkg)
+            .filter { !Modifier.isAbstract(it.modifiers) }
+            .map(Class<out T>::kotlin)
+            .toList()
+            .mapNotNull(KClass<out T>::tryFindInstance)
     }
+
+    fun subtypes() = subtypeInstances
 }

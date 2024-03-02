@@ -35,7 +35,7 @@ public final class Capes {
     private static final List<Cape> TO_REMOVE = new ArrayList<>();
 
     @PreInit(dependencies = MeteorExecutor.class)
-    public static void init() {
+    public static void reload() {
         OWNERS.clear();
         URLS.clear();
         TEXTURES.clear();
@@ -144,7 +144,7 @@ public final class Capes {
                 try {
                     String url = URLS.get(name);
                     if (url == null) {
-                        synchronized (TO_RETRY) {
+                        synchronized (TO_REMOVE) {
                             TO_REMOVE.add(this);
                             downloading = false;
                             return;

@@ -41,37 +41,37 @@ public class DefaultSettingsWidgetFactory extends SettingsWidgetFactory {
     public DefaultSettingsWidgetFactory(GuiTheme theme) {
         super(theme);
 
-        factories.put(BoolSetting.class, (table, setting) -> boolW(table, (BoolSetting) setting));
-        factories.put(IntSetting.class, (table, setting) -> intW(table, (IntSetting) setting));
-        factories.put(DoubleSetting.class, (table, setting) -> doubleW(table, (DoubleSetting) setting));
-        factories.put(StringSetting.class, (table, setting) -> stringW(table, (StringSetting) setting));
-        factories.put(EnumSetting.class, (table, setting) -> enumW(table, (EnumSetting<? extends Enum<?>>) setting));
-        factories.put(ProvidedStringSetting.class, (table, setting) -> providedStringW(table, (ProvidedStringSetting) setting));
-        factories.put(GenericSetting.class, (table, setting) -> genericW(table, (GenericSetting<?>) setting));
-        factories.put(ColorSetting.class, (table, setting) -> colorW(table, (ColorSetting) setting));
-        factories.put(KeybindSetting.class, (table, setting) -> keybindW(table, (KeybindSetting) setting));
-        factories.put(BlockSetting.class, (table, setting) -> blockW(table, (BlockSetting) setting));
-        factories.put(BlockListSetting.class, (table, setting) -> blockListW(table, (BlockListSetting) setting));
-        factories.put(ItemSetting.class, (table, setting) -> itemW(table, (ItemSetting) setting));
-        factories.put(ItemListSetting.class, (table, setting) -> itemListW(table, (ItemListSetting) setting));
-        factories.put(EntityTypeListSetting.class, (table, setting) -> entityTypeListW(table, (EntityTypeListSetting) setting));
-        factories.put(EnchantmentListSetting.class, (table, setting) -> enchantmentListW(table, (EnchantmentListSetting) setting));
-        factories.put(ModuleListSetting.class, (table, setting) -> moduleListW(table, (ModuleListSetting) setting));
-        factories.put(PacketListSetting.class, (table, setting) -> packetListW(table, (PacketListSetting) setting));
-        factories.put(ParticleTypeListSetting.class, (table, setting) -> particleTypeListW(table, (ParticleTypeListSetting) setting));
-        factories.put(SoundEventListSetting.class, (table, setting) -> soundEventListW(table, (SoundEventListSetting) setting));
-        factories.put(StatusEffectAmplifierMapSetting.class, (table, setting) -> statusEffectAmplifierMapW(table, (StatusEffectAmplifierMapSetting) setting));
-        factories.put(StatusEffectListSetting.class, (table, setting) -> statusEffectListW(table, (StatusEffectListSetting) setting));
-        factories.put(StorageBlockListSetting.class, (table, setting) -> storageBlockListW(table, (StorageBlockListSetting) setting));
-        factories.put(ScreenHandlerListSetting.class, (table, setting) -> screenHandlerListW(table, (ScreenHandlerListSetting) setting));
-        factories.put(BlockDataSetting.class, (table, setting) -> blockDataW(table, (BlockDataSetting<?>) setting));
-        factories.put(PotionSetting.class, (table, setting) -> potionW(table, (PotionSetting) setting));
-        factories.put(StringListSetting.class, (table, setting) -> stringListW(table, (StringListSetting) setting));
-        factories.put(StringMapSetting.class, (table, setting) -> stringMapW(table, (StringMapSetting) setting));
-        factories.put(BlockPosSetting.class, (table, setting) -> blockPosW(table, (BlockPosSetting) setting));
-        factories.put(ColorListSetting.class, (table, setting) -> colorListW(table, (ColorListSetting) setting));
-        factories.put(FontFaceSetting.class, (table, setting) -> fontW(table, (FontFaceSetting) setting));
-        factories.put(Vector3dSetting.class, (table, setting) -> vector3dW(table, (Vector3dSetting) setting));
+        map(BoolSetting.class, this::boolW);
+        map(IntSetting.class,  this::intW);
+        map(DoubleSetting.class, this::doubleW);
+        map(EnumSetting.class, this::enumW);
+        map(StringSetting.class, this::stringW);
+        map(ProvidedStringSetting.class, this::providedStringW);
+        map(GenericSetting.class, this::genericW);
+        map(ColorSetting.class, this::colorW);
+        map(KeybindSetting.class, this::keybindW);
+        map(BlockSetting.class, this::blockW);
+        map(BlockListSetting.class, this::blockListW);
+        map(ItemSetting.class, this::itemW);
+        map(ItemListSetting.class, this::itemListW);
+        map(EntityTypeListSetting.class, this::entityTypeListW);
+        map(EnchantmentListSetting.class, this::enchantmentListW);
+        map(ModuleListSetting.class, this::moduleListW);
+        map(PacketListSetting.class, this::packetListW);
+        map(ParticleTypeListSetting.class, this::particleTypeListW);
+        map(SoundEventListSetting.class, this::soundEventListW);
+        map(StatusEffectAmplifierMapSetting.class, this::statusEffectAmplifierMapW);
+        map(StatusEffectListSetting.class, this::statusEffectListW);
+        map(StorageBlockListSetting.class, this::storageBlockListW);
+        map(ScreenHandlerListSetting.class, this::screenHandlerListW);
+        map(BlockDataSetting.class, this::blockDataW);
+        map(PotionSetting.class, this::potionW);
+        map(StringListSetting.class, this::stringListW);
+        map(StringMapSetting.class, this::stringMapW);
+        map(BlockPosSetting.class, this::blockPosW);
+        map(ColorListSetting.class, this::colorListW);
+        map(FontFaceSetting.class, this::fontW);
+        map(Vector3dSetting.class, this::vector3dW);
     }
 
     @Override

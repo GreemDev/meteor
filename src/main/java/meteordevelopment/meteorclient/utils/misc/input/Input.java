@@ -6,6 +6,7 @@
 package meteordevelopment.meteorclient.utils.misc.input;
 
 import meteordevelopment.meteorclient.gui.GuiKeyEvents;
+import meteordevelopment.meteorclient.mixin.KeyBindingAccessor;
 import meteordevelopment.meteorclient.utils.misc.CursorStyle;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.option.KeyBinding;
@@ -37,11 +38,15 @@ public class Input {
     }
 
     public static void setKeyState(KeyBinding bind, boolean pressed) {
-        setKeyState(KeyBinds.getKey(bind), pressed);
+        setKeyState(getKey(bind), pressed);
     }
 
     public static boolean isPressed(KeyBinding bind) {
-        return isKeyPressed(KeyBinds.getKey(bind));
+        return isKeyPressed(getKey(bind));
+    }
+
+    public static int getKey(KeyBinding keyBinding) {
+        return ((KeyBindingAccessor)keyBinding).getKey().getCode();
     }
 
     public static boolean isKeyPressed(int key) {

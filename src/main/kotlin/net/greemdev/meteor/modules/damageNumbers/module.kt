@@ -17,11 +17,11 @@ import net.greemdev.meteor.type.DamageOperatorType
 import net.greemdev.meteor.util.math.*
 import net.greemdev.meteor.util.meteor.*
 import net.greemdev.meteor.util.minecraft
+import net.greemdev.meteor.util.misc.DrawContext
 import net.greemdev.meteor.util.text.ChatColor
-import net.minecraft.client.font.TextRenderer.TextLayerType
+import net.minecraft.client.gui.DrawContext
 import net.minecraft.client.render.GameRenderer
-import net.minecraft.client.render.VertexConsumerProvider
-import net.minecraft.client.util.math.MatrixStack
+import net.minecraft.client.render.Tessellator
 import org.lwjgl.opengl.GL11
 import kotlin.math.abs
 import kotlin.math.round
@@ -30,7 +30,7 @@ import kotlin.math.round
 private val particles = hashSetOf<DamageNumber>()
 
 //Implementation based on ToroHealth
-object DamageNumbers : GModule(
+object DamageNumbers : GModule.Render(
     "damage-numbers", "Floating, disappearing text when you damage enemies showing how much damage was done."
 ) {
     private val sgC = settings group "Colors"
@@ -93,7 +93,7 @@ object DamageNumbers : GModule(
     val damageColor: ColorSetting by sgC color {
         name("damage-color")
         description("The color of the numbers when an entity is &4damaged&r.")
-        defaultValue(ChatColor.darkRed.asMeteor().brighter())
+        defaultValue(ChatColor.darkRed.meteor.brighter())
         canRainbow(false)
         onChanged {
             if (it.rainbow) resetDmg()
@@ -104,7 +104,7 @@ object DamageNumbers : GModule(
     val healColor by sgC color {
         name("heal-color")
         description("The color of the numbers when an entity is &ahealed&r.")
-        defaultValue(ChatColor.green.asMeteor())
+        defaultValue(ChatColor.green.meteor)
         canRainbow(false)
         onChanged {
             if (it.rainbow) resetHeal()
@@ -135,7 +135,11 @@ object DamageNumbers : GModule(
         else healColor()
 
 
-    fun drawNumber(matrices: MatrixStack, vertexConsumers: VertexConsumerProvider, dmg: Float, x: Int, y: Int, width: Float) {
+    fun drawNumber(dmg: Float, drawContext: DrawContext) {
+        val x = 0
+        val y = 0
+        val width = 10f
+
         val number = abs(dmg).takeUnless(Number::isZero) ?: return
         val numStr = (
             if (showDecimal())
@@ -149,17 +153,14 @@ object DamageNumbers : GModule(
         val sw = minecraft.textRenderer.getWidth(formattedNumber)
         val color = getColor(dmg > 0)
 
-        minecraft.textRenderer.draw(
+        drawContext.drawText(
+            minecraft.textRenderer,
             formattedNumber,
-            (x + (width / 2) - sw),
-            y + 5f,
+            (x + (width / 2) - sw).toInt(),
+            y + 5,
             color.packed,
-            shadowedText(),
-            matrices.peek().positionMatrix,
-            vertexConsumers,
-            TextLayerType.NORMAL,
-            0, 15728880,
-            minecraft.textRenderer.isRightToLeft)
+            shadowedText()
+        )
     }
 
     @EventHandler
@@ -183,18 +184,18 @@ object DamageNumbers : GModule(
 
         val tickDelta = minecraft.tickDelta
 
-        val xx = tickDelta.lerp(dn.prevX, dn.x)
-        val yy = tickDelta.lerp(dn.prevY, dn.y)
-        val zz = tickDelta.lerp(dn.prevZ, dn.z)
-
         val (camX, camY, camZ) = wrctx.camera().pos
 
         modifyPushedCopy(wrctx.matrixStack()) {
-            translate(xx - camX, yy - camY, zz - camZ)
+            translate(
+                tickDelta.lerp(dn.prevX, dn.x) - camX,
+                tickDelta.lerp(dn.prevY, dn.y) - camY,
+                tickDelta.lerp(dn.prevZ, dn.z) - camZ
+            )
 
             multiply(Axis.YP.degreesQuaternion(-wrctx.camera().yaw))
             multiply(Axis.XP.degreesQuaternion(wrctx.camera().pitch))
-            scale(scaleFactor.asFloat)
+            scaleFactor.asFloat.also { scale(-it, -it, it) }
 
             RenderSystem.setShader(GameRenderer::getPositionColorProgram)
             RenderSystem.enableDepthTest()
@@ -204,9 +205,11 @@ object DamageNumbers : GModule(
             // WorldRenderContext#consumers() is guaranteed to be present at the point in WorldRenderer.render where
             // this entire function is called (WorldRenderEvents.AFTER_ENTITIES), therefore !! should never cause issues
 
-            drawNumber(wrctx.matrixStack(), wrctx.consumers()!!, dn.getDisplayDamageNumber(), 0, 0, 10f)
+            drawNumber(dn.getDisplayDamageNumber(), DrawContext(Tessellator.getInstance().buffer))
 
             RenderSystem.disableBlend()
         }
+
+        RenderSystem.enableCull()
     }
 }

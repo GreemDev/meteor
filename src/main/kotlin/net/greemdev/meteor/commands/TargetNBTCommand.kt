@@ -20,7 +20,7 @@ import net.minecraft.util.hit.HitResult
 
 object TargetNBTCommand : GCommand("target-nbt", "Gets NBT data of the entity you are looking at.", {
     then("show") {
-        alwaysRuns {
+        runs {
             getTargetNbt()?.also {
                 info(buildText {
                     addString("Target NBT: ")
@@ -32,10 +32,10 @@ object TargetNBTCommand : GCommand("target-nbt", "Gets NBT data of the entity yo
         }
     }
     then("copy") {
-        alwaysRuns {
+        runs {
             getTargetNbt()?.also {
                 minecraft.keyboard.clipboard = it.asString()
-                info("NBT copied successfully copied to clipboard.")
+                info("NBT successfully copied to clipboard.")
             }
         }
     }

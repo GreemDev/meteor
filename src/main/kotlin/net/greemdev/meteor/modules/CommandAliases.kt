@@ -11,7 +11,7 @@ import meteordevelopment.starscript.utils.StarscriptError
 import net.greemdev.meteor.*
 import net.greemdev.meteor.util.meteor.*
 
-object CommandAliases : GModule(
+object CommandAliases : GModule.Misc(
     "command-aliases",
     "Use commands dynamically formatted with Starscript.\nAliases are accessible via Meteor command 'ca'."
 ) {
@@ -54,11 +54,10 @@ object CommandAliases : GModule(
             aliases = compiledCommands.mapNotNull { (name, script) ->
                 runCatching {
                     name to MeteorStarscript.run(script)
-                }.apply {
-                    onFailureOf(StarscriptError::class) {
-                        error("Command script for alias '$name' failed: ${it.message}")
-                    }
-                }.getOrNull()
+                }.onFailureOf(StarscriptError::class) {
+                    error("Command script for alias '$name' failed: ${it.message}")
+                }
+                .getOrNull()
             }.toMap()
         }
     }

@@ -5,6 +5,7 @@
 
 package meteordevelopment.meteorclient;
 
+import kotlin.collections.CollectionsKt;
 import meteordevelopment.discordipc.DiscordIPC;
 import meteordevelopment.meteorclient.events.game.OpenScreenEvent;
 import meteordevelopment.meteorclient.events.meteor.KeyEvent;
@@ -14,6 +15,7 @@ import meteordevelopment.meteorclient.gui.GuiThemes;
 import meteordevelopment.meteorclient.gui.WidgetScreen;
 import meteordevelopment.meteorclient.gui.tabs.TabScreen;
 import meteordevelopment.meteorclient.gui.tabs.Tabs;
+import meteordevelopment.meteorclient.mixin.KeyBindingAccessor;
 import meteordevelopment.meteorclient.systems.Systems;
 import meteordevelopment.meteorclient.systems.config.Config;
 import meteordevelopment.meteorclient.systems.modules.Categories;
@@ -25,7 +27,6 @@ import meteordevelopment.meteorclient.utils.ReflectInit;
 import meteordevelopment.meteorclient.utils.Utils;
 import meteordevelopment.meteorclient.utils.misc.Version;
 import meteordevelopment.meteorclient.utils.misc.input.KeyAction;
-import meteordevelopment.meteorclient.utils.misc.input.KeyBinds;
 import meteordevelopment.meteorclient.utils.network.OnlinePlayers;
 import meteordevelopment.meteorclient.utils.render.color.Color;
 import meteordevelopment.orbit.EventBus;
@@ -42,15 +43,19 @@ import net.greemdev.meteor.modules.MinecraftPresence;
 import net.greemdev.meteor.util.meteor.Meteor;
 import net.greemdev.meteor.util.misc.GVersioning;
 import net.greemdev.meteor.utils;
-import net.minecraft.SharedConstants;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.screen.ChatScreen;
+import net.minecraft.client.option.KeyBinding;
+import net.minecraft.client.util.InputUtil;
+import org.lwjgl.glfw.GLFW;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.File;
 import java.lang.invoke.MethodHandles;
+import java.util.Arrays;
 import java.util.List;
+import java.util.Map;
 
 public class MeteorClient implements ClientModInitializer {
     public static final String MOD_ID = "meteor-client";
@@ -123,7 +128,7 @@ public class MeteorClient implements ClientModInitializer {
         }
 
         // Register event handlers
-        Greteor.lambdaFactoriesFor(MeteorClient.class.getPackageName(), Greteor.class.getPackageName());
+        registerLambdaFactoriesForPackages(MeteorClient.class.getPackageName(), Greteor.class.getPackageName());
 
         // Register init classes
         ReflectInit.registerPackages();
@@ -160,30 +165,27 @@ public class MeteorClient implements ClientModInitializer {
         }));
 
 
-        SharedConstants.isDevelopment = Boolean.parseBoolean(System.getProperty("meteor.minecraft.dev", "false"));
-        if (SharedConstants.isDevelopment)
-            LOG.warn("Property 'meteor.minecraft.dev' is 'true'; Now running in development mode.");
-        else if (GVersioning.isOutdated())
-            Greteor.logger().warn("Not currently on the latest revision! Running %d revisions behind. Latest is %s.".formatted(GVersioning.revisionsBehind(), GVersioning.getLatestRevision()));
+        if (GVersioning.isOutdated())
+            Greteor.logger().warn("Not currently on the latest revision! Running %d revisions behind. Latest is %s.".formatted(GVersioning.revisionsBehind(), GVersioning.latestRevision()));
     }
 
     @EventHandler
     private void onTick(TickEvent.Post event) {
-        if (mc.currentScreen == null && mc.getOverlay() == null && KeyBinds.OPEN_COMMANDS.wasPressed()) {
+        if (mc.currentScreen == null && mc.getOverlay() == null && OPEN_COMMANDS.wasPressed()) {
             mc.setScreen(new ChatScreen(Config.get().prefix.get()));
         }
     }
 
     @EventHandler
     private void onKey(KeyEvent event) {
-        if (event.action == KeyAction.Press && KeyBinds.OPEN_GUI.matchesKey(event.key, 0)) {
+        if (event.action == KeyAction.Press && OPEN_GUI.matchesKey(event.key, 0)) {
             toggleGui();
         }
     }
 
     @EventHandler
     private void onMouseButton(MouseButtonEvent event) {
-        if (event.action == KeyAction.Press && KeyBinds.OPEN_GUI.matchesMouse(event.button)) {
+        if (event.action == KeyAction.Press && OPEN_GUI.matchesMouse(event.button)) {
             toggleGui();
         }
     }
@@ -209,5 +211,45 @@ public class MeteorClient implements ClientModInitializer {
         }
 
         wasWidgetScreen = event.screen instanceof WidgetScreen;
+    }
+
+    public static void registerLambdaFactoriesForPackages(String... packages) {
+        Arrays.stream(packages).forEach(pkg ->
+            EVENT_BUS.registerLambdaFactory(pkg, (lookupInMethod, klass) ->
+                Utils.cast(lookupInMethod.invoke(null, klass, MethodHandles.lookup()))
+            )
+        );
+    }
+
+    // Key bindings
+
+    public static final String KEYBIND_CATEGORY = Utils.nameToTitle(MOD_ID);
+
+    public static KeyBinding OPEN_GUI = new KeyBinding("key.meteor-client.open-gui", InputUtil.Type.KEYSYM, GLFW.GLFW_KEY_RIGHT_SHIFT, KEYBIND_CATEGORY);
+    public static KeyBinding OPEN_COMMANDS = new KeyBinding("key.meteor-client.open-commands", InputUtil.Type.KEYSYM, GLFW.GLFW_KEY_PERIOD, KEYBIND_CATEGORY);
+
+    public static KeyBinding[] injectKeybinds(KeyBinding[] baseKeybinds) {
+        {   // add keybind screen category
+            Map<String, Integer> categories = KeyBindingAccessor.getCategoryOrderMap();
+
+            Integer highest = CollectionsKt.maxOrNull(categories.values());
+            if (highest == null) highest = 0;
+
+            categories.put(MeteorClient.KEYBIND_CATEGORY, highest + 1);
+        }
+
+
+        //doing the reflection to get all static KeyBinding fields was cleaner to impl in kotlin (no try block), so it's not in this class
+        List<KeyBinding> meteorBinds = Greteor.keybinds();
+
+        // Add key binding
+        KeyBinding[] newBinds = new KeyBinding[baseKeybinds.length + meteorBinds.size()];
+
+        System.arraycopy(baseKeybinds, 0, newBinds, 0, baseKeybinds.length);
+
+        for (int i = 0; i < meteorBinds.size(); i++)
+            newBinds[baseKeybinds.length + i] = meteorBinds.get(i);
+
+        return newBinds;
     }
 }

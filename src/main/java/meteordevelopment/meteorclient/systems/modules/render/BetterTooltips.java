@@ -158,7 +158,7 @@ public class BetterTooltips extends Module {
     public final Setting<SettingColor> bytesColor = sgOther.add(new ColorSetting.Builder()
         .name("byte-size-color")
         .description("The color of the item bytes text.")
-        .defaultValue(ChatColor.grey.asMeteor())
+        .defaultValue(ChatColor.grey.meteor())
         .visible(byteSize)
         .build()
     );
@@ -304,7 +304,7 @@ public class BetterTooltips extends Module {
                         ? "%.2f KB".formatted(byteCount / (float) 1024)
                         : "%d bytes".formatted(byteCount);
 
-                event.list.add(FormattedText.colored(count, bytesColor.get()));
+                event.list.add(FormattedText.withColor(count, bytesColor.get()));
             } catch (IOException e) {
                 e.printStackTrace();
             }

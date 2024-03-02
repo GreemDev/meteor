@@ -5,6 +5,7 @@
 
 package meteordevelopment.meteorclient.systems.modules;
 
+import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Ordering;
 import com.mojang.datafixers.util.Pair;
 import com.mojang.serialization.Lifecycle;
@@ -40,6 +41,9 @@ import meteordevelopment.meteorclient.utils.misc.input.Input;
 import meteordevelopment.meteorclient.utils.misc.input.KeyAction;
 import meteordevelopment.orbit.EventHandler;
 import meteordevelopment.orbit.EventPriority;
+import net.greemdev.meteor.GModule;
+import net.greemdev.meteor.util.Reflection;
+import net.greemdev.meteor.utils;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.nbt.NbtElement;
 import net.minecraft.nbt.NbtList;
@@ -85,12 +89,14 @@ public class Modules extends System<Modules> {
 
     @Override
     public void init() {
-        initCombat();
-        initPlayer();
-        initMovement();
-        initRender();
-        initWorld();
-        initMisc();
+        MeteorClient.LOG.info("Modules loaded in {}ms", utils.measureTime(() -> {
+            Reflection.streamSubtypes(Module.class, Modules.class.getPackageName())
+                .map(Reflection::callNoArgsConstructor)
+                .filter(Objects::nonNull)
+                .forEach(this::add);
+
+            sortModules();
+        }));
     }
 
     @Override
@@ -105,9 +111,9 @@ public class Modules extends System<Modules> {
     }
 
     public void sortModules() {
-        for (List<Module> modules : groups.values()) {
-            modules.sort(Comparator.comparing(o -> o.title));
-        }
+        for (List<Module> modulesInGroup : groups.values())
+            modulesInGroup.sort(Comparator.comparing(o -> o.title));
+
         modules.sort(Comparator.comparing(o -> o.title));
     }
 
@@ -151,8 +157,31 @@ public class Modules extends System<Modules> {
         return groups.computeIfAbsent(category, category1 -> new ArrayList<>());
     }
 
+    public Stream<Module> stream() {
+        return moduleInstances.values().stream();
+    }
+
     public Collection<Module> getAll() {
         return moduleInstances.values();
+    }
+
+    public Collection<Module> getAllHidden() {
+        return stream()
+            .filter(Module::isHidden)
+            .collect(ImmutableList.toImmutableList());
+    }
+
+    public Collection<Module> getAllVisible() {
+        return stream()
+            .filter(Predicate.not(Module::isHidden))
+            .collect(ImmutableList.toImmutableList());
+    }
+
+    public Collection<GModule> getGreteorModules() {
+        return stream()
+            .filter(m -> m instanceof GModule)
+            .<GModule>map(Utils::cast)
+            .collect(ImmutableList.toImmutableList());
     }
 
     public List<Module> getList() {

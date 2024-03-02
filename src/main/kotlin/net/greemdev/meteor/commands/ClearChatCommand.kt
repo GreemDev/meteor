@@ -6,21 +6,15 @@
 package net.greemdev.meteor.commands
 
 import net.greemdev.meteor.GCommand
-import net.greemdev.meteor.util.minecraft
-import net.greemdev.meteor.util.misc.allowNextChatClear
+import net.greemdev.meteor.util.misc.clearChat
 
 object ClearChatCommand : GCommand("clearchat", "Clears your chat.", {
+    runs {
+        clearChat()
+    }
     then("andMessageHistory") {
-        alwaysRuns {
+        runs {
             clearChat(true)
         }
     }
-    alwaysRuns {
-        clearChat(false)
-    }
 }, "cc")
-
-private fun clearChat(clearHistory: Boolean) {
-    allowNextChatClear = true
-    minecraft.inGameHud.chatHud.clear(clearHistory)
-}

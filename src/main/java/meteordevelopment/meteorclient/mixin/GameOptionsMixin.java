@@ -9,7 +9,6 @@ import meteordevelopment.meteorclient.MeteorClient;
 import meteordevelopment.meteorclient.events.game.ChangePerspectiveEvent;
 import meteordevelopment.meteorclient.systems.modules.Modules;
 import meteordevelopment.meteorclient.systems.modules.render.Freecam;
-import meteordevelopment.meteorclient.utils.misc.input.KeyBinds;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.option.GameOptions;
 import net.minecraft.client.option.KeyBinding;
@@ -31,7 +30,7 @@ public class GameOptionsMixin {
 
     @Inject(method = "<init>", at = @At(value = "FIELD", target = "Lnet/minecraft/client/option/GameOptions;allKeys:[Lnet/minecraft/client/option/KeyBinding;", opcode = Opcodes.PUTFIELD, shift = At.Shift.AFTER))
     private void onInitAfterKeysAll(MinecraftClient client, File optionsFile, CallbackInfo info) {
-        allKeys = KeyBinds.apply(allKeys);
+        allKeys = MeteorClient.injectKeybinds(allKeys);
     }
 
     @Inject(method = "setPerspective", at = @At("HEAD"), cancellable = true)

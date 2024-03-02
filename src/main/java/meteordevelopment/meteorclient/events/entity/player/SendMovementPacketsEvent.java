@@ -5,8 +5,8 @@
 
 package meteordevelopment.meteorclient.events.entity.player;
 
-public class SendMovementPacketsEvent {
-    public static class Pre {
+public abstract class SendMovementPacketsEvent {
+    public static class Pre extends SendMovementPacketsEvent {
         private static final Pre INSTANCE = new Pre();
 
         public static SendMovementPacketsEvent.Pre get() {
@@ -14,7 +14,7 @@ public class SendMovementPacketsEvent {
         }
     }
 
-    public static class Post {
+    public static class Post extends SendMovementPacketsEvent {
         private static final Post INSTANCE = new Post();
 
         public static SendMovementPacketsEvent.Post get() {

@@ -9,6 +9,7 @@
 package net.greemdev.meteor
 
 import com.google.common.base.MoreObjects
+import com.google.common.base.Predicates
 import kotlinx.datetime.Clock
 import meteordevelopment.meteorclient.gui.widgets.pressable.WPressable
 import net.fabricmc.loader.api.FabricLoader
@@ -26,10 +27,8 @@ import java.lang.IllegalStateException
 import java.nio.file.Path
 import java.text.SimpleDateFormat
 import java.util.*
-import java.util.function.BiConsumer
-import java.util.function.Consumer
+import java.util.function.*
 import java.util.function.Function
-import java.util.function.Supplier
 import kotlin.contracts.ExperimentalContracts
 import kotlin.contracts.InvocationKind
 import kotlin.contracts.contract
@@ -38,6 +37,7 @@ import kotlin.reflect.KMutableProperty
 import kotlin.reflect.full.declaredMemberProperties
 import kotlin.reflect.full.primaryConstructor
 import kotlin.reflect.full.safeCast
+import kotlin.system.measureTimeMillis
 
 inline fun <T> getOrNull(crossinline func: Getter<T>): T? = runCatching(func).getOrNull()
 fun <T> supplyOrNull(func: Supplier<T>): T? = getOrNull(func.kotlin)
@@ -64,6 +64,25 @@ inline fun <T> Collection<T>.getRandomElement(): T { //exists to be used from Ja
 inline fun <T : Any> Collection<T>.findFirst() = optionalOf(firstOrNull())
 inline fun <T : Any> Collection<T>.findLast() = optionalOf(firstOrNull())
 inline fun <T : Any> Collection<T>.find(predicate: Predicate<T>) = optionalOf(firstOrNull(predicate))
+
+fun<T> MutableSet<T>.removeMatching(predicate: Predicate<T>): Int {
+    var removed = 0
+    val iterator = iterator()
+    while (iterator.hasNext()) {
+        if (predicate(iterator.next())) {
+            iterator.remove()
+            removed++
+        }
+    }
+    return removed
+}
+
+fun<T> MutableSet<T>.retainMatching(predicate: Predicate<T>) = removeMatching(predicate.not())
+
+fun<T> MutableList<T>.setElements(elements: Collection<T>) {
+    clear()
+    addAll(elements)
+}
 
 fun getLogger(value: Any) = log4j(value).value
 
@@ -144,10 +163,15 @@ fun colorOf(value: Any): MeteorColor = when (value) {
     else -> throw IllegalArgumentException("Illegal or unknown color value. Only accepts R,G,B(,A); (#)RRGGBB; and (#)RRGGBBAA, or a raw RGB int.")
 }
 
+@Suppress("FunctionName")
+@JvmName("err")
+fun `i fucking hate checked exceptions`(t: Throwable): Nothing =
+    throw t
+
 fun Date.format(fmt: String): String = SimpleDateFormat(fmt).format(this)
 
-fun <T> firstNotNull(vararg nullables: T?) = nullables.firstNotNullOf(Lambdas.selfMapper())
-fun <T> Iterable<T?>.firstNotNull(): T = firstNotNullOf(Lambdas.selfMapper())
+fun <T> firstNotNull(vararg nullables: T?) = nullables.firstNotNullOf(Lambdas.identity())
+fun <T> Iterable<T?>.firstNotNull(): T = firstNotNullOf(Lambdas.identity())
 
 fun <T> List<T>.indexedForEach(consumer: BiConsumer<Int, T>) =
     this.forEachIndexed { index, t -> consumer.accept(index, t) }
@@ -170,7 +194,7 @@ fun Class<out Packet<*>>.isS2C() = simpleName.contains("S2C")
 
 fun AwtColor.meteor() = MeteorColor(red, green, blue, alpha)
 
-fun any(vararg conditions: Boolean) = conditions.any()
+fun any(vararg conditions: Boolean) = conditions.any(Lambdas.identity())
 
 fun <T, R : Comparable<R>> List<T>.sorted(
     sorted: Boolean = true,
@@ -185,73 +209,16 @@ fun <T, R : Comparable<R>> List<T>.sorted(
     }
 }
 
-// Kotlin to Java & vice-versa lambda type conversions for interoperability
-
-
-// Action <-> Runnable
-@get:JvmName("java")
-inline val Action.java: Runnable
-    get() = Runnable(this::invoke)
-
-@get:JvmName("kotlin")
-inline val Runnable.kotlin: Action
-    get() = this::run
-
-inline operator fun Runnable.invoke() = kotlin()
-
-
-// ValueAction <-> Consumer
-@get:JvmName("java")
-inline val <T> ValueAction<T>.java: Consumer<T>
-    get() = Consumer(this::invoke)
-
-@get:JvmName("kotlin")
-inline val <T> Consumer<T>.kotlin: ValueAction<T>
-    get() = this::accept
-
-inline operator fun<T> Consumer<T>.invoke(arg: T) = kotlin(arg)
-
-
-private typealias JPredicate<T> = java.util.function.Predicate<T>
-
-@get:JvmName("java")
-inline val <T> Predicate<T>.java: JPredicate<T>
-    get() = JPredicate(this::invoke)
-
-@get:JvmName("kotlin")
-inline val <T> JPredicate<T>.kotlin: Predicate<T>
-    get() = this::test
-
-inline operator fun<T> JPredicate<T>.invoke(arg: T) = kotlin(arg)
-
-
-// Getter <-> Supplier
-@get:JvmName("java")
-inline val <T> Getter<T>.java: Supplier<T>
-    get() = Supplier(this::invoke)
-
-@get:JvmName("kotlin")
-inline val <T> Supplier<T>.kotlin: Getter<T>
-    get() = this::get
-
-inline operator fun<T> Supplier<T>.invoke() = kotlin()
-
-
-// Mapper <-> Function
-@get:JvmName("java")
-inline val <I, O> Mapper<I, O>.java: Function<I, O>
-    get() = Function(this::invoke)
-
-@get:JvmName("kotlin")
-inline val <I, O> Function<I, O>.kotlin: Mapper<I, O>
-    get() = this::apply
-
-inline operator fun<I, O> Function<I, O>.invoke(arg: I) = kotlin(arg)
-
 fun <T : Any> optionalOf(value: T? = null): Optional<T> = Optional.ofNullable(value)
+fun<T : Any> T?.opt() = optionalOf(this)
 
-fun <T : Any> T.optionally(predicate: Predicate<T>) = optionalOf(takeIf(predicate))
-fun <T : Any> T.optionallyNot(predicate: Predicate<T>) = optionalOf(takeUnless(predicate))
+fun <T : Any> T.optionalIf(predicate: Predicate<T>) = optionalOf(takeIf(predicate))
+fun <T : Any> T.optionalUnless(predicate: Predicate<T>) = optionalOf(takeUnless(predicate))
+
+fun<T> Optional<T>.test(predicate: Predicate<in T>): Boolean {
+    if (isEmpty) return false
+    return filter(predicate).isPresent
+}
 
 
 
@@ -290,6 +257,8 @@ fun File.createFile() = getOrNull { createNewFile() } ?: false
  */
 fun <T : Any> KClass<T>.findInstance(vararg args: Any?) = objectInstance ?: primaryConstructor?.call(args)
 
+fun <T : Any> KClass<T>.tryFindInstance(vararg args: Any?) = objectInstance ?: getOrNull { primaryConstructor?.call(args) }
+
 infix fun <T : WPressable> T.action(func: (T) -> Unit): T = action { func(this) }
 
 /**
@@ -297,7 +266,7 @@ infix fun <T : WPressable> T.action(func: (T) -> Unit): T = action { func(this) 
  */
 fun parseHexColor(hex: String) = Color(
     hex.takeLast(6).uppercase()
-        .optionally { seq ->
+        .optionalIf { seq ->
             seq.all { it in '0'..'9' || it in 'A'..'F' }
         }
         .flatMap { optionalOf(it.toIntOrNull(16)) }
@@ -378,27 +347,155 @@ inline fun<reified T> Any.castChecked() =
 @Suppress("UNCHECKED_CAST")
 fun<T> Any.cast() = this as T
 
+@Suppress("UNCHECKED_CAST")
+fun<T> Any.tryCast() = this as? T
+
+
+
 /**
  * Returns 1 for true, and 0 for false.
  */
 fun Boolean.asInt() = if (this) 1 else 0
 fun Int.asBoolean() = this >= 1
 
+fun measureTime(action: Runnable) = measureTimeMillis(action.kotlin)
+
+fun tickTask(delayBetween: Int, action: Action) = Ticker.Builder().tickLimit(delayBetween).action(action).build()
+fun tickTask(delayBetween: Int, conditionModifier: Pipe<Boolean>, action: Action) =
+    Ticker.Builder().tickLimit(delayBetween).condition(conditionModifier).action(action).build()
+fun Action.runEvery(ticks: Int, conditionModifier: Pipe<Boolean> = Lambdas.identity()) = tickTask(ticks, conditionModifier, this)
+
+fun ticker(builder: Initializer<Ticker.Builder>) = Ticker.Builder().apply(builder).build()
+
+class Ticker private constructor(
+    private val tickLimit: Getter<Int>,
+    private val conditionModifier: Pipe<Boolean> = Lambdas.identity(),
+    private val action: Action
+) : Runnable by action.java {
+    private var ticked = 0
+    fun tick() {
+        if (conditionModifier(ticked >= tickLimit())) {
+            run()
+            ticked = 0
+        } else ticked++
+    }
+
+    class Builder {
+        private var tickLimit: Getter<Int>? = null
+        private var conditionModifier: Pipe<Boolean> = Lambdas.identity()
+        private var action: Action? = null
+
+        fun tickLimit(limit: Int) = tickLimit(Lambdas.constant(limit))
+
+        fun tickLimit(limit: Getter<Int>): Builder {
+            tickLimit = limit
+            return this
+        }
+
+        fun condition(modifier: Pipe<Boolean>): Builder {
+            conditionModifier = modifier
+            return this
+        }
+
+        fun action(action: Action): Builder {
+            this.action = action
+            return this
+        }
+
+        fun build() = Ticker(
+            tickLimit ?: error("Cannot create a Ticker without specifying a tick limit."),
+            conditionModifier,
+            action ?: error("Cannot create a Ticker without specifying an action to run.")
+        )
+    }
+}
+
 object Lambdas {
     @JvmField val noOperation: Action = { }
     @JvmStatic fun <T> void(): ValueAction<T> = { }
     @JvmStatic fun <T> constant(value: T): Getter<T> = { value }
-    @JvmStatic fun <T> selfMapper(): Mapper<T, T> = { it }
+    @JvmStatic fun <T> identity(): Mapper<T, T> = { it }
+
+    @JvmName("ktAllowAll")
+    fun <T> allowAll(): Predicate<T> = { true }
+
+    @JvmName("allowAll")
+    @JvmStatic fun <T> `java-allowAll`(): JPredicate<T> = Predicates.alwaysTrue<T>()
+
+    @JvmName("ktAllowNone")
+    fun <T> allowNone(): Predicate<T> = { false }
+
+    @JvmName("allowNone")
+    @JvmStatic fun <T> `java-allowNone`(): JPredicate<T> = Predicates.alwaysFalse<T>()
+
+    @JvmStatic inline fun invert(supplier: Supplier<Boolean>) = Supplier { !supplier() }
+
+    @JvmStatic inline fun<T> not(crossinline predicate: Predicate<T>): Predicate<T> = { !predicate(it) }
+
+    fun aboveZero(): Predicate<Int> = { it > 0 }
+    fun aboveOrZero(): Predicate<Int> = { it >= 0 }
+
+    fun belowZero(): Predicate<Int> = { it < 0 }
+
+    fun belowOrZero(): Predicate<Int> = { it <= 0 }
 }
+
+inline fun Supplier<Boolean>.inverse() = Lambdas.invert(this)
+inline fun<T> Predicate<T>.not() = Lambdas.not(this)
+
+// Kotlin <-> Java lambda type conversions for interoperability
+
+
+// Action <-> Runnable
+@get:JvmName("java")
+inline val Action.java: Runnable get() = Runnable(this)
+@get:JvmName("kotlin")
+inline val Runnable.kotlin: Action get() = this::run
+
+// ValueAction <-> Consumer
+@get:JvmName("java")
+inline val <T> ValueAction<T>.java: Consumer<T> get() = Consumer(this)
+@get:JvmName("kotlin")
+inline val <T> Consumer<T>.kotlin: ValueAction<T> get() = this::accept
+
+// BiValueAction <-> BiConsumer
+@get:JvmName("java")
+inline val <T1, T2> BiValueAction<T1, T2>.java: BiConsumer<T1, T2> get() = BiConsumer(this)
+@get:JvmName("kotlin")
+inline val <T1, T2> BiConsumer<T1, T2>.kotlin: BiValueAction<T1, T2> get() = this::accept
+
+private typealias JPredicate<T> = java.util.function.Predicate<T>
+
+@get:JvmName("java")
+inline val <T> Predicate<T>.java: JPredicate<T> get() = JPredicate(this)
+@get:JvmName("kotlin")
+inline val <T> JPredicate<T>.kotlin: Predicate<T> get() = this::test
+
+// Getter <-> Supplier
+@get:JvmName("java")
+inline val <T> Getter<T>.java: Supplier<T> get() = Supplier(this)
+@get:JvmName("kotlin")
+inline val <T> Supplier<T>.kotlin: Getter<T> get() = this::get
+
+// Mapper <-> Function
+@get:JvmName("java")
+inline val <I, O> Mapper<I, O>.java: Function<I, O> get() = Function(this)
+@get:JvmName("kotlin")
+inline val <I, O> Function<I, O>.kotlin: Mapper<I, O> get() = this::apply
+
+
+inline operator fun Runnable.invoke() = run()
+inline operator fun<T> JPredicate<T>.invoke(arg: T) = test(arg)
+inline operator fun<T> Supplier<T>.invoke() = get()
+
+inline operator fun<T> Consumer<T>.invoke(arg: T) = accept(arg)
+inline operator fun<T1, T2> BiConsumer<T1, T2>.invoke(arg1: T1, arg2: T2) = accept(arg1, arg2)
+
+inline operator fun<I, O> Function<I, O>.invoke(arg: I) = apply(arg)
+inline operator fun<I1, I2, O> BiFunction<I1, I2, O>.invoke(arg1: I1, arg2: I2) = apply(arg1, arg2)
 
 typealias Action = () -> Unit
 typealias SuspendingAction = suspend () -> Unit
-
-typealias ValueAction<T> = Mapper<T, Unit>
-typealias SuspendingValueAction<T> = SuspendingMapper<T, Unit>
-
-typealias Predicate<T> = Mapper<T, Boolean>
-typealias SuspendingPredicate<T> = SuspendingMapper<T, Boolean>
 
 typealias Initializer<T> = T.() -> Unit
 typealias SuspendingInitializer<T> = suspend T.() -> Unit
@@ -409,8 +506,17 @@ typealias SuspendingGetter<T> = suspend () -> T
 typealias Mapper<I, O> = (I) -> O
 typealias SuspendingMapper<I, O> = suspend (I) -> O
 
-typealias Visitor<T> = (T) -> T
-typealias SuspendingVisitor<T> = suspend (T) -> T
+typealias BiValueAction<T1, T2> = (T1, T2) -> Unit
+typealias SuspendingBiValueAction<T1, T2> = suspend (T1, T2) -> Unit
 
-typealias VisitorOn<T> = T.() -> T
-typealias SuspendingVisitorOn<T> = suspend T.() -> T
+typealias ValueAction<T> = Mapper<T, Unit>
+typealias SuspendingValueAction<T> = SuspendingMapper<T, Unit>
+
+typealias Predicate<T> = Mapper<T, Boolean>
+typealias SuspendingPredicate<T> = SuspendingMapper<T, Boolean>
+
+typealias Pipe<T> = (T) -> T
+typealias SuspendingPipe<T> = suspend (T) -> T
+
+typealias PipeOn<T> = T.() -> T
+typealias SuspendingPipeOn<T> = suspend T.() -> T

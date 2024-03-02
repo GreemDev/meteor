@@ -16,6 +16,8 @@ import net.minecraft.text.MutableText;
 import net.minecraft.text.Text;
 import net.minecraft.util.Formatting;
 
+import java.util.function.Predicate;
+
 import static com.mojang.brigadier.Command.SINGLE_SUCCESS;
 
 public class ModulesCommand extends Command {
@@ -29,8 +31,10 @@ public class ModulesCommand extends Command {
             ChatUtils.info("--- Modules ((highlight)%d(default)) ---", Modules.get().getCount());
 
             Modules.loopCategories().forEach(category -> {
-                MutableText categoryMessage = Text.literal("");
-                Modules.get().getGroup(category).forEach(module -> categoryMessage.append(getModuleText(module)));
+                MutableText categoryMessage = Text.empty();
+                Modules.get().getGroup(category)
+                    .stream().filter(Predicate.not(Module::isHidden))
+                    .forEach(module -> categoryMessage.append(getModuleText(module)));
                 ChatUtils.sendMsg(category.name, categoryMessage);
             });
 

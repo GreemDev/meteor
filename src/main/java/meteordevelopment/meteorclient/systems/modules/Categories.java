@@ -5,7 +5,6 @@
 
 package meteordevelopment.meteorclient.systems.modules;
 
-import net.greemdev.meteor.Greteor;
 import net.minecraft.item.Items;
 
 public class Categories {
@@ -28,7 +27,6 @@ public class Categories {
         Modules.registerCategory(Render);
         Modules.registerCategory(World);
         Modules.registerCategory(Misc);
-        Modules.registerCategory(Greteor.INSTANCE.category());
 
         REGISTERING = false;
     }

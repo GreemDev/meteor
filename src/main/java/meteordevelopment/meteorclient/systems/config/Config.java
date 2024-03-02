@@ -147,7 +147,7 @@ public class Config extends System<Config> {
     public final Setting<SettingColor> meteorPrefixBracketsColor = sgChat.add(new ColorSetting.Builder()
         .name("chat-prefix-brackets-color")
         .description("Color of the brackets around the prefix text.")
-        .defaultValue(ChatColor.grey.asMeteor())
+        .defaultValue(ChatColor.grey.meteor())
         .build()
     );
 

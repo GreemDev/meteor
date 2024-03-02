@@ -6,13 +6,13 @@
 package meteordevelopment.meteorclient.mixin;
 
 import it.unimi.dsi.fastutil.io.FastByteArrayOutputStream;
+import meteordevelopment.meteorclient.MeteorClient;
+import net.greemdev.meteor.util.misc.Nbt;
+import net.greemdev.meteor.util.misc.NbtUtil;
 import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.client.gui.screen.ingame.BookEditScreen;
 import net.minecraft.client.gui.widget.ButtonWidget;
-import net.minecraft.nbt.NbtCompound;
-import net.minecraft.nbt.NbtIo;
-import net.minecraft.nbt.NbtList;
-import net.minecraft.nbt.NbtString;
+import net.minecraft.nbt.*;
 import net.minecraft.text.Text;
 import org.lwjgl.glfw.GLFW;
 import org.spongepowered.asm.mixin.Final;
@@ -47,27 +47,30 @@ public abstract class BookEditScreenMixin extends Screen {
     private void onInit(CallbackInfo info) {
         addDrawableChild(
             new ButtonWidget.Builder(Text.literal("Copy"), button -> {
-                NbtList listTag = new NbtList();
-                    pages.stream().map(NbtString::of).forEach(listTag::add);
+                NbtList pagesNbt = Nbt.newList(listTag ->
+                    pages.stream()
+                        .map(NbtString::of)
+                        .forEach(listTag::add)
+                );
 
-                    NbtCompound tag = new NbtCompound();
-                    tag.put("pages", listTag);
+                NbtCompound bookNbt = Nbt.newCompound(tag -> {
+                    tag.put("pages", pagesNbt);
                     tag.putInt("currentPage", currentPage);
+                });
 
-                    FastByteArrayOutputStream bytes = new FastByteArrayOutputStream();
-                    DataOutputStream out = new DataOutputStream(bytes);
-                    try {
-                        NbtIo.write(tag, out);
-                    } catch (IOException e) {
-                        e.printStackTrace();
+                try (FastByteArrayOutputStream bytes = new FastByteArrayOutputStream()) {
+                    try (DataOutputStream out = new DataOutputStream(bytes)) {
+                        Throwable err = NbtUtil.write(out, bookNbt);
+                        if (err != null) //noinspection CallToPrintStackTrace
+                            err.printStackTrace();
                     }
 
-                    try {
-                        GLFW.glfwSetClipboardString(mc.getWindow().getHandle(), Base64.getEncoder().encodeToString(bytes.array));
-                    } catch (OutOfMemoryError exception) {
-                        GLFW.glfwSetClipboardString(mc.getWindow().getHandle(), exception.toString());
-                    }
-                })
+                    GLFW.glfwSetClipboardString(mc.getWindow().getHandle(), Base64.getEncoder().encodeToString(bytes.array));
+                } catch (Throwable e) {
+                    MeteorClient.LOG.error("Error occurred releasing output stream or copying NBT to clipboard", e);
+                    GLFW.glfwSetClipboardString(mc.getWindow().getHandle(), e.toString());
+                }
+            })
                 .position(4, 4)
                 .size(120, 20)
                 .build()
@@ -89,7 +92,7 @@ public abstract class BookEditScreenMixin extends Screen {
                     try {
                         NbtCompound tag = NbtIo.read(in);
 
-                        NbtList listTag = tag.getList("pages", 8).copy();
+                        NbtList listTag = tag.getList("pages", NbtElement.STRING_TYPE).copy();
 
                         pages.clear();
                         for(int i = 0; i < listTag.size(); ++i) {

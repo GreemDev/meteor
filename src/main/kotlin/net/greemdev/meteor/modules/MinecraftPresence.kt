@@ -39,7 +39,7 @@ const val safeAppId = 1013634358927691846L
 var gameStart: Long = 0
 private val rpc = RichPresence()
 
-object MinecraftPresence : GModule("minecraft-presence", "Displays Minecraft as your presence on Discord.") {
+object MinecraftPresence : GModule.Misc("minecraft-presence", "Displays Minecraft as your presence on Discord.") {
 
     private val sgL1 = settings group "Line 1"
     private val sgL2 = settings group "Line 2"

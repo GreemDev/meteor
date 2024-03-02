@@ -10,7 +10,7 @@ import meteordevelopment.meteorclient.utils.player.ChatUtils
 import meteordevelopment.meteorclient.utils.player.PlayerUtils
 import meteordevelopment.meteorclient.utils.render.color.Color
 import net.greemdev.meteor.GCommand
-import net.greemdev.meteor.commands.api.argument
+import net.greemdev.meteor.commands.api.contextArg
 import net.greemdev.meteor.format
 import net.greemdev.meteor.util.HTTP
 import net.greemdev.meteor.util.minecraft
@@ -21,10 +21,10 @@ import java.util.Date
 object NameHistoryCommand : GCommand(
     "name-history",
     "Provides a list of a player's previous names from the laby.net API.", {
-        then("player", arg.playerListEntry()) {
-            alwaysRuns {
+        then("player", ArgType.playerListEntry()) {
+            runs {
                 MeteorExecutor.execute {
-                    val target by it.argument(arg.playerListEntry(), "player")
+                    val target by contextArg("player", ArgType.playerListEntry())
 
                     val history = HTTP.get("https://laby.net/api/v2/user/${target.profile.id}/get-profile").requestJson<NameHistory>()
                     if (history == null || history.username_history.isNullOrEmpty()) {

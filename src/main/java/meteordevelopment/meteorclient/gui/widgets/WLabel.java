@@ -18,9 +18,12 @@ public abstract class WLabel extends WPressable implements Supplier<String> {
     protected String text;
     protected boolean title;
 
+    protected boolean legacyRenderer;
+
     public WLabel(String text, boolean title) {
         this.text = text;
         this.title = title;
+        this.legacyRenderer = LegacyText.needsSpecialRenderer(text);
     }
 
     public Color getEffectiveColor(GuiTheme theme) {
@@ -53,7 +56,8 @@ public abstract class WLabel extends WPressable implements Supplier<String> {
 
 
     public void set(String text) {
-        if (LegacyText.needsSpecialRenderer(text))
+        legacyRenderer = LegacyText.needsSpecialRenderer(text);
+        if (legacyRenderer)
             if (Math.round(LegacyText.getLegacyWidth(theme.textRenderer(), text)) != width)
                 invalidate();
         else

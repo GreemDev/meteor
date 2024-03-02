@@ -2,13 +2,14 @@
  * This file is part of the Meteor Client distribution (https://github.com/MeteorDevelopment/meteor-client).
  * Copyright (c) Meteor Development.
  */
+@file:Suppress("unused")
 
 package net.greemdev.meteor.modules
 
 import net.greemdev.meteor.GModule
 import net.greemdev.meteor.util.meteor.*
 
-object VanillaFeatures : GModule(
+object VanillaFeatures : GModule.Misc(
     "vanilla-features", "Adds Meteor settings for easier access to some of Minecraft's toggle settings."
 ) {
     init {

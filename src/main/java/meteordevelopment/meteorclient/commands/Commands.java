@@ -7,8 +7,9 @@ package meteordevelopment.meteorclient.commands;
 
 import com.mojang.brigadier.CommandDispatcher;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
-import meteordevelopment.meteorclient.commands.commands.*;
+import meteordevelopment.meteorclient.systems.config.Config;
 import meteordevelopment.meteorclient.utils.PostInit;
+import net.greemdev.meteor.util.Reflection;
 import net.minecraft.client.network.ClientCommandSource;
 import net.minecraft.command.CommandRegistryAccess;
 import net.minecraft.command.CommandSource;
@@ -20,6 +21,7 @@ import org.jetbrains.annotations.Nullable;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
+import java.util.Objects;
 
 import static meteordevelopment.meteorclient.MeteorClient.mc;
 
@@ -31,41 +33,10 @@ public class Commands {
 
     @PostInit
     public static void init() {
-        add(new VClipCommand());
-        add(new HClipCommand());
-        add(new DismountCommand());
-        add(new DamageCommand());
-        add(new DropCommand());
-        add(new EnchantCommand());
-        add(new FakePlayerCommand());
-        add(new FriendsCommand());
-        add(new CommandsCommand());
-        add(new InventoryCommand());
-        add(new LocateCommand());
-        add(new NbtCommand());
-        add(new NotebotCommand());
-        add(new PeekCommand());
-        add(new EnderChestCommand());
-        add(new ProfilesCommand());
-        add(new ReloadCommand());
-        add(new ResetCommand());
-        add(new SayCommand());
-        add(new ServerCommand());
-        add(new SwarmCommand());
-        add(new ToggleCommand());
-        add(new SettingCommand());
-        add(new SpectateCommand());
-        add(new GamemodeCommand());
-        add(new SaveMapCommand());
-        add(new MacroCommand());
-        add(new ModulesCommand());
-        add(new BindsCommand());
-        add(new GiveCommand());
-        add(new BindCommand());
-        add(new FovCommand());
-        add(new RotationCommand());
-        add(new WaypointCommand());
-        add(new InputCommand());
+        Reflection.streamSubtypes(Command.class, Command.class.getPackageName())
+            .map(Reflection::callNoArgsConstructor)
+            .filter(Objects::nonNull)
+            .forEach(Commands::add);
 
         COMMANDS.sort(Comparator.comparing(Command::getName));
     }
@@ -88,5 +59,10 @@ public class Commands {
     @NotNull
     public static Command get(Class<? extends Command> commandClass) {
         return COMMANDS.stream().filter(c -> c.getClass().equals(commandClass)).findFirst().orElseThrow();
+    }
+
+    @NotNull
+    public static String prefix() {
+        return Config.get().prefix.get();
     }
 }

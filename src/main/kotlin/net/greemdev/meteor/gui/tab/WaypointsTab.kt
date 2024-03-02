@@ -14,6 +14,7 @@ import meteordevelopment.meteorclient.gui.tabs.TabScreen
 import meteordevelopment.meteorclient.gui.tabs.WindowTabScreen
 import meteordevelopment.meteorclient.gui.widgets.containers.WTable
 import meteordevelopment.meteorclient.systems.waypoints.Waypoints
+import meteordevelopment.meteorclient.utils.Utils
 import net.greemdev.meteor.util.meteor.*
 import net.greemdev.meteor.*
 import net.greemdev.meteor.util.minecraft
@@ -35,7 +36,7 @@ class WaypointsTab : Tab(NAME, GuiRenderer.WAYPOINTS, Meteor.config().waypointsI
 private class WorldListScreen(theme: GuiTheme, tab: Tab) : WindowTabScreen(theme, tab) {
     override fun initWidgets() {
         add(theme.table()) { cell, table ->
-            cell.expandX().minWidth(300.0)
+            cell.expandX().minWidth(Utils.getWindowWidth() / (GuiTheme.getWidthDivisor() * 2.818182))
 
             val folder = MeteorClient.FOLDER / "waypoints"
             val files = folder.filter {
@@ -46,7 +47,7 @@ private class WorldListScreen(theme: GuiTheme, tab: Tab) : WindowTabScreen(theme
             if (folder.isDirectory && !files.isNullOrEmpty()) {
                 files.forEach {
                     if (it == Meteor.waypoints().file) return@forEach
-                    val nameLabel = table.add(theme.label(it.name.removeSuffix(".nbt"))).expandX().widget()
+                    val nameLabel = table.add(theme.label(it.nameWithoutExtension)).expandX().widget()
                     table.add(theme.verticalSeparator()).expandWidgetY()
                     table.add(theme.button("View") {
                         runCatching {
@@ -75,7 +76,7 @@ private class ListScreen(
     theme: GuiTheme,
     private val file: File,
     private val wp: Waypoints = Waypoints().fromTag(file.readNbt())
-) : WindowScreen(theme, file.name.removeSuffix(".nbt")) {
+) : WindowScreen(theme, file.nameWithoutExtension) {
 
     init {
         this.parent = parent

@@ -8,6 +8,7 @@ package meteordevelopment.meteorclient.settings;
 import com.google.common.collect.ImmutableList;
 import meteordevelopment.meteorclient.utils.render.color.Color;
 import meteordevelopment.meteorclient.utils.render.color.SettingColor;
+import net.greemdev.meteor.util.text.ChatColor;
 import net.minecraft.nbt.NbtCompound;
 
 import java.util.List;
@@ -86,6 +87,10 @@ public class ColorSetting extends Setting<SettingColor> {
         public Builder defaultValue(Color defaultValue) {
             this.defaultValue = defaultValue.toSetting();
             return this;
+        }
+
+        public Builder defaultValue(ChatColor defaultValue) {
+            return defaultValue(defaultValue.meteor());
         }
 
         @Override

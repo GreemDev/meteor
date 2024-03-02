@@ -5,6 +5,7 @@
 
 package meteordevelopment.meteorclient.utils.render.color;
 
+import com.google.common.base.Suppliers;
 import meteordevelopment.meteorclient.utils.misc.ICopyable;
 import meteordevelopment.meteorclient.utils.misc.ISerializable;
 import net.greemdev.meteor.util.Strings;
@@ -15,13 +16,15 @@ import net.minecraft.util.Formatting;
 import net.minecraft.util.math.Vec3d;
 import org.joml.Vector3f;
 import net.greemdev.meteor.utils;
+import org.joml.Vector4f;
 
-import java.util.concurrent.ThreadLocalRandom;
+import java.util.Random;
+import java.util.function.Supplier;
 
 @SuppressWarnings("unused")
 public class Color implements ICopyable<Color>, ISerializable<Color> {
 
-    public static final Color WHITE = new Color(java.awt.Color.WHITE);
+    public static final Color WHITE = new Color();
     public static final Color LIGHT_GRAY = new Color(java.awt.Color.LIGHT_GRAY);
     public static final Color GRAY = new Color(java.awt.Color.GRAY);
     public static final Color DARK_GRAY = new Color(java.awt.Color.DARK_GRAY);
@@ -34,7 +37,6 @@ public class Color implements ICopyable<Color>, ISerializable<Color> {
     public static final Color MAGENTA = new Color(java.awt.Color.MAGENTA);
     public static final Color CYAN = new Color(java.awt.Color.CYAN);
     public static final Color BLUE = new Color(java.awt.Color.BLUE);
-
     public static final Color HYPERLINK_BLUE = new Color(0x0000EE);
 
     public int r, g, b, a;
@@ -51,8 +53,20 @@ public class Color implements ICopyable<Color>, ISerializable<Color> {
         this((int)(r*255), (int)(g*255), (int)(b*255), (int)(a*255));
     }
 
+    public Color(Vector4f components) {
+        this(components.x(), components.y(), components.z(), components.w());
+    }
+
+    public Color(Vector3f components) {
+        this(components.x(), components.y(), components.z(), 1f);
+    }
+
     public Color(int packed) {
         this(toRGBAR(packed), toRGBAG(packed), toRGBAB(packed), toRGBAA(packed));
+    }
+    public Color(int packed, int overrideAlpha) {
+        this(packed);
+        this.a = overrideAlpha;
     }
 
     public Color(Color color) {
@@ -94,18 +108,6 @@ public class Color implements ICopyable<Color>, ISerializable<Color> {
         validate();
     }
 
-    public static Color randomColor(boolean randomizeAlpha) {
-        var r = ThreadLocalRandom.current();
-        return new Color(
-            r.nextInt(0, 256),
-            r.nextInt(0, 256),
-            r.nextInt(0, 256),
-            randomizeAlpha
-                ? r.nextInt(0, 256)
-                : 255
-        );
-    }
-
     public static int fromRGBA(int r, int g, int b, int a) {
         return (r << 16) + (g << 8) + (b) + (a << 24);
     }
@@ -113,15 +115,12 @@ public class Color implements ICopyable<Color>, ISerializable<Color> {
     public static int toRGBAR(int color) {
         return (color >> 16) & 0x000000FF;
     }
-
     public static int toRGBAG(int color) {
         return (color >> 8) & 0x000000FF;
     }
-
     public static int toRGBAB(int color) {
         return (color) & 0x000000FF;
     }
-
     public static int toRGBAA(int color) {
         return (color >> 24) & 0x000000FF;
     }
@@ -137,6 +136,7 @@ public class Color implements ICopyable<Color>, ISerializable<Color> {
             b = v;
             return new Color((int) (r * 255), (int) (g * 255), (int) (b * 255), 255);
         }
+
         hh = h;
         if (hh >= 360.0) hh = 0.0;
         hh /= 60.0;
@@ -201,6 +201,14 @@ public class Color implements ICopyable<Color>, ISerializable<Color> {
         } catch (NumberFormatException e) {
             throw new IllegalArgumentException("Invalid RGB(A) number sequence provided.", e);
         }
+    }
+
+
+    private static final Supplier<Random> _rand = Suppliers.memoize(Random::new);
+
+    public static Color random() {
+        Random rand = _rand.get();
+        return new Color(rand.nextFloat(), rand.nextFloat(), rand.nextFloat(), 1f);
     }
 
     public Color set(int r, int g, int b, int a) {
@@ -285,6 +293,14 @@ public class Color implements ICopyable<Color>, ISerializable<Color> {
         return TextColor.fromRgb(getPacked());
     }
 
+    public Vector3f toVector3f() {
+        return new Vector3f(r / 255f, g / 255f, b / 255f);
+    }
+
+    public Vector4f toVector4f() {
+        return new Vector4f(r / 255f, g / 255f, b / 255f, a / 255f);
+    }
+
     public Style toStyle() {
         return Style.EMPTY.withColor(toTextColor());
     }
@@ -339,6 +355,22 @@ public class Color implements ICopyable<Color>, ISerializable<Color> {
         return fromRGBA(r, g, b, a);
     }
 
+    public float red() {
+        return r / 255f;
+    }
+
+    public float green() {
+        return g / 255f;
+    }
+
+    public float blue() {
+        return b / 255f;
+    }
+
+    public float alpha() {
+        return a / 255f;
+    }
+
     @Override
     public NbtCompound toTag() {
         NbtCompound tag = new NbtCompound();
@@ -364,7 +396,7 @@ public class Color implements ICopyable<Color>, ISerializable<Color> {
 
     @Override
     public String toString() {
-        return r + " " + g + " " + b + " " + a;
+        return "%d %d %d".formatted(r, g, b);
     }
 
     @Override

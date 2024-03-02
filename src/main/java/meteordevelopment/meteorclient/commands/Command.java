@@ -9,6 +9,8 @@ import com.mojang.brigadier.CommandDispatcher;
 import com.mojang.brigadier.arguments.ArgumentType;
 import com.mojang.brigadier.builder.LiteralArgumentBuilder;
 import com.mojang.brigadier.builder.RequiredArgumentBuilder;
+import com.mojang.brigadier.exceptions.CommandSyntaxException;
+import com.mojang.brigadier.exceptions.SimpleCommandExceptionType;
 import meteordevelopment.meteorclient.systems.config.Config;
 import meteordevelopment.meteorclient.utils.Utils;
 import meteordevelopment.meteorclient.utils.player.ChatUtils;
@@ -17,10 +19,13 @@ import net.minecraft.command.CommandSource;
 import net.minecraft.registry.BuiltinRegistries;
 import net.minecraft.server.command.CommandManager;
 import net.minecraft.text.Text;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.function.Supplier;
 
 public abstract class Command {
     protected static final CommandRegistryAccess REGISTRY_ACCESS = CommandManager.createRegistryAccess(BuiltinRegistries.createWrapperLookup());
@@ -59,26 +64,70 @@ public abstract class Command {
 
     public abstract void build(LiteralArgumentBuilder<CommandSource> builder);
 
-    public String getName() {
+    public final String getName() {
         return name;
     }
 
-    public String getDescription() {
+    public final String getDescription() {
         return description;
     }
 
-    public List<String> getAliases() {
+    public final List<String> getAliases() {
         return aliases;
     }
 
     public String toString() {
-        return Config.get().prefix.get() + name;
+        return Commands.prefix() + name;
     }
 
-    public String toString(String... args) {
+    public final String toString(String... args) {
         StringBuilder base = new StringBuilder(toString());
         for (String arg : args) base.append(' ').append(arg);
         return base.toString();
+    }
+
+    @NotNull
+    public String subcommand(String... subcommand) {
+        return toString(subcommand);
+    }
+
+    @NotNull
+    public final <T> T require(@Nullable T value, @NotNull SimpleCommandExceptionType scet) throws CommandSyntaxException {
+        if (value == null)
+            throw scet.create();
+
+        return value;
+    }
+
+    @NotNull
+    public final <T> T require(@Nullable T value, @NotNull CommandSyntaxException cse) throws CommandSyntaxException {
+        if (value == null)
+            throw cse;
+
+        return value;
+    }
+
+    @NotNull
+    public final <T> T require(@Nullable T value, @NotNull Supplier<@NotNull CommandSyntaxException> cse) throws CommandSyntaxException {
+        if (value == null)
+            throw cse.get();
+
+        return value;
+    }
+
+    public final void require(boolean condition, @NotNull SimpleCommandExceptionType scet) throws CommandSyntaxException {
+        if (!condition)
+            throw scet.create();
+    }
+
+    public final void require(boolean condition, @NotNull CommandSyntaxException cse) throws CommandSyntaxException {
+        if (!condition)
+            throw cse;
+    }
+
+    public final void require(boolean condition, @NotNull Supplier<@NotNull CommandSyntaxException> cse) throws CommandSyntaxException {
+        if (!condition)
+            throw cse.get();
     }
 
     public void info(Text message) {

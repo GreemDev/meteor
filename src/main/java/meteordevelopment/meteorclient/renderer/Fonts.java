@@ -33,7 +33,7 @@ public class Fonts {
     public static CustomTextRenderer RENDERER;
 
     @PreInit(dependencies = Shaders.class)
-    public static void refresh() {
+    public static void reload() {
         FONT_FAMILIES.clear();
 
         for (String builtinFont : BUILTIN_FONTS) {

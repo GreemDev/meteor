@@ -9,7 +9,6 @@ import com.mojang.blaze3d.systems.RenderSystem;
 import it.unimi.dsi.fastutil.objects.Object2IntMap;
 import it.unimi.dsi.fastutil.objects.Object2IntOpenHashMap;
 import meteordevelopment.meteorclient.MeteorClient;
-import meteordevelopment.meteorclient.utils.misc.MeteorIdentifier;
 import meteordevelopment.meteorclient.utils.render.color.Color;
 import net.greemdev.meteor.util.misc.KMC;
 import org.apache.commons.io.IOUtils;
@@ -18,7 +17,6 @@ import org.joml.Matrix4f;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 
-import static meteordevelopment.meteorclient.MeteorClient.mc;
 import static org.lwjgl.opengl.GL32C.*;
 
 public class Shader {
@@ -27,23 +25,34 @@ public class Shader {
     private final int id;
     private final Object2IntMap<String> uniformLocations = new Object2IntOpenHashMap<>();
 
+    public Shader(String shaderFileName) {
+        this(shaderFileName + ".vert", shaderFileName + ".frag");
+    }
+
     public Shader(String vertPath, String fragPath) {
         int vert = GL.createShader(GL_VERTEX_SHADER);
-        GL.shaderSource(vert, read(vertPath));
+        {
+            String vertexShader = read(vertPath, "Cannot find vertex shader %s in jar resources");
+            GL.shaderSource(vert, vertexShader);
 
-        String vertError = GL.compileShader(vert);
-        if (vertError != null) {
-            MeteorClient.LOG.error("Failed to compile vertex shader (" + vertPath + "): " + vertError);
-            throw new RuntimeException("Failed to compile vertex shader (" + vertPath + "): " + vertError);
+            String vertError = GL.compileShader(vert);
+            if (vertError != null) {
+                MeteorClient.LOG.error("Failed to compile vertex shader (" + vertPath + "): " + vertError);
+                throw new RuntimeException("Failed to compile vertex shader (" + vertPath + "): " + vertError);
+            }
         }
 
-        int frag = GL.createShader(GL_FRAGMENT_SHADER);
-        GL.shaderSource(frag, read(fragPath));
 
-        String fragError = GL.compileShader(frag);
-        if (fragError != null) {
-            MeteorClient.LOG.error("Failed to compile fragment shader (" + fragPath + "): " + fragError);
-            throw new RuntimeException("Failed to compile fragment shader (" + fragPath + "): " + fragError);
+        int frag = GL.createShader(GL_FRAGMENT_SHADER);
+        {
+            String fragmentShader = read(fragPath, "Cannot find fragment shader %s in jar resources");
+            GL.shaderSource(frag, fragmentShader);
+
+            String fragError = GL.compileShader(frag);
+            if (fragError != null) {
+                MeteorClient.LOG.error("Failed to compile fragment shader (" + fragPath + "): " + fragError);
+                throw new RuntimeException("Failed to compile fragment shader (" + fragPath + "): " + fragError);
+            }
         }
 
         id = GL.createProgram();
@@ -58,13 +67,16 @@ public class Shader {
         GL.deleteShader(frag);
     }
 
-    private String read(String path) {
-        try {
-            return IOUtils.toString(KMC.getMeteorResource("shaders/" + path).get().getInputStream(), StandardCharsets.UTF_8);
-        } catch (IOException e) {
-            e.printStackTrace();
-            return "";
-        }
+    private String read(String path, String notFoundError) {
+        return KMC.getMeteorResource("shaders/%s".formatted(path))
+            .map(rs -> {
+                try {
+                    return IOUtils.toString(rs.getInputStream(), StandardCharsets.UTF_8);
+                } catch (IOException e) {
+                    throw new IllegalStateException("Could not read shader '%s'".formatted(path), e);
+                }
+            })
+            .orElseThrow(() -> new RuntimeException(notFoundError.formatted(path)));
     }
 
     public void bind() {

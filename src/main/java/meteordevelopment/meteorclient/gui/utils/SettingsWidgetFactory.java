@@ -10,6 +10,7 @@ import meteordevelopment.meteorclient.gui.widgets.WWidget;
 import meteordevelopment.meteorclient.gui.widgets.containers.WTable;
 import meteordevelopment.meteorclient.settings.Setting;
 import meteordevelopment.meteorclient.settings.Settings;
+import meteordevelopment.meteorclient.utils.Utils;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -18,6 +19,11 @@ import java.util.function.Function;
 
 public abstract class SettingsWidgetFactory {
     private static final Map<Class<?>, Function<GuiTheme, BiConsumer<WTable, Setting<?>>>> customFactories = new HashMap<>();
+
+    protected <T extends Setting<?>> void map(Class<T> settingClass, BiConsumer<WTable, T> factory) {
+        if (factory != null)
+            factories.put(settingClass, Utils.cast(factory));
+    }
 
     protected final GuiTheme theme;
     protected final Map<Class<?>, BiConsumer<WTable, Setting<?>>> factories = new HashMap<>();

@@ -7,11 +7,9 @@ package net.greemdev.meteor.util.meteor.starscript
 
 import meteordevelopment.meteorclient.utils.misc.MeteorStarscript
 import meteordevelopment.starscript.Starscript
-import net.greemdev.meteor.Mapper
-import net.greemdev.meteor.Visitor
+import net.greemdev.meteor.Pipe
 import net.greemdev.meteor.util.*
 import net.greemdev.meteor.util.meteor.starscript.api.*
-import net.greemdev.meteor.util.math.clamp
 import net.greemdev.meteor.util.math.lerp
 import net.minecraft.util.math.MathHelper
 import kotlin.math.*
@@ -88,5 +86,5 @@ private fun Starscript.utilities() {
     }
 }
 
-private inline fun Starscript.singleNumberFunc(name: String, crossinline mathFunc: Visitor<Double>) =
+private inline fun Starscript.singleNumberFunc(name: String, crossinline mathFunc: Pipe<Double>) =
     numberFunc(name, Constraint.exactCount(1)) { mathFunc(nextNumber()) }

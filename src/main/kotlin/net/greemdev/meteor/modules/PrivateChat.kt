@@ -14,7 +14,7 @@ import net.greemdev.meteor.util.meteor.*
 import net.greemdev.meteor.invoke
 
 // based on https://github.com/Declipsonator/Meteor-Tweaks/blob/main/src/main/java/me/declipsonator/meteortweaks/modules/GroupChat.java
-object PrivateChat : GModule("private-chat", "Turns your chat into a private conversation.") {
+object PrivateChat : GModule.Misc("private-chat", "Turns your chat into a private conversation.") {
 
     val players by sg stringList {
         name("players")

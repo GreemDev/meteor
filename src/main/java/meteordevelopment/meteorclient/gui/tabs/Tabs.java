@@ -5,26 +5,23 @@
 
 package meteordevelopment.meteorclient.gui.tabs;
 
-import com.google.common.collect.ImmutableList;
 import it.unimi.dsi.fastutil.objects.ObjectImmutableList;
 import meteordevelopment.meteorclient.gui.tabs.builtin.*;
 import meteordevelopment.meteorclient.systems.config.Config;
-import meteordevelopment.meteorclient.utils.PreInit;
 import meteordevelopment.meteorclient.utils.Utils;
 import net.greemdev.meteor.gui.tab.WaypointsTab;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 public class Tabs {
     private static Tab _lastTab;
 
     public static void setLastTab(Tab tab) {
+        if (tab == null) return;
         if (Config.get().lastTabMemory.get()) {
-            if (_lastTab != tab)
+            if (!tab.equals(_lastTab))
                 _lastTab = tab;
         } else if (_lastTab != null) {
             _lastTab = null;

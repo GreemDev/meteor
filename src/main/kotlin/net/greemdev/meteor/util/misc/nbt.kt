@@ -3,18 +3,34 @@
  * Copyright (c) Meteor Development.
  */
 @file:JvmName("NbtUtil")
+@file:Suppress("FunctionName")
 
 package net.greemdev.meteor.util.misc
 
+import meteordevelopment.meteorclient.utils.misc.ByteCountDataOutput
 import net.greemdev.meteor.*
+import net.greemdev.meteor.util.string
 import net.minecraft.nbt.*
 import net.minecraft.text.Text
 import net.minecraft.util.crash.CrashException
+import java.io.DataInput
+import java.io.DataOutput
 import java.io.File
+import java.io.IOException
 import java.util.function.Consumer
+import kotlin.random.Random
 
 fun File.write(tag: NbtCompound) =
     runCatching { NbtIo.write(tag, this) }.exceptionOrNull()
+
+fun DataOutput.write(tag: NbtCompound) =
+    runCatching { NbtIo.write(tag, this) }.exceptionOrNull()
+
+fun UnlimitedNbtTagSizeTracker() = NbtTagSizeTracker(Long.MAX_VALUE)
+
+@JvmName("readCompound")
+fun DataInput.readNbtCompound(nbtTagSizeTracker: NbtTagSizeTracker = UnlimitedNbtTagSizeTracker()): Result<NbtCompound> =
+    runCatching { NbtIo.read(this, nbtTagSizeTracker) }
 
 @JvmName("read")
 fun File.readNbt(): NbtCompound =
@@ -23,6 +39,7 @@ fun File.readNbt(): NbtCompound =
     }.onFailureOf(CrashException::class) { throw it.cause!! }
         .getOrNull() ?: error("File at $absolutePath doesn't exist.")
 
+@JvmName("readOrNull")
 fun File.readNbtOrNull() = getOrNull(this::readNbt)
 
 object Nbt {
@@ -34,13 +51,13 @@ object Nbt {
     @JvmStatic
     fun list(vararg elements: Any) = list(elements.toList())
     @JvmStatic
-    infix fun listElements(elements: Collection<NbtElement>) = list { elements.forEach { add(it) } }
+    infix fun listElements(elements: Collection<NbtElement>) = list { elements.forEach(::add) }
     @JvmStatic
     @JvmName("newCompound")
-    fun `java-compound`(builder: Consumer<NbtCompound>) = compound { builder.accept(this) }
+    fun `java-compound`(builder: Consumer<NbtCompound>) = compound(builder.kotlin)
     @JvmStatic
     @JvmName("newList")
-    fun `java-list`(builder: Consumer<NbtList>) = list { builder.accept(this) }
+    fun `java-list`(builder: Consumer<NbtList>) = list(builder.kotlin)
 }
 
 fun Any.toNBT(): NbtElement = when (this) {
@@ -53,6 +70,8 @@ fun Any.toNBT(): NbtElement = when (this) {
     is Long -> NbtLong.of(this)
     else -> error("Unknown or unsupported object type ${this::class.java.simpleName}. Valid NBT non-collection values are: [String, Int, Byte, Boolean, Double, Float, Long]")
 }
+
+fun Any?.toNBTOrNull() = this?.toNBT()
 
 enum class NbtDataType(val byte: kotlin.Byte) {
     Byte(NbtElement.BYTE_TYPE),
@@ -86,7 +105,53 @@ inline fun<reified T> Array<T>.toNBT(): NbtElement = when (T::class) {
     else -> error("Unknown or unsupported array type Supported are Byte, Long, and Int.")
 }
 
-fun Collection<*>.toNBT() = Nbt listElements mapNotNull { it?.toNBT() }
+fun Collection<*>.toNBT() = Nbt listElements mapNotNull(Any?::toNBTOrNull)
 
 fun NbtList.collectAsStrings() = mapNotNull(NbtElement::asString)
 
+@Throws(IOException::class)
+fun NbtCompound.countBytes(): Int {
+    return ByteCountDataOutput().also(::write).count
+}
+
+fun NbtCompound.ifTagPresent(name: String, action: Consumer<NbtCompound>) {
+    if (contains(name, NbtDataType.Compound.int))
+        action(getCompound(name))
+}
+
+fun NbtCompound.ifElementPresent(name: String, dataType: NbtDataType, action: Consumer<NbtElement>) {
+    if (contains(name, dataType.int))
+        action(get(name)!!)
+}
+
+
+fun Random.createRandomNbtIntArray(elements: Int) =
+    string {
+        +"[I;"
+        repeat(elements) {
+            +"${nextInt()}"
+
+            if (it < elements - 1)
+                +','
+        }
+        +']'
+    }
+
+fun Random.createRandomNbtLongArray(elements: Int) =
+    string {
+        +"[L;"
+        repeat(elements) {
+            +"${nextLong()}"
+
+            if (it < elements - 1)
+                +','
+        }
+        +']'
+    }
+
+fun Random.createRandomNbtByteArray(elements: Int) =
+    string {
+        +"[B;"
+        +nextBytes(elements).joinToString(",")
+        +']'
+    }

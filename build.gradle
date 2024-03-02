@@ -29,10 +29,6 @@ repositories {
         }
     }
     maven {
-        name = "enderzombi"
-        url = "https://repo.repsy.io/mvn/enderzombi102/mc/"
-    }
-    maven {
         name = "vram"
         url = "https://maven.vram.io//"
     }

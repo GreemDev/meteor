@@ -13,6 +13,7 @@ import meteordevelopment.meteorclient.systems.friends.Friend;
 import meteordevelopment.meteorclient.systems.friends.Friends;
 import meteordevelopment.meteorclient.utils.network.Capes;
 import meteordevelopment.meteorclient.utils.network.MeteorExecutor;
+import net.greemdev.meteor.util.Reflection;
 import net.minecraft.command.CommandSource;
 
 import static com.mojang.brigadier.Command.SINGLE_SUCCESS;
@@ -28,8 +29,9 @@ public class ReloadCommand extends Command {
             warning("Reloading systems, this may take a while.");
 
             Systems.load();
-            Capes.init();
-            Fonts.refresh();
+            Capes.reload();
+            Fonts.reload();
+            Reflection.cache().clear();
             MeteorExecutor.execute(() -> Friends.get().forEach(Friend::updateInfo));
 
             return SINGLE_SUCCESS;

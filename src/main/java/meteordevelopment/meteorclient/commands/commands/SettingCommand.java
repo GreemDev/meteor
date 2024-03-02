@@ -31,7 +31,7 @@ public class SettingCommand extends Command {
         builder.then(
             literal("hud")
                 .executes(context -> {
-                    TabScreen screen = Tabs.get().get(3).createScreen(GuiThemes.get());
+                    TabScreen screen = Tabs.hud().createScreen(GuiThemes.get());
                     screen.parent = null;
 
                     Utils.screenToOpen = screen;

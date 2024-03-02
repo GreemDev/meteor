@@ -7,10 +7,8 @@ package meteordevelopment.meteorclient.utils.player;
 
 import baritone.api.BaritoneAPI;
 import com.mojang.brigadier.StringReader;
-import meteordevelopment.meteorclient.MeteorClient;
 import meteordevelopment.meteorclient.mixininterface.IChatHud;
 import meteordevelopment.meteorclient.systems.config.Config;
-import meteordevelopment.meteorclient.utils.PostInit;
 import net.greemdev.meteor.util.text.ChatFeedback;
 import net.greemdev.meteor.util.text.FormattedText;
 import net.minecraft.text.*;
@@ -134,7 +132,7 @@ public class ChatUtils {
     private static Text getCustomPrefix(String prefixTitle, Formatting prefixColor) {
         var brackets = Config.get().meteorPrefixBrackets.get();
 
-        return FormattedText.build(brackets.left(), t -> {
+        return new FormattedText(brackets.left(), t -> {
             t.colored(Config.get().meteorPrefixBracketsColor.get());
             t.addString(prefixTitle, prefixColor);
             t.addString(brackets.right() + " ");

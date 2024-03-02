@@ -44,7 +44,7 @@ public abstract class Tab {
     public void openScreen(GuiTheme theme) {
         TabScreen screen = this.createScreen(theme);
         screen.addDirect(theme.topBar())
-            .alignY(Config.getTopBarAlignmentY()) //custom alignment type used for vertical because i don't want to allow placing the top bar in the center
+            .alignY(Config.getTopBarAlignmentY()) //custom alignment type used for vertical because i don't want to allow placing the top bar in the vertical center of the screen
             .alignX(Config.getTopBarAlignmentX());
         mc.setScreen(screen);
         Tabs.setLastTab(this);
@@ -53,4 +53,9 @@ public abstract class Tab {
     public abstract TabScreen createScreen(GuiTheme theme);
 
     public abstract boolean isScreen(Screen screen);
+
+    @Override
+    public boolean equals(@NotNull Object obj) {
+        return obj instanceof Tab tab && name.equals(tab.name);
+    }
 }

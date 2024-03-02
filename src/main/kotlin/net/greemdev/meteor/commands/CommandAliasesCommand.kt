@@ -14,10 +14,10 @@ import net.greemdev.meteor.util.text.textOf
 
 object CommandAliasesCommand : GCommand(
     "command-aliases", "Configured by the module of the same name.", {
-        then("alias", arg.greedyString()) {
+        then("alias", ArgType.greedyString()) {
             suggests { matching(CommandAliases.aliases.keys) }
-            alwaysRuns { ctx ->
-                val name by ctx.argument(arg.greedyString(), "alias")
+            runs {
+                val name by contextArg("alias", ArgType.greedyString())
                 val mapping = CommandAliases.find(name) ?: notFound.throwNew(name)
 
                 minecraft.sendCommand(mapping)

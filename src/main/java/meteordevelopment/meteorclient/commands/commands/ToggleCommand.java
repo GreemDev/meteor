@@ -28,7 +28,7 @@ public class ToggleCommand extends Command {
             .then(literal("all")
                 .then(literal("on")
                     .executes(context -> {
-                        new ArrayList<>(Modules.get().getAll()).forEach(module -> {
+                        Modules.get().getAll().forEach(module -> {
                             if (!module.isActive()) module.toggle();
                         });
                         Hud.get().active = true;
@@ -61,12 +61,19 @@ public class ToggleCommand extends Command {
                         Module m = ModuleArgumentType.get(context);
                         if (m.isActive()) m.toggle();
                         return SINGLE_SUCCESS;
+                    }))
+                .then(literal("visible")
+                    .executes(context -> {
+                        Module module = ModuleArgumentType.get(context);
+                        module.toggleHidden();
+                        module.sendVisibilityMsg();
+                        return SINGLE_SUCCESS;
                     })
                 )
             )
             .then(literal("hud")
                 .executes(context -> {
-                    Hud.get().active = !(Hud.get().active);
+                    Hud.get().active = !Hud.get().active;
                     return SINGLE_SUCCESS;
                 })
                 .then(literal("on")

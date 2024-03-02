@@ -10,9 +10,7 @@ package net.greemdev.meteor.util.text
 import net.greemdev.meteor.*
 import net.minecraft.util.Formatting
 
-@Suppress("DataClassPrivateConstructor") // I DON'T GIVE A SHIT THAT copy() EXPOSES THE PRIVATE CONSTRUCTOR KOTLIN
-data class ChatColor private constructor(val mc: Formatting) {
-
+class ChatColor private constructor(val mc: Formatting) {
     companion object {
         @JvmField val black         = ChatColor(Formatting.BLACK)
         @JvmField val darkBlue      = ChatColor(Formatting.DARK_BLUE)
@@ -48,27 +46,34 @@ data class ChatColor private constructor(val mc: Formatting) {
     val isModifier by invoking(mc::isModifier)
     @get:JvmName("isColor")
     val isColor by invoking(mc::isColor)
-    @get:JvmName("rgb")
-    val rgb by invoking(mc::getColorValue)
+    @get:JvmName("rgbOrNull")
+    val rgbOrNull by invoking(mc::getColorValue)
 
+    fun rgb() = rgbOrNull ?: error("Cannot obtain color for a non-color formatting option.")
 
-    fun asMeteor() = MeteorColor(rgb ?: error("Cannot obtain color for a non-color formatting option.")).apply { a = 255 }
-    fun asAwt(): AwtColor = asMeteor().awt()
+    @get:JvmName("meteor")
+    val meteor by lazy { MeteorColor(rgb(), 255) }
+    @get:JvmName("awt")
+    val awt by lazy { AwtColor(rgb(), false) }
 
-    fun components() = asMeteor().let { it.r to it.g then it.b }
+    fun components() = meteor.let { it.r to it.g then it.b }
 
-    override fun hashCode() = asMeteor().hashCode()
+    operator fun component1() = meteor.r
+    operator fun component2() = meteor.g
+    operator fun component3() = meteor.b
+
+    override fun hashCode() = hashOf(name, code)
     override fun toString(): String = mc.toString()
     override fun equals(other: Any?) = when (other) {
         is ChatColor -> code == other.code
-        is MeteorColor -> rgb != null && asMeteor() == other
-        is AwtColor -> rgb != null && asAwt() == other
+        is MeteorColor -> rgbOrNull != null && meteor == other
+        is AwtColor -> rgbOrNull != null && meteor == other
         is Formatting -> when {
             (mc.isModifier and other.isModifier) && mc.code == other.code -> true
             (mc.isColor and other.isColor) && mc.colorIndex == other.colorIndex -> true
             else -> false
         }
-        is Int -> rgb == other
+        is Int -> other == rgbOrNull
         is Char -> code == other
         else -> false
     }

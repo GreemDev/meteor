@@ -15,6 +15,7 @@ import meteordevelopment.meteorclient.systems.config.Config;
 import net.minecraft.client.gui.screen.Screen;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 import static meteordevelopment.meteorclient.MeteorClient.mc;
@@ -61,6 +62,11 @@ public class YesNoPrompt {
 
     public YesNoPrompt message(String message, Object... args) {
         this.messages.add(String.format(message, args));
+        return this;
+    }
+
+    public YesNoPrompt messageLines(String... messages) {
+        Collections.addAll(this.messages, messages);
         return this;
     }
 
